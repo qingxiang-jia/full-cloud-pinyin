@@ -1,54 +1,49 @@
-use std::{io::{Write, stdout, stdin}, time::{Duration, Instant}};
+use std::{io::{Write, stdout, stdin}, time::Instant, str::FromStr};
+use hyper_tls::HttpsConnector;
+use hyper::{Client, Uri, client::{HttpConnector, ResponseFuture}};
 
-use ureq::Agent;
+#[tokio::main]
+async fn main() {
+    let https = HttpsConnector::new();
+    let client = Client::builder()
+        .build::<_, hyper::Body>(https);
 
-fn main() {
-    let agent: Agent = ureq::AgentBuilder::new()
-        .timeout_read(Duration::from_secs(5))
-        .timeout_write(Duration::from_secs(5))
-        .build();
-    
     loop {
         let mut input = String::new();
         let _ = stdout().flush();
         stdin().read_line(&mut input).expect("Did not enter a corect string.");
         
         let now = Instant::now();
-        let json = get_candidate_json(&input, &agent);
+
+        let future = get_candidates(&input, &client);
+        let result = future.await;
+        match result {
+            Ok(response) => {
+                let data = hyper::body::to_bytes(response.into_body()).await;
+                
+                match data {
+                    Ok(buf) => {
+                        let maybe_str = std::str::from_utf8(&buf);
+                        
+                        match maybe_str {
+                            Ok(str) => println!("{:#?}", str),
+                            Err(err) => println!("Failed to convert bytes to str: {:#?}", err)
+                        }
+                    },
+                    Err(err) => println!("Reading body failed: {:#?}", err)
+                }
+            },
+            Err(err) => println!("{:#?}", err)
+        }
+
         let elapsed = now.elapsed();
-        
-        println!("{:#?} {}", elapsed, json);
+        println!("{:#?}", elapsed);
     }
 }
 
-fn get_candidate_json(pinyin: &str, agent: &Agent) -> String {
-    let request = agent
-        .post("https://inputtools.google.com/request")
-        .set("Content-Length", "0")
-        .query("text", pinyin)
-        .query("itc", "zh-t-i0-pinyin")
-        .query("num", "11")
-        .query("ie", "utf-8");
-    
-    println!("Request: {:#?}", request);
-    
-    let result = request.call();
-    
-    match result {
-        Ok(result) => {
-            let string_result = result.into_string();
-            
-            match string_result {
-                Ok(string_result) => string_result,
-                Err(string_result) => {
-                    println!("Failed to conver to string. Error: {:#?}", string_result);
-                    "".to_string()
-                }
-            }
-        },
-        Err(result) => {
-            println!("Request failed with {:#?}.", result);
-            "".to_string()
-        }
-    }
+fn get_candidates(pinyin: &str, client: &Client<hyper_tls::HttpsConnector<HttpConnector>, hyper::Body>) -> ResponseFuture {
+    let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num=11&cp=0&cs=1&ie=utf-8&oe=utf-8", pinyin.strip_suffix('\n').unwrap());
+    println!("request URL: {}", url);
+    let future = client.get(Uri::from_str(&url).expect("Invalid URI"));
+    return future;
 }
