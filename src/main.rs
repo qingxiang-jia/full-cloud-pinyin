@@ -1,49 +1,36 @@
-use std::{io::{Write, stdout, stdin}, time::Instant, str::FromStr};
-use hyper_tls::HttpsConnector;
-use hyper::{Client, Uri, client::{HttpConnector, ResponseFuture}};
+use std::{io::{Write, stdout, stdin}, time::Instant, net::SocketAddrV4};
+use std::net::{SocketAddr, ToSocketAddrs};
 
-#[tokio::main]
-async fn main() {
-    let https = HttpsConnector::new();
-    let client = Client::builder()
-        .build::<_, hyper::Body>(https);
+fn main() {
+    // DNS lookup first
+    let addr = get_ip().expect("No IPv4 address found.");
+    
+    let mut config = quiche::Config::new(quiche::PROTOCOL_VERSION).expect("Failed to initialize a configuration.");
+    let scid = quiche::ConnectionId::from_vec(vec![3]);
+    let conn = quiche::connect(None, &scid, SocketAddr::V4(addr), &mut config);
 
-    loop {
-        let mut input = String::new();
-        let _ = stdout().flush();
-        stdin().read_line(&mut input).expect("Did not enter a corect string.");
+    // loop {
+    //     let mut input = String::new();
+    //     let _ = stdout().flush();
+    //     stdin().read_line(&mut input).expect("Did not enter a corect string.");
         
-        let now = Instant::now();
+    //     let now = Instant::now();
 
-        let future = get_candidates(&input, &client);
-        let result = future.await;
-        match result {
-            Ok(response) => {
-                let data = hyper::body::to_bytes(response.into_body()).await;
-                
-                match data {
-                    Ok(buf) => {
-                        let maybe_str = std::str::from_utf8(&buf);
-                        
-                        match maybe_str {
-                            Ok(str) => println!("{:#?}", str),
-                            Err(err) => println!("Failed to convert bytes to str: {:#?}", err)
-                        }
-                    },
-                    Err(err) => println!("Reading body failed: {:#?}", err)
-                }
-            },
-            Err(err) => println!("{:#?}", err)
-        }
-
-        let elapsed = now.elapsed();
-        println!("{:#?}", elapsed);
-    }
+    //     let elapsed = now.elapsed();
+    //     println!("{:#?}", elapsed);
+    // }
 }
 
-fn get_candidates(pinyin: &str, client: &Client<hyper_tls::HttpsConnector<HttpConnector>, hyper::Body>) -> ResponseFuture {
-    let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num=11&cp=0&cs=1&ie=utf-8&oe=utf-8", pinyin.strip_suffix('\n').unwrap());
-    println!("request URL: {}", url);
-    let future = client.get(Uri::from_str(&url).expect("Invalid URI"));
-    return future;
+fn get_ip() -> Option<SocketAddrV4> {
+    let addr_iter = "inputtools.google.com:443".to_socket_addrs().expect("DNS lookup failed");
+    let mut maybe_addr = None;
+    addr_iter.for_each(|addr| {
+        match addr {
+            SocketAddr::V4(ipv4) => {
+                maybe_addr = Some(ipv4);
+            },
+            _ => ()
+        }
+    });
+    maybe_addr
 }
