@@ -9,12 +9,24 @@ fn main() {
         
         let now = Instant::now();
 
-        let response = get_candidates(&input, &client);
+        let response = get_candidate_json(&input, &client);
         println!("{:#?}", response);
 
         let elapsed = now.elapsed();
         println!("{:#?}", elapsed);
     }
+}
+
+fn get_candidate_json(pinyin: &str, client: &reqwest::blocking::Client) -> String {
+    let json: serde_json::Value = client.get(
+        format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num=11&cp=0&cs=1&ie=utf-8&oe=utf-8",
+        pinyin.strip_suffix('\n').expect("Nothing to return after stirpping.")))
+        .send()
+        .expect("Network problems.")
+        .json()
+        .expect("The data cannot be converted to JSON.");
+    println!("{:#?}", json);
+    "OK".to_string()
 }
 
 fn get_candidates(pinyin: &str, client: &reqwest::blocking::Client) -> String {
