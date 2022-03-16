@@ -10,14 +10,15 @@ fn main() {
         let now = Instant::now();
 
         let response = get_candidate_json(&input, &client);
-        println!("{:#?}", response);
 
         let elapsed = now.elapsed();
         println!("{:#?}", elapsed);
+
+        println!("{:#?}", response);
     }
 }
 
-fn get_candidate_json(pinyin: &str, client: &reqwest::blocking::Client) -> String {
+fn get_candidate_json(pinyin: &str, client: &reqwest::blocking::Client) -> Vec<String> {
     let json: serde_json::Value = client.get(
         format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num=11&cp=0&cs=1&ie=utf-8&oe=utf-8",
         pinyin.strip_suffix('\n').expect("Nothing to return after stirpping.")))
@@ -25,17 +26,14 @@ fn get_candidate_json(pinyin: &str, client: &reqwest::blocking::Client) -> Strin
         .expect("Network problems.")
         .json()
         .expect("The data cannot be converted to JSON.");
-    println!("{:#?}", json);
-    "OK".to_string()
-}
-
-fn get_candidates(pinyin: &str, client: &reqwest::blocking::Client) -> String {
-    let data = client.get(
-        format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num=11&cp=0&cs=1&ie=utf-8&oe=utf-8",
-        pinyin.strip_suffix('\n').expect("Nothing to return after stirpping.")))
-        .send()
-        .expect("Network problems.")
-        .text()
-        .expect("The data cannot be converted to string.");
-    data
+    let cand_val_ref = &json[1][0][1];
+    let cand_val_vec_ref = cand_val_ref.as_array().expect("Casting failed because of unexpected JSON structure.");
+    let mut candidates = Vec::new();
+    for val_ref in cand_val_vec_ref.iter() {
+        match val_ref {
+            serde_json::Value::String(candidate) => candidates.push(candidate.clone()),
+            _ => ()
+        }
+    }
+    return candidates;
 }
