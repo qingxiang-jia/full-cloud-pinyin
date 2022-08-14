@@ -1,0 +1,17 @@
+:authority: inputtools.google.com
+:method: POST
+:path: /request?text=ceshi&itc=zh-t-i0-pinyin&num=11&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage
+:scheme: https
+accept: */*
+accept-encoding: gzip, deflate, br
+accept-language: en-US,en;q=0.9
+content-length: 0
+content-type: application/x-www-form-urlencoded;charset=UTF-8
+cookie: 1P_JAR=2022-02-20-02; NID=511=mBUQ34f-Ihv4Nt2HX9hLpLhHiu32tIAnPaqcuzIJGCFZJdwhuKkP4g4C7hKzsimGDljmO26-IxrS7DhVAjGTioHFh26l-2fDtluxU80fVJzJfFqE0q4rtodA1nmlLE14mMCUMmPt-YIcbGZMbQ9tog6Uh284P4VOL8RHhiHA4mg
+origin: https://www.google.com
+referer: https://www.google.com/
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-site
+sec-gpc: 1
+user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.87 Safari/537.36
