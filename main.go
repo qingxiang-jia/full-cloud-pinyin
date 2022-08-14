@@ -33,6 +33,7 @@ func FcpEngineBuilder(conn *dbus.Conn, engineName string) dbus.ObjectPath {
 	eid++
 	objectPath := dbus.ObjectPath(fmt.Sprintf("/org/freedesktop/IBus/Engine/FcPinyin/%d", eid))
 
+	// Add a menu item
 	// key, ptype, label, icon, tooltip, sensitive, visible, state
 	prop := ibus.NewProperty("setup", ibus.PROP_TYPE_NORMAL, "Preference - Full Cloud Pinyin", "gtk-preferences", "Configure Full Cloud Pinyin Engine", true, true, ibus.PROP_STATE_UNCHECKED)
 
@@ -67,12 +68,14 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	return false, nil
 }
 
+// Called when the user clicks a text area
 func (e *FcpEngine) FocusIn() *dbus.Error {
 	fmt.Println("FocusIn")
 	e.RegisterProperties(e.propList)
 	return nil
 }
 
+// Called when the only menu item is clicked
 func (e *FcpEngine) PropertyActivate(prop_name string, prop_state uint32) *dbus.Error {
 	fmt.Println("PropertyActivate", prop_name)
 	return nil
