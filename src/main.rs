@@ -37,3 +37,7 @@ fn get_candidate_json(pinyin: &str, client: &reqwest::blocking::Client) -> Vec<S
     }
     return candidates;
 }
+
+//https://michael-f-bryan.github.io/rust-ffi-guide/overview.html
+//http://jakegoulding.com/rust-ffi-omnibus/string_return/
+//https://stackoverflow.com/questions/40156545/how-do-i-return-an-vector-of-dynamic-length-in-a-pub-extern-c-fn
