@@ -10,6 +10,7 @@ import (
 type FcpEngine struct {
 	ibus.Engine
 	propList *ibus.PropList
+	preedit  []rune
 }
 
 func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
