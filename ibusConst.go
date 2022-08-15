@@ -43,4 +43,5 @@ const (
 	IBUS_ALT_R     = 65514
 	IBUS_CTRL_L    = 65507
 	IBUS_CTRL_R    = 65508
+	IBUS_ESC       = 65307
 )

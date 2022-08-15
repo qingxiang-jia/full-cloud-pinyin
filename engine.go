@@ -45,12 +45,21 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		// Remove a character from preedit
 		if key == IBUS_BACKSPACE {
 			if len(e.preedit) == 0 {
+				e.HideLookupTable()
 				return true, nil
 			}
 
 			e.preedit = e.preedit[:len(e.preedit)-1]
 			e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
 
+			return true, nil
+		}
+
+		// Terminate typing
+		if key == IBUS_ESC || key == IBUS_ENTER {
+			e.preedit = e.preedit[:0]
+			e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+			e.HideLookupTable()
 			return true, nil
 		}
 	}
