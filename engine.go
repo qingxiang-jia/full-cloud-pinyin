@@ -15,22 +15,46 @@ type FcpEngine struct {
 
 func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
 	fmt.Println("Process Key Event > ", keyVal, keyCode, state)
-	if state == 0 && keyVal == 115 {
-		e.UpdateAuxiliaryText(ibus.NewText("s"), true)
 
-		lt := ibus.NewLookupTable()
-		lt.AppendCandidate("sss")
-		lt.AppendCandidate("s")
-		lt.AppendCandidate("gittu")
-		lt.AppendLabel("1:")
-		lt.AppendLabel("2:")
-		lt.AppendLabel("3:")
+	key := rune(keyVal)
+	str := string(key)
 
-		e.UpdateLookupTable(lt, true)
+	if state == 0 {
+		// a-z
+		if IBUS_a <= key && key <= IBUS_z {
+			lt := ibus.NewLookupTable()
+			lt.AppendCandidate(str)
+			lt.AppendCandidate(str)
+			lt.AppendCandidate(str)
+			lt.AppendCandidate(str)
+			lt.AppendCandidate(str)
+			lt.AppendLabel("1:")
+			lt.AppendLabel("2:")
+			lt.AppendLabel("3:")
+			lt.AppendLabel("4:")
+			lt.AppendLabel("5:")
 
-		e.UpdatePreeditText(ibus.NewText("s"), uint32(1), true)
-		return true, nil
+			e.UpdateLookupTable(lt, true)
+
+			e.preedit = append(e.preedit, key)
+			e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+
+			return true, nil
+		}
+
+		// Remove a character from preedit
+		if key == IBUS_BACKSPACE {
+			if len(e.preedit) == 0 {
+				return true, nil
+			}
+
+			e.preedit = e.preedit[:len(e.preedit)-1]
+			e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+
+			return true, nil
+		}
 	}
+
 	return false, nil
 }
 

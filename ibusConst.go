@@ -1,32 +1,32 @@
 package main
 
 const (
-	IBUS_A = iota + 97
-	IBUS_B
-	IBUS_C
-	IBUS_D
-	IBUS_E
-	IBUS_F
-	IBUS_G
-	IBUS_H
-	IBUS_I
-	IBUS_J
-	IBUS_K
-	IBUS_L
-	IBUS_M
-	IBUS_N
-	IBUS_O
-	IBUS_P
-	IBUS_Q
-	IBUS_R
-	IBUS_S
-	IBUS_T
-	IBUS_U
-	IBUS_V
-	IBUS_W
-	IBUS_X
-	IBUS_Y
-	IBUS_Z
+	IBUS_a = iota + 97
+	IBUS_b
+	IBUS_c
+	IBUS_d
+	IBUS_e
+	IBUS_f
+	IBUS_g
+	IBUS_h
+	IBUS_i
+	IBUS_j
+	IBUS_k
+	IBUS_l
+	IBUS_m
+	IBUS_n
+	IBUS_o
+	IBUS_p
+	IBUS_q
+	IBUS_r
+	IBUS_s
+	IBUS_t
+	IBUS_u
+	IBUS_v
+	IBUS_w
+	IBUS_x
+	IBUS_y
+	IBUS_z
 )
 
 const (
