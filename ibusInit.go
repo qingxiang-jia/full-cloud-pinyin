@@ -47,7 +47,7 @@ func genEngine(conn *dbus.Conn, path *dbus.ObjectPath) *FcpEngine {
 	prop := ibus.NewProperty("setup", ibus.PROP_TYPE_NORMAL, "Preference - Full Cloud Pinyin", "gtk-preferences", "Configure Full Cloud Pinyin Engine", true, true, ibus.PROP_STATE_UNCHECKED)
 
 	// Make an full cloud pinyin engine
-	engine := &FcpEngine{ibus.BaseEngine(conn, *path), ibus.NewPropList(prop)}
+	engine := &FcpEngine{ibus.BaseEngine(conn, *path), ibus.NewPropList(prop), []rune{}}
 
 	return engine
 }
