@@ -22,7 +22,7 @@ type CloudPinyin struct {
 
 // https://posener.github.io/http2/
 
-func (c *CloudPinyin) New() *CloudPinyin {
+func NewCloudPinyin() *CloudPinyin {
 	client := http.Client{Timeout: 5 * time.Second}
 	client.Transport = &http2.Transport{}
 

@@ -5,39 +5,47 @@ import (
 
 	"github.com/godbus/dbus"
 	"github.com/haunt98/goibus/ibus"
+	cp "github.com/qingxiang-jia/full-cloud-pinyin/internal/cloudPinyin"
 	"github.com/qingxiang-jia/full-cloud-pinyin/internal/consts"
 )
 
 type FcpEngine struct {
 	ibus.Engine
-	PropList *ibus.PropList
-	Preedit  []rune
+	CloudPinyin cp.CloudPinyin
+	PropList    *ibus.PropList
+	Preedit     []rune
+}
+
+func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
+	ibusEngine := ibus.BaseEngine(conn, *path)
+	cloudpinyin := cp.NewCloudPinyin()
+	propList := ibus.NewPropList(prop)
+	preedit := []rune{}
+	return &FcpEngine{Engine: ibusEngine, CloudPinyin: *cloudpinyin, PropList: propList, Preedit: preedit}
 }
 
 func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
 	fmt.Println("Process Key Event > ", keyVal, keyCode, state)
 
 	key := rune(keyVal)
-	str := string(key)
 
 	if state == 0 {
 		// a-z
 		if consts.IBUS_a <= key && key <= consts.IBUS_z {
+			e.Preedit = append(e.Preedit, key)
+			cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), consts.CandCntA)
+			if err != nil {
+				fmt.Println(err)
+				return true, nil
+			}
+
 			lt := ibus.NewLookupTable()
-			lt.AppendCandidate(str)
-			lt.AppendCandidate(str)
-			lt.AppendCandidate(str)
-			lt.AppendCandidate(str)
-			lt.AppendCandidate(str)
-			lt.AppendLabel("1:")
-			lt.AppendLabel("2:")
-			lt.AppendLabel("3:")
-			lt.AppendLabel("4:")
-			lt.AppendLabel("5:")
+			for i, val := range cand {
+				lt.AppendCandidate(val)
+				lt.AppendLabel(fmt.Sprintf("%d:", i))
+			}
 
 			e.UpdateLookupTable(lt, true)
-
-			e.Preedit = append(e.Preedit, key)
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 
 			return true, nil
