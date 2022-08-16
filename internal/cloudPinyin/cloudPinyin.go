@@ -61,16 +61,15 @@ func (c *CloudPinyin) GetCandidates(pinyin string, candCnt int) ([]string, error
 
 func jstrToCand(jstr string) ([]string, error) {
 	words := re.FindAllString(jstr, -1)
+	if len(words) >= 2 && words[0] != "SUCCESS" {
+		return nil, errors.New("network request probably have failed")
+	}
+	words = words[2:]
 
 	fmt.Println(words)
 
 	cand := []string{}
-	for i, val := range words {
-		if i == 0 {
-			if val != "SUCCESS" {
-				return nil, errors.New("network request failed")
-			}
-		}
+	for _, val := range words {
 		if val == "annotation" {
 			break
 		} else {
