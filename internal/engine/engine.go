@@ -31,7 +31,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 	if state == 0 {
 		// a-z
-		if consts.IBUS_a <= key && key <= consts.IBUS_z {
+		if consts.IBusA <= key && key <= consts.IBusZ {
 			e.Preedit = append(e.Preedit, key)
 			cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), consts.CandCntA)
 			if err != nil {
@@ -52,7 +52,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		}
 
 		// Remove a character from preedit
-		if key == consts.IBUS_BACKSPACE {
+		if key == consts.IBusBackspace {
 			if len(e.Preedit) == 0 {
 				e.HideLookupTable()
 				return true, nil
@@ -65,7 +65,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		}
 
 		// Terminate typing
-		if key == consts.IBUS_ESC || key == consts.IBUS_ENTER {
+		if key == consts.IBusEsc || key == consts.IBusEnter {
 			e.Preedit = e.Preedit[:0]
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 			e.HideLookupTable()
