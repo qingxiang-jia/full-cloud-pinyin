@@ -5,6 +5,7 @@ import (
 
 	"github.com/godbus/dbus"
 	"github.com/haunt98/goibus/ibus"
+	"github.com/qingxiang-jia/full-cloud-pinyin/internal/engine"
 )
 
 var eid = 0
@@ -42,12 +43,12 @@ func setupEngine(conn *dbus.Conn, engineName string) dbus.ObjectPath {
 	return objectPath
 }
 
-func genEngine(conn *dbus.Conn, path *dbus.ObjectPath) *FcpEngine {
+func genEngine(conn *dbus.Conn, path *dbus.ObjectPath) *engine.FcpEngine {
 	// Create a menu item
 	prop := ibus.NewProperty("setup", ibus.PROP_TYPE_NORMAL, "Preference - Full Cloud Pinyin", "gtk-preferences", "Configure Full Cloud Pinyin Engine", true, true, ibus.PROP_STATE_UNCHECKED)
 
 	// Make an full cloud pinyin engine
-	engine := &FcpEngine{ibus.BaseEngine(conn, *path), ibus.NewPropList(prop), []rune{}}
+	engine := &engine.FcpEngine{Engine: ibus.BaseEngine(conn, *path), PropList: ibus.NewPropList(prop), Preedit: []rune{}}
 
 	return engine
 }
