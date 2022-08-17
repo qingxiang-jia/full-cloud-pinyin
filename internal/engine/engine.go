@@ -86,6 +86,12 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			return true, nil
 		}
 
+		// Commit preedit as Chinese
+		if key == consts.IBusSpace {
+			e.CommitCandidate(int(e.lt.CursorPos))
+			return true, nil
+		}
+
 		// Cursor up lookup table
 		if key == consts.IBusUp {
 			if e.MoveCursorDown() {
@@ -133,6 +139,14 @@ func (e *FcpEngine) MoveCursorDown() bool {
 	}
 	e.lt.CursorPos--
 	return true
+}
+
+func (e *FcpEngine) CommitCandidate(i int) {
+	text := e.lt.Candidates[i].Value().(ibus.Text)
+	e.CommitText(&text)
+	e.Preedit = e.Preedit[:0]
+	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+	e.HideLookupTable()
 }
 
 // Called when the user clicks a text area

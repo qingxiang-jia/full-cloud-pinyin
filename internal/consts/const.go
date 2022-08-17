@@ -42,6 +42,7 @@ const (
 
 const (
 	IBusBackspace = 65288
+	IBusSpace     = 32
 	IBusUp        = 65362
 	IBusDown      = 65364
 	IBusLeft      = 65361
