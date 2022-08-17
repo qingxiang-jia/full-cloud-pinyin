@@ -47,6 +47,8 @@ const (
 	IBusLeft      = 65361
 	IBusRight     = 65363
 	IBusEnter     = 65293
+	IBusEqual     = 61
+	IBusMinus     = 45
 	IBusTilda     = 65239
 	IBusShiftL    = 65505
 	IBusShiftR    = 65506

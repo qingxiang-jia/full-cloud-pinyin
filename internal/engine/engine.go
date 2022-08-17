@@ -101,6 +101,18 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			}
 			return true, nil
 		}
+
+		// + to go to next page
+		if key == consts.IBusEqual {
+			e.PageUpLookupTable()
+			return true, nil
+		}
+
+		// - to go to previous page
+		if key == consts.IBusMinus {
+			e.PageDownLookupTable()
+			return true, nil
+		}
 	}
 
 	return false, nil
