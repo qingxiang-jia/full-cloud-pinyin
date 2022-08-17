@@ -110,7 +110,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 		// + to go to next page
 		if key == consts.IBusEqual {
-			e.PageUpLookupTable()
+			e.MovePageUp()
+			fmt.Println("cur pos:", e.lt.CursorPos)
 			return true, nil
 		}
 
@@ -124,12 +125,13 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	return false, nil
 }
 
-// Not sure why the buil-in cursor moving functions don't work so I need to write my own. Same for the next one.
+// Not sure why the buil-in cursor moving functions don't work so I need to write my own. Same for the next three.
 func (e *FcpEngine) MoveCursorUp() bool {
 	if int(e.lt.CursorPos) == len(e.lt.Candidates) {
 		return false
 	}
 	e.lt.CursorPos++
+	fmt.Println("cur pos:", e.lt.CursorPos)
 	return true
 }
 
@@ -138,7 +140,29 @@ func (e *FcpEngine) MoveCursorDown() bool {
 		return false
 	}
 	e.lt.CursorPos--
+	fmt.Println("cur pos:", e.lt.CursorPos)
 	return true
+}
+
+func (e *FcpEngine) MovePageUp() bool {
+	sz := int(e.lt.PageSize)
+	max := len(e.lt.Candidates)
+	curPageMin := int(e.lt.CursorPos) / sz * sz
+	nextPos := curPageMin + sz
+	if nextPos >= max {
+		nextPos = max
+	}
+	if nextPos == int(e.lt.CursorPos) {
+		return false
+	} else {
+		e.lt.CursorPos = uint32(nextPos)
+		e.UpdateLookupTable(e.lt, true)
+	}
+	return true
+}
+
+func (e *FcpEngine) MovePageDown() bool {
+	return false
 }
 
 func (e *FcpEngine) CommitCandidate(i int) {
