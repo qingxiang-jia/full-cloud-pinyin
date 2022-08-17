@@ -88,20 +88,39 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 		// Cursor up lookup table
 		if key == consts.IBusUp {
-			fmt.Println("cursor up")
-			e.CursorUp()
-			e.UpdateLookupTable(e.lt, true)
+			if e.MoveCursorDown() {
+				e.UpdateLookupTable(e.lt, true)
+			}
+			return true, nil
 		}
 
 		// Cursor down lookup table
 		if key == consts.IBusDown {
-			fmt.Println("cursor down")
-			e.CursorDown()
-			e.UpdateLookupTable(e.lt, true)
+			if e.MoveCursorUp() {
+				e.UpdateLookupTable(e.lt, true)
+			}
+			return true, nil
 		}
 	}
 
 	return false, nil
+}
+
+// Not sure why the buil-in cursor moving functions don't work so I need to write my own. Same for the next one.
+func (e *FcpEngine) MoveCursorUp() bool {
+	if int(e.lt.CursorPos) == len(e.lt.Candidates) {
+		return false
+	}
+	e.lt.CursorPos++
+	return true
+}
+
+func (e *FcpEngine) MoveCursorDown() bool {
+	if e.lt.CursorPos == 0 {
+		return false
+	}
+	e.lt.CursorPos--
+	return true
 }
 
 // Called when the user clicks a text area
