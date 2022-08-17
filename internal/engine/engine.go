@@ -14,6 +14,7 @@ type FcpEngine struct {
 	CloudPinyin cp.CloudPinyin
 	PropList    *ibus.PropList
 	Preedit     []rune
+	lt          *ibus.LookupTable
 }
 
 func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
@@ -21,7 +22,8 @@ func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *
 	cloudpinyin := cp.NewCloudPinyin()
 	propList := ibus.NewPropList(prop)
 	preedit := []rune{}
-	return &FcpEngine{Engine: ibusEngine, CloudPinyin: *cloudpinyin, PropList: propList, Preedit: preedit}
+	lt := ibus.NewLookupTable()
+	return &FcpEngine{Engine: ibusEngine, CloudPinyin: *cloudpinyin, PropList: propList, Preedit: preedit, lt: lt}
 }
 
 func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
@@ -39,13 +41,16 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				return true, nil
 			}
 
-			lt := ibus.NewLookupTable()
+			// Clear look up table before use
+			e.lt.Candidates = e.lt.Candidates[:0]
+			e.lt.Labels = e.lt.Labels[:0]
+
 			for i, val := range cand {
-				lt.AppendCandidate(val)
-				lt.AppendLabel(fmt.Sprintf("%d:", i))
+				e.lt.AppendCandidate(val)
+				e.lt.AppendLabel(fmt.Sprintf("%d:", i))
 			}
 
-			e.UpdateLookupTable(lt, true)
+			e.UpdateLookupTable(e.lt, true)
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 
 			return true, nil
@@ -79,6 +84,20 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 			e.HideLookupTable()
 			return true, nil
+		}
+
+		// Cursor up lookup table
+		if key == consts.IBusUp {
+			fmt.Println("cursor up")
+			e.CursorUp()
+			e.UpdateLookupTable(e.lt, true)
+		}
+
+		// Cursor down lookup table
+		if key == consts.IBusDown {
+			fmt.Println("cursor down")
+			e.CursorDown()
+			e.UpdateLookupTable(e.lt, true)
 		}
 	}
 
