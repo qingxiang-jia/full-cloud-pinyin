@@ -65,7 +65,16 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		}
 
 		// Terminate typing
-		if key == consts.IBusEsc || key == consts.IBusEnter {
+		if key == consts.IBusEsc {
+			e.Preedit = e.Preedit[:0]
+			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+			e.HideLookupTable()
+			return true, nil
+		}
+
+		// Commit preedit as latin
+		if key == consts.IBusEnter {
+			e.CommitText(ibus.NewText(string(e.Preedit)))
 			e.Preedit = e.Preedit[:0]
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 			e.HideLookupTable()
