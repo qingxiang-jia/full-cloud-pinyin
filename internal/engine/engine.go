@@ -15,15 +15,18 @@ type FcpEngine struct {
 	PropList    *ibus.PropList
 	Preedit     []rune
 	lt          *ibus.LookupTable
+	ltVisible   bool
 }
 
 func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
-	ibusEngine := ibus.BaseEngine(conn, *path)
-	cloudpinyin := cp.NewCloudPinyin()
-	propList := ibus.NewPropList(prop)
-	preedit := []rune{}
-	lt := ibus.NewLookupTable()
-	return &FcpEngine{Engine: ibusEngine, CloudPinyin: *cloudpinyin, PropList: propList, Preedit: preedit, lt: lt}
+	return &FcpEngine{
+		Engine:      ibus.BaseEngine(conn, *path),
+		CloudPinyin: *cp.NewCloudPinyin(),
+		PropList:    ibus.NewPropList(prop),
+		Preedit:     []rune{},
+		lt:          ibus.NewLookupTable(),
+		ltVisible:   false,
+	}
 }
 
 func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
@@ -52,6 +55,9 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			e.UpdateLookupTable(e.lt, true)
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+			e.ShowLt()
+			// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
+			// so call it here to keep in sync
 
 			return true, nil
 		}
@@ -59,7 +65,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		// Remove a character from preedit
 		if key == consts.IBusBackspace {
 			if len(e.Preedit) == 0 {
-				e.HideLookupTable()
+				e.HideLt()
 				return true, nil
 			}
 
@@ -73,7 +79,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		if key == consts.IBusEsc {
 			e.Preedit = e.Preedit[:0]
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-			e.HideLookupTable()
+			e.HideLt()
 			return true, nil
 		}
 
@@ -82,7 +88,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			e.CommitText(ibus.NewText(string(e.Preedit)))
 			e.Preedit = e.Preedit[:0]
 			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-			e.HideLookupTable()
+			e.HideLt()
 			return true, nil
 		}
 
@@ -184,7 +190,17 @@ func (e *FcpEngine) CommitCandidate(i int) {
 	e.CommitText(&text)
 	e.Preedit = e.Preedit[:0]
 	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+	e.HideLt()
+}
+
+func (e *FcpEngine) HideLt() {
 	e.HideLookupTable()
+	e.ltVisible = false
+}
+
+func (e *FcpEngine) ShowLt() {
+	e.ShowLookupTable()
+	e.ltVisible = true
 }
 
 // Called when the user clicks a text area
