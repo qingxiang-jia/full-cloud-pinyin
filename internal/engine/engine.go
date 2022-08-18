@@ -132,7 +132,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	return false, nil
 }
 
-// Not sure why the buil-in cursor moving functions don't work so I need to write my own. Same for the next three.
+// Not sure why the buil-in cursor moving functions don't work so I need to write my own.
+// Same for the next three.
 func (e *FcpEngine) MoveCursorUp() bool {
 	if int(e.lt.CursorPos) == len(e.lt.Candidates) {
 		return false
