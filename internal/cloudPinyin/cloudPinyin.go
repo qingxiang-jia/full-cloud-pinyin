@@ -1,7 +1,6 @@
 package cloudpinyin
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,6 +28,9 @@ func NewCloudPinyin() *CloudPinyin {
 }
 
 func (c *CloudPinyin) GetCandidates(pinyin string, candCnt int) ([]string, error) {
+	if len(pinyin) == 0 {
+		return []string{}, nil
+	}
 	if len(pinyin) > maxPinyinLen {
 		pinyin = pinyin[:50]
 	}
@@ -57,9 +59,6 @@ func (c *CloudPinyin) GetCandidates(pinyin string, candCnt int) ([]string, error
 // ["SUCCESS",[["ceshi",["测试","策士","侧视","测","侧","册","策","厕","CE","恻","測"],[],{"annotation":["ce shi","ce shi","ce shi","ce","ce","ce","ce","ce","c e","ce","ce"],"candidate_type":[0,0,0,0,0,0,0,0,0,0,0],"lc":["16 16","16 16","16 16","16","16","16","16","16","0 0","16","16"],"matched_length":[5,5,5,2,2,2,2,2,2,2,2]}]]]
 func jstrToCand(jstr string) ([]string, error) {
 	words := re.FindAllString(jstr, -1)
-	if len(words) >= 2 && words[0] != "SUCCESS" {
-		return nil, errors.New("network request probably have failed")
-	}
 	words = words[2:]
 
 	cand := []string{}

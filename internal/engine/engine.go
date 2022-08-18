@@ -59,8 +59,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 					return true, nil
 				}
 
-				e.Preedit = e.Preedit[:len(e.Preedit)-1]
-				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.HandlePinyinInput('x', true)
 
 				return true, nil
 			}
@@ -122,7 +121,11 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 }
 
 func (e *FcpEngine) HandlePinyinInput(key rune, isRemoving bool) bool {
-	e.Preedit = append(e.Preedit, key)
+	if isRemoving {
+		e.Preedit = e.Preedit[0 : len(e.Preedit)-1]
+	} else {
+		e.Preedit = append(e.Preedit, key)
+	}
 	cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), consts.CandCntA)
 	if err != nil {
 		fmt.Println(err)
