@@ -44,6 +44,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				return true, nil
 			}
 
+			e.ClearLt()
+
 			for i, val := range cand {
 				e.lt.AppendCandidate(val)
 				e.lt.AppendLabel(fmt.Sprintf("%d:", i))
