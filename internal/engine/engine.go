@@ -16,6 +16,7 @@ type FcpEngine struct {
 	Preedit     []rune
 	lt          *ibus.LookupTable
 	ltVisible   bool
+	enMode      bool
 }
 
 func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
@@ -26,6 +27,7 @@ func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *
 		Preedit:     []rune{},
 		lt:          ibus.NewLookupTable(),
 		ltVisible:   false,
+		enMode:      false,
 	}
 }
 
@@ -34,7 +36,13 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 	key := rune(keyVal)
 
-	if state == 0 {
+	// Decides whether need to switch to/out of English mode
+	if state == consts.IBusButtonUp && (key == consts.IBusShiftL || key == consts.IBusShiftR) {
+		e.enMode = !e.enMode
+		fmt.Println("ENGLISH MODE:", e.enMode)
+	}
+
+	if state == consts.IBusButtonDown && !e.enMode {
 		// a-z
 		if consts.IBusA <= key && key <= consts.IBusZ {
 			e.Preedit = append(e.Preedit, key)

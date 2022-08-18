@@ -59,3 +59,8 @@ const (
 	IBusCtrlR     = 65508
 	IBusEsc       = 65307
 )
+
+const (
+	IBusButtonDown = 0
+	IBusButtonUp   = 1073741825
+)
