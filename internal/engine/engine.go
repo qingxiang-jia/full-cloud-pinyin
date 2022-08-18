@@ -60,70 +60,72 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			return true, nil
 		}
 
-		// Remove a character from preedit
-		if key == consts.IBusBackspace {
-			if len(e.Preedit) == 0 {
+		if e.ltVisible {
+			// Remove a character from preedit
+			if key == consts.IBusBackspace {
+				if len(e.Preedit) == 0 {
+					e.HideLt()
+					return true, nil
+				}
+
+				e.Preedit = e.Preedit[:len(e.Preedit)-1]
+				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+
+				return true, nil
+			}
+
+			// Terminate typing
+			if key == consts.IBusEsc {
+				e.Preedit = e.Preedit[:0]
+				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 				e.HideLt()
 				return true, nil
 			}
 
-			e.Preedit = e.Preedit[:len(e.Preedit)-1]
-			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-
-			return true, nil
-		}
-
-		// Terminate typing
-		if key == consts.IBusEsc {
-			e.Preedit = e.Preedit[:0]
-			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-			e.HideLt()
-			return true, nil
-		}
-
-		// Commit preedit as latin
-		if key == consts.IBusEnter {
-			e.CommitText(ibus.NewText(string(e.Preedit)))
-			e.Preedit = e.Preedit[:0]
-			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-			e.HideLt()
-			return true, nil
-		}
-
-		// Commit preedit as Chinese
-		if key == consts.IBusSpace {
-			e.CommitCandidate(int(e.lt.CursorPos))
-			return true, nil
-		}
-
-		// Cursor up lookup table
-		if key == consts.IBusUp {
-			if e.MoveCursorDown() {
-				e.UpdateLookupTable(e.lt, true)
+			// Commit preedit as latin
+			if key == consts.IBusEnter {
+				e.CommitText(ibus.NewText(string(e.Preedit)))
+				e.Preedit = e.Preedit[:0]
+				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.HideLt()
+				return true, nil
 			}
-			return true, nil
-		}
 
-		// Cursor down lookup table
-		if key == consts.IBusDown {
-			if e.MoveCursorUp() {
-				e.UpdateLookupTable(e.lt, true)
+			// Commit preedit as Chinese
+			if key == consts.IBusSpace {
+				e.CommitCandidate(int(e.lt.CursorPos))
+				return true, nil
 			}
-			return true, nil
-		}
 
-		// + to go to next page
-		if key == consts.IBusEqual {
-			e.MovePageUp()
-			fmt.Println("cur pos:", e.lt.CursorPos)
-			return true, nil
-		}
+			// Cursor up lookup table
+			if key == consts.IBusUp {
+				if e.MoveCursorDown() {
+					e.UpdateLookupTable(e.lt, true)
+				}
+				return true, nil
+			}
 
-		// - to go to previous page
-		if key == consts.IBusMinus {
-			e.MovePageDown()
-			fmt.Println("cur pos:", e.lt.CursorPos)
-			return true, nil
+			// Cursor down lookup table
+			if key == consts.IBusDown {
+				if e.MoveCursorUp() {
+					e.UpdateLookupTable(e.lt, true)
+				}
+				return true, nil
+			}
+
+			// + to go to next page
+			if key == consts.IBusEqual {
+				e.MovePageUp()
+				fmt.Println("cur pos:", e.lt.CursorPos)
+				return true, nil
+			}
+
+			// - to go to previous page
+			if key == consts.IBusMinus {
+				e.MovePageDown()
+				fmt.Println("cur pos:", e.lt.CursorPos)
+				return true, nil
+			}
 		}
 	}
 
