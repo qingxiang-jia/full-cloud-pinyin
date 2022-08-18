@@ -39,7 +39,6 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	// Decides whether need to switch to/out of English mode
 	if state == consts.IBusButtonUp && (key == consts.IBusShiftL || key == consts.IBusShiftR) {
 		e.enMode = !e.enMode
-		fmt.Println("ENGLISH MODE:", e.enMode)
 	}
 
 	if state == consts.IBusButtonDown && !e.enMode {
@@ -124,14 +123,12 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			// + to go to next page
 			if key == consts.IBusEqual {
 				e.MovePageUp()
-				fmt.Println("cur pos:", e.lt.CursorPos)
 				return true, nil
 			}
 
 			// - to go to previous page
 			if key == consts.IBusMinus {
 				e.MovePageDown()
-				fmt.Println("cur pos:", e.lt.CursorPos)
 				return true, nil
 			}
 		}
@@ -147,7 +144,6 @@ func (e *FcpEngine) MoveCursorUp() bool {
 		return false
 	}
 	e.lt.CursorPos++
-	fmt.Println("cur pos:", e.lt.CursorPos)
 	return true
 }
 
@@ -156,7 +152,6 @@ func (e *FcpEngine) MoveCursorDown() bool {
 		return false
 	}
 	e.lt.CursorPos--
-	fmt.Println("cur pos:", e.lt.CursorPos)
 	return true
 }
 
@@ -184,7 +179,6 @@ func (e *FcpEngine) MovePageUp() bool {
 func (e *FcpEngine) MovePageDown() bool {
 	sz := e.lt.PageSize
 	pos := e.lt.CursorPos
-	fmt.Println("before: sz:", sz, "pos", pos)
 	if pos < sz {
 		return false
 	}
@@ -223,13 +217,11 @@ func (e *FcpEngine) ClearLt() {
 
 // Called when the user clicks a text area
 func (e *FcpEngine) FocusIn() *dbus.Error {
-	fmt.Println("FocusIn")
 	e.RegisterProperties(e.PropList)
 	return nil
 }
 
 // Called when any of the UI props are called
 func (e *FcpEngine) PropertyActivate(prop_name string, prop_state uint32) *dbus.Error {
-	fmt.Println("PropertyActivate", prop_name)
 	return nil
 }

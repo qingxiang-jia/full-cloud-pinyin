@@ -20,8 +20,6 @@ type CloudPinyin struct {
 	http2       http.Client
 }
 
-// https://posener.github.io/http2/
-
 func NewCloudPinyin() *CloudPinyin {
 	client := http.Client{Timeout: 5 * time.Second}
 	client.Transport = &http2.Transport{}
@@ -36,9 +34,6 @@ func (c *CloudPinyin) GetCandidates(pinyin string, candCnt int) ([]string, error
 	}
 
 	url := fmt.Sprintf("https://inputtools.google.com/request?text=%s&itc=zh-t-i0-pinyin&num=%d&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", pinyin, candCnt)
-
-	// ["SUCCESS",[["ceshi",["测试","策士","侧视","测","侧","册","策","厕","CE","恻","測"],[],{"annotation":["ce shi","ce shi","ce shi","ce","ce","ce","ce","ce","c e","ce","ce"],"candidate_type":[0,0,0,0,0,0,0,0,0,0,0],"lc":["16 16","16 16","16 16","16","16","16","16","16","0 0","16","16"],"matched_length":[5,5,5,2,2,2,2,2,2,2,2]}]]]
-	fmt.Println(url)
 
 	resp, err := c.http2.Get(url)
 	if err != nil {
@@ -59,14 +54,13 @@ func (c *CloudPinyin) GetCandidates(pinyin string, candCnt int) ([]string, error
 	return cand, err
 }
 
+// ["SUCCESS",[["ceshi",["测试","策士","侧视","测","侧","册","策","厕","CE","恻","測"],[],{"annotation":["ce shi","ce shi","ce shi","ce","ce","ce","ce","ce","c e","ce","ce"],"candidate_type":[0,0,0,0,0,0,0,0,0,0,0],"lc":["16 16","16 16","16 16","16","16","16","16","16","0 0","16","16"],"matched_length":[5,5,5,2,2,2,2,2,2,2,2]}]]]
 func jstrToCand(jstr string) ([]string, error) {
 	words := re.FindAllString(jstr, -1)
 	if len(words) >= 2 && words[0] != "SUCCESS" {
 		return nil, errors.New("network request probably have failed")
 	}
 	words = words[2:]
-
-	fmt.Println(words)
 
 	cand := []string{}
 	for _, val := range words {
