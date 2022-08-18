@@ -185,6 +185,9 @@ func (e *FcpEngine) MovePageDown() bool {
 }
 
 func (e *FcpEngine) CommitCandidate(i int) {
+	if !e.ltVisible {
+		return
+	}
 	text := e.lt.Candidates[i].Value().(ibus.Text)
 	e.CommitText(&text)
 	e.Preedit = e.Preedit[:0]
