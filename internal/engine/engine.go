@@ -175,7 +175,6 @@ func (e *FcpEngine) MovePageDown() bool {
 	}
 	pos = (pos/sz - 1) * sz
 	e.lt.CursorPos = pos
-	fmt.Println("after: sz:", sz, "pos", pos)
 	e.UpdateLookupTable(e.lt, true)
 	return true
 }
