@@ -44,10 +44,6 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				return true, nil
 			}
 
-			// Clear look up table before use
-			e.lt.Candidates = e.lt.Candidates[:0]
-			e.lt.Labels = e.lt.Labels[:0]
-
 			for i, val := range cand {
 				e.lt.AppendCandidate(val)
 				e.lt.AppendLabel(fmt.Sprintf("%d:", i))
@@ -192,6 +188,7 @@ func (e *FcpEngine) CommitCandidate(i int) {
 	e.Preedit = e.Preedit[:0]
 	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 	e.HideLt()
+	e.ClearLt()
 }
 
 func (e *FcpEngine) HideLt() {
@@ -202,6 +199,11 @@ func (e *FcpEngine) HideLt() {
 func (e *FcpEngine) ShowLt() {
 	e.ShowLookupTable()
 	e.ltVisible = true
+}
+
+func (e *FcpEngine) ClearLt() {
+	e.lt.Candidates = e.lt.Candidates[:0]
+	e.lt.Labels = e.lt.Labels[:0]
 }
 
 // Called when the user clicks a text area
