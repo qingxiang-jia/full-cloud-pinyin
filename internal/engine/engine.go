@@ -44,27 +44,11 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	if state == consts.IBusButtonDown && !e.enMode {
 		// a-z
 		if consts.IBusA <= key && key <= consts.IBusZ {
-			e.Preedit = append(e.Preedit, key)
-			cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), consts.CandCntA)
-			if err != nil {
-				fmt.Println(err)
+			if e.HandlePinyinInput(key, false) {
 				return true, nil
 			}
 
-			e.ClearLt()
-
-			for i, val := range cand {
-				e.lt.AppendCandidate(val)
-				e.lt.AppendLabel(fmt.Sprintf("%d:", i))
-			}
-
-			e.UpdateLookupTable(e.lt, true)
-			e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-			e.ShowLt()
-			// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
-			// so call it here to keep in sync
-
-			return true, nil
+			return false, nil
 		}
 
 		if e.ltVisible {
@@ -135,6 +119,30 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	}
 
 	return false, nil
+}
+
+func (e *FcpEngine) HandlePinyinInput(key rune, isRemoving bool) bool {
+	e.Preedit = append(e.Preedit, key)
+	cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), consts.CandCntA)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	e.ClearLt()
+
+	for i, val := range cand {
+		e.lt.AppendCandidate(val)
+		e.lt.AppendLabel(fmt.Sprintf("%d:", i))
+	}
+
+	e.UpdateLookupTable(e.lt, true)
+	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+	e.ShowLt()
+	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
+	// so call it here to keep in sync
+
+	return true
 }
 
 // Not sure why the buil-in cursor moving functions don't work so I need to write my own.
