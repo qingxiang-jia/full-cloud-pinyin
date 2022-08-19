@@ -36,9 +36,8 @@ func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *
 }
 
 func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
-	fmt.Println("Process Key Event > ", keyVal, keyCode, state)
-
 	key := rune(keyVal)
+	fmt.Println(key, string(key))
 
 	// Decides whether need to switch to/out of English mode
 	if state == consts.IBusButtonUp && (key == consts.IBusShiftL || key == consts.IBusShiftR) {
