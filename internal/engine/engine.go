@@ -176,11 +176,11 @@ func (e *FcpEngine) MoveCursorDown() bool {
 // Workaround, because the IBus side doesn't work.
 func (e *FcpEngine) MovePageUp() {
 	sz := int(e.lt.PageSize)
-	max := len(e.lt.Candidates)
+	total := len(e.lt.Candidates)
 	nextPos := int(e.lt.CursorPos)
 	nextPos += sz
-	if nextPos >= max {
-		nextPos = max - 1
+	if nextPos >= total {
+		nextPos = total - 1
 	}
 	if nextPos != int(e.lt.CursorPos) {
 		e.lt.CursorPos = uint32(nextPos)
