@@ -140,9 +140,8 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 
 	e.ClearLt()
 
-	for i, val := range cand {
+	for _, val := range cand {
 		e.lt.AppendCandidate(val)
-		e.lt.AppendLabel(fmt.Sprintf("%d:", i))
 	}
 
 	e.UpdateLookupTable(e.lt, true)
