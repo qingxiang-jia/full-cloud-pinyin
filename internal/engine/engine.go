@@ -48,11 +48,9 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	if state == consts.IBusButtonDown && !e.enMode {
 		// a-z
 		if consts.IBusA <= key && key <= consts.IBusZ {
-			if e.HandlePinyinInput(key, false) {
-				return true, nil
-			}
+			hasHandled := e.HandlePinyinInput(key, consts.AddRune, consts.CandCntA)
 
-			return false, nil
+			return hasHandled, nil
 		}
 
 		if e.ltVisible {
@@ -63,9 +61,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 					return true, nil
 				}
 
-				e.HandlePinyinInput('x', true)
-
-				return true, nil
+				hasHandled := e.HandlePinyinInput('_', consts.RemoveRune, consts.CandCntA)
+				return hasHandled, nil
 			}
 
 			// Terminate typing
