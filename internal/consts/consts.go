@@ -12,6 +12,12 @@ const (
 )
 
 const (
+	AddRune = iota
+	RemoveRune
+	UnchangedRune
+)
+
+const (
 	IBusA = iota + 97
 	IBusB
 	IBusC

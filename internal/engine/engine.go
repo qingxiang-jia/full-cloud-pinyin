@@ -121,13 +121,19 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	return false, nil
 }
 
-func (e *FcpEngine) HandlePinyinInput(key rune, isRemoving bool) bool {
-	if isRemoving {
-		e.Preedit = e.Preedit[0 : len(e.Preedit)-1]
-	} else {
+func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
+	switch op {
+	case consts.AddRune:
 		e.Preedit = append(e.Preedit, key)
+	case consts.RemoveRune:
+		e.Preedit = e.Preedit[0 : len(e.Preedit)-1]
+	case consts.UnchangedRune:
+	default:
+		fmt.Println("Not a valid operation")
+		return false
 	}
-	cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), consts.CandCntA)
+
+	cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), depth)
 	if err != nil {
 		fmt.Println(err)
 		return false
