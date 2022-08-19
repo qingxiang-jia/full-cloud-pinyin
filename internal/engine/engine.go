@@ -105,7 +105,9 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// + to go to next page
 			if key == consts.IBusEqual {
-				e.MovePageUp()
+				if !e.MovePageUp() {
+					fmt.Println("end reached, cur pos:", e.lt.CursorPos)
+				}
 				return true, nil
 			}
 
@@ -173,34 +175,33 @@ func (e *FcpEngine) MoveCursorDown() bool {
 	return true
 }
 
-// Move the page up by moving the cursor to the lowest index of the next page.
-// We use this because the page down signal isn't working.
+// Workaround, because the IBus side doesn't work.
+// Return value indicates whether we successfully moved a page.
 func (e *FcpEngine) MovePageUp() bool {
 	sz := int(e.lt.PageSize)
 	max := len(e.lt.Candidates)
-	curPageMin := int(e.lt.CursorPos) / sz * sz
-	nextPos := curPageMin + sz
+	nextPos := int(e.lt.CursorPos)
+	nextPos += sz
 	if nextPos >= max {
-		nextPos = max
+		nextPos = max - 1
 	}
 	if nextPos == int(e.lt.CursorPos) {
 		return false
 	} else {
 		e.lt.CursorPos = uint32(nextPos)
 		e.UpdateLookupTable(e.lt, true)
+		return true
 	}
-	return true
 }
 
-// Move the page down by moving the cursor to the lowest index of the previous page.
-// We use this because the page up signal isn't working.
+// Workaround, because the IBus side doesn't work.
 func (e *FcpEngine) MovePageDown() bool {
 	sz := e.lt.PageSize
 	pos := e.lt.CursorPos
 	if pos < sz {
 		return false
 	}
-	pos = (pos/sz - 1) * sz
+	pos -= sz
 	e.lt.CursorPos = pos
 	e.UpdateLookupTable(e.lt, true)
 	return true
