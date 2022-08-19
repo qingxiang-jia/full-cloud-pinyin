@@ -41,12 +41,15 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 	// Decides whether need to switch to/out of English mode
 	if state == consts.IBusButtonUp && (key == consts.IBusShiftL || key == consts.IBusShiftR) {
+		e.cpCurDepth = 0
 		e.enMode = !e.enMode
 	}
 
 	if state == consts.IBusButtonDown && !e.enMode {
 		// a-z
 		if consts.IBusA <= key && key <= consts.IBusZ {
+			e.cpCurDepth = 0
+
 			hasHandled := e.HandlePinyinInput(key, consts.AddRune, consts.CandCntA)
 
 			return hasHandled, nil
@@ -55,6 +58,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		if e.ltVisible {
 			// Remove a character from preedit
 			if key == consts.IBusBackspace {
+				e.cpCurDepth = 0
+
 				if len(e.Preedit) == 0 {
 					e.HideLt()
 					return true, nil
@@ -66,6 +71,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// Terminate typing
 			if key == consts.IBusEsc {
+				e.cpCurDepth = 0
+
 				e.Preedit = e.Preedit[:0]
 				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 				e.HideLt()
@@ -74,6 +81,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// Commit preedit as latin
 			if key == consts.IBusEnter {
+				e.cpCurDepth = 0
+
 				e.CommitText(ibus.NewText(string(e.Preedit)))
 				e.Preedit = e.Preedit[:0]
 				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
@@ -83,6 +92,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// Commit preedit as Chinese
 			if key == consts.IBusSpace {
+				e.cpCurDepth = 0
+
 				e.CommitCandidate(int(e.lt.CursorPos))
 				return true, nil
 			}
@@ -106,6 +117,13 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			// + to go to next page
 			if key == consts.IBusEqual {
 				e.MovePageUp()
+				if e.AtLastPage() {
+					// We may want to load more candidates
+					if e.cpCurDepth < len(e.cpDepth) {
+						e.cpCurDepth++
+					}
+					e.HandlePinyinInput('_', consts.UnchangedRune, e.cpDepth[e.cpCurDepth])
+				}
 				return true, nil
 			}
 
@@ -198,6 +216,18 @@ func (e *FcpEngine) MovePageDown() {
 	pos -= sz
 	e.lt.CursorPos = pos
 	e.UpdateLookupTable(e.lt, true)
+}
+
+func (e *FcpEngine) AtLastPage() bool {
+	sz := int(e.lt.PageSize)
+	total := len(e.lt.Candidates)
+	maxIdx := (total/sz+1)*sz - 1
+	curIdx := int(e.lt.CursorPos)
+	if maxIdx-curIdx < sz {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (e *FcpEngine) CommitCandidate(i int) {
