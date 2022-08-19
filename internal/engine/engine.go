@@ -17,6 +17,8 @@ type FcpEngine struct {
 	lt          *ibus.LookupTable
 	ltVisible   bool
 	enMode      bool
+	cpDepth     [8]int
+	cpCurDepth  int
 }
 
 func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
@@ -28,6 +30,8 @@ func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *
 		lt:          ibus.NewLookupTable(),
 		ltVisible:   false,
 		enMode:      false,
+		cpDepth:     [8]int{consts.CandCntA, consts.CandCntB, consts.CandCntC, consts.CandCntD, consts.CandCntE, consts.CandCntF, consts.CandCntG, consts.CandCntH},
+		cpCurDepth:  0,
 	}
 }
 
