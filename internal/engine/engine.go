@@ -98,6 +98,17 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				return true, nil
 			}
 
+			// Commit candidate by keying in candidate index
+			if consts.IBus0 <= key && key <= consts.IBus9 {
+				idx := int(key) - 48
+				if 0 < idx && idx <= int(e.lt.PageSize) {
+					e.cpCurDepth = 0
+
+					e.CommitCandidate(idx - 1)
+				}
+				return true, nil
+			}
+
 			// Cursor up lookup table
 			if key == consts.IBusUp {
 				if e.MoveCursorDown() {

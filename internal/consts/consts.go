@@ -18,6 +18,19 @@ const (
 )
 
 const (
+	IBus0 = iota + 48
+	IBus1
+	IBus2
+	IBus3
+	IBus4
+	IBus5
+	IBus6
+	IBus7
+	IBus8
+	IBus9
+)
+
+const (
 	IBusA = iota + 97
 	IBusB
 	IBusC
