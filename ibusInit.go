@@ -11,7 +11,16 @@ import (
 
 var eid = 0
 
-func Init() {
+func Init(isExecByIBus bool, isExecFromTerm bool) {
+	if isExecByIBus {
+		execByIBus()
+	}
+	if isExecFromTerm {
+		execFromTerm()
+	}
+}
+
+func execFromTerm() {
 	bus := ibus.NewBus()
 
 	conn := bus.GetDbusConn()
@@ -27,6 +36,18 @@ func Init() {
 	select {
 	case <-c:
 	}
+}
+
+func execByIBus() {
+	bus := ibus.NewBus()
+
+	conn := bus.GetDbusConn()
+
+	ibus.NewFactory(conn, setupEngine)
+
+	bus.RequestName("org.freedesktop.IBus.FcPinyin", 0)
+
+	select {}
 }
 
 func setupEngine(conn *dbus.Conn, engineName string) dbus.ObjectPath {
@@ -61,8 +82,8 @@ func genEngineComp() *ibus.Component {
 		"0.1",
 		"MIT",
 		"Qingxiang Jia <ybjqx3340@gmail.com>",
-		"https://github.com/qingxiang-jia/full-cloud-pinyin",
-		"/use/bin/fcpengine",
+		"https://github.com/qingxiang-jia/full-cloud-pinyin/full-cloud-pinyin",
+		"/home/lee/Code/Projects/full-cloud-pinyin/",
 		"full-cloud-pinyin",
 	)
 
