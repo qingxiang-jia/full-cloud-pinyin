@@ -3,7 +3,7 @@ package engine
 import (
 	"fmt"
 
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 	"github.com/haunt98/goibus/ibus"
 	cp "github.com/qingxiang-jia/full-cloud-pinyin/internal/cloudPinyin"
 	"github.com/qingxiang-jia/full-cloud-pinyin/internal/consts"

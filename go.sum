@@ -1,7 +1,11 @@
 github.com/godbus/dbus v4.1.0+incompatible h1:WqqLRTsQic3apZUK9qC5sGNfXthmPXzUZ7nQPrNITa4=
 github.com/godbus/dbus v4.1.0+incompatible/go.mod h1:/YcGZj5zSblfDWMMoOzV4fas9FZnQYTkDnsGvmh2Grw=
+github.com/godbus/dbus/v5 v5.0.3 h1:ZqHaoEF7TBzh4jzPmqVhE/5A1z9of6orkAe5uHoAeME=
+github.com/godbus/dbus/v5 v5.0.3/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
 github.com/haunt98/goibus v0.1.0 h1:cZ9tCLzRRUSIRRT/ftLjKzVZeTysAIfDY+YW5yp5KlM=
 github.com/haunt98/goibus v0.1.0/go.mod h1:2S00DbP0vBtzClK0ofQRrvAxeyVcOypfHWgIXqW3kLs=
+github.com/haunt98/goibus v0.1.1-0.20210317172708-a61fcf356936 h1:/B6Jk/Yf+h1LNY7SNnVos7KsH1vRC2JZ/kuPX8vsuIA=
+github.com/haunt98/goibus v0.1.1-0.20210317172708-a61fcf356936/go.mod h1:PeC+wC6mEWiE4aszs8LejWj6SrOhT6oZ+E0w7OM/nXg=
 golang.org/x/net v0.0.0-20220812174116-3211cb980234 h1:RDqmgfe7SvlMWoqC3xwQ2blLO3fcWcxMa3eBLRdRW7E=
 golang.org/x/net v0.0.0-20220812174116-3211cb980234/go.mod h1:YDH+HFinaLZZlnHAfSS6ZXJJ9M9t4Dl22yv3iI2vPwk=
 golang.org/x/text v0.3.7 h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk=
