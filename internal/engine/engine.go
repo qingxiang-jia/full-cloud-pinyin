@@ -100,11 +100,13 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// Commit candidate by keying in candidate index
 			if consts.IBus0 <= key && key <= consts.IBus9 {
-				idx := int(key) - 48
-				if 0 < idx && idx <= int(e.lt.PageSize) {
+				idx := int(key) - 48 - 1
+				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
+				idx += base
+				if 0 < idx && idx < len(e.lt.Candidates) {
 					e.cpCurDepth = 0
 
-					e.CommitCandidate(idx - 1)
+					e.CommitCandidate(idx)
 				}
 				return true, nil
 			}
