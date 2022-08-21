@@ -127,6 +127,11 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				return true, nil
 			}
 
+			if key == consts.IBusLeft || key == consts.IBusRight {
+				// Currently I don't plan to support moving preedit cursor
+				return true, nil
+			}
+
 			// + to go to next page
 			if key == consts.IBusEqual {
 				e.MovePageUp()
