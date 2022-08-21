@@ -105,7 +105,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				idx := int(key) - 48 - 1
 				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
 				idx += base
-				if 0 < idx && idx < len(e.lt.Candidates) {
+				if 0 <= idx && idx < len(e.lt.Candidates) {
 					e.cpCurDepth = 0
 
 					e.CommitCandidate(idx)
