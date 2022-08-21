@@ -16,6 +16,7 @@ type FcpEngine struct {
 	Preedit     []rune
 	lt          *ibus.LookupTable
 	ltVisible   bool
+	matchedLen  []int
 	enMode      bool
 	cpDepth     [8]int
 	cpCurDepth  int
@@ -29,6 +30,7 @@ func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *
 		Preedit:     []rune{},
 		lt:          ibus.NewLookupTable(),
 		ltVisible:   false,
+		matchedLen:  []int{},
 		enMode:      false,
 		cpDepth:     [8]int{consts.CandCntA, consts.CandCntB, consts.CandCntC, consts.CandCntD, consts.CandCntE, consts.CandCntF, consts.CandCntG, consts.CandCntH},
 		cpCurDepth:  0,
@@ -168,7 +170,7 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 		return false
 	}
 
-	cand, err := e.CloudPinyin.GetCandidates(string(e.Preedit), depth)
+	cand, matchedLen, err := e.CloudPinyin.GetCandidates(string(e.Preedit), depth)
 	if err != nil {
 		fmt.Println(err)
 		return false
@@ -179,6 +181,7 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 	for _, val := range cand {
 		e.lt.AppendCandidate(val)
 	}
+	e.matchedLen = matchedLen
 
 	e.UpdateLookupTable(e.lt, true)
 	if op == consts.AddRune || op == consts.RemoveRune {
