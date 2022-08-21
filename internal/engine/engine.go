@@ -257,10 +257,16 @@ func (e *FcpEngine) CommitCandidate(i int) {
 	}
 	text := e.lt.Candidates[i].Value().(ibus.Text)
 	e.CommitText(&text)
-	e.Preedit = e.Preedit[:0]
+
+	matchedLen := e.matchedLen[i]
+	e.Preedit = e.Preedit[matchedLen:len(e.Preedit)]
 	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-	e.HideLt()
-	e.ClearLt()
+	if len(e.Preedit) == 0 {
+		e.HideLt()
+		e.ClearLt()
+	} else {
+		e.HandlePinyinInput('_', consts.UnchangedRune, consts.CandCntA)
+	}
 }
 
 func (e *FcpEngine) HideLt() {
