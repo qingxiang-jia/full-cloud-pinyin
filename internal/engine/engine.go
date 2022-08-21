@@ -177,7 +177,7 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 
 	e.UpdateLookupTable(e.lt, true)
 	if op == consts.AddRune || op == consts.RemoveRune {
-		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(len(e.Preedit)), true)
 	}
 	e.ShowLt()
 	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
