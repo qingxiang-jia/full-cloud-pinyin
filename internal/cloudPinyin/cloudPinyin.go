@@ -76,14 +76,15 @@ func jstrToCand(jstr string) ([]string, []int) {
 	}
 
 	// Grab matched length
-	matchedLen := []int{}
 	if hasMatchedLen {
+		matchedLen := []int{}
 		startIdx := len(words) - len(cand)
 		for i := startIdx; i < len(words); i++ {
 			len, _ := strconv.Atoi(words[i])
 			matchedLen = append(matchedLen, len)
 		}
+		return cand, matchedLen
+	} else {
+		return cand, nil
 	}
-
-	return cand, matchedLen
 }
