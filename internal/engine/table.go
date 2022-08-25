@@ -99,6 +99,14 @@ func (t *CandidateTable) Cursor() int {
 	return int(t.lt.CursorPos)
 }
 
+func (t *CandidateTable) GetCandidate(i int) ibus.Text {
+	return t.lt.Candidates[i].Value().(ibus.Text)
+}
+
 func (t *CandidateTable) PageSize() int {
 	return int(t.lt.PageSize)
+}
+
+func (t *CandidateTable) CandidateCount() int {
+	return len(t.lt.Candidates)
 }

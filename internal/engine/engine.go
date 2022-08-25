@@ -76,7 +76,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				e.cpCurDepth = 0
 
 				e.Preedit = e.Preedit[:0]
-				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.SyncPreedit(1)
 				e.table.Hide()
 				return true, nil
 			}
@@ -85,10 +85,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			if key == consts.IBusEnter {
 				e.cpCurDepth = 0
 
-				e.CommitText(ibus.NewText(string(e.Preedit)))
-				e.Preedit = e.Preedit[:0]
-				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-				e.table.Hide()
+				e.CommitPreedit()
 				return true, nil
 			}
 
@@ -105,7 +102,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				idx := int(key) - 48 - 1
 				base := e.table.Cursor() / e.table.PageSize() * e.table.PageSize()
 				idx += base
-				if 0 <= idx && idx < len(e.table.lt.Candidates) {
+				if 0 <= idx && idx < e.table.CandidateCount() {
 					e.cpCurDepth = 0
 
 					e.CommitCandidate(idx)
@@ -176,18 +173,19 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) {
 	e.matchedLen = matchedLen
 
 	if op == consts.AddRune || op == consts.RemoveRune {
-		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(len(e.Preedit)), true)
+		e.SyncPreedit(len(e.Preedit))
 	}
 	e.table.Show()
 	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
 	// so call it here to keep in sync
 }
 
+// Note, the i is the index of the candidate in the whole table, not just this page
 func (e *FcpEngine) CommitCandidate(i int) {
 	if !e.table.Visible {
 		return
 	}
-	text := e.table.lt.Candidates[i].Value().(ibus.Text)
+	text := e.table.GetCandidate(i)
 	e.CommitText(&text)
 
 	if e.matchedLen != nil {
@@ -196,13 +194,24 @@ func (e *FcpEngine) CommitCandidate(i int) {
 	} else {
 		e.Preedit = e.Preedit[:0]
 	}
-	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+	e.SyncPreedit(1)
 	if len(e.Preedit) == 0 {
 		e.table.Hide()
 		e.table.Clear()
 	} else {
 		go e.HandlePinyinInput('_', consts.UnchangedRune, consts.CandCntA)
 	}
+}
+
+func (e *FcpEngine) CommitPreedit() {
+	e.CommitText(ibus.NewText(string(e.Preedit)))
+	e.Preedit = e.Preedit[:0]
+	e.SyncPreedit(1)
+	e.table.Hide()
+}
+
+func (e *FcpEngine) SyncPreedit(preeditCursor int) {
+	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(preeditCursor), true)
 }
 
 // Called when the user clicks a text area
