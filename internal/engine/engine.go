@@ -52,9 +52,9 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 		if consts.IBusA <= key && key <= consts.IBusZ {
 			e.cpCurDepth = 0
 
-			hasHandled := e.HandlePinyinInput(key, consts.AddRune, consts.CandCntA)
+			go e.HandlePinyinInput(key, consts.AddRune, consts.CandCntA)
 
-			return hasHandled, nil
+			return true, nil
 		}
 
 		if e.ltVisible {
@@ -67,8 +67,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 					return true, nil
 				}
 
-				hasHandled := e.HandlePinyinInput('_', consts.RemoveRune, consts.CandCntA)
-				return hasHandled, nil
+				go e.HandlePinyinInput('_', consts.RemoveRune, consts.CandCntA)
+				return true, nil
 			}
 
 			// Terminate typing
@@ -142,7 +142,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 					if e.cpCurDepth < len(e.cpDepth) {
 						e.cpCurDepth++
 					}
-					e.HandlePinyinInput('_', consts.UnchangedRune, e.cpDepth[e.cpCurDepth])
+					go e.HandlePinyinInput('_', consts.UnchangedRune, e.cpDepth[e.cpCurDepth])
 				}
 				return true, nil
 			}
@@ -158,7 +158,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	return false, nil
 }
 
-func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
+func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) {
 	switch op {
 	case consts.AddRune:
 		e.Preedit = append(e.Preedit, key)
@@ -167,13 +167,11 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 	case consts.UnchangedRune:
 	default:
 		fmt.Println("Not a valid operation")
-		return false
 	}
 
 	cand, matchedLen, err := e.CloudPinyin.GetCandidates(string(e.Preedit), depth)
 	if err != nil {
 		fmt.Println(err)
-		return false
 	}
 
 	e.ClearLt()
@@ -190,8 +188,6 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 	e.ShowLt()
 	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
 	// so call it here to keep in sync
-
-	return true
 }
 
 // Not sure why the buil-in cursor moving functions don't work so I need to write my own.
@@ -269,7 +265,7 @@ func (e *FcpEngine) CommitCandidate(i int) {
 		e.HideLt()
 		e.ClearLt()
 	} else {
-		e.HandlePinyinInput('_', consts.UnchangedRune, consts.CandCntA)
+		go e.HandlePinyinInput('_', consts.UnchangedRune, consts.CandCntA)
 	}
 }
 
