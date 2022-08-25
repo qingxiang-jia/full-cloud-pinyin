@@ -51,6 +51,7 @@ func (t *CandidateTable) CursorUp() bool {
 	return true
 }
 
+// Workaround, because the IBus side doesn't work.
 func (t *CandidateTable) PageDown() {
 	sz := t.lt.PageSize
 	pos := t.lt.CursorPos
@@ -62,6 +63,7 @@ func (t *CandidateTable) PageDown() {
 	t.e.UpdateLookupTable(t.lt, true)
 }
 
+// Workaround, because the IBus side doesn't work.
 func (t *CandidateTable) PageUp() {
 	sz := int(t.lt.PageSize)
 	total := len(t.lt.Candidates)
