@@ -294,3 +294,11 @@ func (e *FcpEngine) FocusIn() *dbus.Error {
 func (e *FcpEngine) PropertyActivate(prop_name string, prop_state uint32) *dbus.Error {
 	return nil
 }
+
+func (e *FcpEngine) Enable() *dbus.Error {
+	return nil
+}
+
+func (e *FcpEngine) Disable() *dbus.Error {
+	return nil
+}
