@@ -94,3 +94,11 @@ func (t *CandidateTable) AtLastPage() bool {
 		return false
 	}
 }
+
+func (t *CandidateTable) Cursor() int {
+	return int(t.lt.CursorPos)
+}
+
+func (t *CandidateTable) PageSize() int {
+	return int(t.lt.PageSize)
+}

@@ -96,14 +96,14 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			if key == consts.IBusSpace {
 				e.cpCurDepth = 0
 
-				e.CommitCandidate(int(e.table.lt.CursorPos))
+				e.CommitCandidate(e.table.Cursor())
 				return true, nil
 			}
 
 			// Commit candidate by keying in candidate index
 			if consts.IBus0 <= key && key <= consts.IBus9 {
 				idx := int(key) - 48 - 1
-				base := int(e.table.lt.CursorPos / e.table.lt.PageSize * e.table.lt.PageSize)
+				base := e.table.Cursor() / e.table.PageSize() * e.table.PageSize()
 				idx += base
 				if 0 <= idx && idx < len(e.table.lt.Candidates) {
 					e.cpCurDepth = 0
