@@ -10,30 +10,30 @@ import (
 )
 
 type FcpEngine struct {
-	ibus.Engine
+	*ibus.Engine
 	CloudPinyin cp.CloudPinyin
 	PropList    *ibus.PropList
 	Preedit     []rune
-	lt          *ibus.LookupTable
-	ltVisible   bool
 	matchedLen  []int
 	enMode      bool
 	cpDepth     [8]int
 	cpCurDepth  int
+	table       *CandidateTable
 }
 
 func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
+	engine := ibus.BaseEngine(conn, *path)
+	lt := ibus.NewLookupTable()
 	return &FcpEngine{
-		Engine:      ibus.BaseEngine(conn, *path),
+		Engine:      &engine,
 		CloudPinyin: *cp.NewCloudPinyin(),
 		PropList:    ibus.NewPropList(prop),
 		Preedit:     []rune{},
-		lt:          ibus.NewLookupTable(),
-		ltVisible:   false,
 		matchedLen:  []int{},
 		enMode:      false,
 		cpDepth:     [8]int{consts.CandCntA, consts.CandCntB, consts.CandCntC, consts.CandCntD, consts.CandCntE, consts.CandCntF, consts.CandCntG, consts.CandCntH},
 		cpCurDepth:  0,
+		table:       NewCandidateTbale(&engine, lt),
 	}
 }
 
@@ -57,13 +57,13 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			return true, nil
 		}
 
-		if e.ltVisible {
+		if e.table.Visible {
 			// Remove a character from preedit
 			if key == consts.IBusBackspace {
 				e.cpCurDepth = 0
 
 				if len(e.Preedit) == 0 {
-					e.HideLt()
+					e.table.Hide()
 					return true, nil
 				}
 
@@ -77,7 +77,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 				e.Preedit = e.Preedit[:0]
 				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-				e.HideLt()
+				e.table.Hide()
 				return true, nil
 			}
 
@@ -88,7 +88,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 				e.CommitText(ibus.NewText(string(e.Preedit)))
 				e.Preedit = e.Preedit[:0]
 				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-				e.HideLt()
+				e.table.Hide()
 				return true, nil
 			}
 
@@ -96,16 +96,16 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			if key == consts.IBusSpace {
 				e.cpCurDepth = 0
 
-				e.CommitCandidate(int(e.lt.CursorPos))
+				e.CommitCandidate(int(e.table.lt.CursorPos))
 				return true, nil
 			}
 
 			// Commit candidate by keying in candidate index
 			if consts.IBus0 <= key && key <= consts.IBus9 {
 				idx := int(key) - 48 - 1
-				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
+				base := int(e.table.lt.CursorPos / e.table.lt.PageSize * e.table.lt.PageSize)
 				idx += base
-				if 0 <= idx && idx < len(e.lt.Candidates) {
+				if 0 <= idx && idx < len(e.table.lt.Candidates) {
 					e.cpCurDepth = 0
 
 					e.CommitCandidate(idx)
@@ -115,17 +115,13 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// Cursor up lookup table
 			if key == consts.IBusUp {
-				if e.MoveCursorDown() {
-					e.UpdateLookupTable(e.lt, true)
-				}
+				e.table.CursorDown()
 				return true, nil
 			}
 
 			// Cursor down lookup table
 			if key == consts.IBusDown {
-				if e.MoveCursorUp() {
-					e.UpdateLookupTable(e.lt, true)
-				}
+				e.table.CursorUp()
 				return true, nil
 			}
 
@@ -136,8 +132,8 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// + to go to next page
 			if key == consts.IBusEqual {
-				e.MovePageUp()
-				if e.AtLastPage() {
+				e.table.PageUp()
+				if e.table.AtLastPage() {
 					// We may want to load more candidates
 					if e.cpCurDepth < len(e.cpDepth) {
 						e.cpCurDepth++
@@ -149,7 +145,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 			// - to go to previous page
 			if key == consts.IBusMinus {
-				e.MovePageDown()
+				e.table.PageDown()
 				return true, nil
 			}
 		}
@@ -174,84 +170,24 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) {
 		fmt.Println(err)
 	}
 
-	e.ClearLt()
+	e.table.Clear()
 
-	for _, val := range cand {
-		e.lt.AppendCandidate(val)
-	}
+	e.table.Add(cand)
 	e.matchedLen = matchedLen
 
-	e.UpdateLookupTable(e.lt, true)
 	if op == consts.AddRune || op == consts.RemoveRune {
 		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(len(e.Preedit)), true)
 	}
-	e.ShowLt()
+	e.table.Show()
 	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
 	// so call it here to keep in sync
 }
 
-// Not sure why the buil-in cursor moving functions don't work so I need to write my own.
-// Same for the next three.
-func (e *FcpEngine) MoveCursorUp() bool {
-	if int(e.lt.CursorPos) == len(e.lt.Candidates) {
-		return false
-	}
-	e.lt.CursorPos++
-	return true
-}
-
-func (e *FcpEngine) MoveCursorDown() bool {
-	if e.lt.CursorPos == 0 {
-		return false
-	}
-	e.lt.CursorPos--
-	return true
-}
-
-// Workaround, because the IBus side doesn't work.
-func (e *FcpEngine) MovePageUp() {
-	sz := int(e.lt.PageSize)
-	total := len(e.lt.Candidates)
-	nextPos := int(e.lt.CursorPos)
-	nextPos += sz
-	if nextPos >= total {
-		nextPos = total - 1
-	}
-	if nextPos != int(e.lt.CursorPos) {
-		e.lt.CursorPos = uint32(nextPos)
-		e.UpdateLookupTable(e.lt, true)
-	}
-}
-
-// Workaround, because the IBus side doesn't work.
-func (e *FcpEngine) MovePageDown() {
-	sz := e.lt.PageSize
-	pos := e.lt.CursorPos
-	if pos < sz {
-		return
-	}
-	pos -= sz
-	e.lt.CursorPos = pos
-	e.UpdateLookupTable(e.lt, true)
-}
-
-func (e *FcpEngine) AtLastPage() bool {
-	sz := int(e.lt.PageSize)
-	total := len(e.lt.Candidates)
-	maxIdx := (total/sz+1)*sz - 1
-	curIdx := int(e.lt.CursorPos)
-	if maxIdx-curIdx < sz {
-		return true
-	} else {
-		return false
-	}
-}
-
 func (e *FcpEngine) CommitCandidate(i int) {
-	if !e.ltVisible {
+	if !e.table.Visible {
 		return
 	}
-	text := e.lt.Candidates[i].Value().(ibus.Text)
+	text := e.table.lt.Candidates[i].Value().(ibus.Text)
 	e.CommitText(&text)
 
 	if e.matchedLen != nil {
@@ -262,26 +198,11 @@ func (e *FcpEngine) CommitCandidate(i int) {
 	}
 	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
 	if len(e.Preedit) == 0 {
-		e.HideLt()
-		e.ClearLt()
+		e.table.Hide()
+		e.table.Clear()
 	} else {
 		go e.HandlePinyinInput('_', consts.UnchangedRune, consts.CandCntA)
 	}
-}
-
-func (e *FcpEngine) HideLt() {
-	e.HideLookupTable()
-	e.ltVisible = false
-}
-
-func (e *FcpEngine) ShowLt() {
-	e.ShowLookupTable()
-	e.ltVisible = true
-}
-
-func (e *FcpEngine) ClearLt() {
-	e.lt.Candidates = e.lt.Candidates[:0]
-	e.lt.Labels = e.lt.Labels[:0]
 }
 
 // Called when the user clicks a text area

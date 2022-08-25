@@ -3,14 +3,16 @@ package engine
 import "github.com/haunt98/goibus/ibus"
 
 type CandidateTable struct {
-	lt *ibus.LookupTable
-	e  *ibus.Engine
+	e       *ibus.Engine
+	lt      *ibus.LookupTable
+	Visible bool
 }
 
-func NewCandidateTbale(e *ibus.Engine) *CandidateTable {
+func NewCandidateTbale(e *ibus.Engine, lt *ibus.LookupTable) *CandidateTable {
 	return &CandidateTable{
-		lt: ibus.NewLookupTable(),
-		e:  e,
+		e:       e,
+		lt:      ibus.NewLookupTable(),
+		Visible: false,
 	}
 }
 
@@ -18,6 +20,7 @@ func (t *CandidateTable) Add(candidates []string) {
 	for _, val := range candidates {
 		t.lt.AppendCandidate(val)
 	}
+	t.e.UpdateLookupTable(t.lt, true)
 }
 
 func (t *CandidateTable) Clear() {
@@ -27,28 +30,30 @@ func (t *CandidateTable) Clear() {
 
 func (t *CandidateTable) Hide() {
 	t.e.HideLookupTable()
+	t.Visible = false
 }
 
 func (t *CandidateTable) Show() {
 	t.e.ShowLookupTable()
+	t.Visible = true
 }
 
 // Not sure why the buil-in cursor moving functions don't work so I need to write my own.
 // Same for the next three.
-func (t *CandidateTable) CursorDown() bool {
+func (t *CandidateTable) CursorDown() {
 	if t.lt.CursorPos == 0 {
-		return false
+		return
 	}
 	t.lt.CursorPos--
-	return true
+	t.e.UpdateLookupTable(t.lt, true)
 }
 
-func (t *CandidateTable) CursorUp() bool {
+func (t *CandidateTable) CursorUp() {
 	if int(t.lt.CursorPos) == len(t.lt.Candidates) {
-		return false
+		return
 	}
 	t.lt.CursorPos++
-	return true
+	t.e.UpdateLookupTable(t.lt, true)
 }
 
 // Workaround, because the IBus side doesn't work.
