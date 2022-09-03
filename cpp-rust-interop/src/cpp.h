@@ -1,9 +1,5 @@
 #pragma once
-#include <memory>
 
-class BlobstoreClient {
-public:
-  BlobstoreClient();
-};
+#include <string>
 
-std::unique_ptr<BlobstoreClient> new_blobstore_client();
+void print(int a);

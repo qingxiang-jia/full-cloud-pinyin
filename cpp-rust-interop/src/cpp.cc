@@ -1,7 +1,8 @@
 #include "cpp-rust-interop/src/cpp.h"
 
-BlobstoreClient::BlobstoreClient() {}
+#include <string>
+#include <iostream>
 
-std::unique_ptr<BlobstoreClient> new_blobstore_client() {
-  return std::unique_ptr<BlobstoreClient>(new BlobstoreClient());
+void print(int a) {
+  std::cout << a << '\n';
 }
