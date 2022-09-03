@@ -1,5 +1,6 @@
 #pragma once
 
-#include <string>
+#include "rust/cxx.h"
+#include "cpp-rust-interop/src/main.rs.h"
 
-void print(int a);
+void print(rust::String s);

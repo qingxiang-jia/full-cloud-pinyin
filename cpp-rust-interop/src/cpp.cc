@@ -1,8 +1,9 @@
+#include "rust/cxx.h"
 #include "cpp-rust-interop/src/cpp.h"
 
 #include <string>
 #include <iostream>
 
-void print(int a) {
-  std::cout << a << '\n';
+void print(rust::String s) {
+  std::cout << std::string(s.c_str());
 }
