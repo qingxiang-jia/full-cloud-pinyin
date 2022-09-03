@@ -1,3 +1,5 @@
 full-cloud-pinyin
-fcitx5/build
+build/
+target/
 *.kdev4
+.cache/
