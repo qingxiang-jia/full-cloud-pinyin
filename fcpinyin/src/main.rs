@@ -1,5 +1,4 @@
 use std::{
-    fs,
     io::{stdin, stdout, Write},
     time::{Duration, Instant},
 };
@@ -9,6 +8,7 @@ use regex::Regex;
 #[derive(Debug)]
 struct FullCloudPinyin {
     http: reqwest::blocking::Client,
+    re: Regex
 }
 
 #[derive(Debug)]
@@ -37,6 +37,7 @@ impl FullCloudPinyin {
     pub fn new() -> Self {
         Self {
             http: reqwest::blocking::Client::new(),
+            re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input.")
         }
     }
 
@@ -51,7 +52,7 @@ impl FullCloudPinyin {
 
         let json_str = rep.text().expect("The data cannot be converted to string.");
 
-        let candidates = Self::from_json_str_to_structured(json_str);
+        let candidates = self.from_json_str_to_structured(json_str);
 
         CloudResponse {
             latency: elapsed,
@@ -59,11 +60,10 @@ impl FullCloudPinyin {
         }
     }
 
-    fn from_json_str_to_structured(s: String) -> Vec<Candidate> {
+    fn from_json_str_to_structured(&self, s: String) -> Vec<Candidate> {
         let mut linear_data: Vec<String> = Vec::new();
 
-        let re = Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input.");
-        for caps in re.captures_iter(&s) {
+        for caps in self.re.captures_iter(&s) {
             for cap in caps.iter() {
                 if cap.is_some() {
                     linear_data.push(cap.unwrap().as_str().to_owned());
