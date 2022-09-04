@@ -1,13 +1,16 @@
-pub mod fcpinyin;
+mod fcpinyin;
+mod tui;
 
 use std::{
     io::{stdin, stdout, Write}
 };
 
-use fcpinyin::fcpinyin::FullCloudPinyin;
+use fcpinyin::FullCloudPinyin;
+use tui::run_tui;
+
 
 fn main() {
-    interactive_loop();
+    run_tui();
 }
 
 fn interactive_loop() {
