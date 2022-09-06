@@ -39,9 +39,9 @@ static const std::array<fcitx::Key, 10> selectionKeys = {
     fcitx::Key{FcitxKey_0},
 };
 
-class QuweiCandidateWord : public fcitx::CandidateWord {
+class QuweiCandidate : public fcitx::CandidateWord {
 public:
-    QuweiCandidateWord(QuweiEngine *engine, std::string text)
+    QuweiCandidate(QuweiEngine *engine, std::string text)
         : engine_(engine) {
         setText(fcitx::Text(std::move(text)));
     }
@@ -140,14 +140,14 @@ private:
             char *outbuf = out;
             iconv(engine_->conv(), &inbuf, &insize, &outbuf, &avail);
             *outbuf = '\0';
-            candidates_[i] = std::make_unique<QuweiCandidateWord>(engine_, out);
+            candidates_[i] = std::make_unique<QuweiCandidate>(engine_, out);
         }
     }
 
     QuweiEngine *engine_;
     fcitx::InputContext *ic_;
     fcitx::Text labels_[10];
-    std::unique_ptr<QuweiCandidateWord> candidates_[10];
+    std::unique_ptr<QuweiCandidate> candidates_[10];
     int code_;
     int cursor_ = 0;
 };

@@ -17,6 +17,13 @@
 #include <fcitx/instance.h>
 #include <iconv.h>
 
+/*
+TODO:
+1. State
+2. Engine
+3. CandiadteList, Candidate
+*/
+
 class QuweiEngine;
 
 class QuweiState : public fcitx::InputContextProperty {
