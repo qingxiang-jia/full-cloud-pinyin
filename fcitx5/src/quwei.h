@@ -21,7 +21,6 @@
 TODO:
 1. State
 2. Engine
-3. CandiadteList, Candidate
 */
 
 class QuweiEngine;

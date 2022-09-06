@@ -56,102 +56,6 @@ private:
     QuweiEngine *engine_;
 };
 
-class QuweiCandidateList : public fcitx::CandidateList,
-                           public fcitx::PageableCandidateList,
-                           public fcitx::CursorMovableCandidateList {
-public:
-    QuweiCandidateList(QuweiEngine *engine, fcitx::InputContext *ic,
-                       const std::string &code)
-        : engine_(engine), ic_(ic), code_(std::stoi(code)) {
-        setPageable(this);
-        setCursorMovable(this);
-        for (int i = 0; i < 10; i++) {
-            const char label[2] = {static_cast<char>('0' + (i + 1) % 10), '\0'};
-            labels_[i].append(label);
-            labels_[i].append(". ");
-        }
-        generate();
-    }
-
-    const fcitx::Text &label(int idx) const override { return labels_[idx]; }
-
-    const fcitx::CandidateWord &candidate(int idx) const override {
-        return *candidates_[idx];
-    }
-    int size() const override { return 10; }
-    fcitx::CandidateLayoutHint layoutHint() const override {
-        return fcitx::CandidateLayoutHint::NotSet;
-    }
-    bool usedNextBefore() const override { return false; }
-    void prev() override {
-        if (!hasPrev()) {
-            return;
-        }
-        --code_;
-        auto state = ic_->propertyFor(engine_->factory());
-        state->setCode(code_);
-    }
-    void next() override {
-        if (!hasNext()) {
-            return;
-        }
-        code_++;
-        auto state = ic_->propertyFor(engine_->factory());
-        state->setCode(code_);
-    }
-
-    bool hasPrev() const override { return code_ > 0; }
-
-    bool hasNext() const override { return code_ < 999; }
-
-    void prevCandidate() override { cursor_ = (cursor_ + 9) % 10; }
-
-    void nextCandidate() override { cursor_ = (cursor_ + 1) % 10; }
-
-    int cursorIndex() const override { return cursor_; }
-
-private:
-    void generate() {
-        for (int i = 0; i < 10; i++) {
-            auto code = code_ * 10 + (i + 1);
-            auto qu = code / 100;
-            auto wei = code % 100;
-
-            // Quwei to GB2312 (0xA0 + qu, 0xA0 + wei)
-            char in[3];
-            if (qu >= 95) { /* Process extend Qu 95 and 96 */
-                in[0] = qu - 95 + 0xA8;
-                in[1] = wei + 0x40;
-
-                /* skip 0xa87f and 0xa97f */
-                if (in[1] >= 0x7f) {
-                    in[1]++;
-                }
-            } else {
-                in[0] = qu + 0xa0;
-                in[1] = wei + 0xa0;
-            }
-
-            size_t insize = 2, avail = FCITX_UTF8_MAX_LENGTH + 1;
-            std::remove_pointer_t<second_argument_type<decltype(&::iconv)>>
-                inbuf = in;
-
-            char out[FCITX_UTF8_MAX_LENGTH + 1];
-            char *outbuf = out;
-            iconv(engine_->conv(), &inbuf, &insize, &outbuf, &avail);
-            *outbuf = '\0';
-            candidates_[i] = std::make_unique<QuweiCandidate>(engine_, out);
-        }
-    }
-
-    QuweiEngine *engine_;
-    fcitx::InputContext *ic_;
-    fcitx::Text labels_[10];
-    std::unique_ptr<QuweiCandidate> candidates_[10];
-    int code_;
-    int cursor_ = 0;
-};
-
 } // namespace
 
 void QuweiState::keyEvent(fcitx::KeyEvent &event) {
@@ -272,8 +176,7 @@ void QuweiState::updateUI() {
     auto &inputPanel = ic_->inputPanel();
     inputPanel.reset();
     if (buffer_.size() == 3) {
-        inputPanel.setCandidateList(std::make_unique<QuweiCandidateList>(
-            engine_, ic_, buffer_.userInput()));
+        inputPanel.setCandidateList(std::make_unique<fcitx::CommonCandidateList>());
     }
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
         fcitx::Text preedit(buffer_.userInput(),
