@@ -16,6 +16,7 @@
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <iconv.h>
+#include <memory>
 #include <vector>
 
 /*
@@ -78,7 +79,7 @@ private:
     fcitx::Instance *instance_;
     fcitx::FactoryFor<QuweiState> factory_;
     iconv_t conv_;
-    DummyPinyin *dummyPinyin;
+    std::unique_ptr<DummyPinyin> dummyPinyin_;
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
