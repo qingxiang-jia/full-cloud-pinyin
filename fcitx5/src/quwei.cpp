@@ -244,14 +244,14 @@ std::string gen_random_str(const int len) {
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
-    std::string tmp_s;
-    tmp_s.reserve(len);
+    std::string str;
+    str.reserve(len);
 
     for (int i = 0; i < len; ++i) {
-        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+        str += alphanum[rand() % (sizeof(alphanum) - 1)];
     }
     
-    return tmp_s;
+    return str;
 }
 
 std::vector<std::string> getCandidates(std::string preedit) {
