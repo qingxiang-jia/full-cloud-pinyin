@@ -16,6 +16,7 @@
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <iconv.h>
+#include <vector>
 
 /*
 TODO:
@@ -78,6 +79,12 @@ class QuweiEngineFactory : public fcitx::AddonFactory {
         FCITX_UNUSED(manager);
         return new QuweiEngine(manager->instance());
     }
+};
+
+class DummyPinyin {
+public:
+    DummyPinyin();
+    std::vector<std::string> getCandidates(std::string preedit);
 };
 
 #endif // _FCITX5_QUWEI_QUWEI_H_
