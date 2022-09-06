@@ -1,16 +1,13 @@
 mod fcpinyin;
-mod testbed;
 
 use std::{
     io::{stdin, stdout, Write}
 };
 
 use fcpinyin::FullCloudPinyin;
-use testbed::run_gui;
 
 
 fn main() {
-    run_gui();
 }
 
 fn interactive_loop() {
