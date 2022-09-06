@@ -46,6 +46,12 @@ private:
                                 fcitx::InputBufferOption::FixedCursor}};
 };
 
+class DummyPinyin {
+public:
+    DummyPinyin();
+    std::vector<std::string> getCandidates(std::string preedit);
+};
+
 class QuweiEngine : public fcitx::InputMethodEngineV2 {
 public:
     QuweiEngine(fcitx::Instance *instance);
@@ -72,6 +78,7 @@ private:
     fcitx::Instance *instance_;
     fcitx::FactoryFor<QuweiState> factory_;
     iconv_t conv_;
+    DummyPinyin *dummyPinyin;
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
@@ -79,12 +86,6 @@ class QuweiEngineFactory : public fcitx::AddonFactory {
         FCITX_UNUSED(manager);
         return new QuweiEngine(manager->instance());
     }
-};
-
-class DummyPinyin {
-public:
-    DummyPinyin();
-    std::vector<std::string> getCandidates(std::string preedit);
 };
 
 #endif // _FCITX5_QUWEI_QUWEI_H_
