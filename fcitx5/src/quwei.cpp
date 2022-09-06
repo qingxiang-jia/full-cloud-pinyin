@@ -235,4 +235,34 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
     state->reset();
 }
 
+DummyPinyin::DummyPinyin() {}
+
+std::string gen_random_str(const int len) {
+    // https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
+    
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    std::string tmp_s;
+    tmp_s.reserve(len);
+
+    for (int i = 0; i < len; ++i) {
+        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+    
+    return tmp_s;
+}
+
+std::vector<std::string> getCandidates(std::string preedit) {
+    int candidadteCount = 5;
+    
+    std::vector<std::string> candidates = {};
+    
+    for (int i = 0; i < candidadteCount; i++) {
+        candidates.push_back(gen_random_str(preedit.length()));
+    }
+    return candidates;
+}
+
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
