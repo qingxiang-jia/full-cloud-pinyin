@@ -253,7 +253,7 @@ std::string gen_random_str(const int len) {
     return str;
 }
 
-std::vector<std::string> getCandidates(std::string preedit) {
+std::vector<std::string> DummyPinyin::getCandidates(std::string preedit) {
     int candidadteCount = 5;
     
     std::vector<std::string> candidates = {};
