@@ -11,6 +11,7 @@
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <fcitx/userinterfacemanager.h>
+#include <memory>
 #include <punctuation_public.h>
 #include <quickphrase_public.h>
 #include <utility>
@@ -39,6 +40,13 @@ static const std::array<fcitx::Key, 10> selectionKeys = {
     fcitx::Key{FcitxKey_0},
 };
 
+static const std::vector<fcitx::Key> candListSelectKey = {
+    fcitx::Key{FcitxKey_1}, fcitx::Key{FcitxKey_2}, fcitx::Key{FcitxKey_3},
+    fcitx::Key{FcitxKey_4}, fcitx::Key{FcitxKey_5}, fcitx::Key{FcitxKey_6},
+    fcitx::Key{FcitxKey_7}, fcitx::Key{FcitxKey_8}, fcitx::Key{FcitxKey_9},
+    fcitx::Key{FcitxKey_0},
+};
+
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
     QuweiCandidate(QuweiEngine *engine, std::string text)
@@ -61,11 +69,15 @@ private:
 void QuweiState::keyEvent(fcitx::KeyEvent &event) {
     if (auto candidateList = ic_->inputPanel().candidateList()) {
         int idx = event.key().keyListIndex(selectionKeys);
+        
+        // Select a candidate by keying in 0-9
         if (idx >= 0 && idx < candidateList->size()) {
             event.accept();
             candidateList->candidate(idx).select(ic_);
             return;
         }
+
+        // Go to the previous page by keying in the default previous page key
         if (event.key().checkKeyList(
                 engine_->instance()->globalConfig().defaultPrevPage())) {
             if (auto *pageable = candidateList->toPageable();
@@ -78,6 +90,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             return event.filterAndAccept();
         }
 
+        // Go to the next page by keying in the default next page key
         if (event.key().checkKeyList(
                 engine_->instance()->globalConfig().defaultNextPage())) {
             if (auto *pageable = candidateList->toPageable();
@@ -90,71 +103,57 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         }
     }
 
-    if (buffer_.empty()) {
-        if (!event.key().isDigit()) {
-            // if it gonna commit something
-            auto c = fcitx::Key::keySymToUnicode(event.key().sym());
-            if (!c) {
-                return;
-            }
-            std::string punc, puncAfter;
-            // skip key pad
-            if (c && !event.key().isKeyPad()) {
-                std::tie(punc, puncAfter) =
-                    engine_->punctuation()
-                        ->call<fcitx::IPunctuation::pushPunctuationV2>("zh_CN",
-                                                                       ic_, c);
-            }
-            if (event.key().check(FcitxKey_semicolon) &&
-                engine_->quickphrase()) {
-                auto keyString = fcitx::utf8::UCS4ToUTF8(c);
-                // s is punc or key
-                auto output = !punc.empty() ? (punc + puncAfter) : keyString;
-                // alt is key or empty
-                auto altOutput = !punc.empty() ? keyString : "";
-                // if no punc: key -> key (s = key, alt = empty)
-                // if there's punc: key -> punc, return -> key (s = punc, alt =
-                // key)
-                std::string text;
-                engine_->quickphrase()->call<fcitx::IQuickPhrase::trigger>(
-                    ic_, text, "", output, altOutput,
-                    fcitx::Key(FcitxKey_semicolon));
-                event.filterAndAccept();
-                return;
-            }
-            if (!punc.empty()) {
-                event.filterAndAccept();
-                ic_->commitString(punc + puncAfter);
-                if (size_t length = fcitx::utf8::lengthValidated(puncAfter);
-                    length != 0 && length != fcitx::utf8::INVALID_LENGTH) {
-                    for (size_t i = 0; i < length; i++) {
-                        ic_->forwardKey(fcitx::Key(FcitxKey_Left));
-                    }
-                }
-            }
-            return;
+    // Remove one character from buffer
+    if (event.key().check(FcitxKey_BackSpace)) {
+        buffer_.backspace();
+        updateUI();
+        return event.filterAndAccept();
+    }
+
+    // Commit buffer as is (i.e., not Chinese)
+    if (event.key().check(FcitxKey_Return)) {
+        ic_->commitString(buffer_.userInput());
+        reset();
+        return event.filterAndAccept();
+    }
+
+    // Terminate this input session
+    if (event.key().check(FcitxKey_Escape)) {
+        reset();
+        return event.filterAndAccept();
+    }
+
+    if (!event.key().isDigit()) {
+        return event.filterAndAccept();
+    }
+
+    // If buffer is empty and has keyed in a letter, show lookup table
+    if (event.key().isLAZ() || event.key().isUAZ()) {
+        // Append this key into the buffer
+        buffer_.type(event.key().sym());
+
+        std::string preedit = buffer_.userInput();
+
+        // Use preedit to query the dummy
+        std::vector<std::string> candidates = engine_->dummyPinyin_->getCandidates(preedit);
+
+        // Store candidates in candidate list
+        auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
+        candidateList->setSelectionKey(candListSelectKey);
+        candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
+        candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
+
+        for (unsigned long i = 0; i < candidates.size(); i++) {
+            std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i]);
+            candidateList->append(std::move(candidate));
         }
-    } else {
-        if (event.key().check(FcitxKey_BackSpace)) {
-            buffer_.backspace();
-            updateUI();
-            return event.filterAndAccept();
-        }
-        if (event.key().check(FcitxKey_Return)) {
-            ic_->commitString(buffer_.userInput());
-            reset();
-            return event.filterAndAccept();
-        }
-        if (event.key().check(FcitxKey_Escape)) {
-            reset();
-            return event.filterAndAccept();
-        }
-        if (!event.key().isDigit()) {
-            return event.filterAndAccept();
+
+        if (candidates.size() != 0) {
+            candidateList->setGlobalCursorIndex(0);
+            ic_->inputPanel().setCandidateList(std::move(candidateList));
         }
     }
 
-    buffer_.type(event.key().sym());
     updateUI();
     return event.filterAndAccept();
 }

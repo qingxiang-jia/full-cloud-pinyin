@@ -69,6 +69,8 @@ public:
     auto conv() const { return conv_; }
     auto instance() const { return instance_; }
 
+    std::unique_ptr<DummyPinyin> dummyPinyin_;
+
     FCITX_ADDON_DEPENDENCY_LOADER(quickphrase, instance_->addonManager());
     FCITX_ADDON_DEPENDENCY_LOADER(punctuation, instance_->addonManager());
 
@@ -79,7 +81,6 @@ private:
     fcitx::Instance *instance_;
     fcitx::FactoryFor<QuweiState> factory_;
     iconv_t conv_;
-    std::unique_ptr<DummyPinyin> dummyPinyin_;
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
