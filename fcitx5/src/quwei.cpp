@@ -123,10 +123,6 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         return event.filterAndAccept();
     }
 
-    if (!event.key().isDigit()) {
-        return event.filterAndAccept();
-    }
-
     // If buffer is empty and has keyed in a letter, show lookup table
     if (event.key().isLAZ() || event.key().isUAZ()) {
         // Append this key into the buffer
