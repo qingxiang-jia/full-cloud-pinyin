@@ -190,9 +190,9 @@ void QuweiState::updateUI() {
 }
 
 QuweiEngine::QuweiEngine(fcitx::Instance *instance)
-    : instance_(instance), factory_([this](fcitx::InputContext &ic) {
+    : dummyPinyin_(new DummyPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
           return new QuweiState(this, &ic);
-      }), dummyPinyin_(new DummyPinyin()) {
+      }) {
     conv_ = iconv_open("UTF-8", "GB18030");
     if (conv_ == reinterpret_cast<iconv_t>(-1)) {
         throw std::runtime_error("Failed to create converter");
