@@ -106,6 +106,10 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
     // Remove one character from buffer
     if (event.key().check(FcitxKey_BackSpace)) {
         buffer_.backspace();
+
+        std::string preedit = buffer_.userInput();
+        candidates = engine_->dummyPinyin_->getCandidates(preedit);
+
         updateUI();
         return event.filterAndAccept();
     }
