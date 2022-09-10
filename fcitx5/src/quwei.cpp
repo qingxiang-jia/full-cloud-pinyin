@@ -101,30 +101,30 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             }
             return event.filterAndAccept();
         }
-    }
 
-    // Remove one character from buffer
-    if (event.key().check(FcitxKey_BackSpace)) {
-        buffer_.backspace();
+        // Remove one character from buffer
+        if (event.key().check(FcitxKey_BackSpace)) {
+            buffer_.backspace();
 
-        std::string preedit = buffer_.userInput();
-        candidates = engine_->dummyPinyin_->getCandidates(preedit);
+            std::string preedit = buffer_.userInput();
+            candidates = engine_->dummyPinyin_->getCandidates(preedit);
 
-        updateUI();
-        return event.filterAndAccept();
-    }
+            updateUI();
+            return event.filterAndAccept();
+        }
 
-    // Commit buffer as is (i.e., not Chinese)
-    if (event.key().check(FcitxKey_Return)) {
-        ic_->commitString(buffer_.userInput());
-        reset();
-        return event.filterAndAccept();
-    }
+        // Commit buffer as is (i.e., not Chinese)
+        if (event.key().check(FcitxKey_Return)) {
+            ic_->commitString(buffer_.userInput());
+            reset();
+            return event.filterAndAccept();
+        }
 
-    // Terminate this input session
-    if (event.key().check(FcitxKey_Escape)) {
-        reset();
-        return event.filterAndAccept();
+        // Terminate this input session
+        if (event.key().check(FcitxKey_Escape)) {
+            reset();
+            return event.filterAndAccept();
+        }
     }
 
     // If buffer is empty and has keyed in a letter, show lookup table
@@ -136,10 +136,12 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
 
         // Use preedit to query the dummy
         candidates = engine_->dummyPinyin_->getCandidates(preedit);
+
+        updateUI();
+        return event.filterAndAccept();
     }
 
-    updateUI();
-    return event.filterAndAccept();
+    return;
 }
 
 void QuweiState::setCode(int code) {
