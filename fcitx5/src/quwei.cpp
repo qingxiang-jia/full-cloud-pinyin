@@ -169,6 +169,10 @@ void QuweiState::setCode(int code) {
 
 void QuweiState::updateUI() {
     auto &inputPanel = ic_->inputPanel();
+    inputPanel.reset();
+    if (buffer_.size() == 3) {
+        inputPanel.setCandidateList(std::make_unique<fcitx::CommonCandidateList>());
+    }
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
         fcitx::Text preedit(buffer_.userInput(),
                             fcitx::TextFormatFlag::HighLight);
