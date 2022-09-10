@@ -167,6 +167,8 @@ void QuweiState::setCandidateList() {
         candidateList->append(std::move(candidate));
     }
 
+    candidates.clear();
+
     candidateList->setGlobalCursorIndex(0);
     ic_->inputPanel().setCandidateList(std::move(candidateList));
 }
