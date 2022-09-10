@@ -34,6 +34,7 @@ public:
 
     void keyEvent(fcitx::KeyEvent &keyEvent);
     void setCode(int code);
+    void setCandidateList();
     void updateUI();
     void reset() {
         buffer_.clear();
@@ -45,6 +46,7 @@ private:
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
+    std::vector<std::string> candidates;
 };
 
 class DummyPinyin {

@@ -131,23 +131,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         std::string preedit = buffer_.userInput();
 
         // Use preedit to query the dummy
-        std::vector<std::string> candidates = engine_->dummyPinyin_->getCandidates(preedit);
-
-        // Store candidates in candidate list
-        auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
-        candidateList->setSelectionKey(candListSelectKey);
-        candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
-        candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
-
-        for (unsigned long i = 0; i < candidates.size(); i++) {
-            std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i]);
-            candidateList->append(std::move(candidate));
-        }
-
-        if (candidates.size() != 0) {
-            candidateList->setGlobalCursorIndex(0);
-            ic_->inputPanel().setCandidateList(std::move(candidateList));
-        }
+        candidates = engine_->dummyPinyin_->getCandidates(preedit);
     }
 
     updateUI();
@@ -167,12 +151,30 @@ void QuweiState::setCode(int code) {
     updateUI();
 }
 
+void QuweiState::setCandidateList() {
+    if (candidates.empty()) {
+        return;
+    }
+
+    // Store candidates in candidate list
+    auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
+    candidateList->setSelectionKey(candListSelectKey);
+    candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
+    candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
+
+    for (unsigned long i = 0; i < candidates.size(); i++) {
+        std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i]);
+        candidateList->append(std::move(candidate));
+    }
+
+    candidateList->setGlobalCursorIndex(0);
+    ic_->inputPanel().setCandidateList(std::move(candidateList));
+}
+
 void QuweiState::updateUI() {
     auto &inputPanel = ic_->inputPanel();
     inputPanel.reset();
-    if (buffer_.size() == 3) {
-        inputPanel.setCandidateList(std::make_unique<fcitx::CommonCandidateList>());
-    }
+    setCandidateList();
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
         fcitx::Text preedit(buffer_.userInput(),
                             fcitx::TextFormatFlag::HighLight);
