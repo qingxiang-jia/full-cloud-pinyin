@@ -18,21 +18,6 @@
 
 namespace {
 
-// Template to help resolve iconv parameter issue on BSD.
-template <class T>
-struct function_traits;
-
-// partial specialization for function pointer
-template <class R, class... Args>
-struct function_traits<R (*)(Args...)> {
-    using result_type = R;
-    using argument_types = std::tuple<Args...>;
-};
-
-template <class T>
-using second_argument_type = typename std::tuple_element<
-    1, typename function_traits<T>::argument_types>::type;
-
 static const std::array<fcitx::Key, 10> selectionKeys = {
     fcitx::Key{FcitxKey_1}, fcitx::Key{FcitxKey_2}, fcitx::Key{FcitxKey_3},
     fcitx::Key{FcitxKey_4}, fcitx::Key{FcitxKey_5}, fcitx::Key{FcitxKey_6},
@@ -144,19 +129,6 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
     return;
 }
 
-void QuweiState::setCode(int code) {
-    if (code < 0 || code > 999) {
-        return;
-    }
-    buffer_.clear();
-    auto codeStr = std::to_string(code);
-    while (codeStr.size() < 3) {
-        codeStr = "0" + codeStr;
-    }
-    buffer_.type(std::to_string(code));
-    updateUI();
-}
-
 void QuweiState::setCandidateList() {
     if (candidates.empty()) {
         return;
@@ -199,10 +171,6 @@ QuweiEngine::QuweiEngine(fcitx::Instance *instance)
     : dummyPinyin_(new DummyPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
           return new QuweiState(this, &ic);
       }) {
-    conv_ = iconv_open("UTF-8", "GB18030");
-    if (conv_ == reinterpret_cast<iconv_t>(-1)) {
-        throw std::runtime_error("Failed to create converter");
-    }
     instance->inputContextManager().registerProperty("quweiState", &factory_);
 }
 
