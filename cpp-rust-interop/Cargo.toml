@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 cxx = "1.0"
+tokio = { version = "1", features = ["full"] }
 
 [build-dependencies]
 cxx-build = "1.0"
