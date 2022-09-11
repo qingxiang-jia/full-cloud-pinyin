@@ -19,12 +19,6 @@
 #include <memory>
 #include <vector>
 
-/*
-TODO:
-1. State
-2. Engine
-*/
-
 class QuweiEngine;
 
 class QuweiState : public fcitx::InputContextProperty {
