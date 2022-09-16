@@ -1,5 +1,5 @@
-#include "rust/cxx.h"
-#include "cpp-rust-interop/src/cpp.h"
+#include "cxx.h"
+#include "cpp.h"
 
 #include <string>
 #include <iostream>

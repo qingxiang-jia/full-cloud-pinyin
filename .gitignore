@@ -3,3 +3,4 @@ build/
 target/
 *.kdev4
 .cache/
+*.out
