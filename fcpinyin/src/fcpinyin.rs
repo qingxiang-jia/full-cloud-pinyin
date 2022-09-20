@@ -1,4 +1,3 @@
-use std::time::Duration;
 use std::time::Instant;
 
 use regex::Regex;
@@ -7,13 +6,6 @@ use regex::Regex;
 pub struct FullCloudPinyin {
     pub http: reqwest::blocking::Client,
     re: Regex,
-}
-
-#[derive(Debug)]
-pub struct GitpResponse {
-    // GITP stands for Google Input Tools Pinyin
-    pub latency: Duration,
-    pub candidates: Vec<Candidate>,
 }
 
 #[derive(Debug)]
@@ -33,7 +25,7 @@ impl FullCloudPinyin {
         }
     }
 
-    pub fn get_candidates(&self, preedit: &str, depth: i32) -> GitpResponse {
+    pub fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<Candidate> {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8", preedit, depth);
 
         let now = Instant::now();
@@ -46,10 +38,7 @@ impl FullCloudPinyin {
 
         let candidates = self.from_json_str_to_structured(json_str);
 
-        GitpResponse {
-            latency: elapsed,
-            candidates,
-        }
+        candidates
     }
 
     fn from_json_str_to_structured(&self, s: String) -> Vec<Candidate> {

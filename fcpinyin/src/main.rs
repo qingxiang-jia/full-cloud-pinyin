@@ -21,7 +21,6 @@ fn interactive_loop() {
 
         let candidates = fcp.get_candidates(&input, 11);
 
-        println!("{:#?}", candidates.latency);
-        println!("{:#?}", candidates.candidates);
+        println!("{:#?}", candidates);
     }
 }
