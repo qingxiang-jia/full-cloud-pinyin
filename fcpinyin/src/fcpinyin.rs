@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use regex::Regex;
 
 #[derive(Debug)]
@@ -28,11 +26,7 @@ impl FullCloudPinyin {
     pub fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<Candidate> {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8", preedit, depth);
 
-        let now = Instant::now();
-
         let rep = self.http.get(url).send().expect("Network problems.");
-
-        let elapsed = now.elapsed();
 
         let json_str = rep.text().expect("The data cannot be converted to string.");
 
