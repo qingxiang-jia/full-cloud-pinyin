@@ -7,6 +7,7 @@
 #ifndef _FCITX5_QUWEI_QUWEI_H_
 #define _FCITX5_QUWEI_QUWEI_H_
 
+#include "../../fcpinyin/ffi.rs.h"
 #include <fcitx-utils/inputbuffer.h>
 #include <fcitx/addonfactory.h>
 #include <fcitx/addonmanager.h>
@@ -45,6 +46,7 @@ private:
 
 class DummyPinyin {
 public:
+    std::unique_ptr<::RustPinyinEngine> fcp;
     DummyPinyin();
     std::vector<std::string> getCandidates(std::string preedit);
 };

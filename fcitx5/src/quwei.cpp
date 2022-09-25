@@ -5,7 +5,6 @@
  *
  */
 #include "quwei.h"
-#include "../../fcpinyin/ffi.rs.h"
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/utf8.h>
 #include <fcitx/candidatelist.h>
@@ -209,33 +208,20 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
     state->reset();
 }
 
-DummyPinyin::DummyPinyin() {}
-
-std::string gen_random_str(const int len) {
-    // https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
-    
-    static const char alphanum[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-    std::string str;
-    str.reserve(len);
-
-    for (int i = 0; i < len; ++i) {
-        str += alphanum[rand() % (sizeof(alphanum) - 1)];
-    }
-    
-    return str;
+DummyPinyin::DummyPinyin() {
+  auto boxedFcp = init();
+  this->fcp = std::unique_ptr<::RustPinyinEngine>(boxedFcp.into_raw());
 }
 
 std::vector<std::string> DummyPinyin::getCandidates(std::string preedit) {
-    int candidadteCount = 25;
+    auto rustCand = this->fcp->get_candidates(preedit, 11);
     
     std::vector<std::string> candidates = {};
-    
-    for (int i = 0; i < candidadteCount; i++) {
-        candidates.push_back(gen_random_str(preedit.length()));
+
+    for (auto cand : rustCand) {
+        candidates.push_back(cand.word.c_str());
     }
+    
     return candidates;
 }
 
