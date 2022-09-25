@@ -4,6 +4,7 @@ use fcp::FullCloudPinyin;
 
 
 fn main() {
+    interactive_loop();
 }
 
 fn interactive_loop() {
