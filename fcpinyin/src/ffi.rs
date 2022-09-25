@@ -11,7 +11,7 @@ mod ffi {
     extern "Rust" {
         type RustPinyinEngine;
 
-        fn new() -> Box<RustPinyinEngine>;
+        fn init() -> Box<RustPinyinEngine>;
 
         fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<CandidateWord>;
     }
@@ -21,7 +21,7 @@ struct RustPinyinEngine {
     fcpinyin: FullCloudPinyin,
 }
 
-fn new() -> Box<RustPinyinEngine> {
+fn init() -> Box<RustPinyinEngine> {
     Box::new(RustPinyinEngine {
         fcpinyin: FullCloudPinyin::new(),
     })

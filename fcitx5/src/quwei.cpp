@@ -5,6 +5,7 @@
  *
  */
 #include "quwei.h"
+#include "../../fcpinyin/ffi.rs.h"
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/utf8.h>
 #include <fcitx/candidatelist.h>
