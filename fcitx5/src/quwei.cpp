@@ -210,7 +210,7 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
 
 DummyPinyin::DummyPinyin() {
   auto boxedFcp = init();
-  this->fcp = std::unique_ptr<::RustPinyinEngine>(boxedFcp.into_raw());
+  this->fcp = boxedFcp.into_raw();
 }
 
 std::vector<std::string> DummyPinyin::getCandidates(std::string preedit) {

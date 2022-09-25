@@ -46,7 +46,7 @@ private:
 
 class DummyPinyin {
 public:
-    std::unique_ptr<::RustPinyinEngine> fcp;
+    ::RustPinyinEngine* fcp;
     DummyPinyin();
     std::vector<std::string> getCandidates(std::string preedit);
 };
