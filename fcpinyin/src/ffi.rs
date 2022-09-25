@@ -1,5 +1,4 @@
-use crate::cpp_rust_bridge::ffi::CandidateWord;
-use crate::FullCloudPinyin;
+use ffi::CandidateWord;
 
 #[cxx::bridge]
 mod ffi {

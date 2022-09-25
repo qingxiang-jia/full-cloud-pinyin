@@ -1,11 +1,6 @@
-mod fcpinyin;
-mod cpp_rust_bridge;
+use std::io::{stdin, stdout, Write};
 
-use std::{
-    io::{stdin, stdout, Write}
-};
-
-use fcpinyin::FullCloudPinyin;
+use fcp::FullCloudPinyin;
 
 
 fn main() {
