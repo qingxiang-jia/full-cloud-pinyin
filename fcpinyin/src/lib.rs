@@ -1,3 +1,5 @@
+mod ffi;
+
 use regex::Regex;
 
 #[derive(Debug)]
