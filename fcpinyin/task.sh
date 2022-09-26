@@ -11,8 +11,9 @@ if [ $1 == "gen-staticlib" ]; then
     exit 0
 fi
 
-if [ $1 == "gen-headers" ]; then
-    cxxbridge src/ffi.rs > ffi.rs.h
+if [ $1 == "gen-cxx" ]; then
+    cxxbridge src/ffi.rs > ffi.cc
+    cxxbridge src/ffi.rs --header > ffi.h
     exit 0
 fi
 

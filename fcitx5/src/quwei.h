@@ -7,7 +7,7 @@
 #ifndef _FCITX5_QUWEI_QUWEI_H_
 #define _FCITX5_QUWEI_QUWEI_H_
 
-#include "../../fcpinyin/ffi.rs.h"
+#include "../../fcpinyin/ffi.h"
 #include <fcitx-utils/inputbuffer.h>
 #include <fcitx/addonfactory.h>
 #include <fcitx/addonmanager.h>
