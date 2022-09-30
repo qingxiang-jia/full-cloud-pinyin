@@ -1,4 +1,4 @@
-set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.a")
+set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.so")
 set(RUST_PART_CXX "${CMAKE_SOURCE_DIR}/../fcpinyin/ffi.cc")
 add_library(rust_part STATIC ${RUST_PART_CXX})
 target_link_libraries(rust_part ${RUST_PART_LIB})
@@ -6,7 +6,7 @@ include_directories("${CMAKE_SOURCE_DIR}/../fcpinyin")
 
 # Make sure it produce quwei.so instead of libquwei.so
 add_library(quwei SHARED quwei.cpp)
-target_link_libraries(quwei PRIVATE Fcitx5::Core Fcitx5::Module::Punctuation  Fcitx5::Module::QuickPhrase)
+target_link_libraries(quwei PRIVATE Fcitx5::Core Fcitx5::Module::Punctuation Fcitx5::Module::QuickPhrase rust_part)
 install(TARGETS quwei DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
 
 # Addon config file
