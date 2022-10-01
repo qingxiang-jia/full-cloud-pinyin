@@ -938,23 +938,29 @@ union MaybeUninit {
 } // namespace cxxbridge1
 } // namespace rust
 
-struct CandidateWord;
-struct RustPinyinEngine;
+namespace org {
+  namespace blobstore {
+    struct CandidateWord;
+    struct RustPinyinEngine;
+  }
+}
 
-#ifndef CXXBRIDGE1_STRUCT_CandidateWord
-#define CXXBRIDGE1_STRUCT_CandidateWord
+namespace org {
+namespace blobstore {
+#ifndef CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
+#define CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
 struct CandidateWord final {
   ::rust::String word;
   ::std::int32_t len;
 
   using IsRelocatable = ::std::true_type;
 };
-#endif // CXXBRIDGE1_STRUCT_CandidateWord
+#endif // CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
 
-#ifndef CXXBRIDGE1_STRUCT_RustPinyinEngine
-#define CXXBRIDGE1_STRUCT_RustPinyinEngine
+#ifndef CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
+#define CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
 struct RustPinyinEngine final : public ::rust::Opaque {
-  ::rust::Vec<::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
+  ::rust::Vec<::org::blobstore::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
   ~RustPinyinEngine() = delete;
 
 private:
@@ -964,95 +970,97 @@ private:
     static ::std::size_t align() noexcept;
   };
 };
-#endif // CXXBRIDGE1_STRUCT_RustPinyinEngine
+#endif // CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
 
 extern "C" {
-::std::size_t cxxbridge1$RustPinyinEngine$operator$sizeof() noexcept;
-::std::size_t cxxbridge1$RustPinyinEngine$operator$alignof() noexcept;
+::std::size_t org$blobstore$cxxbridge1$RustPinyinEngine$operator$sizeof() noexcept;
+::std::size_t org$blobstore$cxxbridge1$RustPinyinEngine$operator$alignof() noexcept;
 
-::RustPinyinEngine *cxxbridge1$init() noexcept;
+::org::blobstore::RustPinyinEngine *org$blobstore$cxxbridge1$init() noexcept;
 
-void cxxbridge1$RustPinyinEngine$get_candidates(const ::RustPinyinEngine &self, ::rust::Str preedit, ::std::int32_t depth, ::rust::Vec<::CandidateWord> *return$) noexcept;
+void org$blobstore$cxxbridge1$RustPinyinEngine$get_candidates(const ::org::blobstore::RustPinyinEngine &self, ::rust::Str preedit, ::std::int32_t depth, ::rust::Vec<::org::blobstore::CandidateWord> *return$) noexcept;
 } // extern "C"
 
 ::std::size_t RustPinyinEngine::layout::size() noexcept {
-  return cxxbridge1$RustPinyinEngine$operator$sizeof();
+  return org$blobstore$cxxbridge1$RustPinyinEngine$operator$sizeof();
 }
 
 ::std::size_t RustPinyinEngine::layout::align() noexcept {
-  return cxxbridge1$RustPinyinEngine$operator$alignof();
+  return org$blobstore$cxxbridge1$RustPinyinEngine$operator$alignof();
 }
 
-::rust::Box<::RustPinyinEngine> init() noexcept {
-  return ::rust::Box<::RustPinyinEngine>::from_raw(cxxbridge1$init());
+::rust::Box<::org::blobstore::RustPinyinEngine> init() noexcept {
+  return ::rust::Box<::org::blobstore::RustPinyinEngine>::from_raw(org$blobstore$cxxbridge1$init());
 }
 
-::rust::Vec<::CandidateWord> RustPinyinEngine::get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept {
-  ::rust::MaybeUninit<::rust::Vec<::CandidateWord>> return$;
-  cxxbridge1$RustPinyinEngine$get_candidates(*this, preedit, depth, &return$.value);
+::rust::Vec<::org::blobstore::CandidateWord> RustPinyinEngine::get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept {
+  ::rust::MaybeUninit<::rust::Vec<::org::blobstore::CandidateWord>> return$;
+  org$blobstore$cxxbridge1$RustPinyinEngine$get_candidates(*this, preedit, depth, &return$.value);
   return ::std::move(return$.value);
 }
+} // namespace blobstore
+} // namespace org
 
 extern "C" {
-::RustPinyinEngine *cxxbridge1$box$RustPinyinEngine$alloc() noexcept;
-void cxxbridge1$box$RustPinyinEngine$dealloc(::RustPinyinEngine *) noexcept;
-void cxxbridge1$box$RustPinyinEngine$drop(::rust::Box<::RustPinyinEngine> *ptr) noexcept;
+::org::blobstore::RustPinyinEngine *cxxbridge1$box$org$blobstore$RustPinyinEngine$alloc() noexcept;
+void cxxbridge1$box$org$blobstore$RustPinyinEngine$dealloc(::org::blobstore::RustPinyinEngine *) noexcept;
+void cxxbridge1$box$org$blobstore$RustPinyinEngine$drop(::rust::Box<::org::blobstore::RustPinyinEngine> *ptr) noexcept;
 
-void cxxbridge1$rust_vec$CandidateWord$new(const ::rust::Vec<::CandidateWord> *ptr) noexcept;
-void cxxbridge1$rust_vec$CandidateWord$drop(::rust::Vec<::CandidateWord> *ptr) noexcept;
-::std::size_t cxxbridge1$rust_vec$CandidateWord$len(const ::rust::Vec<::CandidateWord> *ptr) noexcept;
-::std::size_t cxxbridge1$rust_vec$CandidateWord$capacity(const ::rust::Vec<::CandidateWord> *ptr) noexcept;
-const ::CandidateWord *cxxbridge1$rust_vec$CandidateWord$data(const ::rust::Vec<::CandidateWord> *ptr) noexcept;
-void cxxbridge1$rust_vec$CandidateWord$reserve_total(::rust::Vec<::CandidateWord> *ptr, ::std::size_t new_cap) noexcept;
-void cxxbridge1$rust_vec$CandidateWord$set_len(::rust::Vec<::CandidateWord> *ptr, ::std::size_t len) noexcept;
-void cxxbridge1$rust_vec$CandidateWord$truncate(::rust::Vec<::CandidateWord> *ptr, ::std::size_t len) noexcept;
+void cxxbridge1$rust_vec$org$blobstore$CandidateWord$new(const ::rust::Vec<::org::blobstore::CandidateWord> *ptr) noexcept;
+void cxxbridge1$rust_vec$org$blobstore$CandidateWord$drop(::rust::Vec<::org::blobstore::CandidateWord> *ptr) noexcept;
+::std::size_t cxxbridge1$rust_vec$org$blobstore$CandidateWord$len(const ::rust::Vec<::org::blobstore::CandidateWord> *ptr) noexcept;
+::std::size_t cxxbridge1$rust_vec$org$blobstore$CandidateWord$capacity(const ::rust::Vec<::org::blobstore::CandidateWord> *ptr) noexcept;
+const ::org::blobstore::CandidateWord *cxxbridge1$rust_vec$org$blobstore$CandidateWord$data(const ::rust::Vec<::org::blobstore::CandidateWord> *ptr) noexcept;
+void cxxbridge1$rust_vec$org$blobstore$CandidateWord$reserve_total(::rust::Vec<::org::blobstore::CandidateWord> *ptr, ::std::size_t new_cap) noexcept;
+void cxxbridge1$rust_vec$org$blobstore$CandidateWord$set_len(::rust::Vec<::org::blobstore::CandidateWord> *ptr, ::std::size_t len) noexcept;
+void cxxbridge1$rust_vec$org$blobstore$CandidateWord$truncate(::rust::Vec<::org::blobstore::CandidateWord> *ptr, ::std::size_t len) noexcept;
 } // extern "C"
 
 namespace rust {
 inline namespace cxxbridge1 {
 template <>
-::RustPinyinEngine *Box<::RustPinyinEngine>::allocation::alloc() noexcept {
-  return cxxbridge1$box$RustPinyinEngine$alloc();
+::org::blobstore::RustPinyinEngine *Box<::org::blobstore::RustPinyinEngine>::allocation::alloc() noexcept {
+  return cxxbridge1$box$org$blobstore$RustPinyinEngine$alloc();
 }
 template <>
-void Box<::RustPinyinEngine>::allocation::dealloc(::RustPinyinEngine *ptr) noexcept {
-  cxxbridge1$box$RustPinyinEngine$dealloc(ptr);
+void Box<::org::blobstore::RustPinyinEngine>::allocation::dealloc(::org::blobstore::RustPinyinEngine *ptr) noexcept {
+  cxxbridge1$box$org$blobstore$RustPinyinEngine$dealloc(ptr);
 }
 template <>
-void Box<::RustPinyinEngine>::drop() noexcept {
-  cxxbridge1$box$RustPinyinEngine$drop(this);
+void Box<::org::blobstore::RustPinyinEngine>::drop() noexcept {
+  cxxbridge1$box$org$blobstore$RustPinyinEngine$drop(this);
 }
 template <>
-Vec<::CandidateWord>::Vec() noexcept {
-  cxxbridge1$rust_vec$CandidateWord$new(this);
+Vec<::org::blobstore::CandidateWord>::Vec() noexcept {
+  cxxbridge1$rust_vec$org$blobstore$CandidateWord$new(this);
 }
 template <>
-void Vec<::CandidateWord>::drop() noexcept {
-  return cxxbridge1$rust_vec$CandidateWord$drop(this);
+void Vec<::org::blobstore::CandidateWord>::drop() noexcept {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$drop(this);
 }
 template <>
-::std::size_t Vec<::CandidateWord>::size() const noexcept {
-  return cxxbridge1$rust_vec$CandidateWord$len(this);
+::std::size_t Vec<::org::blobstore::CandidateWord>::size() const noexcept {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$len(this);
 }
 template <>
-::std::size_t Vec<::CandidateWord>::capacity() const noexcept {
-  return cxxbridge1$rust_vec$CandidateWord$capacity(this);
+::std::size_t Vec<::org::blobstore::CandidateWord>::capacity() const noexcept {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$capacity(this);
 }
 template <>
-const ::CandidateWord *Vec<::CandidateWord>::data() const noexcept {
-  return cxxbridge1$rust_vec$CandidateWord$data(this);
+const ::org::blobstore::CandidateWord *Vec<::org::blobstore::CandidateWord>::data() const noexcept {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$data(this);
 }
 template <>
-void Vec<::CandidateWord>::reserve_total(::std::size_t new_cap) noexcept {
-  return cxxbridge1$rust_vec$CandidateWord$reserve_total(this, new_cap);
+void Vec<::org::blobstore::CandidateWord>::reserve_total(::std::size_t new_cap) noexcept {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$reserve_total(this, new_cap);
 }
 template <>
-void Vec<::CandidateWord>::set_len(::std::size_t len) noexcept {
-  return cxxbridge1$rust_vec$CandidateWord$set_len(this, len);
+void Vec<::org::blobstore::CandidateWord>::set_len(::std::size_t len) noexcept {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$set_len(this, len);
 }
 template <>
-void Vec<::CandidateWord>::truncate(::std::size_t len) {
-  return cxxbridge1$rust_vec$CandidateWord$truncate(this, len);
+void Vec<::org::blobstore::CandidateWord>::truncate(::std::size_t len) {
+  return cxxbridge1$rust_vec$org$blobstore$CandidateWord$truncate(this, len);
 }
 } // namespace cxxbridge1
 } // namespace rust

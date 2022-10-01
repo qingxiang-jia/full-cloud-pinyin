@@ -919,23 +919,29 @@ std::size_t align_of() {
 } // namespace cxxbridge1
 } // namespace rust
 
-struct CandidateWord;
-struct RustPinyinEngine;
+namespace org {
+  namespace blobstore {
+    struct CandidateWord;
+    struct RustPinyinEngine;
+  }
+}
 
-#ifndef CXXBRIDGE1_STRUCT_CandidateWord
-#define CXXBRIDGE1_STRUCT_CandidateWord
+namespace org {
+namespace blobstore {
+#ifndef CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
+#define CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
 struct CandidateWord final {
   ::rust::String word;
   ::std::int32_t len;
 
   using IsRelocatable = ::std::true_type;
 };
-#endif // CXXBRIDGE1_STRUCT_CandidateWord
+#endif // CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
 
-#ifndef CXXBRIDGE1_STRUCT_RustPinyinEngine
-#define CXXBRIDGE1_STRUCT_RustPinyinEngine
+#ifndef CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
+#define CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
 struct RustPinyinEngine final : public ::rust::Opaque {
-  ::rust::Vec<::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
+  ::rust::Vec<::org::blobstore::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
   ~RustPinyinEngine() = delete;
 
 private:
@@ -945,6 +951,8 @@ private:
     static ::std::size_t align() noexcept;
   };
 };
-#endif // CXXBRIDGE1_STRUCT_RustPinyinEngine
+#endif // CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
 
-::rust::Box<::RustPinyinEngine> init() noexcept;
+::rust::Box<::org::blobstore::RustPinyinEngine> init() noexcept;
+} // namespace blobstore
+} // namespace org
