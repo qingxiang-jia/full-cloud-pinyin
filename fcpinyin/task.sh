@@ -7,7 +7,7 @@ fi
 
 # If we specify cdylib or staticlib in Cargo.toml, the main.rs can't properly reference contents in lib.rs.
 if [ $1 == "gen-lib" ]; then
-    cargo rustc --lib --release --crate-type cdylib
+    cargo rustc --lib --release --crate-type staticlib
     exit 0
 fi
 

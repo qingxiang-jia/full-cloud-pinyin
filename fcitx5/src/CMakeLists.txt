@@ -1,4 +1,4 @@
-set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.so")
+set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.a")
 set(RUST_PART_CXX "${CMAKE_SOURCE_DIR}/../fcpinyin/ffi.cc")
 add_library(rust_part STATIC ${RUST_PART_CXX})
 target_link_libraries(rust_part ${RUST_PART_LIB})
