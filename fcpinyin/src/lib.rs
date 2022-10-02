@@ -50,10 +50,12 @@ impl FullCloudPinyin {
 
         let mut colon_pos: Vec<usize> = Vec::new();
 
-        assert!(linear_data[0] == "SUCCESS");
+        if linear_data[0] != "SUCCESS" {
+            println!("Rust: Google returned irregular data:\n{}", s.as_str());
+            return Vec::new();
+        }
 
         for i in 0..linear_data.len() {
-            println!("{}", &linear_data[i]);
             if linear_data[i] == ":" {
                 colon_pos.push(i);
             }
