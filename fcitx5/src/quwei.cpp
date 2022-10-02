@@ -93,6 +93,22 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             return event.filterAndAccept();
         }
 
+        // Go to the next candidate by ->
+        if (auto *cursorMovable = candidateList->toCursorMovable()) {
+            if (event.key().check(FcitxKey_Right)) {
+                cursorMovable->nextCandidate();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+                return event.filterAndAccept();
+            }
+            if (event.key().check(FcitxKey_Left)) {
+                cursorMovable->prevCandidate();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+                return event.filterAndAccept();
+            }
+        }
+
         // Go to the next page by keying in the default next page key
         if (event.key().checkKeyList(nextPageKeys)) {
             if (auto *pageable = candidateList->toPageable();
