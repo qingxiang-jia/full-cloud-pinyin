@@ -1,6 +1,7 @@
 mod ffi;
 
 use regex::Regex;
+use reqwest::header::USER_AGENT;
 
 #[derive(Debug)]
 pub struct FullCloudPinyin {
@@ -30,10 +31,10 @@ impl FullCloudPinyin {
             return Vec::new(); // Otherwise we will get FAILED_TO_PARSE_REQUEST_BODY
         }
 
-        let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8", preedit, depth);
+        let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
         println!("Rust: {}", url.as_str());
-        
-        let rep = self.http.get(url).send().expect("Network problems.");
+
+        let rep = self.http.get(url).header(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0").send().expect("Network problems.");
 
         let json_str = rep.text().expect("The data cannot be converted to string.");
 
