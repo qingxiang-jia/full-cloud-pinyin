@@ -73,6 +73,14 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             return;
         }
 
+        // Select a candidate by space key
+        if (event.key().check(FcitxKey_space)) {
+            event.accept();
+            auto idx = candidateList->cursorIndex();
+            candidateList->candidate(idx).select(ic_);
+            return;
+        }
+
         // Go to the previous page by keying in the default previous page key
         if (event.key().checkKeyList(prevPageKeys)) {
             if (auto *pageable = candidateList->toPageable();
