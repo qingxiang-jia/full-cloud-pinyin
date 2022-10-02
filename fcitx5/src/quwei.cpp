@@ -125,7 +125,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             buffer_.backspace();
 
             std::string preedit = buffer_.userInput();
-            candidates = engine_->dummyPinyin_->getCandidates(preedit);
+            candidates = engine_->rustPinyin_->getCandidates(preedit);
 
             updateUI();
             return event.filterAndAccept();
@@ -152,8 +152,8 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
 
         std::string preedit = buffer_.userInput();
 
-        // Use preedit to query the dummy
-        candidates = engine_->dummyPinyin_->getCandidates(preedit);
+        // Use preedit to query pinyin candidates
+        candidates = engine_->rustPinyin_->getCandidates(preedit);
 
         updateUI();
         return event.filterAndAccept();
@@ -201,7 +201,7 @@ void QuweiState::updateUI() {
 }
 
 QuweiEngine::QuweiEngine(fcitx::Instance *instance)
-    : dummyPinyin_(new RustPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
+    : rustPinyin_(new RustPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
           return new QuweiState(this, &ic);
       }) {
     instance->inputContextManager().registerProperty("quweiState", &factory_);

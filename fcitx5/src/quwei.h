@@ -67,7 +67,7 @@ public:
     auto conv() const { return conv_; }
     auto instance() const { return instance_; }
 
-    std::unique_ptr<RustPinyin> dummyPinyin_;
+    std::unique_ptr<RustPinyin> rustPinyin_;
 
     FCITX_ADDON_DEPENDENCY_LOADER(quickphrase, instance_->addonManager());
     FCITX_ADDON_DEPENDENCY_LOADER(punctuation, instance_->addonManager());
