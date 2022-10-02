@@ -6,6 +6,9 @@
  */
 #include "quwei.h"
 #include <fcitx-utils/i18n.h>
+#include <fcitx-utils/key.h>
+#include <fcitx-utils/keysymgen.h>
+#include <fcitx-utils/log.h>
 #include <fcitx-utils/utf8.h>
 #include <fcitx/candidatelist.h>
 #include <fcitx/inputpanel.h>
@@ -30,6 +33,14 @@ static const std::vector<fcitx::Key> candListSelectKey = {
     fcitx::Key{FcitxKey_4}, fcitx::Key{FcitxKey_5}, fcitx::Key{FcitxKey_6},
     fcitx::Key{FcitxKey_7}, fcitx::Key{FcitxKey_8}, fcitx::Key{FcitxKey_9},
     fcitx::Key{FcitxKey_0},
+};
+
+static const std::array<fcitx::Key, 1> prevPageKeys = {
+    fcitx::Key{FcitxKey_minus}
+};
+
+static const std::array<fcitx::Key, 1> nextPageKeys = {
+    fcitx::Key{FcitxKey_equal}
 };
 
 class QuweiCandidate : public fcitx::CandidateWord {
@@ -63,8 +74,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         }
 
         // Go to the previous page by keying in the default previous page key
-        if (event.key().checkKeyList(
-                engine_->instance()->globalConfig().defaultPrevPage())) {
+        if (event.key().checkKeyList(prevPageKeys)) {
             if (auto *pageable = candidateList->toPageable();
                 pageable && pageable->hasPrev()) {
                 event.accept();
@@ -76,8 +86,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         }
 
         // Go to the next page by keying in the default next page key
-        if (event.key().checkKeyList(
-                engine_->instance()->globalConfig().defaultNextPage())) {
+        if (event.key().checkKeyList(nextPageKeys)) {
             if (auto *pageable = candidateList->toPageable();
                 pageable && pageable->hasNext()) {
                 pageable->next();
