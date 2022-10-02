@@ -44,10 +44,10 @@ private:
     std::vector<std::string> candidates;
 };
 
-class DummyPinyin {
+class RustPinyin {
 public:
     fcp::RustPinyinEngine* fcp;
-    DummyPinyin();
+    RustPinyin();
     std::vector<std::string> getCandidates(std::string preedit);
 };
 
@@ -67,7 +67,7 @@ public:
     auto conv() const { return conv_; }
     auto instance() const { return instance_; }
 
-    std::unique_ptr<DummyPinyin> dummyPinyin_;
+    std::unique_ptr<RustPinyin> dummyPinyin_;
 
     FCITX_ADDON_DEPENDENCY_LOADER(quickphrase, instance_->addonManager());
     FCITX_ADDON_DEPENDENCY_LOADER(punctuation, instance_->addonManager());

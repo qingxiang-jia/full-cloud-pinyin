@@ -201,7 +201,7 @@ void QuweiState::updateUI() {
 }
 
 QuweiEngine::QuweiEngine(fcitx::Instance *instance)
-    : dummyPinyin_(new DummyPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
+    : dummyPinyin_(new RustPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
           return new QuweiState(this, &ic);
       }) {
     instance->inputContextManager().registerProperty("quweiState", &factory_);
@@ -241,12 +241,12 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
     state->reset();
 }
 
-DummyPinyin::DummyPinyin() {
+RustPinyin::RustPinyin() {
   auto boxedFcp = fcp::init();
   this->fcp = boxedFcp.into_raw();
 }
 
-std::vector<std::string> DummyPinyin::getCandidates(std::string preedit) {
+std::vector<std::string> RustPinyin::getCandidates(std::string preedit) {
     auto rustCand = this->fcp->get_candidates(preedit, 11);
     
     std::vector<std::string> candidates = {};
