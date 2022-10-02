@@ -919,29 +919,26 @@ std::size_t align_of() {
 } // namespace cxxbridge1
 } // namespace rust
 
-namespace org {
-  namespace blobstore {
-    struct CandidateWord;
-    struct RustPinyinEngine;
-  }
+namespace fcp {
+  struct CandidateWord;
+  struct RustPinyinEngine;
 }
 
-namespace org {
-namespace blobstore {
-#ifndef CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
-#define CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
+namespace fcp {
+#ifndef CXXBRIDGE1_STRUCT_fcp$CandidateWord
+#define CXXBRIDGE1_STRUCT_fcp$CandidateWord
 struct CandidateWord final {
   ::rust::String word;
   ::std::int32_t len;
 
   using IsRelocatable = ::std::true_type;
 };
-#endif // CXXBRIDGE1_STRUCT_org$blobstore$CandidateWord
+#endif // CXXBRIDGE1_STRUCT_fcp$CandidateWord
 
-#ifndef CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
-#define CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
+#ifndef CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
+#define CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
 struct RustPinyinEngine final : public ::rust::Opaque {
-  ::rust::Vec<::org::blobstore::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
+  ::rust::Vec<::fcp::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
   ~RustPinyinEngine() = delete;
 
 private:
@@ -951,8 +948,7 @@ private:
     static ::std::size_t align() noexcept;
   };
 };
-#endif // CXXBRIDGE1_STRUCT_org$blobstore$RustPinyinEngine
+#endif // CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
 
-::rust::Box<::org::blobstore::RustPinyinEngine> init() noexcept;
-} // namespace blobstore
-} // namespace org
+::rust::Box<::fcp::RustPinyinEngine> init() noexcept;
+} // namespace fcp

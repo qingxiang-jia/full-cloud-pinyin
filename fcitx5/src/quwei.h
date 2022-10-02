@@ -46,7 +46,7 @@ private:
 
 class DummyPinyin {
 public:
-    org::blobstore::RustPinyinEngine* fcp;
+    fcp::RustPinyinEngine* fcp;
     DummyPinyin();
     std::vector<std::string> getCandidates(std::string preedit);
 };

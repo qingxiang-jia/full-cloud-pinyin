@@ -242,7 +242,7 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
 }
 
 DummyPinyin::DummyPinyin() {
-  auto boxedFcp = org::blobstore::init();
+  auto boxedFcp = fcp::init();
   this->fcp = boxedFcp.into_raw();
 }
 

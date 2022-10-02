@@ -1,7 +1,7 @@
 use crate::FullCloudPinyin;
 use ffi::CandidateWord;
 
-#[cxx::bridge(namespace = "org::blobstore")]
+#[cxx::bridge(namespace = "fcp")]
 mod ffi {
     struct CandidateWord {
         word: String,
