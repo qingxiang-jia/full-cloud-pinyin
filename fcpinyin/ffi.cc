@@ -957,7 +957,7 @@ struct CandidateWord final {
 #ifndef CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
 #define CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
 struct RustPinyinEngine final : public ::rust::Opaque {
-  ::rust::Vec<::fcp::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
+  ::rust::Vec<::fcp::CandidateWord> query_candidates(::rust::Str preedit) const noexcept;
   ~RustPinyinEngine() = delete;
 
 private:
@@ -975,7 +975,7 @@ extern "C" {
 
 ::fcp::RustPinyinEngine *fcp$cxxbridge1$init() noexcept;
 
-void fcp$cxxbridge1$RustPinyinEngine$get_candidates(const ::fcp::RustPinyinEngine &self, ::rust::Str preedit, ::std::int32_t depth, ::rust::Vec<::fcp::CandidateWord> *return$) noexcept;
+void fcp$cxxbridge1$RustPinyinEngine$query_candidates(const ::fcp::RustPinyinEngine &self, ::rust::Str preedit, ::rust::Vec<::fcp::CandidateWord> *return$) noexcept;
 } // extern "C"
 
 ::std::size_t RustPinyinEngine::layout::size() noexcept {
@@ -990,9 +990,9 @@ void fcp$cxxbridge1$RustPinyinEngine$get_candidates(const ::fcp::RustPinyinEngin
   return ::rust::Box<::fcp::RustPinyinEngine>::from_raw(fcp$cxxbridge1$init());
 }
 
-::rust::Vec<::fcp::CandidateWord> RustPinyinEngine::get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept {
+::rust::Vec<::fcp::CandidateWord> RustPinyinEngine::query_candidates(::rust::Str preedit) const noexcept {
   ::rust::MaybeUninit<::rust::Vec<::fcp::CandidateWord>> return$;
-  fcp$cxxbridge1$RustPinyinEngine$get_candidates(*this, preedit, depth, &return$.value);
+  fcp$cxxbridge1$RustPinyinEngine$query_candidates(*this, preedit, &return$.value);
   return ::std::move(return$.value);
 }
 } // namespace fcp

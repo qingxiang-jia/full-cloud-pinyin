@@ -16,7 +16,7 @@ fn interactive_loop() {
             .read_line(&mut input)
             .expect("Did not enter a corect string.");
 
-        let candidates = fcp.get_candidates(&input, 11);
+        let candidates = fcp.query_candidates(&input);
 
         println!("{:#?}", candidates);
     }

@@ -1,11 +1,15 @@
 mod ffi;
 
+use std::cell::{RefCell, Cell};
+
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 
 #[derive(Debug)]
 pub struct FullCloudPinyin {
     pub http: reqwest::blocking::Client,
+    last_query: RefCell<String>,
+    query_depth: Cell<QueryDepth>,
     re: Regex,
 }
 
@@ -18,15 +22,51 @@ pub struct Candidate {
     pub matched_len: Option<i32>,
 }
 
+#[derive(Debug)]
+#[derive(Copy)]
+#[derive(Clone)]
+enum QueryDepth {
+    D1 = 11,
+    D2 = 21,
+    D3 = 41,
+    D4 = 81,
+    D5 = 161,
+    D6 = 321,
+    D7 = 641,
+    D8 = 1281
+}
+
 impl FullCloudPinyin {
     pub fn new() -> Self {
         Self {
             http: reqwest::blocking::Client::new(),
+            last_query: RefCell::new("".to_owned()),
+            query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }
     }
 
-    pub fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<Candidate> {
+    pub fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
+        let mut last_query = self.last_query.borrow_mut();
+        if last_query.eq(preedit) {
+            match self.query_depth.get() {
+                QueryDepth::D1 => self.query_depth.set(QueryDepth::D2),
+                QueryDepth::D2 => self.query_depth.set(QueryDepth::D3),
+                QueryDepth::D3 => self.query_depth.set(QueryDepth::D4),
+                QueryDepth::D4 => self.query_depth.set(QueryDepth::D5),
+                QueryDepth::D5 => self.query_depth.set(QueryDepth::D6),
+                QueryDepth::D6 => self.query_depth.set(QueryDepth::D7),
+                QueryDepth::D7 => self.query_depth.set(QueryDepth::D8),
+                QueryDepth::D8 => self.query_depth.set(QueryDepth::D8),
+            }
+        } else {
+            *last_query = preedit.to_owned();
+            self.query_depth.set(QueryDepth::D1);
+        }
+        return self.get_candidates(preedit, self.query_depth.get() as i32);
+    }
+
+    fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<Candidate> {
         if preedit.len() == 0 {
             return Vec::new(); // Otherwise we will get FAILED_TO_PARSE_REQUEST_BODY
         }

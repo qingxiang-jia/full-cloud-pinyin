@@ -13,7 +13,7 @@ mod ffi {
 
         fn init() -> Box<RustPinyinEngine>;
 
-        fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<CandidateWord>;
+        fn query_candidates(&self, preedit: &str) -> Vec<CandidateWord>;
     }
 }
 
@@ -28,8 +28,8 @@ fn init() -> Box<RustPinyinEngine> {
 }
 
 impl RustPinyinEngine {
-    fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<CandidateWord> {
-        let candidates = self.fcpinyin.get_candidates(preedit, depth);
+    fn query_candidates(&self, preedit: &str) -> Vec<CandidateWord> {
+        let candidates = self.fcpinyin.query_candidates(preedit);
         let mut words = Vec::new();
 
         // There's not need to keep candidates so let's consume it

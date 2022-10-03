@@ -938,7 +938,7 @@ struct CandidateWord final {
 #ifndef CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
 #define CXXBRIDGE1_STRUCT_fcp$RustPinyinEngine
 struct RustPinyinEngine final : public ::rust::Opaque {
-  ::rust::Vec<::fcp::CandidateWord> get_candidates(::rust::Str preedit, ::std::int32_t depth) const noexcept;
+  ::rust::Vec<::fcp::CandidateWord> query_candidates(::rust::Str preedit) const noexcept;
   ~RustPinyinEngine() = delete;
 
 private:

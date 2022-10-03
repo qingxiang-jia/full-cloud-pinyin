@@ -247,7 +247,7 @@ RustPinyin::RustPinyin() {
 }
 
 std::vector<std::string> RustPinyin::getCandidates(std::string preedit) {
-    auto rustCand = this->fcp->get_candidates(preedit, 11);
+    auto rustCand = this->fcp->query_candidates(preedit);
     
     std::vector<std::string> candidates = {};
 
