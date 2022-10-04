@@ -41,14 +41,14 @@ private:
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
-    std::vector<std::string> candidates;
+    ::rust::Vec<::fcp::CandidateWord> candidates;
 };
 
 class RustPinyin {
 public:
     fcp::RustPinyinEngine* fcp;
     RustPinyin();
-    std::vector<std::string> getCandidates(std::string preedit);
+    ::rust::Vec<::fcp::CandidateWord> getCandidates(std::string preedit);
 };
 
 class QuweiEngine : public fcitx::InputMethodEngineV2 {

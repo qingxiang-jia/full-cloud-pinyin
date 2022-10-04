@@ -45,9 +45,9 @@ static const std::array<fcitx::Key, 1> nextPageKeys = {
 
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
-    QuweiCandidate(QuweiEngine *engine, std::string text)
-        : engine_(engine) {
-        setText(fcitx::Text(std::move(text)));
+    QuweiCandidate(QuweiEngine *engine, ::rust::String text, int matched_len)
+        : engine_(engine), matched_len(matched_len) {
+        setText(fcitx::Text(std::move(text.c_str())));
     }
 
     void select(fcitx::InputContext *inputContext) const override {
@@ -58,6 +58,7 @@ public:
 
 private:
     QuweiEngine *engine_;
+    int matched_len;
 };
 
 } // namespace
@@ -174,7 +175,7 @@ void QuweiState::setCandidateList() {
     candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
 
     for (unsigned long i = 0; i < candidates.size(); i++) {
-        std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i]);
+        std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len);
         candidateList->append(std::move(candidate));
     }
 
@@ -246,16 +247,9 @@ RustPinyin::RustPinyin() {
   this->fcp = boxedFcp.into_raw();
 }
 
-std::vector<std::string> RustPinyin::getCandidates(std::string preedit) {
+::rust::Vec<::fcp::CandidateWord> RustPinyin::getCandidates(std::string preedit) {
     auto rustCand = this->fcp->query_candidates(preedit);
-    
-    std::vector<std::string> candidates = {};
-
-    for (auto cand : rustCand) {
-        candidates.push_back(cand.word.c_str());
-    }
-    
-    return candidates;
+    return rustCand;
 }
 
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
