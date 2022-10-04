@@ -36,7 +36,7 @@ impl RustPinyinEngine {
         for candidate in candidates.into_iter() {
             words.push(CandidateWord {
                 word: candidate.word,
-                len: candidate.matched_len.unwrap_or_else(|| -1),
+                len: candidate.matched_len.unwrap_or_else(|| preedit.len() as i32),
             })
         }
 
