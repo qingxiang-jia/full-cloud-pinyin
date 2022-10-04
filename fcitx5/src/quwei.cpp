@@ -81,7 +81,18 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             return;
         }
 
-        // Go to the previous page by <-
+        // Go to the next page by keying in the next page keys
+        if (event.key().checkKeyList(nextPageKeys)) {
+            if (auto *pageable = candidateList->toPageable();
+                pageable && pageable->hasNext()) {
+                pageable->next();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+            }
+            return event.filterAndAccept();
+        }
+
+        // Go to the previous page by previous page keys
         if (event.key().checkKeyList(prevPageKeys)) {
             if (auto *pageable = candidateList->toPageable();
                 pageable && pageable->hasPrev()) {
@@ -107,17 +118,6 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
                     fcitx::UserInterfaceComponent::InputPanel);
                 return event.filterAndAccept();
             }
-        }
-
-        // Go to the next page by keying in the default next page key
-        if (event.key().checkKeyList(nextPageKeys)) {
-            if (auto *pageable = candidateList->toPageable();
-                pageable && pageable->hasNext()) {
-                pageable->next();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
-            }
-            return event.filterAndAccept();
         }
 
         // Remove one character from buffer
