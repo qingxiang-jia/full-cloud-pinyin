@@ -81,7 +81,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
             return;
         }
 
-        // Go to the previous page by keying in the default previous page key
+        // Go to the previous page by <-
         if (event.key().checkKeyList(prevPageKeys)) {
             if (auto *pageable = candidateList->toPageable();
                 pageable && pageable->hasPrev()) {
