@@ -51,14 +51,31 @@ public:
     }
 
     void select(fcitx::InputContext *inputContext) const override {
-        inputContext->commitString(text().toString());
         auto state = inputContext->propertyFor(engine_->factory());
-        state->reset();
+        auto preedit = state->getPreedit();
+
+        FCITX_INFO() << "preedit=" << state->getPreedit() << " matched_len=" << matched_len;
+
+        if (preedit.length() == matched_len) {
+            FCITX_INFO() << "preedit len == matched len";
+            inputContext->commitString(text().toString());
+            state->reset();
+        } else if (preedit.length() > matched_len) {
+            FCITX_INFO() << "preedit len > matched len";
+            // Partial match
+            inputContext->commitString(text().toString());
+            // Update preedit
+            state->preeditRemoveFront(matched_len);
+            // Query and update candidates for updated preedit and update UI
+            state->getUpdateCandidatesRefreshUI();
+        } else {
+            FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
+        }
     }
 
 private:
     QuweiEngine *engine_;
-    int matched_len;
+    unsigned long matched_len;
 };
 
 } // namespace
@@ -124,11 +141,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         // Remove one character from buffer
         if (event.key().check(FcitxKey_BackSpace)) {
             buffer_.backspace();
-
-            std::string preedit = buffer_.userInput();
-            candidates = engine_->rustPinyin_->getCandidates(preedit);
-
-            updateUI();
+            getUpdateCandidatesRefreshUI();
             return event.filterAndAccept();
         }
 
@@ -153,10 +166,8 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
 
         std::string preedit = buffer_.userInput();
 
-        // Use preedit to query pinyin candidates
-        candidates = engine_->rustPinyin_->getCandidates(preedit);
-
-        updateUI();
+        // Use preedit to query pinyin candidates, update candidates, and update UI
+        getUpdateCandidatesRefreshUI();
         return event.filterAndAccept();
     }
 
@@ -199,6 +210,24 @@ void QuweiState::updateUI() {
     }
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     ic_->updatePreedit();
+}
+
+void QuweiState::getUpdateCandidatesRefreshUI() {
+    std::string preedit = buffer_.userInput();
+    candidates = engine_->rustPinyin_->queryCandidates(preedit);
+    updateUI();
+}
+
+std::string QuweiState::getPreedit() {
+    auto preedit = buffer_.userInput();
+    return preedit;
+}
+
+void QuweiState::preeditRemoveFront(int lenToRemove) {
+    auto oldPreedit = buffer_.userInput();
+    auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
+    buffer_.clear();
+    buffer_.type(newPreedit);
 }
 
 QuweiEngine::QuweiEngine(fcitx::Instance *instance)
@@ -247,7 +276,7 @@ RustPinyin::RustPinyin() {
   this->fcp = boxedFcp.into_raw();
 }
 
-::rust::Vec<::fcp::CandidateWord> RustPinyin::getCandidates(std::string preedit) {
+::rust::Vec<::fcp::CandidateWord> RustPinyin::queryCandidates(std::string preedit) {
     auto rustCand = this->fcp->query_candidates(preedit);
     return rustCand;
 }

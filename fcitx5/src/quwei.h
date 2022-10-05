@@ -31,6 +31,9 @@ public:
     void setCode(int code);
     void setCandidateList();
     void updateUI();
+    void getUpdateCandidatesRefreshUI();
+    std::string getPreedit();
+    void preeditRemoveFront(int lenToRemove);
     void reset() {
         buffer_.clear();
         updateUI();
@@ -48,7 +51,7 @@ class RustPinyin {
 public:
     fcp::RustPinyinEngine* fcp;
     RustPinyin();
-    ::rust::Vec<::fcp::CandidateWord> getCandidates(std::string preedit);
+    ::rust::Vec<::fcp::CandidateWord> queryCandidates(std::string preedit);
 };
 
 class QuweiEngine : public fcitx::InputMethodEngineV2 {
