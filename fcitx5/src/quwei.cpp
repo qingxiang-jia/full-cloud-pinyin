@@ -54,14 +54,10 @@ public:
         auto state = inputContext->propertyFor(engine_->factory());
         auto preedit = state->getPreedit();
 
-        FCITX_INFO() << "preedit=" << state->getPreedit() << " matched_len=" << matched_len;
-
         if (preedit.length() == matched_len) {
-            FCITX_INFO() << "preedit len == matched len";
             inputContext->commitString(text().toString());
             state->reset();
         } else if (preedit.length() > matched_len) {
-            FCITX_INFO() << "preedit len > matched len";
             // Partial match
             inputContext->commitString(text().toString());
             // Update preedit
