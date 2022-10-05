@@ -50,12 +50,6 @@ public:
         setText(fcitx::Text(std::move(text.c_str())));
     }
 
-    QuweiCandidate(QuweiEngine *engine)
-        : engine_(engine), matched_len(0) {
-        setText({});
-        setPlaceHolder(true);
-    }
-
     void select(fcitx::InputContext *inputContext) const override {
         auto state = inputContext->propertyFor(engine_->factory());
         auto preedit = state->getPreedit();
@@ -194,12 +188,6 @@ void QuweiState::setCandidateList() {
     for (unsigned long i = 0; i < candidates.size(); i++) {
         std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len);
         candidateList->append(std::move(candidate));
-    }
-
-    // Add placeholder candidates
-    for (int i = 0; i < 100; i++) {
-        auto placeholder = std::make_unique<QuweiCandidate>(engine_);
-        candidateList->append(std::move(placeholder));
     }
 
     candidates.clear();
