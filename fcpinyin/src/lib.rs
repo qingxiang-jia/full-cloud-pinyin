@@ -72,7 +72,6 @@ impl FullCloudPinyin {
         }
 
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
-        println!("Rust: {}", url.as_str());
 
         let rep = self.http.get(url).header(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0").send().expect("Network problems.");
 
