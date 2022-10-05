@@ -67,7 +67,7 @@ public:
             // Update preedit
             state->preeditRemoveFront(matched_len);
             // Query and update candidates for updated preedit and update UI
-            state->getUpdateCandidatesRefreshUI();
+            state->getUpdateCandidatesRefreshUI(false);
         } else {
             FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
         }
@@ -141,7 +141,7 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         // Remove one character from buffer
         if (event.key().check(FcitxKey_BackSpace)) {
             buffer_.backspace();
-            getUpdateCandidatesRefreshUI();
+            getUpdateCandidatesRefreshUI(false);
             return event.filterAndAccept();
         }
 
@@ -167,39 +167,43 @@ void QuweiState::keyEvent(fcitx::KeyEvent &event) {
         std::string preedit = buffer_.userInput();
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
-        getUpdateCandidatesRefreshUI();
+        getUpdateCandidatesRefreshUI(false);
         return event.filterAndAccept();
     }
 
     return;
 }
 
-void QuweiState::setCandidateList() {
+void QuweiState::setCandidateList(bool append) {
     if (candidates.empty()) {
         return;
     }
 
-    // Store candidates in candidate list
-    auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
-    candidateList->setSelectionKey(candListSelectKey);
-    candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
-    candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
+    if (append) {
 
-    for (unsigned long i = 0; i < candidates.size(); i++) {
-        std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len);
-        candidateList->append(std::move(candidate));
+    } else {
+        // Store candidates in candidate list
+        auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
+        candidateList->setSelectionKey(candListSelectKey);
+        candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
+        candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
+
+        for (unsigned long i = 0; i < candidates.size(); i++) {
+            std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len);
+            candidateList->append(std::move(candidate));
+        }
+
+        candidates.clear();
+
+        candidateList->setGlobalCursorIndex(0);
+        ic_->inputPanel().setCandidateList(std::move(candidateList));
     }
-
-    candidates.clear();
-
-    candidateList->setGlobalCursorIndex(0);
-    ic_->inputPanel().setCandidateList(std::move(candidateList));
 }
 
-void QuweiState::updateUI() {
+void QuweiState::updateUI(bool append) {
     auto &inputPanel = ic_->inputPanel();
     inputPanel.reset();
-    setCandidateList();
+    setCandidateList(append);
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
         fcitx::Text preedit(buffer_.userInput(),
                             fcitx::TextFormatFlag::HighLight);
@@ -212,10 +216,10 @@ void QuweiState::updateUI() {
     ic_->updatePreedit();
 }
 
-void QuweiState::getUpdateCandidatesRefreshUI() {
+void QuweiState::getUpdateCandidatesRefreshUI(bool append) {
     std::string preedit = buffer_.userInput();
     candidates = engine_->rustPinyin_->queryCandidates(preedit);
-    updateUI();
+    updateUI(append);
 }
 
 std::string QuweiState::getPreedit() {
@@ -272,8 +276,8 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
 }
 
 RustPinyin::RustPinyin() {
-  auto boxedFcp = fcp::init();
-  this->fcp = boxedFcp.into_raw();
+    auto boxedFcp = fcp::init();
+    this->fcp = boxedFcp.into_raw();
 }
 
 ::rust::Vec<::fcp::CandidateWord> RustPinyin::queryCandidates(std::string preedit) {

@@ -29,14 +29,14 @@ public:
 
     void keyEvent(fcitx::KeyEvent &keyEvent);
     void setCode(int code);
-    void setCandidateList();
-    void updateUI();
-    void getUpdateCandidatesRefreshUI();
+    void setCandidateList(bool append);
+    void updateUI(bool append);
+    void getUpdateCandidatesRefreshUI(bool append);
     std::string getPreedit();
     void preeditRemoveFront(int lenToRemove);
     void reset() {
         buffer_.clear();
-        updateUI();
+        updateUI(false);
     }
 
 private:
