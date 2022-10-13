@@ -1,6 +1,6 @@
 mod ffi;
 
-use std::cell::{RefCell, Cell};
+use std::{cell::{RefCell, Cell}, time::Instant};
 
 use regex::Regex;
 use reqwest::header::USER_AGENT;
@@ -67,6 +67,8 @@ impl FullCloudPinyin {
     }
 
     fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<Candidate> {
+        // let start = Instant::now();
+        
         if preedit.len() == 0 {
             return Vec::new(); // Otherwise we will get FAILED_TO_PARSE_REQUEST_BODY
         }
@@ -78,6 +80,9 @@ impl FullCloudPinyin {
         let json_str = rep.text().expect("The data cannot be converted to string.");
 
         let candidates = self.from_json_str_to_structured(json_str);
+
+        // let duration = start.elapsed().as_millis();
+        // println!("{}", duration);
 
         candidates
     }
