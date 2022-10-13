@@ -1,3 +1,6 @@
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+
 set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.a")
 set(RUST_PART_CXX "${CMAKE_SOURCE_DIR}/../fcpinyin/ffi.cc")
 add_library(rust_part STATIC ${RUST_PART_CXX})
