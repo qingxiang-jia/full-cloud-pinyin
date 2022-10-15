@@ -31,21 +31,16 @@ type(std::string &s);
 clear();
 ```
 
-# QuweiState
-
-```c++
-keyEvent(fcitx::KeyEvent); <- QuweiEngine::keyEvent
-setCandidateList();
-updateUI();
-getUpdateCandidatesRefreshUI();
-getPreedit();
-preeditRemoveFront(int lenToRemove);
-```
-
 # QuweiEngine
 
 ```c++
 activate(const fcitx::InputMethodEntry &entry, fcitx::InputContextEvent &event);
 keyEvent(const fcitx::InputMethodEntry &entry, fcitx::KeyEvent &keyEvent);
 reset(const fcitx::InputMethodEntry &, fcitx::InputContextEvent &event);
+keyEvent(fcitx::KeyEvent);
+setCandidateList();
+updateUI();
+getUpdateCandidatesRefreshUI();
+getPreedit();
+preeditRemoveFront(int lenToRemove);
 ```
