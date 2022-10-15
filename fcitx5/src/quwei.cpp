@@ -51,19 +51,18 @@ public:
     }
 
     void select(fcitx::InputContext *inputContext) const override {
-        auto state = inputContext->propertyFor(engine_->factory());
-        auto preedit = state->getPreedit();
+        auto preedit = engine_->getPreedit();
 
         if (preedit.length() == matched_len) {
             inputContext->commitString(text().toString());
-            state->reset();
+            engine_->reset();
         } else if (preedit.length() > matched_len) {
             // Partial match
             inputContext->commitString(text().toString());
             // Update preedit
-            state->preeditRemoveFront(matched_len);
+            engine_->preeditRemoveFront(matched_len);
             // Query and update candidates for updated preedit and update UI
-            state->getUpdateCandidatesRefreshUI(false);
+            engine_->getUpdateCandidatesRefreshUI(false);
         } else {
             FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
         }
@@ -76,175 +75,8 @@ private:
 
 } // namespace
 
-void QuweiState::keyEvent(fcitx::KeyEvent &event) {
-    if (auto candidateList = ic_->inputPanel().candidateList()) {
-        int idx = event.key().keyListIndex(selectionKeys);
-        
-        // Select a candidate by keying in 0-9
-        if (idx >= 0 && idx < candidateList->size()) {
-            event.accept();
-            candidateList->candidate(idx).select(ic_);
-            return;
-        }
-
-        // Select a candidate by space key
-        if (event.key().check(FcitxKey_space)) {
-            event.accept();
-            auto idx = candidateList->cursorIndex();
-            candidateList->candidate(idx).select(ic_);
-            return;
-        }
-
-        // Go to the next page by keying in the next page keys
-        if (event.key().checkKeyList(nextPageKeys)) {
-            if (auto *pageable = candidateList->toPageable();
-                pageable && pageable->hasNext()) {
-                pageable->next();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
-            }
-            return event.filterAndAccept();
-        }
-
-        // Go to the previous page by previous page keys
-        if (event.key().checkKeyList(prevPageKeys)) {
-            if (auto *pageable = candidateList->toPageable();
-                pageable && pageable->hasPrev()) {
-                event.accept();
-                pageable->prev();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
-            }
-            return event.filterAndAccept();
-        }
-
-        // Go to the next candidate by ->
-        if (auto *cursorMovable = candidateList->toCursorMovable()) {
-            if (event.key().check(FcitxKey_Right)) {
-                cursorMovable->nextCandidate();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
-                return event.filterAndAccept();
-            }
-            if (event.key().check(FcitxKey_Left)) {
-                cursorMovable->prevCandidate();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
-                return event.filterAndAccept();
-            }
-        }
-
-        // Remove one character from buffer
-        if (event.key().check(FcitxKey_BackSpace)) {
-            buffer_.backspace();
-            getUpdateCandidatesRefreshUI(false);
-            return event.filterAndAccept();
-        }
-
-        // Commit buffer as is (i.e., not Chinese)
-        if (event.key().check(FcitxKey_Return)) {
-            ic_->commitString(buffer_.userInput());
-            reset();
-            return event.filterAndAccept();
-        }
-
-        // Terminate this input session
-        if (event.key().check(FcitxKey_Escape)) {
-            reset();
-            return event.filterAndAccept();
-        }
-    }
-
-    // If buffer is empty and has keyed in a letter, show lookup table
-    if (event.key().isLAZ() || event.key().isUAZ()) {
-        // Append this key into the buffer
-        buffer_.type(event.key().sym());
-
-        std::string preedit = buffer_.userInput();
-
-        // Use preedit to query pinyin candidates, update candidates, and update UI
-        getUpdateCandidatesRefreshUI(false);
-        return event.filterAndAccept();
-    }
-
-    return;
-}
-
-void QuweiState::setCandidateList(bool append) {
-    if (candidates.empty()) {
-        return;
-    }
-
-    if (append) {
-        auto candidateList = ic_->inputPanel().candidateList();
-        auto modifiable = candidateList->toModifiable();
-        if (modifiable) {
-            auto currLen = modifiable->totalSize();
-            for (auto i = currLen; i < candidates.size(); i++) {
-                modifiable->append(std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len));
-            }
-        } else {
-            FCITX_INFO() << "Failed to convert to ModifiableCandidateList";
-        }
-    } else {
-        // Store candidates in candidate list
-        auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
-        candidateList->setSelectionKey(candListSelectKey);
-        candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
-        candidateList->setPageSize(engine_->instance()->globalConfig().defaultPageSize());
-
-        for (unsigned long i = 0; i < candidates.size(); i++) {
-            std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len);
-            candidateList->append(std::move(candidate));
-        }
-
-        candidates.clear();
-
-        candidateList->setGlobalCursorIndex(0);
-        ic_->inputPanel().setCandidateList(std::move(candidateList));
-    }
-}
-
-void QuweiState::updateUI(bool append) {
-    auto &inputPanel = ic_->inputPanel();
-    inputPanel.reset();
-    setCandidateList(append);
-    if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
-        fcitx::Text preedit(buffer_.userInput(),
-                            fcitx::TextFormatFlag::HighLight);
-        inputPanel.setClientPreedit(preedit);
-    } else {
-        fcitx::Text preedit(buffer_.userInput());
-        inputPanel.setPreedit(preedit);
-    }
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-    ic_->updatePreedit();
-}
-
-void QuweiState::getUpdateCandidatesRefreshUI(bool append) {
-    std::string preedit = buffer_.userInput();
-    candidates = engine_->rustPinyin_->queryCandidates(preedit);
-    updateUI(append);
-}
-
-std::string QuweiState::getPreedit() {
-    auto preedit = buffer_.userInput();
-    return preedit;
-}
-
-void QuweiState::preeditRemoveFront(int lenToRemove) {
-    auto oldPreedit = buffer_.userInput();
-    auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
-    buffer_.clear();
-    buffer_.type(newPreedit);
-}
-
 QuweiEngine::QuweiEngine(fcitx::Instance *instance)
-    : rustPinyin_(new RustPinyin()), instance_(instance), factory_([this](fcitx::InputContext &ic) {
-          return new QuweiState(this, &ic);
-      }) {
-    instance->inputContextManager().registerProperty("quweiState", &factory_);
-}
+    : rustPinyin_(new RustPinyin()), instance_(instance) {}
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
                            fcitx::InputContextEvent &event) {
@@ -270,15 +102,179 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         return;
     }
     // FCITX_INFO() << keyEvent.key() << " isRelease=" << keyEvent.isRelease();
-    auto ic = keyEvent.inputContext();
-    auto *state = ic->propertyFor(&factory_);
-    state->keyEvent(keyEvent);
+    ic_ = keyEvent.inputContext();
+
+    if (auto candidateList = ic_->inputPanel().candidateList()) {
+        int idx = keyEvent.key().keyListIndex(selectionKeys);
+        
+        // Select a candidate by keying in 0-9
+        if (idx >= 0 && idx < candidateList->size()) {
+            keyEvent.accept();
+            candidateList->candidate(idx).select(ic_);
+            return;
+        }
+
+        // Select a candidate by space key
+        if (keyEvent.key().check(FcitxKey_space)) {
+            keyEvent.accept();
+            auto idx = candidateList->cursorIndex();
+            candidateList->candidate(idx).select(ic_);
+            return;
+        }
+
+        // Go to the next page by keying in the next page keys
+        if (keyEvent.key().checkKeyList(nextPageKeys)) {
+            if (auto *pageable = candidateList->toPageable();
+                pageable && pageable->hasNext()) {
+                pageable->next();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+            }
+            return keyEvent.filterAndAccept();
+        }
+
+        // Go to the previous page by previous page keys
+        if (keyEvent.key().checkKeyList(prevPageKeys)) {
+            if (auto *pageable = candidateList->toPageable();
+                pageable && pageable->hasPrev()) {
+                keyEvent.accept();
+                pageable->prev();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+            }
+            return keyEvent.filterAndAccept();
+        }
+
+        // Go to the next candidate by ->
+        if (auto *cursorMovable = candidateList->toCursorMovable()) {
+            if (keyEvent.key().check(FcitxKey_Right)) {
+                cursorMovable->nextCandidate();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+                return keyEvent.filterAndAccept();
+            }
+            if (keyEvent.key().check(FcitxKey_Left)) {
+                cursorMovable->prevCandidate();
+                ic_->updateUserInterface(
+                    fcitx::UserInterfaceComponent::InputPanel);
+                return keyEvent.filterAndAccept();
+            }
+        }
+
+        // Remove one character from buffer
+        if (keyEvent.key().check(FcitxKey_BackSpace)) {
+            buffer_.backspace();
+            getUpdateCandidatesRefreshUI(false);
+            return keyEvent.filterAndAccept();
+        }
+
+        // Commit buffer as is (i.e., not Chinese)
+        if (keyEvent.key().check(FcitxKey_Return)) {
+            ic_->commitString(buffer_.userInput());
+            reset();
+            return keyEvent.filterAndAccept();
+        }
+
+        // Terminate this input session
+        if (keyEvent.key().check(FcitxKey_Escape)) {
+            reset();
+            return keyEvent.filterAndAccept();
+        }
+    }
+
+    // If buffer is empty and has keyed in a letter, show lookup table
+    if (keyEvent.key().isLAZ() || keyEvent.key().isUAZ()) {
+        // Append this key into the buffer
+        buffer_.type(keyEvent.key().sym());
+
+        std::string preedit = buffer_.userInput();
+
+        // Use preedit to query pinyin candidates, update candidates, and update UI
+        getUpdateCandidatesRefreshUI(false);
+        return keyEvent.filterAndAccept();
+    }
+
+    return;
+}
+
+void QuweiEngine::setCandidateList(bool append) {
+    if (candidates.empty()) {
+        return;
+    }
+
+    if (append) {
+        auto candidateList = ic_->inputPanel().candidateList();
+        auto modifiable = candidateList->toModifiable();
+        if (modifiable) {
+            auto currLen = modifiable->totalSize();
+            for (auto i = currLen; i < candidates.size(); i++) {
+                modifiable->append(std::make_unique<QuweiCandidate>(this, candidates[i].word, candidates[i].len));
+            }
+        } else {
+            FCITX_INFO() << "Failed to convert to ModifiableCandidateList";
+        }
+    } else {
+        // Store candidates in candidate list
+        auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
+        candidateList->setSelectionKey(candListSelectKey);
+        candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
+        candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
+
+        for (unsigned long i = 0; i < candidates.size(); i++) {
+            std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(this, candidates[i].word, candidates[i].len);
+            candidateList->append(std::move(candidate));
+        }
+
+        candidates.clear();
+
+        candidateList->setGlobalCursorIndex(0);
+        ic_->inputPanel().setCandidateList(std::move(candidateList));
+    }
+}
+
+void QuweiEngine::updateUI(bool append) {
+    auto &inputPanel = ic_->inputPanel();
+    inputPanel.reset();
+    setCandidateList(append);
+    if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
+        fcitx::Text preedit(buffer_.userInput(),
+                            fcitx::TextFormatFlag::HighLight);
+        inputPanel.setClientPreedit(preedit);
+    } else {
+        fcitx::Text preedit(buffer_.userInput());
+        inputPanel.setPreedit(preedit);
+    }
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    ic_->updatePreedit();
+}
+
+void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
+    std::string preedit = buffer_.userInput();
+    candidates = rustPinyin_->queryCandidates(preedit);
+    updateUI(append);
+}
+
+std::string QuweiEngine::getPreedit() {
+    auto preedit = buffer_.userInput();
+    return preedit;
+}
+
+void QuweiEngine::preeditRemoveFront(int lenToRemove) {
+    auto oldPreedit = buffer_.userInput();
+    auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
+    buffer_.clear();
+    buffer_.type(newPreedit);
+}
+
+void QuweiEngine::reset() {
+    buffer_.clear();
+    updateUI(false);
 }
 
 void QuweiEngine::reset(const fcitx::InputMethodEntry &,
                         fcitx::InputContextEvent &event) {
-    auto *state = event.inputContext()->propertyFor(&factory_);
-    state->reset();
+    buffer_.clear();
+    updateUI(false);
 }
 
 RustPinyin::RustPinyin() {

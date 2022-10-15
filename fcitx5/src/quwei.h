@@ -22,31 +22,6 @@
 
 class QuweiEngine;
 
-class QuweiState : public fcitx::InputContextProperty {
-public:
-    QuweiState(QuweiEngine *engine, fcitx::InputContext *ic)
-        : engine_(engine), ic_(ic) {}
-
-    void keyEvent(fcitx::KeyEvent &keyEvent);
-    void setCode(int code);
-    void setCandidateList(bool append);
-    void updateUI(bool append);
-    void getUpdateCandidatesRefreshUI(bool append);
-    std::string getPreedit();
-    void preeditRemoveFront(int lenToRemove);
-    void reset() {
-        buffer_.clear();
-        updateUI(false);
-    }
-
-private:
-    QuweiEngine *engine_;
-    fcitx::InputContext *ic_;
-    fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
-                                fcitx::InputBufferOption::FixedCursor}};
-    ::rust::Vec<::fcp::CandidateWord> candidates;
-};
-
 class RustPinyin {
 public:
     fcp::RustPinyinEngine* fcp;
@@ -63,10 +38,16 @@ public:
     void keyEvent(const fcitx::InputMethodEntry &entry,
                   fcitx::KeyEvent &keyEvent) override;
 
+    void setCandidateList(bool append);
+    void updateUI(bool append);
+    void getUpdateCandidatesRefreshUI(bool append);
+    std::string getPreedit();
+    void preeditRemoveFront(int lenToRemove);
+    void reset();
+
     void reset(const fcitx::InputMethodEntry &,
                fcitx::InputContextEvent &event) override;
 
-    auto factory() const { return &factory_; }
     auto conv() const { return conv_; }
     auto instance() const { return instance_; }
 
@@ -80,11 +61,11 @@ private:
     FCITX_ADDON_DEPENDENCY_LOADER(fullwidth, instance_->addonManager());
 
     fcitx::Instance *instance_;
-    fcitx::FactoryFor<QuweiState> factory_;
     iconv_t conv_;
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
+    ::rust::Vec<::fcp::CandidateWord> candidates;
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
