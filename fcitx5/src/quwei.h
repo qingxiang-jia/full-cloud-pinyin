@@ -16,7 +16,6 @@
 #include <fcitx/inputmethodengine.h>
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
-#include <iconv.h>
 #include <memory>
 #include <vector>
 
@@ -48,20 +47,11 @@ public:
     void reset(const fcitx::InputMethodEntry &,
                fcitx::InputContextEvent &event) override;
 
-    auto conv() const { return conv_; }
     auto instance() const { return instance_; }
 
     std::unique_ptr<RustPinyin> rustPinyin_;
-
-    FCITX_ADDON_DEPENDENCY_LOADER(quickphrase, instance_->addonManager());
-    FCITX_ADDON_DEPENDENCY_LOADER(punctuation, instance_->addonManager());
-
 private:
-    FCITX_ADDON_DEPENDENCY_LOADER(chttrans, instance_->addonManager());
-    FCITX_ADDON_DEPENDENCY_LOADER(fullwidth, instance_->addonManager());
-
     fcitx::Instance *instance_;
-    iconv_t conv_;
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};

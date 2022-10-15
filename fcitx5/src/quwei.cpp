@@ -83,16 +83,6 @@ void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
     FCITX_UNUSED(entry);
     auto *inputContext = event.inputContext();
     ic_ = inputContext;
-    // Request full width.
-    fullwidth();
-    chttrans();
-    for (const auto *actionName : {"chttrans", "punctuation", "fullwidth"}) {
-        if (auto *action =
-                instance_->userInterfaceManager().lookupAction(actionName)) {
-            inputContext->statusArea().addAction(
-                fcitx::StatusGroup::InputMethod, action);
-        }
-    }
 }
 
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
