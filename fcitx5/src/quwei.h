@@ -82,6 +82,9 @@ private:
     fcitx::Instance *instance_;
     fcitx::FactoryFor<QuweiState> factory_;
     iconv_t conv_;
+    fcitx::InputContext *ic_;
+    fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
+                                fcitx::InputBufferOption::FixedCursor}};
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {

@@ -250,6 +250,7 @@ void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
                            fcitx::InputContextEvent &event) {
     FCITX_UNUSED(entry);
     auto *inputContext = event.inputContext();
+    ic_ = inputContext;
     // Request full width.
     fullwidth();
     chttrans();
