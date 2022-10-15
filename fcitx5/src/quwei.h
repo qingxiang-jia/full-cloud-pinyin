@@ -7,7 +7,7 @@
 #ifndef _FCITX5_QUWEI_QUWEI_H_
 #define _FCITX5_QUWEI_QUWEI_H_
 
-#include "../../fcpinyin/ffi.h"
+#include "rustpinyin.h"
 #include <fcitx-utils/inputbuffer.h>
 #include <fcitx/addonfactory.h>
 #include <fcitx/addonmanager.h>
@@ -20,13 +20,6 @@
 #include <vector>
 
 class QuweiEngine;
-
-class RustPinyin {
-public:
-    fcp::RustPinyinEngine* fcp;
-    RustPinyin();
-    ::rust::Vec<::fcp::CandidateWord> queryCandidates(std::string preedit);
-};
 
 class QuweiEngine : public fcitx::InputMethodEngineV2 {
 public:
