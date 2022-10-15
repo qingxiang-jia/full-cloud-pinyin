@@ -273,6 +273,7 @@ void QuweiEngine::reset() {
 
 void QuweiEngine::reset(const fcitx::InputMethodEntry &,
                         fcitx::InputContextEvent &event) {
+    FCITX_UNUSED(event);
     buffer_.clear();
     updateUI(false);
 }
