@@ -176,7 +176,16 @@ void QuweiState::setCandidateList(bool append) {
     }
 
     if (append) {
-
+        auto candidateList = ic_->inputPanel().candidateList();
+        auto modifiable = candidateList->toModifiable();
+        if (modifiable) {
+            auto currLen = modifiable->totalSize();
+            for (auto i = currLen; i < candidates.size(); i++) {
+                modifiable->append(std::make_unique<QuweiCandidate>(engine_, candidates[i].word, candidates[i].len));
+            }
+        } else {
+            FCITX_INFO() << "Failed to convert to ModifiableCandidateList";
+        }
     } else {
         // Store candidates in candidate list
         auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
