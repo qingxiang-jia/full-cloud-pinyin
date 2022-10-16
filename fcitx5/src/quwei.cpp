@@ -28,11 +28,11 @@
 namespace {
 
 template <class F, typename... Args>
-void call_async(F&& fun, Args... param) {
+void call_async(F&& lambda) {
     // Modified from https://stackoverflow.com/a/56834117/1509779
     auto futptr = std::make_shared<std::future<void>>();
-    *futptr = std::async(std::launch::async, [futptr, fun, param...]() {
-        fun(param...);
+    *futptr = std::async(std::launch::async, [futptr, lambda]() {
+        lambda();
     });
 }
 
@@ -77,7 +77,7 @@ public:
             // Update preedit
             engine_->preeditRemoveFront(matched_len);
             // Query and update candidates for updated preedit and update UI
-            engine_->getUpdateCandidatesRefreshUI(false);
+            call_async([this](){ engine_->getUpdateCandidatesRefreshUI(false); });
         } else {
             FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
         }
@@ -169,7 +169,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         // Remove one character from buffer
         if (keyEvent.key().check(FcitxKey_BackSpace)) {
             buffer_.backspace();
-            getUpdateCandidatesRefreshUI(false);
+            call_async([this](){ getUpdateCandidatesRefreshUI(false); });
             return keyEvent.filterAndAccept();
         }
 
@@ -195,7 +195,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         std::string preedit = buffer_.userInput();
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
-        getUpdateCandidatesRefreshUI(false);
+        call_async([this](){ getUpdateCandidatesRefreshUI(false); });
         return keyEvent.filterAndAccept();
     }
 

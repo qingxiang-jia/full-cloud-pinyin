@@ -1,6 +1,6 @@
 mod ffi;
 
-use std::{cell::{RefCell, Cell}, time::Instant};
+use std::{cell::{RefCell, Cell}, time::Instant, sync::Mutex};
 
 use regex::Regex;
 use reqwest::header::USER_AGENT;
@@ -8,7 +8,7 @@ use reqwest::header::USER_AGENT;
 #[derive(Debug)]
 pub struct FullCloudPinyin {
     pub http: reqwest::blocking::Client,
-    last_query: RefCell<String>,
+    last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
 }
@@ -40,14 +40,14 @@ impl FullCloudPinyin {
     pub fn new() -> Self {
         Self {
             http: reqwest::blocking::Client::new(),
-            last_query: RefCell::new("".to_owned()),
+            last_query: Mutex::new("".to_owned()),
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }
     }
 
     pub fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
-        let mut last_query = self.last_query.borrow_mut();
+        let mut last_query = self.last_query.lock().expect("Failed to lock last_query.");
         if last_query.eq(preedit) {
             match self.query_depth.get() {
                 QueryDepth::D1 => self.query_depth.set(QueryDepth::D2),
