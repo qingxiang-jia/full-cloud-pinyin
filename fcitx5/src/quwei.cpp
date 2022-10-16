@@ -14,12 +14,27 @@
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <fcitx/userinterfacemanager.h>
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <new>
+#include <thread>
+#include <functional>
 #include <memory>
 #include <punctuation_public.h>
 #include <quickphrase_public.h>
 #include <utility>
 
 namespace {
+
+template <class F, typename... Args>
+void call_async(F&& fun, Args... param) {
+    // Modified from https://stackoverflow.com/a/56834117/1509779
+    auto futptr = std::make_shared<std::future<void>>();
+    *futptr = std::async(std::launch::async, [futptr, fun, param...]() {
+        fun(param...);
+    });
+}
 
 static const std::array<fcitx::Key, 10> selectionKeys = {
     fcitx::Key{FcitxKey_1}, fcitx::Key{FcitxKey_2}, fcitx::Key{FcitxKey_3},
