@@ -49,6 +49,7 @@ private:
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
     ::rust::Vec<::fcp::CandidateWord> candidates;
+    std::mutex m;
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {

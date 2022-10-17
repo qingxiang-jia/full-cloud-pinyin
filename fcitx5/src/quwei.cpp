@@ -21,6 +21,7 @@
 #include <thread>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <punctuation_public.h>
 #include <quickphrase_public.h>
 #include <utility>
@@ -222,18 +223,25 @@ void QuweiEngine::setCandidateList(bool append) {
         // Store candidates in candidate list
         auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
         candidateList->setSelectionKey(candListSelectKey);
-        candidateList->setCursorPositionAfterPaging(                fcitx::CursorPositionAfterPaging::ResetToFirst);
+        candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
         candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
 
+        std::string first5;
         for (unsigned long i = 0; i < candidates.size(); i++) {
             std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(this, candidates[i].word, candidates[i].len);
             candidateList->append(std::move(candidate));
+            if (i < 5) {
+                first5 += candidates[i].word.c_str();
+                first5 += ' ';
+            }
         }
 
         candidates.clear();
 
         candidateList->setGlobalCursorIndex(0);
+        FCITX_INFO() << "About to set candidate as: " << first5;
         ic_->inputPanel().setCandidateList(std::move(candidateList));
+        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
 }
 
