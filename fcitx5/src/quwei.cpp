@@ -193,8 +193,6 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         // Append this key into the buffer
         buffer_.type(keyEvent.key().sym());
 
-        std::string preedit = buffer_.userInput();
-
         // Use preedit to query pinyin candidates, update candidates, and update UI
         call_async([this](){ getUpdateCandidatesRefreshUI(false); });
         return keyEvent.filterAndAccept();
