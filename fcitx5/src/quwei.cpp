@@ -101,6 +101,15 @@ void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
     ic_ = inputContext;
 }
 
+void newKeyEvent(const fcitx::InputMethodEntry &entry, fcitx::KeyEvent &keyEvent) {
+    FCITX_UNUSED(entry);
+
+}
+
+void newSelect(::rust::String text, int matched_len) {
+    
+}
+
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
                            fcitx::KeyEvent &keyEvent) {
     FCITX_UNUSED(entry);
