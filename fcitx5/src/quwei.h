@@ -30,9 +30,9 @@ public:
     void keyEvent(const fcitx::InputMethodEntry &entry,
                   fcitx::KeyEvent &keyEvent) override;
 
-    void setCandidateList(bool append);
-    void updateUI(bool append);
-    void getUpdateCandidatesRefreshUI(bool append);
+    void setCandidateList();
+    void updateUI();
+    void getUpdateCandidatesRefreshUI();
     std::string getPreedit();
     void preeditRemoveFront(int lenToRemove);
     void reset();
