@@ -30,11 +30,6 @@ public:
     void keyEvent(const fcitx::InputMethodEntry &entry,
                   fcitx::KeyEvent &keyEvent) override;
 
-    void newKeyEvent(const fcitx::InputMethodEntry &entry,
-                     fcitx::KeyEvent &keyEvent);
-
-    void newSelect(::rust::String text, int matched_len);
-
     void setCandidateList(bool append);
     void updateUI(bool append);
     void getUpdateCandidatesRefreshUI(bool append);
