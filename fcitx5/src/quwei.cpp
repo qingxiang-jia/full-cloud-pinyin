@@ -248,7 +248,7 @@ void QuweiEngine::updateUI() {
 
 void QuweiEngine::getUpdateCandidatesRefreshUI() {
     std::string preedit = buffer_.userInput();
-    candidates = rustPinyin_->queryCandidates(preedit);
+    candidates = rustPinyin_->fcp->query_candidates(preedit);
     updateUI();
 }
 
@@ -279,11 +279,6 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry &,
 RustPinyin::RustPinyin() {
     auto boxedFcp = fcp::init();
     this->fcp = boxedFcp.into_raw();
-}
-
-::rust::Vec<::fcp::CandidateWord> RustPinyin::queryCandidates(std::string preedit) {
-    auto rustCand = this->fcp->query_candidates(preedit);
-    return rustCand;
 }
 
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
