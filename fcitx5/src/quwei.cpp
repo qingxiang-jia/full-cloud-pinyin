@@ -201,7 +201,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
     return;
 }
 
-void QuweiEngine::setCandidateList() {
+void QuweiEngine::setCandidateList(::rust::Vec<::fcp::CandidateWord> candidates) {
     if (candidates.empty()) {
         return;
     }
@@ -227,13 +227,11 @@ void QuweiEngine::setCandidateList() {
     candidateList->setGlobalCursorIndex(0);
     FCITX_INFO() << "About to set candidate as: " << first5;
     ic_->inputPanel().setCandidateList(std::move(candidateList));
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::updateUI() {
     auto &inputPanel = ic_->inputPanel();
     inputPanel.reset();
-    setCandidateList();
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
         fcitx::Text preedit(buffer_.userInput(),
                             fcitx::TextFormatFlag::HighLight);
@@ -247,9 +245,22 @@ void QuweiEngine::updateUI() {
 }
 
 void QuweiEngine::getUpdateCandidatesRefreshUI() {
+    auto &inputPanel = ic_->inputPanel();
     std::string preedit = buffer_.userInput();
-    candidates = rustPinyin_->fcp->query_candidates(preedit);
-    updateUI();
+    
+    auto candidates = rustPinyin_->fcp->query_candidates(preedit);
+    setCandidateList(candidates);
+    
+    if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
+        fcitx::Text preedit(buffer_.userInput(),
+                            fcitx::TextFormatFlag::HighLight);
+        inputPanel.setClientPreedit(preedit);
+    } else {
+        fcitx::Text preedit(buffer_.userInput());
+        inputPanel.setPreedit(preedit);
+    }
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    ic_->updatePreedit();
 }
 
 std::string QuweiEngine::getPreedit() {

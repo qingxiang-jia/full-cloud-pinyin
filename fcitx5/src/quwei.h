@@ -30,7 +30,7 @@ public:
     void keyEvent(const fcitx::InputMethodEntry &entry,
                   fcitx::KeyEvent &keyEvent) override;
 
-    void setCandidateList();
+    void setCandidateList(::rust::Vec<::fcp::CandidateWord> candidates);
     void updateUI();
     void getUpdateCandidatesRefreshUI();
     std::string getPreedit();
@@ -48,7 +48,6 @@ private:
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
-    ::rust::Vec<::fcp::CandidateWord> candidates;
     std::mutex m;
 };
 
