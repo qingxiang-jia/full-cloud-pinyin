@@ -260,7 +260,7 @@ void QuweiEngine::getUpdateCandidatesRefreshUI() {
         fcitx::Text preedit(buffer_.userInput());
         inputPanel.setPreedit(preedit);
     }
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
     ic_->updatePreedit();
     m.unlock();
 }
