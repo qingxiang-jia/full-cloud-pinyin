@@ -78,7 +78,7 @@ public:
             // Update preedit
             engine_->preeditRemoveFront(matched_len);
             // Query and update candidates for updated preedit and update UI
-            engine_->getUpdateCandidatesRefreshUI();
+            call_async([this](){ engine_->getUpdateCandidatesRefreshUI(); });
         } else {
             FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
         }
@@ -170,7 +170,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         // Remove one character from buffer
         if (keyEvent.key().check(FcitxKey_BackSpace)) {
             buffer_.backspace();
-            getUpdateCandidatesRefreshUI();
+            call_async([this](){ getUpdateCandidatesRefreshUI(); });
             return keyEvent.filterAndAccept();
         }
 
@@ -194,7 +194,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         buffer_.type(keyEvent.key().sym());
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
-        getUpdateCandidatesRefreshUI();
+        call_async([this](){ getUpdateCandidatesRefreshUI(); });
         return keyEvent.filterAndAccept();
     }
 
@@ -245,6 +245,7 @@ void QuweiEngine::updateUI() {
 }
 
 void QuweiEngine::getUpdateCandidatesRefreshUI() {
+    m.lock();
     auto &inputPanel = ic_->inputPanel();
     std::string preedit = buffer_.userInput();
     
@@ -261,6 +262,7 @@ void QuweiEngine::getUpdateCandidatesRefreshUI() {
     }
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     ic_->updatePreedit();
+    m.unlock();
 }
 
 std::string QuweiEngine::getPreedit() {
