@@ -44,9 +44,9 @@ public:
     auto instance() const { return instance_; }
 
     std::unique_ptr<RustPinyin> rustPinyin_;
+    std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 private:
     fcitx::Instance *instance_;
-    std::unique_ptr<fcitx::EventDispatcher> dispatcher;
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
