@@ -249,7 +249,6 @@ void QuweiEngine::updateUI() {
 }
 
 void QuweiEngine::getUpdateCandidatesRefreshUI() {
-    m.lock();
     auto &inputPanel = ic_->inputPanel();
     std::string preedit = buffer_.userInput();
     
@@ -266,7 +265,6 @@ void QuweiEngine::getUpdateCandidatesRefreshUI() {
     }
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     ic_->updatePreedit();
-    m.unlock();
 }
 
 std::string QuweiEngine::getPreedit() {
