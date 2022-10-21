@@ -16,6 +16,7 @@
 #include <fcitx/inputmethodengine.h>
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
+#include <fcitx-utils/eventdispatcher.h>
 #include <memory>
 #include <vector>
 
@@ -43,6 +44,7 @@ public:
     auto instance() const { return instance_; }
 
     std::unique_ptr<RustPinyin> rustPinyin_;
+    std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 private:
     fcitx::Instance *instance_;
     fcitx::InputContext *ic_;
