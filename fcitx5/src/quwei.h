@@ -16,6 +16,7 @@
 #include <fcitx/inputmethodengine.h>
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
+#include <fcitx-utils/eventdispatcher.h>
 #include <memory>
 #include <vector>
 
@@ -45,6 +46,7 @@ public:
     std::unique_ptr<RustPinyin> rustPinyin_;
 private:
     fcitx::Instance *instance_;
+    std::unique_ptr<fcitx::EventDispatcher> dispatcher;
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};

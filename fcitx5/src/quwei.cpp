@@ -5,6 +5,7 @@
  *
  */
 #include "quwei.h"
+#include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/key.h>
 #include <fcitx-utils/keysymgen.h>
@@ -92,7 +93,10 @@ private:
 } // namespace
 
 QuweiEngine::QuweiEngine(fcitx::Instance *instance)
-    : rustPinyin_(new RustPinyin()), instance_(instance) {}
+    : rustPinyin_(new RustPinyin()), instance_(instance) {
+        dispatcher = std::make_unique<fcitx::EventDispatcher>();
+        dispatcher->attach(&instance->eventLoop());
+    }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
                            fcitx::InputContextEvent &event) {
