@@ -55,7 +55,12 @@ impl FullCloudPinyin {
         };
         path.push("sled_cache");
 
-        let db = match sled::open(path.as_path()) {
+        let config = sled::Config::default()
+            .path(path.as_path())
+            .cache_capacity(10 * 1024 * 1024)
+            .flush_every_ms(Some(5 * 60 * 1000));
+
+        let db = match config.open() {
             Ok(db) => db,
             Err(error) => panic!("Failed to create cache: {:#?}", error)
         };
