@@ -15,6 +15,14 @@ pub struct FullCloudPinyin {
 }
 
 #[derive(Debug)]
+#[derive(Serialize)]
+pub struct Candidates {
+    depth: QueryDepth,
+    candidates: Vec<Candidate>
+}
+
+#[derive(Debug)]
+#[derive(Serialize)]
 pub struct Candidate {
     pub word: String,
     pub annotation: String,
@@ -24,6 +32,7 @@ pub struct Candidate {
 #[derive(Debug)]
 #[derive(Copy)]
 #[derive(Clone)]
+#[derive(Serialize)]
 enum QueryDepth {
     D1 = 11,
     D2 = 21,
@@ -77,7 +86,6 @@ impl FullCloudPinyin {
         let json_str = rep.text().expect("The data cannot be converted to string.");
 
         let candidates = self.from_json_str_to_structured(json_str);
-
 
         candidates
     }
