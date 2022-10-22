@@ -17,8 +17,6 @@ pub struct FullCloudPinyin {
 pub struct Candidate {
     pub word: String,
     pub annotation: String,
-    pub category: i8,
-    pub lc: String,
     pub matched_len: Option<i32>,
 }
 
@@ -115,14 +113,6 @@ impl FullCloudPinyin {
 
         let candidates = &linear_data[2..colon_pos[0] - 1];
         let annotations = &linear_data[colon_pos[0] + 1..colon_pos[1] - 1];
-        let candidate_types = &linear_data[colon_pos[1] + 1..colon_pos[2] - 1];
-
-        let lc: &[String];
-        if has_matched_len {
-            lc = &linear_data[colon_pos[2] + 1..colon_pos[3] - 1];
-        } else {
-            lc = &linear_data[colon_pos[2] + 1..];
-        }
 
         let matched_len: Option<&[String]>;
         if has_matched_len {
@@ -136,10 +126,6 @@ impl FullCloudPinyin {
             aggregate.push(Candidate {
                 word: candidates[i].to_owned(),
                 annotation: annotations[i].to_owned(),
-                category: candidate_types[i]
-                    .parse::<i8>()
-                    .expect("Candidate type failed to be parsed to i8."),
-                lc: lc[i].to_owned(),
                 matched_len: match matched_len {
                     Some(len) => Some(
                         len[i]
