@@ -1,15 +1,17 @@
 mod ffi;
 
-use std::{cell::Cell, sync::Mutex};
+use std::{cell::Cell, sync::Mutex, path::PathBuf};
 
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::Serialize;
 use std::fs;
+use sled;
 
 #[derive(Debug)]
 pub struct FullCloudPinyin {
     http: reqwest::blocking::Client,
+    cache: sled::Db,
     last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
@@ -47,14 +49,20 @@ enum QueryDepth {
 
 impl FullCloudPinyin {
     pub fn new() -> Self {
-        let result = Self::make_config_dir_if_not_already();
-        match result {
-            Ok(()) => (),
-            error => println!("Failed to create config dir: {:#?}", error)
-        }
+        let mut path = match Self::make_config_dir_if_not_already() {
+            Ok(path_buf) => path_buf,
+            Err(error) => panic!("Failed to create config dir: {:#?}", error)
+        };
+        path.push("sled_cache");
+
+        let db = match sled::open(path.as_path()) {
+            Ok(db) => db,
+            Err(error) => panic!("Failed to create cache: {:#?}", error)
+        };
 
         Self {
             http: reqwest::blocking::Client::new(),
+            cache: db,
             last_query: Mutex::new("".to_owned()),
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
@@ -152,10 +160,14 @@ impl FullCloudPinyin {
         aggregate
     }
 
-    fn make_config_dir_if_not_already() -> std::io::Result<()> {
+    fn make_config_dir_if_not_already() -> std::io::Result<PathBuf> {
         let mut path = home::home_dir().expect("Failed to get home path.");
         path.push(".config");
         path.push("fcpinyin/");
-        return fs::create_dir_all(path.as_path());
+        let result = match fs::create_dir_all(path.as_path()) {
+            Ok(()) => Ok(path),
+            Err(error) => Err(error)
+        };
+        result
     }
 }
