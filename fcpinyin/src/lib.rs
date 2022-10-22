@@ -9,7 +9,7 @@ use std::fs;
 
 #[derive(Debug)]
 pub struct FullCloudPinyin {
-    pub http: reqwest::blocking::Client,
+    http: reqwest::blocking::Client,
     last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
