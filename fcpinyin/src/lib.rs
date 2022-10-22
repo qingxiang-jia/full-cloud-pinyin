@@ -5,6 +5,7 @@ use std::{cell::Cell, sync::Mutex};
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::Serialize;
+use std::fs;
 
 #[derive(Debug)]
 pub struct FullCloudPinyin {
@@ -46,6 +47,12 @@ enum QueryDepth {
 
 impl FullCloudPinyin {
     pub fn new() -> Self {
+        let result = Self::make_config_dir_if_not_already();
+        match result {
+            Ok(()) => (),
+            error => println!("Failed to create config dir: {:#?}", error)
+        }
+
         Self {
             http: reqwest::blocking::Client::new(),
             last_query: Mutex::new("".to_owned()),
@@ -143,5 +150,12 @@ impl FullCloudPinyin {
         }
 
         aggregate
+    }
+
+    fn make_config_dir_if_not_already() -> std::io::Result<()> {
+        let mut path = home::home_dir().expect("Failed to get home path.");
+        path.push(".config");
+        path.push("fcpinyin/");
+        return fs::create_dir_all(path.as_path());
     }
 }
