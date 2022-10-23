@@ -41,6 +41,6 @@ Note: the installation directory is specific to Arch. If you use something else,
 
 ## Future Plans
     
--   Less web requests: we could do caching, so common pinyin doesn't need to go through the internet.
+-   Less web requests: we could do caching, so common pinyin doesn't need to go through the internet. [done]
 -   Better privacy: user defines what words (in pinyin) that shouldn't go to the internet.
 -   We could also support user-created words, something regular pinyin input methods already do but cloud ones can't.
