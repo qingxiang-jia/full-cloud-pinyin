@@ -1,12 +1,12 @@
 mod ffi;
 
-use std::{cell::Cell, sync::Mutex, path::PathBuf};
+use std::{cell::Cell, path::PathBuf, sync::Mutex};
 
 use regex::Regex;
 use reqwest::header::USER_AGENT;
-use serde::Serialize;
-use std::fs;
+use serde::{Deserialize, Serialize};
 use sled;
+use std::fs;
 
 #[derive(Debug)]
 pub struct FullCloudPinyin {
@@ -17,25 +17,20 @@ pub struct FullCloudPinyin {
     re: Regex,
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Candidates {
     depth: QueryDepth,
-    candidates: Vec<Candidate>
+    candidates: Vec<Candidate>,
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candidate {
     pub word: String,
     pub annotation: String,
     pub matched_len: Option<i32>,
 }
 
-#[derive(Debug)]
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(Serialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 enum QueryDepth {
     D1 = 11,
     D2 = 21,
@@ -44,14 +39,14 @@ enum QueryDepth {
     D5 = 161,
     D6 = 321,
     D7 = 641,
-    D8 = 1281
+    D8 = 1281,
 }
 
 impl FullCloudPinyin {
     pub fn new() -> Self {
         let mut path = match Self::make_config_dir_if_not_already() {
             Ok(path_buf) => path_buf,
-            Err(error) => panic!("Failed to create config dir: {:#?}", error)
+            Err(error) => panic!("Failed to create config dir: {:#?}", error),
         };
         path.push("sled_cache");
 
@@ -62,7 +57,7 @@ impl FullCloudPinyin {
 
         let db = match config.open() {
             Ok(db) => db,
-            Err(error) => panic!("Failed to create cache: {:#?}", error)
+            Err(error) => panic!("Failed to create cache: {:#?}", error),
         };
 
         Self {
@@ -91,21 +86,63 @@ impl FullCloudPinyin {
             *last_query = preedit.to_owned();
             self.query_depth.set(QueryDepth::D1);
         }
-        return self.get_candidates(preedit, self.query_depth.get() as i32);
+        return self.get_candidates(preedit, self.query_depth.get());
     }
 
-    fn get_candidates(&self, preedit: &str, depth: i32) -> Vec<Candidate> {
+    fn get_candidates(&self, preedit: &str, depth: QueryDepth) -> Vec<Candidate> {
         if preedit.len() == 0 {
             return Vec::new(); // Otherwise we will get FAILED_TO_PARSE_REQUEST_BODY
         }
 
-        let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
+        match self.cache.contains_key(preedit) {
+            Ok(has_key) => {
+                if has_key {
+                    let cached = self
+                        .cache
+                        .get(preedit)
+                        .expect(&format!(
+                            "Error occured when getting cached value for {}",
+                            preedit
+                        ))
+                        .expect(&format!("The cached value for {} doesn't exist.", preedit));
+                    let deserialized: Candidates = bincode::deserialize(&cached)
+                        .expect("The cached value cannot be deserialized.");
+                    println!("Cache hit for {}", preedit);
+                    return deserialized.candidates;
+                }
+            }
+            Err(error) => println!("Cache failed: {:#?}", error),
+        }
 
-        let rep = self.http.get(url).header(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0").send().expect("Network problems.");
+        println!("Web request for: {}", preedit);
+
+        let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth as i32);
+
+        let rep = self
+            .http
+            .get(url)
+            .header(
+                USER_AGENT,
+                "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
+            )
+            .send()
+            .expect("Network problems.");
 
         let json_str = rep.text().expect("The data cannot be converted to string.");
 
         let candidates = self.from_json_str_to_structured(json_str);
+
+        // Save to cache
+        let to_be_saved = Candidates {
+            depth,
+            candidates: candidates.clone(),
+        };
+        let serialized = match bincode::serialize(&to_be_saved) {
+            Ok(data) => data,
+            Err(error) => panic!("Failed to serialize: {:#?}", error),
+        };
+        
+        _ = self.cache.insert(preedit, serialized);
 
         candidates
     }
@@ -171,7 +208,7 @@ impl FullCloudPinyin {
         path.push("fcpinyin/");
         let result = match fs::create_dir_all(path.as_path()) {
             Ok(()) => Ok(path),
-            Err(error) => Err(error)
+            Err(error) => Err(error),
         };
         result
     }
