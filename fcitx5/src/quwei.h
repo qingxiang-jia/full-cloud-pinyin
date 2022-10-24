@@ -33,7 +33,7 @@ public:
 
     void setCandidateList(::rust::Vec<::fcp::CandidateWord> candidates);
     void updateUI();
-    void getUpdateCandidatesRefreshUI();
+    void getCandidatesAndUpdateAsync();
     std::string getPreedit();
     void preeditRemoveFront(int lenToRemove);
     void reset();
@@ -50,7 +50,7 @@ private:
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
-    std::mutex m;
+    void getUpdateCandidatesRefreshUI();
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
