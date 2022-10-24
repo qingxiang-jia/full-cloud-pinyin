@@ -29,7 +29,7 @@ The whole build step looks like this:
 So instead of running CMake directly, using commands in `task.sh` is probably easier. In particular, in `fcpinyin/`
 
 - `./task.sh gen-lib` to compile the Rust code into a statically linked object file
-- `./task.sh gen-cxx` to generate header files for that object file using CXX
+- `./task.sh gen-cxx` to generate header files for that object file using CXX. You need a copy of cxxbridge. I built it from source [here](https://github.com/dtolnay/cxx/tree/master/gen/cmd).
 
 In `fcitx5/`,
 
