@@ -31,9 +31,8 @@ public:
     void keyEvent(const fcitx::InputMethodEntry &entry,
                   fcitx::KeyEvent &keyEvent) override;
 
-    void setCandidateList(::rust::Vec<::fcp::CandidateWord> candidates);
     void updateUI();
-    void getCandidatesAndUpdateAsync();
+    void getCandidatesAndUpdateAsync(bool append = false);
     std::string getPreedit();
     void preeditRemoveFront(int lenToRemove);
     void reset();
@@ -50,7 +49,7 @@ private:
     fcitx::InputContext *ic_;
     fcitx::InputBuffer buffer_{{fcitx::InputBufferOption::AsciiOnly,
                                 fcitx::InputBufferOption::FixedCursor}};
-    void getUpdateCandidatesRefreshUI();
+    void getUpdateCandidatesRefreshUI(bool append);
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
