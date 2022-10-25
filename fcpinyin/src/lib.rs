@@ -115,8 +115,10 @@ impl FullCloudPinyin {
                 deserialized.candidates.truncate(depth as usize);
             }
 
-            println!("HIT {} @{:#?}", preedit, depth);
-            return deserialized.candidates;
+            if deserialized.depth >= depth {
+                println!("HIT {} @{:#?}", preedit, depth);
+                return deserialized.candidates;
+            }
         }
 
         println!("MISS {} @{:#?}", preedit, depth);
