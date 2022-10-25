@@ -233,13 +233,7 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
         // Store candidates in candidate list
         auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
         candidateList->setSelectionKey(candListSelectKey);
-        if (append) {
-            FCITX_INFO() << "append: do not change";
-            candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::DonotChange);
-        } else {
-            FCITX_INFO() << "new: reset to first";
-            candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
-        }
+        candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
         candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
 
         std::string first5;
@@ -256,6 +250,11 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
 
         if (!append) {
             candidateList->setGlobalCursorIndex(0);
+        } else {
+            // Get current page number
+            auto pageable = ic_->inputPanel().candidateList()->toPageable();
+            auto currPage = pageable->currentPage();
+            candidateList->setPage(currPage);
         }
         FCITX_INFO() << "About to set candidate as: " << first5;
         ic_->inputPanel().setCandidateList(std::move(candidateList));
