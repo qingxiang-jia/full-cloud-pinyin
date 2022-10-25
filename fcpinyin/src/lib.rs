@@ -30,7 +30,7 @@ pub struct Candidate {
     pub matched_len: Option<i32>,
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
 enum QueryDepth {
     D1 = 11,
     D2 = 21,
@@ -94,24 +94,29 @@ impl FullCloudPinyin {
             return Vec::new(); // Otherwise we will get FAILED_TO_PARSE_REQUEST_BODY
         }
 
-        match self.cache.contains_key(preedit) {
-            Ok(has_key) => {
-                if has_key {
-                    let cached = self
-                        .cache
-                        .get(preedit)
-                        .expect(&format!(
-                            "Error occured when getting cached value for {}",
-                            preedit
-                        ))
-                        .expect(&format!("The cached value for {} doesn't exist.", preedit));
-                    let deserialized: Candidates = bincode::deserialize(&cached)
-                        .expect("The cached value cannot be deserialized.");
-                    println!("Cache hit for {}", preedit);
-                    return deserialized.candidates;
-                }
+        let has_key = self.cache.contains_key(preedit).expect(&format!(
+            "Cache failed when trying get whether {} exists.",
+            preedit
+        ));
+        if has_key {
+            let cached = self
+                .cache
+                .get(preedit)
+                .expect(&format!(
+                    "Error occured when getting cached value for {}",
+                    preedit
+                ))
+                .expect(&format!("The cached value for {} doesn't exist.", preedit));
+
+            let mut deserialized: Candidates =
+                bincode::deserialize(&cached).expect("The cached value cannot be deserialized.");
+
+            if deserialized.depth > depth {
+                deserialized.candidates.truncate(depth as usize);
             }
-            Err(error) => println!("Cache failed: {:#?}", error),
+
+            println!("Cache hit for {}", preedit);
+            return deserialized.candidates;
         }
 
         println!("Web request for: {}", preedit);
@@ -141,7 +146,7 @@ impl FullCloudPinyin {
             Ok(data) => data,
             Err(error) => panic!("Failed to serialize: {:#?}", error),
         };
-        
+
         _ = self.cache.insert(preedit, serialized);
 
         candidates
