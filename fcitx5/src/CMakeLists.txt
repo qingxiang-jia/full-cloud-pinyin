@@ -8,7 +8,7 @@ target_link_libraries(rust_part ${RUST_PART_LIB} ssl crypto stdc++ gcc_s util rt
 include_directories("${CMAKE_SOURCE_DIR}/../fcpinyin")
 
 # Make sure it produce quwei.so instead of libquwei.so
-add_library(quwei SHARED quwei.cpp)
+add_library(quwei SHARED quwei.cpp dummy.cc)
 target_link_libraries(quwei PRIVATE Fcitx5::Core Fcitx5::Module::Punctuation Fcitx5::Module::QuickPhrase rust_part)
 install(TARGETS quwei DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
 

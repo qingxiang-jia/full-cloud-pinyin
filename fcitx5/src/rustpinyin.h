@@ -2,6 +2,7 @@
 #define _FCITX5_QUWEI_RUSTPINYIN_H_
 
 #include "../../fcpinyin/ffi.h"
+#include "dummy.h"
 
 class RustPinyin {
 public:
