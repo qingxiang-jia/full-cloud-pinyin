@@ -276,6 +276,10 @@ void QuweiEngine::getCandidatesAndUpdateAsync(bool append) {
     call_async([this, append](){ dispatcher->schedule([this, append](){ getUpdateCandidatesRefreshUI(append); }); });
 }
 
+void QuweiEngine::sayHello() {
+    std::cout << "hello~~~~";
+}
+
 std::string QuweiEngine::getPreedit() {
     auto preedit = buffer_.userInput();
     return preedit;

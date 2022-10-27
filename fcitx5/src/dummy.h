@@ -4,10 +4,14 @@
 #include <iostream>
 #include <memory>
 
+class QuweiEngine;
+
 namespace fcp {
 class Dummy {
 public:
     void sayHello() const;
+    void setEngine(QuweiEngine* engine);
+    QuweiEngine* engine;
 };
 
 std::unique_ptr<Dummy> newDummy();

@@ -42,6 +42,8 @@ public:
 
     auto instance() const { return instance_; }
 
+    void sayHello();
+
     std::unique_ptr<RustPinyin> rustPinyin_;
     std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 private:
