@@ -6,17 +6,29 @@ use tokio::time::{sleep, Duration};
 fn main() {
     let mut rng = rand::thread_rng();
     let handler = TaskHandler::new();
-    handler.handle_task(Task { to_print: "a".to_owned(), delay: rng.gen_range(0..500) });
-    handler.handle_task(Task { to_print: "b".to_owned(), delay: rng.gen_range(0..500) });
-    handler.handle_task(Task { to_print: "c".to_owned(), delay: rng.gen_range(0..500) });
-    handler.handle_task(Task { to_print: "d".to_owned(), delay: rng.gen_range(0..500) });
+    handler.handle_task(Task {
+        to_print: "a".to_owned(),
+        delay: rng.gen_range(0..500),
+    });
+    handler.handle_task(Task {
+        to_print: "b".to_owned(),
+        delay: rng.gen_range(0..500),
+    });
+    handler.handle_task(Task {
+        to_print: "c".to_owned(),
+        delay: rng.gen_range(0..500),
+    });
+    handler.handle_task(Task {
+        to_print: "d".to_owned(),
+        delay: rng.gen_range(0..500),
+    });
 
     _ = sleep(Duration::from_millis(5000));
 }
 
 pub struct Task {
     to_print: String,
-    delay: i32
+    delay: i32,
 }
 
 async fn long_running(task: Task) {
@@ -39,10 +51,7 @@ impl TaskHandler {
         // The runtime is created before spawning the thread
         // to more cleanly forward errors if the `unwrap()`
         // panics.
-        let rt = Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
+        let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         std::thread::spawn(move || {
             rt.block_on(async move {
@@ -57,14 +66,12 @@ impl TaskHandler {
             });
         });
 
-        TaskHandler {
-            send_channel: send,
-        }
+        TaskHandler { send_channel: send }
     }
 
     pub fn handle_task(&self, task: Task) {
         match self.send_channel.blocking_send(task) {
-            Ok(()) => {},
+            Ok(()) => {}
             Err(_) => panic!("The shared runtime has shut down."),
         }
     }
