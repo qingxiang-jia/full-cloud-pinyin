@@ -1,27 +1,71 @@
 use rand::Rng;
 use tokio::runtime::Builder;
+use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
 
 fn main() {
-    let runtime = Builder::new_multi_thread()
-        .worker_threads(1)
-        .enable_all()
-        .build()
-        .unwrap();
-
     let mut rng = rand::thread_rng();
+    let handler = TaskHandler::new();
+    handler.handle_task(Task { to_print: "a".to_owned(), delay: rng.gen_range(0..500) });
+    handler.handle_task(Task { to_print: "b".to_owned(), delay: rng.gen_range(0..500) });
+    handler.handle_task(Task { to_print: "c".to_owned(), delay: rng.gen_range(0..500) });
+    handler.handle_task(Task { to_print: "d".to_owned(), delay: rng.gen_range(0..500) });
 
-    let h1 = runtime.spawn(long_running("a".to_owned(), rng.gen_range(1..500)));
-    let h2 = runtime.spawn(long_running("b".to_owned(), rng.gen_range(1..500)));
-    let h3 = runtime.spawn(long_running("c".to_owned(), rng.gen_range(1..500)));
-    let h4 = runtime.spawn(long_running("d".to_owned(), rng.gen_range(1..500)));
-    _ = runtime.block_on(h1); // Otherwise main ends and the async runtime also ends so long_running don't get a chance to run.
-    _ = runtime.block_on(h2); // Otherwise main ends and the async runtime also ends so long_running don't get a chance to run.
-    _ = runtime.block_on(h3); // Otherwise main ends and the async runtime also ends so long_running don't get a chance to run.
-    _ = runtime.block_on(h4); // Otherwise main ends and the async runtime also ends so long_running don't get a chance to run.
+    _ = sleep(Duration::from_millis(5000));
 }
 
-async fn long_running(to_print: String, how_long: i32) {
-    sleep(Duration::from_millis(how_long as u64)).await;
-    println!("{}", to_print);
+pub struct Task {
+    to_print: String,
+    delay: i32
+}
+
+async fn long_running(task: Task) {
+    sleep(Duration::from_millis(task.delay as u64)).await;
+    println!("{}", task.to_print);
+}
+
+#[derive(Clone)]
+pub struct TaskHandler {
+    send_channel: mpsc::Sender<Task>,
+}
+
+impl TaskHandler {
+    pub fn new() -> TaskHandler {
+        // Set up a channel for communicating.
+        let (send, mut recv) = mpsc::channel(16);
+
+        // Build the runtime for the new thread.
+        //
+        // The runtime is created before spawning the thread
+        // to more cleanly forward errors if the `unwrap()`
+        // panics.
+        let rt = Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+
+        std::thread::spawn(move || {
+            rt.block_on(async move {
+                while let Some(task) = recv.recv().await {
+                    tokio::spawn(long_running(task));
+                }
+
+                // Once all senders have gone out of scope,
+                // the `.recv()` call returns None and it will
+                // exit from the while loop and shut down the
+                // thread.
+            });
+        });
+
+        TaskHandler {
+            send_channel: send,
+        }
+    }
+
+    pub fn handle_task(&self, task: Task) {
+        match self.send_channel.blocking_send(task) {
+            Ok(()) => {},
+            Err(_) => panic!("The shared runtime has shut down."),
+        }
+    }
 }
