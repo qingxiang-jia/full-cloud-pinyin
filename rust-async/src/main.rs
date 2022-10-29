@@ -31,9 +31,9 @@ pub struct Task {
     delay: i32,
 }
 
-async fn long_running(task: Task) {
-    sleep(Duration::from_millis(task.delay as u64)).await;
-    println!("{}", task.to_print);
+async fn long_running(to_print: String, delay: i32) {
+    sleep(Duration::from_millis(delay as u64)).await;
+    println!("{}", to_print);
 }
 
 #[derive(Clone)]
@@ -44,7 +44,7 @@ pub struct TaskHandler {
 impl TaskHandler {
     pub fn new() -> TaskHandler {
         // Set up a channel for communicating.
-        let (send, mut recv) = mpsc::channel(16);
+        let (send, mut recv) = mpsc::channel::<Task>(16);
 
         // Build the runtime for the new thread.
         //
@@ -56,7 +56,7 @@ impl TaskHandler {
         std::thread::spawn(move || {
             rt.block_on(async move {
                 while let Some(task) = recv.recv().await {
-                    tokio::spawn(long_running(task));
+                    tokio::spawn(long_running(task.to_print, task.delay));
                 }
 
                 // Once all senders have gone out of scope,
