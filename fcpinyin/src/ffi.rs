@@ -12,6 +12,7 @@ mod ffi {
     extern "Rust" {
         type RustPinyinEngine;
 
+        // Pass in a QuweiEngine ptr, then initialzie a scheduler with that ptr, then fn keyEvent could use scheduler to call Fcitx code
         fn init() -> Box<RustPinyinEngine>;
 
         fn query_candidates(&self, preedit: &str) -> Vec<CandidateWord>;
