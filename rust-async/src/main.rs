@@ -23,7 +23,7 @@ fn main() {
         delay: rng.gen_range(0..500),
     });
 
-    std::thread::sleep(Duration::from_millis(4000)); // Wait for the taks to finish.
+    std::thread::sleep(Duration::from_millis(4000)); // Wait for the tasks to finish.
 }
 
 pub struct Task {
