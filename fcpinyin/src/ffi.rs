@@ -19,11 +19,11 @@ mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("../fcitx5/src/dummy.h");
+        include!("../fcitx5/src/rs2cc.h");
 
-        type Dummy;
+        type Rs2Cc;
 
-        fn newDummy() -> UniquePtr<Dummy>;
+        fn newRs2Cc() -> UniquePtr<Rs2Cc>;
 
         fn sayHello(&self);
     }
@@ -31,13 +31,13 @@ mod ffi {
 
 struct RustPinyinEngine {
     fcpinyin: FullCloudPinyin,
-    dummy: UniquePtr<ffi::Dummy>
+    fcitx5: UniquePtr<ffi::Rs2Cc>
 }
 
 fn init() -> Box<RustPinyinEngine> {
     Box::new(RustPinyinEngine {
         fcpinyin: FullCloudPinyin::new(),
-        dummy: ffi::newDummy()
+        fcitx5: ffi::newRs2Cc()
     })
 }
 
@@ -54,7 +54,7 @@ impl RustPinyinEngine {
             })
         }
 
-        self.dummy.sayHello();
+        self.fcitx5.sayHello();
 
         words
     }

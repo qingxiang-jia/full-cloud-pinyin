@@ -7,14 +7,14 @@
 class QuweiEngine;
 
 namespace fcp {
-class Dummy {
+class Rs2Cc {
 public:
     void sayHello() const;
     void setEngine(QuweiEngine* engine);
     QuweiEngine* engine;
 };
 
-std::unique_ptr<Dummy> newDummy();
+std::unique_ptr<Rs2Cc> newRs2Cc();
 }
 
-#endif // _FCITX5_QUWEI_DUMMY_H_
+#endif // _FCITX5_QUWEI_RS2CC_H_
