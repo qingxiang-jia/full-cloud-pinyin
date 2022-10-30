@@ -5,11 +5,17 @@
 #include <memory>
 
 class QuweiEngine;
+class Str;
+template <typename T> class Vec;
 
 namespace fcp {
 class Rs2Cc {
 public:
     void sayHello() const;
+    void setState(Str preedit, Vec<Str> candidates);
+    void commit(int idx);
+    void pageUp();
+    void pageDown();
     void setEngine(QuweiEngine* engine);
     QuweiEngine* engine;
 };

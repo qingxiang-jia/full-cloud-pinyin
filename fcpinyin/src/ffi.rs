@@ -26,6 +26,14 @@ mod ffi {
         fn newRs2Cc() -> UniquePtr<Rs2Cc>;
 
         fn sayHello(&self);
+
+        fn setState(&self, preedit: String, candidates: Vec<String>);
+
+        fn commit(&self, idx: i32);
+
+        fn pageUp(&self);
+
+        fn pageDown(&self);
     }
 }
 
