@@ -5,6 +5,18 @@ void fcp::Rs2Cc::sayHello() const {
     std::cout << "hello~~~~";
 }
 
+void fcp::Rs2Cc::setState(rust::String preedit, rust::Vec<rust::String> candidates) const {
+}
+
+void fcp::Rs2Cc::commit(int idx) const {
+}
+
+void fcp::Rs2Cc::pageDown() const {
+}
+
+void fcp::Rs2Cc::pageUp() const {
+}
+
 void fcp::Rs2Cc::setEngine(QuweiEngine* engine) {
     this->engine = engine;
 }

@@ -5,17 +5,22 @@
 #include <memory>
 
 class QuweiEngine;
-class Str;
-template <typename T> class Vec;
+namespace rust {
+    inline namespace cxxbridge1 {
+        class String;
+        template <typename T> class Vec;
+    } 
+}
+        
 
 namespace fcp {
 class Rs2Cc {
 public:
     void sayHello() const;
-    void setState(Str preedit, Vec<Str> candidates);
-    void commit(int idx);
-    void pageUp();
-    void pageDown();
+    void setState(rust::String preedit, rust::Vec<::rust::String> candidates) const;
+    void commit(int idx) const;
+    void pageUp() const;
+    void pageDown() const;
     void setEngine(QuweiEngine* engine);
     QuweiEngine* engine;
 };
