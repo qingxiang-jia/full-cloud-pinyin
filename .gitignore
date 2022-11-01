@@ -4,5 +4,5 @@ target/
 *.kdev4
 .cache/
 *.out
-fcpinyin/ffi.h
-fcpinyin/ffi.cc
+# fcpinyin/ffi.h
+# fcpinyin/ffi.cc
