@@ -3,15 +3,9 @@
 
 #include <iostream>
 #include <memory>
+#include "../../fcpinyin/cxx.h"
 
 class QuweiEngine;
-namespace rust {
-    inline namespace cxxbridge1 {
-        class String;
-        template <typename T> class Vec;
-    } 
-}
-        
 
 namespace fcp {
 class Rs2Cc {
