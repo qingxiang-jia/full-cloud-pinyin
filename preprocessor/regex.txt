@@ -1,0 +1,11 @@
+namespace rust {(.|\n)+?} \/\/ namespace rust
+- matches the whole cxx block in ffi.cc that will be turned into cxx.h
+
+namespace fcp {(.|\n)+} \/\/ namespace rust
+- matches the whole fcp block in ffi.cc that will be turned in to ffi.cc
+
+#include (.|\n)+<utility>
+- matches the entire include section in ffi.cc
+
+namespace fcp {(.|\n)+} \/\/ namespace fcp
+- matches the entire section of fcp header in ffi.h
