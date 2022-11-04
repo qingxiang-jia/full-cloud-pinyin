@@ -1,9 +1,13 @@
 use regex::Regex;
 use std::fs;
+use std::env;
 
 fn main() {
-    let code = fs::read_to_string("input.cc").expect("Failed to load the file.");
-
+    // Read line from file
+    let args: Vec<String> = env::args().collect();
+    let src_path = &args[1]; // 0 is the program itself
+    let code = fs::read_to_string(src_path).expect("Failed to load the file.");
+    
     // Set up regex to extract code
     let re_cxx = Regex::new("(namespace rust \\{(?:.|\n)+?\\} // namespace\n\\} // namespace cxxbridge1\n\\} // namespace rust)").expect("re_cxx is invalid.");
     let re_fcp = Regex::new("namespace fcp \\{(?:.|\n)+").expect("re_fcp is invalid.");
