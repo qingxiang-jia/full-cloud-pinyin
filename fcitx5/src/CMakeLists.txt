@@ -1,10 +1,14 @@
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
+# Take the static lib (Rust code) and a C++ header so C++ sees it as C++ code
 set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.a")
-set(RUST_PART_CXX "${CMAKE_SOURCE_DIR}/../fcpinyin/ffi.cc")
+set(RUST_PART_CXX "${CMAKE_SOURCE_DIR}/../fcpinyin/ffi.h")
+
 add_library(rust_part STATIC ${RUST_PART_CXX})
+set_target_properties(rust_part PROPERTIES LINKER_LANGUAGE CXX) # Hint CMake that the header file is for C++
 target_link_libraries(rust_part ${RUST_PART_LIB} ssl crypto stdc++ gcc_s util rt pthread m dl c)
+
 include_directories("${CMAKE_SOURCE_DIR}/../fcpinyin")
 
 # Make sure it produce quwei.so instead of libquwei.so

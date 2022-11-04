@@ -12,7 +12,6 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-
 namespace rust {
 inline namespace cxxbridge1 {
 // #include "rust/cxx.h"
