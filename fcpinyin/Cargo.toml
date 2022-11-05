@@ -22,3 +22,7 @@ name = "fcp"
 [[bin]]
 path = "src/core/main.rs"
 name = "fcp_demo"
+
+[[bin]]
+path = "src/cli/main.rs"
+name = "cargo-fcp"

@@ -6,6 +6,12 @@ fn main() {
     // Read line from file
     let args: Vec<String> = env::args().collect();
     let src_path = &args[1]; // 0 is the program itself
+    
+    cxx_gen_cc_to_separate_h(src_path);
+}
+
+fn cxx_gen_cc_to_separate_h(src_path: &String) {
+    // Read line from file
     let code = fs::read_to_string(src_path).expect("Failed to load the file.");
     
     // Set up regex to extract code
