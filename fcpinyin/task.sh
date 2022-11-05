@@ -12,8 +12,8 @@ if [ $1 == "gen-lib" ]; then
 fi
 
 if [ $1 == "gen-cxx" ]; then
-    cxxbridge src/ffi.rs > ffi.cc
-    cxxbridge src/ffi.rs --header > ffi.h
+    cxxbridge src/core/ffi.rs > ffi.cc
+    cxxbridge src/core/ffi.rs --header > ffi.h
     exit 0
 fi
 
