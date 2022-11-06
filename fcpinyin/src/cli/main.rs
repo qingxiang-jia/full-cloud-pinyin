@@ -30,7 +30,7 @@ fn main() {
             let mut handle = Command::new("cargo")
                 .args(["rustc", "--lib", "--release", "--crate-type", "staticlib"])
                 .spawn()
-                .expect("ls command failed to start");
+                .expect("cargo command failed to start");
             let _ = handle.wait();
         }
         &_ => {
