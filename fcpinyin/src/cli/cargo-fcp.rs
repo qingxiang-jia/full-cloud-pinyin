@@ -23,7 +23,20 @@ fn main() {
             cxx_gen_cc_to_separate_h(code);
         }
         "gen-lib" => {
-            run_cmd!(cargo rustc --lib --release --crate-type staticlib).expect("Failed to run cargo.")
+            let output = run_fun!(cargo rustc --lib --release --crate-type staticlib).expect("Failed to run cargo.");
+            println!("{}", output);
+        }
+        "init" => {
+            let pwd = run_fun!(pwd).expect("Failed to run pwd."); // Workaround the cd bug of cmd_lib
+            if let Err(err) = run_cmd!{
+                rm -rf ../fcitx5/build;
+                mkdir ../fcitx5/build;
+                cd $pwd/../fcitx5/build;
+                pwd;
+                cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..;
+            } {
+                println!("{}", err);
+            }
         }
         &_ => {
             println!("No such option.");
