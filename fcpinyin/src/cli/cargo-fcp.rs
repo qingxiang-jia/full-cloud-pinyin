@@ -1,7 +1,9 @@
+use cmd_lib;
+use cmd_lib::run_cmd;
+use cmd_lib::run_fun;
 use regex::Regex;
 use std::env;
 use std::fs;
-use std::process::Command;
 use std::str;
 
 fn main() {
@@ -17,21 +19,11 @@ fn main() {
 
     match arg2.as_str() {
         "gen-cxx" => {
-            let cxx_output = Command::new("cxxbridge")
-                .args(["src/core/ffi.rs"])
-                .output()
-                .expect("Faild to run cxxbridge");
-            let code = std::str::from_utf8(&cxx_output.stdout)
-                .expect("CXX output cannot be decoded as UTF-8.")
-                .to_owned();
+            let code = run_fun!(cxxbridge src/core/ffi.rs).expect("Failed to run cxxbridge.");
             cxx_gen_cc_to_separate_h(code);
         }
         "gen-lib" => {
-            let mut handle = Command::new("cargo")
-                .args(["rustc", "--lib", "--release", "--crate-type", "staticlib"])
-                .spawn()
-                .expect("cargo command failed to start");
-            let _ = handle.wait();
+            run_cmd!(cargo rustc --lib --release --crate-type staticlib).expect("Failed to run cargo.")
         }
         &_ => {
             println!("No such option.");
