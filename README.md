@@ -28,12 +28,10 @@ So instead of running CMake directly, using commands in `task.sh` is probably ea
 1. Run `cargo install --path . --bin cargo-fcp --force` to compile helper code and install it to your local cargo repository. (You can remove it by running `cargo uninstall fcpinyin`.)
 2. `cargo fcp gen-lib` to compile the Rust code into a statically linked object file.
 3. `cargo fcp gen-cxx` to generate header files for that object file using CXX. You need a copy of cxxbridge. I built it from source [here](https://github.com/dtolnay/cxx/tree/master/gen/cmd). 
-
-In `fcitx5/`,
-
-- `./task.sh --init` to get the out-of-source build directory created and a bunch of CMake intialization work
-- `./task.sh --build` to build the C++ code and link with the previously built object files
-- `./task.sh --install` to install the binary to OS to test
+4. `cargo fcp init` to get the out-of-source build directory created and a bunch of CMake intialization work
+5. `cargo fcp build` to build the C++ code and link with the previously built object files
+6. `cargo fcp install` to install the binary to OS to test
+7. `cargo fcp uninstall` to uninstall the binary from the OS
 
 Note: the installation directory is specific to Arch. If you use something else, the installtion direction might need to be adjusted. I am new to both Rust and C++ so a lot of these setup may be overly complicated. Let me know if there's a better approach.
 
