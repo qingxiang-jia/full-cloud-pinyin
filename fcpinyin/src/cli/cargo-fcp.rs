@@ -38,6 +38,14 @@ fn main() {
                 println!("{}", err);
             }
         }
+        "build" => {
+            if let Err(err) = run_cmd! {
+                cd ../fcitx5;
+                cmake --build ./build;
+            } {
+                println!("{}", err);
+            }
+        }
         &_ => {
             println!("No such option.");
             return;
