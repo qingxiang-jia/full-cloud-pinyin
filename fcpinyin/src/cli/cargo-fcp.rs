@@ -54,6 +54,14 @@ fn main() {
                 println!("{}", err);
             }
         }
+        "uninstall" => {
+            if let Err(err) = run_cmd! {
+                cd ../fcitx5;
+                bash -c "sudo xargs -I{} rm {} < ./build/install_manifest.txt"; // Wordaround {} in command
+            } {
+                println!("{}", err);
+            }
+        }
         &_ => {
             println!("No such option.");
             return;
