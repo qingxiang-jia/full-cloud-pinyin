@@ -30,7 +30,7 @@ fi
 
 if [ $1 == "uninstall" ]; then
     cd ./build
-    sudo xargs -I{} rm "{}" < ./install_manifest.txt
+    sudo xargs -I{} rm {} < ./install_manifest.txt
     cd ../
     exit 0
 fi
