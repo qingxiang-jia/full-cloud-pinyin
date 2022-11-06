@@ -46,6 +46,14 @@ fn main() {
                 println!("{}", err);
             }
         }
+        "install" => {
+            if let Err(err) = run_cmd! {
+                cd ../fcitx5;
+                sudo cmake --install ./build;
+            } {
+                println!("{}", err);
+            }
+        }
         &_ => {
             println!("No such option.");
             return;
