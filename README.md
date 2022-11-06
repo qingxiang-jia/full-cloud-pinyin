@@ -8,11 +8,8 @@ Using pinyin on Linux has been improved a lot, especially with Fcitx (both 4 and
 
 ## Project Structure
 
- - fcitx5 - the implementation based on Fcitx5.
- - ibus - the implementation based on IBus.
- - fcpinyin - the part that gets candidates from Google Input Tools.
- - cpp-17-async - play around ways to do async in C++ 17.
- - cpp-rust-interop - play around ways to do C++/Rust interop.
+ - fcitx5 - necessary code that makes fcpinyin works on Fcitx 5.
+ - fcpinyin - gets candidates from Google Input Tools and does caching.
 
 ## How to Build
 
@@ -28,8 +25,9 @@ The whole build step looks like this:
 
 So instead of running CMake directly, using commands in `task.sh` is probably easier. In particular, in `fcpinyin/`
 
-- `./task.sh gen-lib` to compile the Rust code into a statically linked object file
-- `./task.sh gen-cxx` to generate header files for that object file using CXX. You need a copy of cxxbridge. I built it from source [here](https://github.com/dtolnay/cxx/tree/master/gen/cmd).
+1. Run `cargo install --path . --bin cargo-fcp --force` to compile helper code and install it to your local cargo repository. (You can remove it by running `cargo uninstall fcpinyin`.)
+2. `cargo fcp gen-lib` to compile the Rust code into a statically linked object file.
+3. `cargo fcp gen-cxx` to generate header files for that object file using CXX. You need a copy of cxxbridge. I built it from source [here](https://github.com/dtolnay/cxx/tree/master/gen/cmd). 
 
 In `fcitx5/`,
 
