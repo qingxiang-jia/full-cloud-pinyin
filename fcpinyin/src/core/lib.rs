@@ -116,12 +116,9 @@ impl FullCloudPinyin {
             }
 
             if deserialized.depth >= depth {
-                println!("HIT {} @{:#?}", preedit, depth);
                 return deserialized.candidates;
             }
         }
-
-        println!("MISS {} @{:#?}", preedit, depth);
 
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth as i32);
 
