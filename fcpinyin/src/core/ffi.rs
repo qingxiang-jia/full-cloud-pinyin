@@ -1,6 +1,5 @@
 use crate::FullCloudPinyin;
 use ffi::CandidateWord;
-use cxx::UniquePtr;
 
 #[cxx::bridge(namespace = "fcp")]
 mod ffi {
@@ -17,35 +16,15 @@ mod ffi {
 
         fn query_candidates(&self, preedit: &str) -> Vec<CandidateWord>;
     }
-
-    unsafe extern "C++" {
-        include!("../fcitx5/src/rs2cc.h");
-
-        type Rs2Cc;
-
-        fn newRs2Cc() -> UniquePtr<Rs2Cc>;
-
-        fn sayHello(&self);
-
-        fn setState(&self, preedit: String, candidates: Vec<String>);
-
-        fn commit(&self, idx: i32);
-
-        fn pageUp(&self);
-
-        fn pageDown(&self);
-    }
 }
 
 struct RustPinyinEngine {
     fcpinyin: FullCloudPinyin,
-    fcitx5: UniquePtr<ffi::Rs2Cc>
 }
 
 fn init() -> Box<RustPinyinEngine> {
     Box::new(RustPinyinEngine {
         fcpinyin: FullCloudPinyin::new(),
-        fcitx5: ffi::newRs2Cc()
     })
 }
 
@@ -61,8 +40,6 @@ impl RustPinyinEngine {
                 len: candidate.matched_len.unwrap_or_else(|| preedit.len() as i32),
             })
         }
-
-        self.fcitx5.sayHello();
 
         words
     }
