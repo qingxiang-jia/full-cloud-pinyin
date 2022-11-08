@@ -14,7 +14,6 @@ sled = "0.34.7"
 bincode = "1.3.3"
 regex = "1.6.0"
 home = "0.5.4"
-cmd_lib = "1.3.0"
 
 [lib]
 path = "src/core/lib.rs"
@@ -23,7 +22,3 @@ name = "fcp"
 [[bin]]
 path = "src/core/main.rs"
 name = "fcp_demo"
-
-[[bin]]
-path = "src/cli/cargo-fcp.rs"
-name = "cargo-fcp"
