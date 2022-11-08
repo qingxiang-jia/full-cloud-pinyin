@@ -240,10 +240,6 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
         for (unsigned long i = 0; i < candidates.size(); i++) {
             std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(this, candidates[i].word, candidates[i].len);
             candidateList->append(std::move(candidate));
-            if (i < 5) {
-                first5 += candidates[i].word.c_str();
-                first5 += ' ';
-            }
         }
 
         candidates.clear();
@@ -256,7 +252,6 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
             auto currPage = pageable->currentPage();
             candidateList->setPage(currPage);
         }
-        FCITX_INFO() << "About to set candidate as: " << first5;
         ic_->inputPanel().setCandidateList(std::move(candidateList));
     }
 
@@ -274,10 +269,6 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
 
 void QuweiEngine::getCandidatesAndUpdateAsync(bool append) {
     call_async([this, append](){ dispatcher->schedule([this, append](){ getUpdateCandidatesRefreshUI(append); }); });
-}
-
-void QuweiEngine::sayHello() {
-    std::cout << "hello~~~~";
 }
 
 std::string QuweiEngine::getPreedit() {
