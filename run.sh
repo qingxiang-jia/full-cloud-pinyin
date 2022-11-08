@@ -15,7 +15,7 @@ fi
 
 if [ $1 == "gen-cxx" ]; then
     cd ./fcpinyin
-    cxxbridge src/core/ffi.rs > ffi.h
+    cxxbridge src/ffi.rs > ffi.h
     cd ../
     exit 0
 fi

@@ -16,9 +16,9 @@ regex = "1.6.0"
 home = "0.5.4"
 
 [lib]
-path = "src/core/lib.rs"
+path = "src/lib.rs"
 name = "fcp"
 
 [[bin]]
-path = "src/core/main.rs"
+path = "src/main.rs"
 name = "fcp_demo"
