@@ -8,7 +8,14 @@ fi
 # If we specify cdylib or staticlib in Cargo.toml, the main.rs can't properly reference contents in lib.rs.
 if [ $1 == "gen-lib" ]; then
     cd ./fcpinyin
-    cargo rustc --lib --release --crate-type staticlib
+    cargo -Z unstable-options rustc --lib --release --crate-type staticlib -- --print native-static-libs
+    cd ../
+    exit 0
+fi
+
+if [ $1 == "rc" ]; then
+    cd ./c-based-ffi
+    cargo -Z unstable-options rustc --lib --release --crate-type staticlib -- --print native-static-libs
     cd ../
     exit 0
 fi
