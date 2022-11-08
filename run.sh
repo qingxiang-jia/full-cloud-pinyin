@@ -37,6 +37,23 @@ if [ $1 == "init" ]; then
     exit 0
 fi
 
+if [ $1 == "ci" ]; then
+    cd ./c-based-ffi
+    rm -rf ./build
+    mkdir build
+    cd ./build
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
+    cd ../../
+    exit 0
+fi
+
+if [ $1 == "cb" ]; then
+    cd ./c-based-ffi/build
+    cmake --build .
+    cd ../../
+    exit 0
+fi
+
 if [ $1 == "build" ]; then
     cd ./fcitx5/build
     cmake --build .

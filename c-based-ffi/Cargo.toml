@@ -9,4 +9,5 @@ edition = "2021"
 libc = "0.2.137"
 
 [lib]
-crate-type = ["cdylib"]
+path = "src/lib.rs"
+name = "rust_code"
