@@ -9,5 +9,5 @@ edition = "2021"
 libc = "0.2.137"
 
 [lib]
-path = "src/lib.rs"
-name = "rust_code"
+path = "src/rust_api.rs"
+name = "rust_api"

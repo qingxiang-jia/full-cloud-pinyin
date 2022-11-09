@@ -4,3 +4,5 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(main main.c)
 target_link_libraries(main "${CMAKE_SOURCE_DIR}/target/release/librust_code.a")
+
+add_library(c_api STATIC c_api.c)

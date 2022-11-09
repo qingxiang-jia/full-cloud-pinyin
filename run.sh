@@ -75,4 +75,9 @@ if [ $1 == "uninstall" ]; then
     exit 0
 fi
 
+if [ $1 == "cr" ]; then
+    ./c-based-ffi/build/src/main
+    exit 0
+fi
+
 echo "Nothing done"
