@@ -1,4 +1,5 @@
 #pragma once
 #include <inttypes.h>
+#include <stdint.h>
 
-uint32_t c_add(uint32_t, uint32_t);
+void c_print_u32(uint32_t);

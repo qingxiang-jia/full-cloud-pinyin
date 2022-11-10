@@ -1,5 +1,7 @@
 #include "c_api.h"
+#include <stdint.h>
+#include <stdio.h>
 
-uint32_t c_add(uint32_t a, uint32_t b) {
-  return a + b;
+void c_print_u32(uint32_t n) {
+  printf("N=%d\n", n);
 }
