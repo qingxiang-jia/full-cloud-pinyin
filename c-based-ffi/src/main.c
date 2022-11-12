@@ -4,12 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-int main(void) {
-  uint32_t sum = r_add_cb(12, 10, c_print_u32);
-  printf("The sum is %d, end of main.\n", sum);
-
-  key(SPACE);
-
+void run_callbacks_as_function() {
   commit(3);
 
   pageUp();
@@ -30,4 +25,15 @@ int main(void) {
   uint16_t cnt = 4;
 
   setState(preedit, candidates, lens, cnt);
+}
+
+int main(void) {
+  uint32_t sum = r_add_cb(12, 10, c_print_u32);
+  printf("The sum is %d, end of main.\n", sum);
+
+  key(SPACE);
+
+  r_run_callbacks(commit, pageUp, pageDown, setState);
+
+  // run_callbacks_as_function(); // Run them from C side (they are supposed to be run from Rust side)
 }

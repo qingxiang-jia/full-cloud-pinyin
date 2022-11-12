@@ -51,4 +51,4 @@ void pageDown();
 // preedit should be a readonly pointer, it will be freed by Rust side
 // the same is true for candidates and lens
 // candidates points to an array of UTF-8 encoded CString
-void setState(char *preedit, int8_t **candidates, uint8_t *lens, uint16_t cnt);
+void setState(char *preedit, int8_t **candidates, uint8_t *lens, size_t cnt);

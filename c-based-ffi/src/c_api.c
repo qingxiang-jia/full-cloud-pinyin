@@ -111,13 +111,13 @@ void pageUp() { printf("pageUp()\n"); }
 
 void pageDown() { printf("pageDown()\n"); }
 
-void setState(char *preedit, int8_t **candidates, uint8_t *lens, uint16_t cnt) {
+void setState(char *preedit, int8_t **candidates, uint8_t *lens, size_t cnt) {
   printf("Setting state BEGIN\n");
 
   printf("preedit: %s\n", preedit);
   printf("candidates address is %p\n", candidates);
 
-  for (uint16_t i = 0; i < cnt; i++) {
+  for (size_t i = 0; i < cnt; i++) {
     printf("candidate matching length: %d\n", lens[i]);
   }
   
