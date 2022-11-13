@@ -52,7 +52,7 @@ impl FullCloudPinyin {
 
         let config = sled::Config::default()
             .path(path.as_path())
-            .cache_capacity(10 * 1024 * 1024)
+            .cache_capacity(100 * 1024 * 1024)
             .flush_every_ms(Some(5 * 60 * 1000));
 
         let db = match config.open() {
