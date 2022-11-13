@@ -8,6 +8,31 @@ use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Candidates {
+    depth: QueryDepth,
+    candidates: Vec<Candidate>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Candidate {
+    pub word: String,
+    pub annotation: String,
+    pub matched_len: Option<i32>,
+}
+
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
+enum QueryDepth {
+    D1 = 11,
+    D2 = 21,
+    D3 = 41,
+    D4 = 81,
+    D5 = 161,
+    D6 = 321,
+    D7 = 641,
+    D8 = 1281,
+}
+
 // New async implementation of FullCloudPinyin
 #[derive(Debug)]
 pub struct Fcp {
@@ -202,31 +227,6 @@ pub struct FullCloudPinyin {
     last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Candidates {
-    depth: QueryDepth,
-    candidates: Vec<Candidate>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Candidate {
-    pub word: String,
-    pub annotation: String,
-    pub matched_len: Option<i32>,
-}
-
-#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
-enum QueryDepth {
-    D1 = 11,
-    D2 = 21,
-    D3 = 41,
-    D4 = 81,
-    D5 = 161,
-    D6 = 321,
-    D7 = 641,
-    D8 = 1281,
 }
 
 impl FullCloudPinyin {
