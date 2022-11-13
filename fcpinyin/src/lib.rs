@@ -8,6 +8,23 @@ use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
 
+type FnCommit = unsafe extern "C" fn(idx: u16);
+type FnVoid = unsafe extern "C" fn();
+type FnSetState = unsafe extern "C" fn(
+    preedit: *const i8,
+    candidates: *const *const i8,
+    lens: *const u16,
+    cnt: usize,
+);
+
+#[repr(C)]
+pub struct Fcitx5 {
+    commit: FnCommit,
+    page_up: FnVoid,
+    page_down: FnVoid,
+    set_state: FnSetState,
+}
+
 #[repr(u8)]
 pub enum Key {
     A,
@@ -94,11 +111,12 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
+    fcitx5: Fcitx5
 }
 
 impl Fcp {
     #[no_mangle]
-    pub extern "C" fn new() -> Self {
+    pub extern "C" fn new(fcitx5: Fcitx5) -> Self {
         let mut path = match Self::make_config_dir_if_not_already() {
             Ok(path_buf) => path_buf,
             Err(error) => panic!("Failed to create config dir: {:#?}", error),
@@ -121,6 +139,7 @@ impl Fcp {
             last_query: Mutex::new("".to_owned()),
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
+            fcitx5
         }
     }
 
