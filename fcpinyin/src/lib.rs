@@ -97,7 +97,8 @@ pub struct Fcp {
 }
 
 impl Fcp {
-    pub fn new() -> Self {
+    #[no_mangle]
+    pub extern "C" fn new() -> Self {
         let mut path = match Self::make_config_dir_if_not_already() {
             Ok(path_buf) => path_buf,
             Err(error) => panic!("Failed to create config dir: {:#?}", error),
@@ -121,6 +122,13 @@ impl Fcp {
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }
+    }
+
+    #[no_mangle]
+    pub extern "C" fn key(&self, key: Key) {
+        tokio::spawn(async move {
+            key(key).await;
+        });
     }
 
     pub async fn key(&self, key: Key) {
