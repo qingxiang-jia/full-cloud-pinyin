@@ -8,17 +8,57 @@ use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Candidates {
-    depth: QueryDepth,
-    candidates: Vec<Candidate>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Candidate {
-    pub word: String,
-    pub annotation: String,
-    pub matched_len: Option<i32>,
+#[repr(u8)]
+pub enum Key {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
+    Num0,
+    Num1,
+    Num2,
+    Num3,
+    Num4,
+    Num5,
+    Num6,
+    Num7,
+    Num8,
+    Num9,
+    Enter,
+    Space,
+    BackSpace,
+    LeftControl,
+    RightControl,
+    LeftShift,
+    RightShift,
+    LeftBracket,
+    RightBracket,
+    Minus,
+    Equal,
+    Comma,
+    Period,
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
@@ -31,6 +71,19 @@ enum QueryDepth {
     D6 = 321,
     D7 = 641,
     D8 = 1281,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Candidates {
+    depth: QueryDepth,
+    candidates: Vec<Candidate>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Candidate {
+    pub word: String,
+    pub annotation: String,
+    pub matched_len: Option<i32>,
 }
 
 // New async implementation of FullCloudPinyin
@@ -68,6 +121,10 @@ impl Fcp {
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }
+    }
+
+    pub async fn key(&self, key: Key) {
+
     }
 
     pub async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
