@@ -13,14 +13,14 @@ void run_callbacks_as_function() {
 
   char *preedit = "abc";
 
-  int8_t *candidates[4] = {
-      (int8_t[]){228, 184, 128}, // 一
-      (int8_t[]){233, 148, 174}, // 键
-      (int8_t[]){228, 184, 137}, // 三 
-      (int8_t[]){232, 191, 158}, // 连
+  int16_t *candidates[4] = {
+      (int16_t[]){228, 184, 128}, // 一
+      (int16_t[]){233, 148, 174}, // 键
+      (int16_t[]){228, 184, 137}, // 三 
+      (int16_t[]){232, 191, 158}, // 连
   };
 
-  uint8_t lens[] = {1, 2, 3, 4};
+  uint16_t lens[] = {1, 2, 3, 4};
 
   uint16_t cnt = 4;
 

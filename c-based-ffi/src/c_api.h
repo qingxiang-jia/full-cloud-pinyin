@@ -42,7 +42,7 @@ void c_print_u32(uint32_t);
 
 void key(enum Key key);
 
-void commit(uint8_t idx);
+void commit(uint16_t idx);
 
 void pageUp();
 
@@ -51,4 +51,4 @@ void pageDown();
 // preedit should be a readonly pointer, it will be freed by Rust side
 // the same is true for candidates and lens
 // candidates points to an array of UTF-8 encoded CString
-void setState(char *preedit, int8_t **candidates, uint8_t *lens, size_t cnt);
+void setState(char *preedit, int16_t **candidates, uint16_t *lens, size_t cnt);

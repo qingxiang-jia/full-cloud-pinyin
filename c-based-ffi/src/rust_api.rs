@@ -2,12 +2,12 @@ use std::ffi::CString;
 
 type Callback = unsafe extern "C" fn(n: u32);
 
-type FnCommit = unsafe extern "C" fn(idx: u8);
+type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
 type FnSetState = unsafe extern "C" fn(
     preedit: *const i8,
     candidates: *const *const i8,
-    lens: *const u8,
+    lens: *const u16,
     cnt: usize,
 );
 

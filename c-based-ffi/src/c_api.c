@@ -105,13 +105,13 @@ void key(enum Key key) {
   }
 }
 
-void commit(uint8_t idx) { printf("commit(%d)\n", idx); }
+void commit(uint16_t idx) { printf("commit(%d)\n", idx); }
 
 void pageUp() { printf("pageUp()\n"); }
 
 void pageDown() { printf("pageDown()\n"); }
 
-void setState(char *preedit, int8_t **candidates, uint8_t *lens, size_t cnt) {
+void setState(char *preedit, int16_t **candidates, uint16_t *lens, size_t cnt) {
   printf("Setting state BEGIN\n");
 
   printf("preedit: %s\n", preedit);
