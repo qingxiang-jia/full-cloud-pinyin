@@ -17,6 +17,7 @@ type FnSetState = unsafe extern "C" fn(
     cnt: usize,
 );
 
+// Thread-safe Fcitx 5 API based on EventScheduler
 #[repr(C)]
 pub struct Fcitx5 {
     commit: FnCommit,
@@ -64,6 +65,7 @@ pub enum Key {
     Num8,
     Num9,
     Enter,
+    Esc,
     Space,
     BackSpace,
     LeftControl,
@@ -108,6 +110,7 @@ pub struct Candidate {
 pub struct Fcp {
     http: reqwest::Client,
     cache: sled::Db,
+    preedit: Mutex<String>,
     last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
@@ -136,6 +139,7 @@ impl Fcp {
         Self {
             http: reqwest::Client::new(),
             cache: db,
+            preedit: Mutex::new("".to_owned()),
             last_query: Mutex::new("".to_owned()),
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
@@ -144,14 +148,50 @@ impl Fcp {
     }
 
     #[no_mangle]
-    pub extern "C" fn key(&self, key: Key) {
-        tokio::spawn(async move {
-            key(key).await;
-        });
+    pub extern "C" fn key(&self, key: Key) -> bool {
+        let preedit_shared = self.preedit.lock().expect("Failed to lock preedit.");
+        let preedit_empty = preedit_shared.len() == 0;
+        std::mem::drop(preedit_shared);
+        
+        if preedit_empty { // We are not in a typing session
+            match key {
+                A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | BackSpace | Equal | Minus => {
+                    // Creat a new typing session with the newly typed character
+                    tokio::spawn(async move {
+                        key(key).await;
+                    });
+                    true
+                },
+                _ => false
+            }
+        } else { // We are in a typing session
+            match key {
+                Enter => {
+                    // commit and terminate the session
+                    // TODO missing binding API
+                    true
+                },
+                Esc => {
+                    // reset preedit and terminate session
+                    // TODO missing binding API
+                    true
+                },
+                A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | BackSpace | Equal | Minus => {
+                    // Creat a new typing session with the newly typed character
+                    tokio::spawn(async move {
+                        key(key).await;
+                    });
+                    true
+                }
+                _ => false
+            }
+        }
     }
 
     pub async fn key(&self, key: Key) {
-
+        let preedit_shared = self.preedit.lock().expect("Failed to lock preedit.");
+        let mut preedit = preedit_shared.clone();
+        std::mem::drop(preedit_shared);
     }
 
     pub async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
