@@ -37,13 +37,6 @@ void call_async(F&& lambda) {
     });
 }
 
-static const std::array<fcitx::Key, 10> selectionKeys = {
-    fcitx::Key{FcitxKey_1}, fcitx::Key{FcitxKey_2}, fcitx::Key{FcitxKey_3},
-    fcitx::Key{FcitxKey_4}, fcitx::Key{FcitxKey_5}, fcitx::Key{FcitxKey_6},
-    fcitx::Key{FcitxKey_7}, fcitx::Key{FcitxKey_8}, fcitx::Key{FcitxKey_9},
-    fcitx::Key{FcitxKey_0},
-};
-
 static const std::vector<fcitx::Key> candListSelectKey = {
     fcitx::Key{FcitxKey_1}, fcitx::Key{FcitxKey_2}, fcitx::Key{FcitxKey_3},
     fcitx::Key{FcitxKey_4}, fcitx::Key{FcitxKey_5}, fcitx::Key{FcitxKey_6},
@@ -114,15 +107,18 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
     ic_ = keyEvent.inputContext();
 
     if (auto candidateList = ic_->inputPanel().candidateList()) {
-        int idx = keyEvent.key().keyListIndex(selectionKeys);
-        
-        // Select a candidate by keying in 0-9
-        if (idx >= 0 && idx < candidateList->size()) {
-            keyEvent.accept();
-            candidateList->candidate(idx).select(ic_);
-            return;
-        }
+        fcitx::KeySym key = keyEvent.key().sym();
 
+        if (fcitx::KeySym::FcitxKey_0 <= key && key <= fcitx::KeySym::FcitxKey_9) {
+            auto idx = key - fcitx::KeySym::FcitxKey_1;
+            // Select a candidate by keying in 0-9
+            if (idx >= 0 && idx < candidateList->size()) {
+                keyEvent.accept();
+                candidateList->candidate(idx).select(ic_);
+                return;
+            }
+        }
+        
         // Select a candidate by space key
         if (keyEvent.key().check(FcitxKey_space)) {
             keyEvent.accept();
