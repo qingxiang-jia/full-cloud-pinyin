@@ -44,14 +44,6 @@ static const std::vector<fcitx::Key> candListSelectKey = {
     fcitx::Key{FcitxKey_0},
 };
 
-static const std::array<fcitx::Key, 1> prevPageKeys = {
-    fcitx::Key{FcitxKey_minus}
-};
-
-static const std::array<fcitx::Key, 1> nextPageKeys = {
-    fcitx::Key{FcitxKey_equal}
-};
-
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
     QuweiCandidate(QuweiEngine *engine, ::rust::String text, int matched_len)
@@ -120,7 +112,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         }
         
         // Select a candidate by space key
-        if (keyEvent.key().check(FcitxKey_space)) {
+        if (key == FcitxKey_space) {
             keyEvent.accept();
             auto idx = candidateList->cursorIndex();
             candidateList->candidate(idx).select(ic_);
@@ -128,7 +120,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         }
 
         // Go to the next page by keying in the next page keys
-        if (keyEvent.key().checkKeyList(nextPageKeys)) {
+        if (key == FcitxKey_equal) {
             if (auto *pageable = candidateList->toPageable();
                 pageable) {
                 if (pageable->hasNext()) {
@@ -143,7 +135,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         }
 
         // Go to the previous page by previous page keys
-        if (keyEvent.key().checkKeyList(prevPageKeys)) {
+        if (key == FcitxKey_minus) {
             if (auto *pageable = candidateList->toPageable();
                 pageable && pageable->hasPrev()) {
                 keyEvent.accept();
@@ -156,13 +148,13 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
 
         // Go to the next candidate by ->
         if (auto *cursorMovable = candidateList->toCursorMovable()) {
-            if (keyEvent.key().check(FcitxKey_Right)) {
+            if (key == FcitxKey_Right) {
                 cursorMovable->nextCandidate();
                 ic_->updateUserInterface(
                     fcitx::UserInterfaceComponent::InputPanel);
                 return keyEvent.filterAndAccept();
             }
-            if (keyEvent.key().check(FcitxKey_Left)) {
+            if (key == FcitxKey_Left) {
                 cursorMovable->prevCandidate();
                 ic_->updateUserInterface(
                     fcitx::UserInterfaceComponent::InputPanel);
@@ -171,21 +163,21 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         }
 
         // Remove one character from buffer
-        if (keyEvent.key().check(FcitxKey_BackSpace)) {
+        if (key == FcitxKey_BackSpace) {
             buffer_.backspace();
             getCandidatesAndUpdateAsync();
             return keyEvent.filterAndAccept();
         }
 
         // Commit buffer as is (i.e., not Chinese)
-        if (keyEvent.key().check(FcitxKey_Return)) {
+        if (key == FcitxKey_Return) {
             ic_->commitString(buffer_.userInput());
             reset();
             return keyEvent.filterAndAccept();
         }
 
         // Terminate this input session
-        if (keyEvent.key().check(FcitxKey_Escape)) {
+        if (key == FcitxKey_Escape) {
             reset();
             return keyEvent.filterAndAccept();
         }
