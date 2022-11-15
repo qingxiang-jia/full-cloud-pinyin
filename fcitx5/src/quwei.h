@@ -31,13 +31,6 @@ public:
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
 
-    void select(const int idx);
-    void setPreedit(std::string preedit);
-    void setCandidates(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
-    void getCandidatesAndUpdateAsync(bool append = false);
-    void preeditRemoveFirstN(int lenToRemove);
-    void reset();
-
     std::unique_ptr<RustPinyin> rustPinyin_;
     std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 
@@ -48,7 +41,13 @@ private:
     std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
     std::vector<unsigned long> lens;
 
+    void select(const int idx);
+    void setPreedit(std::string preedit);
+    void setCandidates(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
+    void getCandidatesAndUpdateAsync(bool append = false);
     void getUpdateCandidatesRefreshUI(bool append);
+    void preeditRemoveFirstN(int lenToRemove);
+    void reset();
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
