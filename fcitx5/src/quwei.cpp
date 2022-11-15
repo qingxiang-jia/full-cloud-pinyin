@@ -39,32 +39,8 @@ void call_async(F&& lambda) {
 
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
-    QuweiCandidate(QuweiEngine *engine, ::rust::String text, int matched_len)
-        : engine_(engine), matched_len(matched_len) {
-        setText(fcitx::Text(std::move(text.c_str())));
-    }
-
-    void select(fcitx::InputContext *inputContext) const override {
-        auto preedit = engine_->getPreedit();
-
-        if (preedit.length() == matched_len) {
-            inputContext->commitString(text().toString());
-            engine_->reset();
-        } else if (preedit.length() > matched_len) {
-            // Partial match
-            inputContext->commitString(text().toString());
-            // Update preedit
-            engine_->preeditRemoveFront(matched_len);
-            // Query and update candidates for updated preedit and update UI
-            engine_->getCandidatesAndUpdateAsync();
-        } else {
-            FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
-        }
-    }
-
-private:
-    QuweiEngine *engine_;
-    unsigned long matched_len;
+    QuweiCandidate(::rust::String text) { setText(fcitx::Text(std::move(text.c_str()))); }
+    void select(fcitx::InputContext*) const {};
 };
 
 } // namespace
@@ -80,6 +56,27 @@ void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
     FCITX_UNUSED(entry);
     auto *inputContext = event.inputContext();
     ic_ = inputContext;
+}
+
+void QuweiEngine::select(const int idx)
+{
+    auto preedit = buffer_.userInput();
+    auto matchedLen = lens[idx];
+    auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
+
+    if (preedit.length() == matchedLen) {
+        ic_->commitString(candidate.toStringForCommit());
+        reset();
+    } else if (preedit.length() > matchedLen) {
+        // Partial match
+        ic_->commitString(candidate.toStringForCommit());
+        // Update preedit
+        preeditRemoveFront(matchedLen);
+        // Query and update candidates for updated preedit and update UI
+        getCandidatesAndUpdateAsync();
+    } else {
+        FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
+    }
 }
 
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
@@ -99,7 +96,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
             // Select a candidate by keying in 0-9
             if (idx >= 0 && idx < candidateList->size()) {
                 keyEvent.accept();
-                candidateList->candidate(idx).select(ic_);
+                select(idx);
                 return;
             }
         }
@@ -108,7 +105,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
         if (key == FcitxKey_space) {
             keyEvent.accept();
             auto idx = candidateList->cursorIndex();
-            candidateList->candidate(idx).select(ic_);
+            select(idx);
             return;
         }
 
@@ -217,9 +214,11 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
         candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
         candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
 
-        for (unsigned long i = 0; i < candidates.size(); i++) {
-            std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(this, candidates[i].word, candidates[i].len);
-            candidateList->append(std::move(candidate));
+        lens.clear();
+        for (auto& candidate : candidates) {
+            std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(candidate.word);
+            candidateList->append(std::move(candidateWord));
+            lens.push_back(candidate.len);
         }
 
         candidates.clear();

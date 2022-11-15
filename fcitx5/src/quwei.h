@@ -29,6 +29,7 @@ public:
     void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
 
+    void select(const int idx);
     void updateUI();
     void getCandidatesAndUpdateAsync(bool append = false);
     std::string getPreedit();
@@ -47,6 +48,7 @@ private:
     fcitx::InputContext* ic_;
     fcitx::InputBuffer buffer_ { { fcitx::InputBufferOption::AsciiOnly, fcitx::InputBufferOption::FixedCursor } };
     void getUpdateCandidatesRefreshUI(bool append);
+    std::vector<unsigned long> lens;
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
