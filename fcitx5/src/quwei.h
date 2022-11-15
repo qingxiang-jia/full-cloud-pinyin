@@ -12,6 +12,7 @@
 #include <fcitx-utils/inputbuffer.h>
 #include <fcitx/addonfactory.h>
 #include <fcitx/addonmanager.h>
+#include <fcitx/candidatelist.h>
 #include <fcitx/inputcontext.h>
 #include <fcitx/inputcontextproperty.h>
 #include <fcitx/inputmethodengine.h>
@@ -30,6 +31,7 @@ public:
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
 
     void select(const int idx);
+    void setState(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
     void updateUI();
     void getCandidatesAndUpdateAsync(bool append = false);
     void preeditRemoveFront(int lenToRemove);
@@ -47,6 +49,7 @@ private:
     fcitx::InputContext* ic_;
     fcitx::InputBuffer buffer_ { { fcitx::InputBufferOption::AsciiOnly, fcitx::InputBufferOption::FixedCursor } };
     void getUpdateCandidatesRefreshUI(bool append);
+    std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
     std::vector<unsigned long> lens;
 };
 
