@@ -88,9 +88,9 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     // FCITX_INFO() << keyEvent.key() << " isRelease=" << keyEvent.isRelease();
     ic_ = keyEvent.inputContext();
 
-    if (auto candidateList = ic_->inputPanel().candidateList()) {
-        fcitx::KeySym key = keyEvent.key().sym();
+    fcitx::KeySym key = keyEvent.key().sym();
 
+    if (auto candidateList = ic_->inputPanel().candidateList()) {
         if (FcitxKey_0 <= key && key <= FcitxKey_9) {
             auto idx = key - FcitxKey_1;
             // Select a candidate by keying in 0-9
@@ -169,9 +169,9 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     }
 
     // If buffer is empty and has keyed in a letter, show lookup table
-    if (keyEvent.key().isLAZ() || keyEvent.key().isUAZ()) {
+    if ((FcitxKey_A <= key && key <= FcitxKey_Z) || (FcitxKey_a <= key && key <= FcitxKey_z)) {
         // Append this key into the buffer
-        buffer_.type(keyEvent.key().sym());
+        buffer_.type(key);
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
         getCandidatesAndUpdateAsync();
