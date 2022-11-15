@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
-#ifndef _FCITX5_QUWEI_QUWEI_H_
-#define _FCITX5_QUWEI_QUWEI_H_
+
+#pragma once
 
 #include "rustpinyin.h"
 #include <fcitx-utils/eventdispatcher.h>
@@ -61,5 +61,3 @@ class QuweiEngineFactory : public fcitx::AddonFactory {
         return new QuweiEngine(manager->instance());
     }
 };
-
-#endif // _FCITX5_QUWEI_QUWEI_H_
