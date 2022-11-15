@@ -32,10 +32,10 @@ public:
 
     void select(const int idx);
     void setPreedit(std::string preedit);
-    void setState(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
+    void setCandidates(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
     void updateUI();
     void getCandidatesAndUpdateAsync(bool append = false);
-    void preeditRemoveFront(int lenToRemove);
+    void preeditRemoveFirstN(int lenToRemove);
     void reset();
 
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;

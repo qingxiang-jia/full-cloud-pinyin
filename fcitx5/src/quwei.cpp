@@ -71,7 +71,7 @@ void QuweiEngine::select(const int idx)
         // Partial match
         ic_->commitString(candidate.toStringForCommit());
         // Update preedit
-        preeditRemoveFront(matchedLen);
+        preeditRemoveFirstN(matchedLen);
         // Query and update candidates for updated preedit and update UI
         getCandidatesAndUpdateAsync();
     } else {
@@ -215,7 +215,7 @@ void QuweiEngine::setPreedit(std::string preedit)
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
 }
 
-void QuweiEngine::setState(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
+void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
 {
     if (candidates.empty()) {
         return;
@@ -251,7 +251,7 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
 
     auto candidates = rustPinyin_->fcp->query_candidates(preedit);
 
-    setState(candidates, append);
+    setCandidates(candidates, append);
 }
 
 void QuweiEngine::getCandidatesAndUpdateAsync(bool append)
@@ -259,7 +259,7 @@ void QuweiEngine::getCandidatesAndUpdateAsync(bool append)
     call_async([this, append]() { dispatcher->schedule([this, append]() { getUpdateCandidatesRefreshUI(append); }); });
 }
 
-void QuweiEngine::preeditRemoveFront(int lenToRemove)
+void QuweiEngine::preeditRemoveFirstN(int lenToRemove)
 {
     auto oldPreedit = buffer_.userInput();
     auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
