@@ -29,16 +29,14 @@ public:
 
     void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
+    void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
 
     void select(const int idx);
     void setPreedit(std::string preedit);
     void setCandidates(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
-    void updateUI();
     void getCandidatesAndUpdateAsync(bool append = false);
     void preeditRemoveFirstN(int lenToRemove);
     void reset();
-
-    void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
 
     auto instance() const { return instance_; }
 

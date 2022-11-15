@@ -185,12 +185,6 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     return;
 }
 
-void QuweiEngine::updateUI()
-{
-    ic_->inputPanel().reset();
-    setPreedit(buffer_.userInput());
-}
-
 std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
 {
     auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
@@ -268,14 +262,14 @@ void QuweiEngine::preeditRemoveFirstN(int lenToRemove)
 void QuweiEngine::reset()
 {
     buffer_.clear();
-    updateUI();
+    ic_->inputPanel().reset();
+    setPreedit(buffer_.userInput());
 }
 
 void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event)
 {
     FCITX_UNUSED(event);
-    buffer_.clear();
-    updateUI();
+    reset();
 }
 
 RustPinyin::RustPinyin()
