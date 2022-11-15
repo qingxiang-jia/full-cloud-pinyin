@@ -150,6 +150,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
         // Remove one character from buffer
         if (key == FcitxKey_BackSpace) {
             buffer_.backspace();
+            setPreedit(buffer_.userInput());
             getCandidatesAndUpdateAsync();
             return keyEvent.filterAndAccept();
         }
@@ -172,6 +173,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     if ((FcitxKey_A <= key && key <= FcitxKey_Z) || (FcitxKey_a <= key && key <= FcitxKey_z)) {
         // Append this key into the buffer
         buffer_.type(key);
+        setPreedit(buffer_.userInput());
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
         getCandidatesAndUpdateAsync();
@@ -208,6 +210,7 @@ void QuweiEngine::setPreedit(std::string preedit)
         ic_->inputPanel().setPreedit(text);
     }
     ic_->updatePreedit();
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
 }
 
 void QuweiEngine::setState(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
@@ -237,17 +240,7 @@ void QuweiEngine::setState(::rust::Vec<::fcp::CandidateWord> candidates, bool ap
     }
     ic_->inputPanel().setCandidateList(std::move(candidateList));
 
-    if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
-        fcitx::Text preedit(buffer_.userInput(), fcitx::TextFormatFlag::HighLight);
-        ic_->inputPanel().setClientPreedit(preedit);
-    } else {
-        fcitx::Text preedit(buffer_.userInput());
-        ic_->inputPanel().setPreedit(preedit);
-    }
-
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
-
-    ic_->updatePreedit();
 }
 
 void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
