@@ -224,7 +224,6 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
         candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
         candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
 
-        std::string first5;
         for (unsigned long i = 0; i < candidates.size(); i++) {
             std::unique_ptr<fcitx::CandidateWord> candidate = std::make_unique<QuweiCandidate>(this, candidates[i].word, candidates[i].len);
             candidateList->append(std::move(candidate));
