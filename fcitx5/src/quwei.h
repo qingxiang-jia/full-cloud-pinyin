@@ -38,8 +38,6 @@ public:
     void preeditRemoveFirstN(int lenToRemove);
     void reset();
 
-    auto instance() const { return instance_; }
-
     std::unique_ptr<RustPinyin> rustPinyin_;
     std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 
@@ -47,9 +45,10 @@ private:
     fcitx::Instance* instance_;
     fcitx::InputContext* ic_;
     fcitx::InputBuffer buffer_ { { fcitx::InputBufferOption::AsciiOnly, fcitx::InputBufferOption::FixedCursor } };
-    void getUpdateCandidatesRefreshUI(bool append);
     std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
     std::vector<unsigned long> lens;
+
+    void getUpdateCandidatesRefreshUI(bool append);
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {

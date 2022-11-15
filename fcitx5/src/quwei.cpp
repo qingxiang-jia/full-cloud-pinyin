@@ -190,7 +190,7 @@ std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
     auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
     candidateList->setLabels(std::vector<std::string> { "1. ", "2. ", "3. ", "4. ", "5. ", "6. ", "7. ", "8. ", "9. ", "10. " });
     candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
-    candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
+    candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
     return candidateList;
 }
 
