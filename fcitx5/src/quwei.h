@@ -32,7 +32,6 @@ public:
     void select(const int idx);
     void updateUI();
     void getCandidatesAndUpdateAsync(bool append = false);
-    std::string getPreedit();
     void preeditRemoveFront(int lenToRemove);
     void reset();
 

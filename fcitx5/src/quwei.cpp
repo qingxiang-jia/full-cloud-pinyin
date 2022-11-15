@@ -250,11 +250,6 @@ void QuweiEngine::getCandidatesAndUpdateAsync(bool append) {
     call_async([this, append](){ dispatcher->schedule([this, append](){ getUpdateCandidatesRefreshUI(append); }); });
 }
 
-std::string QuweiEngine::getPreedit() {
-    auto preedit = buffer_.userInput();
-    return preedit;
-}
-
 void QuweiEngine::preeditRemoveFront(int lenToRemove) {
     auto oldPreedit = buffer_.userInput();
     auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
