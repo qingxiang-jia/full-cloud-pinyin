@@ -31,6 +31,7 @@ public:
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
 
     void select(const int idx);
+    void setPreedit(std::string preedit);
     void setState(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
     void updateUI();
     void getCandidatesAndUpdateAsync(bool append = false);

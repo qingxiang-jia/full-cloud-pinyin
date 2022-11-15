@@ -185,15 +185,8 @@ void QuweiEngine::updateUI()
 {
     auto& inputPanel = ic_->inputPanel();
     inputPanel.reset();
-    if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
-        fcitx::Text preedit(buffer_.userInput(), fcitx::TextFormatFlag::HighLight);
-        inputPanel.setClientPreedit(preedit);
-    } else {
-        fcitx::Text preedit(buffer_.userInput());
-        inputPanel.setPreedit(preedit);
-    }
+    setPreedit(buffer_.userInput());
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-    ic_->updatePreedit();
 }
 
 std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
@@ -203,6 +196,18 @@ std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
     candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
     candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
     return candidateList;
+}
+
+void QuweiEngine::setPreedit(std::string preedit)
+{
+    if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
+        fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
+        ic_->inputPanel().setClientPreedit(text);
+    } else {
+        fcitx::Text text(preedit);
+        ic_->inputPanel().setPreedit(text);
+    }
+    ic_->updatePreedit();
 }
 
 void QuweiEngine::setState(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
