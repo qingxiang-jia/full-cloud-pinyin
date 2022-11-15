@@ -5,6 +5,7 @@
  *
  */
 #include "quwei.h"
+#include <chrono>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/key.h>
@@ -15,26 +16,23 @@
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <fcitx/userinterfacemanager.h>
-#include <chrono>
+#include <functional>
 #include <future>
 #include <iostream>
-#include <new>
-#include <thread>
-#include <functional>
 #include <memory>
+#include <new>
 #include <punctuation_public.h>
 #include <quickphrase_public.h>
+#include <thread>
 #include <utility>
 
 namespace {
 
-template <class F, typename... Args>
-void call_async(F&& lambda) {
+template <class F, typename... Args> void call_async(F&& lambda)
+{
     // Modified from https://stackoverflow.com/a/56834117/1509779
     auto futptr = std::make_shared<std::future<void>>();
-    *futptr = std::async(std::launch::async, [futptr, lambda]() {
-        lambda();
-    });
+    *futptr = std::async(std::launch::async, [futptr, lambda]() { lambda(); });
 }
 
 class QuweiCandidate : public fcitx::CandidateWord {
@@ -45,16 +43,18 @@ public:
 
 } // namespace
 
-QuweiEngine::QuweiEngine(fcitx::Instance *instance)
-    : rustPinyin_(new RustPinyin()), instance_(instance) {
-        dispatcher = std::make_unique<fcitx::EventDispatcher>();
-        dispatcher->attach(&instance->eventLoop());
-    }
+QuweiEngine::QuweiEngine(fcitx::Instance* instance)
+    : rustPinyin_(new RustPinyin())
+    , instance_(instance)
+{
+    dispatcher = std::make_unique<fcitx::EventDispatcher>();
+    dispatcher->attach(&instance->eventLoop());
+}
 
-void QuweiEngine::activate(const fcitx::InputMethodEntry &entry,
-                           fcitx::InputContextEvent &event) {
+void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
+{
     FCITX_UNUSED(entry);
-    auto *inputContext = event.inputContext();
+    auto* inputContext = event.inputContext();
     ic_ = inputContext;
 }
 
@@ -79,8 +79,8 @@ void QuweiEngine::select(const int idx)
     }
 }
 
-void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
-                           fcitx::KeyEvent &keyEvent) {
+void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent)
+{
     FCITX_UNUSED(entry);
     if (keyEvent.isRelease() || keyEvent.key().states()) {
         return;
@@ -100,7 +100,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
                 return;
             }
         }
-        
+
         // Select a candidate by space key
         if (key == FcitxKey_space) {
             keyEvent.accept();
@@ -111,8 +111,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
 
         // Go to the next page by keying in the next page keys
         if (key == FcitxKey_equal) {
-            if (auto *pageable = candidateList->toPageable();
-                pageable) {
+            if (auto* pageable = candidateList->toPageable(); pageable) {
                 if (pageable->hasNext()) {
                     pageable->next();
                     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
@@ -126,28 +125,24 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
 
         // Go to the previous page by previous page keys
         if (key == FcitxKey_minus) {
-            if (auto *pageable = candidateList->toPageable();
-                pageable && pageable->hasPrev()) {
+            if (auto* pageable = candidateList->toPageable(); pageable && pageable->hasPrev()) {
                 keyEvent.accept();
                 pageable->prev();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
+                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
             }
             return keyEvent.filterAndAccept();
         }
 
         // Go to the next candidate by ->
-        if (auto *cursorMovable = candidateList->toCursorMovable()) {
+        if (auto* cursorMovable = candidateList->toCursorMovable()) {
             if (key == FcitxKey_Right) {
                 cursorMovable->nextCandidate();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
+                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
                 return keyEvent.filterAndAccept();
             }
             if (key == FcitxKey_Left) {
                 cursorMovable->prevCandidate();
-                ic_->updateUserInterface(
-                    fcitx::UserInterfaceComponent::InputPanel);
+                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
                 return keyEvent.filterAndAccept();
             }
         }
@@ -186,12 +181,12 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry &entry,
     return;
 }
 
-void QuweiEngine::updateUI() {
-    auto &inputPanel = ic_->inputPanel();
+void QuweiEngine::updateUI()
+{
+    auto& inputPanel = ic_->inputPanel();
     inputPanel.reset();
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
-        fcitx::Text preedit(buffer_.userInput(),
-                            fcitx::TextFormatFlag::HighLight);
+        fcitx::Text preedit(buffer_.userInput(), fcitx::TextFormatFlag::HighLight);
         inputPanel.setClientPreedit(preedit);
     } else {
         fcitx::Text preedit(buffer_.userInput());
@@ -204,13 +199,13 @@ void QuweiEngine::updateUI() {
 std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
 {
     auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
-    candidateList->setLabels(std::vector<std::string>{"1. ", "2. ", "3. ", "4. ", "5. ", "6. ", "7. ", "8. ", "9. ", "10. "});
+    candidateList->setLabels(std::vector<std::string> { "1. ", "2. ", "3. ", "4. ", "5. ", "6. ", "7. ", "8. ", "9. ", "10. " });
     candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
     candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
     return candidateList;
 }
 
-void QuweiEngine::setState(::rust::Vec< ::fcp::CandidateWord> candidates, bool append)
+void QuweiEngine::setState(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
 {
     if (candidates.empty()) {
         return;
@@ -250,7 +245,8 @@ void QuweiEngine::setState(::rust::Vec< ::fcp::CandidateWord> candidates, bool a
     ic_->updatePreedit();
 }
 
-void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
+void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
+{
     std::string preedit = buffer_.userInput();
 
     auto candidates = rustPinyin_->fcp->query_candidates(preedit);
@@ -258,30 +254,34 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
     setState(candidates, append);
 }
 
-void QuweiEngine::getCandidatesAndUpdateAsync(bool append) {
-    call_async([this, append](){ dispatcher->schedule([this, append](){ getUpdateCandidatesRefreshUI(append); }); });
+void QuweiEngine::getCandidatesAndUpdateAsync(bool append)
+{
+    call_async([this, append]() { dispatcher->schedule([this, append]() { getUpdateCandidatesRefreshUI(append); }); });
 }
 
-void QuweiEngine::preeditRemoveFront(int lenToRemove) {
+void QuweiEngine::preeditRemoveFront(int lenToRemove)
+{
     auto oldPreedit = buffer_.userInput();
     auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
     buffer_.clear();
     buffer_.type(newPreedit);
 }
 
-void QuweiEngine::reset() {
+void QuweiEngine::reset()
+{
     buffer_.clear();
     updateUI();
 }
 
-void QuweiEngine::reset(const fcitx::InputMethodEntry &,
-                        fcitx::InputContextEvent &event) {
+void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event)
+{
     FCITX_UNUSED(event);
     buffer_.clear();
     updateUI();
 }
 
-RustPinyin::RustPinyin() {
+RustPinyin::RustPinyin()
+{
     auto boxedFcp = fcp::init();
     this->fcp = boxedFcp.into_raw();
 }
