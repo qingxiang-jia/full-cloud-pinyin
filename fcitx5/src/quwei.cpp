@@ -37,13 +37,6 @@ void call_async(F&& lambda) {
     });
 }
 
-static const std::vector<fcitx::Key> candListSelectKey = {
-    fcitx::Key{FcitxKey_1}, fcitx::Key{FcitxKey_2}, fcitx::Key{FcitxKey_3},
-    fcitx::Key{FcitxKey_4}, fcitx::Key{FcitxKey_5}, fcitx::Key{FcitxKey_6},
-    fcitx::Key{FcitxKey_7}, fcitx::Key{FcitxKey_8}, fcitx::Key{FcitxKey_9},
-    fcitx::Key{FcitxKey_0},
-};
-
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
     QuweiCandidate(QuweiEngine *engine, ::rust::String text, int matched_len)
@@ -220,7 +213,7 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append) {
     if (!candidates.empty()) {
         // Store candidates in candidate list
         auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
-        candidateList->setSelectionKey(candListSelectKey);
+        candidateList->setLabels(std::vector<std::string>{"1. ", "2. ", "3. ", "4. ", "5. ", "6. ", "7. ", "8. ", "9. ", "10. "});
         candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
         candidateList->setPageSize(instance()->globalConfig().defaultPageSize());
 
