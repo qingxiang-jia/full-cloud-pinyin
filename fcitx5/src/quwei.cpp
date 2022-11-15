@@ -187,10 +187,8 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
 
 void QuweiEngine::updateUI()
 {
-    auto& inputPanel = ic_->inputPanel();
-    inputPanel.reset();
+    ic_->inputPanel().reset();
     setPreedit(buffer_.userInput());
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
