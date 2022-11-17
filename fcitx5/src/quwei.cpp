@@ -150,8 +150,12 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
         // Remove one character from buffer
         if (key == FcitxKey_BackSpace) {
             buffer_.backspace();
-            setPreedit(buffer_.userInput());
-            getCandidatesAndUpdateAsync();
+            if (buffer_.size() == 0) {
+                reset();
+            } else {
+                setPreedit(buffer_.userInput());
+                getCandidatesAndUpdateAsync();
+            }
             return keyEvent.filterAndAccept();
         }
 
