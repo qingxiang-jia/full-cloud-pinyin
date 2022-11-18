@@ -15,6 +15,7 @@
 #include <fcitx/candidatelist.h>
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
+#include <fcitx/text.h>
 #include <fcitx/userinterfacemanager.h>
 #include <functional>
 #include <future>
@@ -38,6 +39,7 @@ template <class F, typename... Args> void call_async(F&& lambda)
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
     QuweiCandidate(::rust::String text) { setText(fcitx::Text(std::move(text.c_str()))); }
+    QuweiCandidate(fcitx::Text text) { setText(text); }
     void select(fcitx::InputContext*) const {};
 };
 
@@ -154,6 +156,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
                 reset();
             } else {
                 setPreedit(buffer_.userInput());
+                setDummyCandidates();
                 getCandidatesAndUpdateAsync();
             }
             return keyEvent.filterAndAccept();
@@ -178,6 +181,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
         // Append this key into the buffer
         buffer_.type(key);
         setPreedit(buffer_.userInput());
+        setDummyCandidates();
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
         getCandidatesAndUpdateAsync();
@@ -194,6 +198,22 @@ std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
     candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
     candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
     return candidateList;
+}
+
+void QuweiEngine::setDummyCandidates()
+{
+    auto candidateList = makeCandidateList();
+
+    lens.clear();
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("Loading"));
+        candidateList->append(std::move(candidateWord));
+        lens.push_back(0);
+    }
+    candidateList->setGlobalCursorIndex(0);
+
+    ic_->inputPanel().setCandidateList(std::move(candidateList));
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
 }
 
 void QuweiEngine::setPreedit(std::string preedit)

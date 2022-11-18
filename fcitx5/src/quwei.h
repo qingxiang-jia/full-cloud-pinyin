@@ -38,7 +38,6 @@ private:
     fcitx::Instance* instance_;
     fcitx::InputContext* ic_;
     fcitx::InputBuffer buffer_ { { fcitx::InputBufferOption::AsciiOnly, fcitx::InputBufferOption::FixedCursor } };
-    std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
     std::vector<unsigned long> lens;
 
     void select(const int idx);
@@ -47,6 +46,8 @@ private:
     void getCandidatesAndUpdateAsync(bool append = false);
     void getUpdateCandidatesRefreshUI(bool append);
     void preeditRemoveFirstN(int lenToRemove);
+    std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
+    void setDummyCandidates();
     void reset();
 };
 
