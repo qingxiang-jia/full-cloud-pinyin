@@ -213,7 +213,7 @@ void QuweiEngine::setDummyCandidates()
     candidateList->setGlobalCursorIndex(0);
 
     ic_->inputPanel().setCandidateList(std::move(candidateList));
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::setPreedit(std::string preedit)
@@ -226,7 +226,7 @@ void QuweiEngine::setPreedit(std::string preedit)
         ic_->inputPanel().setPreedit(text);
     }
     ic_->updatePreedit();
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
@@ -256,7 +256,7 @@ void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bo
     }
     ic_->inputPanel().setCandidateList(std::move(candidateList));
 
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
