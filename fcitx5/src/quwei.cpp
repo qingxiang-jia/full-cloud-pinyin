@@ -87,10 +87,14 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     if (keyEvent.isRelease() || keyEvent.key().states()) {
         return;
     }
+    if (ic_->inputPanel().candidateList() == nullptr) {
+        ic_->inputPanel().setCandidateList(makeCandidateList());
+    } // Surprisingly, if you set it list in activate(), it is still null when keyuEvent is called.
 
     fcitx::KeySym key = keyEvent.key().sym();
+    auto candidateList = ic_->inputPanel().candidateList();
 
-    if (auto candidateList = ic_->inputPanel().candidateList()) {
+    if (candidateList->size() > 0) {
         if (FcitxKey_0 <= key && key <= FcitxKey_9) {
             auto idx = key - FcitxKey_1;
             // Select a candidate by keying in 0-9
@@ -200,9 +204,10 @@ std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
 
 void QuweiEngine::setDummyCandidates()
 {
-    auto candidateList = makeCandidateList();
+    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
 
     lens.clear();
+    candidateList->clear();
     for (int i = 0; i < 5; i++) {
         std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("☁"));
         candidateList->append(std::move(candidateWord));
@@ -210,7 +215,6 @@ void QuweiEngine::setDummyCandidates()
     }
     candidateList->setGlobalCursorIndex(0);
 
-    ic_->inputPanel().setCandidateList(std::move(candidateList));
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
@@ -233,26 +237,22 @@ void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bo
         return;
     }
 
-    auto candidateList = makeCandidateList();
+    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
 
-    lens.clear();
+    if (!append) {
+        lens.clear();
+        candidateList->clear();
+    }
     for (auto& candidate : candidates) {
         std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(candidate.word);
         candidateList->append(std::move(candidateWord));
         lens.push_back(candidate.len);
     }
-
     candidates.clear();
 
     if (!append) {
         candidateList->setGlobalCursorIndex(0);
-    } else {
-        // Get current page number
-        auto pageable = ic_->inputPanel().candidateList()->toPageable();
-        auto currPage = pageable->currentPage();
-        candidateList->setPage(currPage);
     }
-    ic_->inputPanel().setCandidateList(std::move(candidateList));
 
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
