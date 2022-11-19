@@ -206,7 +206,7 @@ void QuweiEngine::setDummyCandidates()
 
     lens.clear();
     for (int i = 0; i < 5; i++) {
-        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("Loading"));
+        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("☁"));
         candidateList->append(std::move(candidateWord));
         lens.push_back(0);
     }
