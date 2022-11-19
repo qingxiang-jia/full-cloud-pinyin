@@ -87,8 +87,6 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     if (keyEvent.isRelease() || keyEvent.key().states()) {
         return;
     }
-    // FCITX_INFO() << keyEvent.key() << " isRelease=" << keyEvent.isRelease();
-    ic_ = keyEvent.inputContext();
 
     fcitx::KeySym key = keyEvent.key().sym();
 
