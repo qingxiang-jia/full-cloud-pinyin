@@ -68,6 +68,17 @@ if [ $1 == "install" ]; then
     exit 0
 fi
 
+if [ $1 == "bir" ]; then
+    cd ./fcitx5/build
+    cmake --build .
+    cd ../../
+    cd ./fcitx5/build
+    sudo cmake --install .
+    cd ../../
+    fcitx5
+    exit 0
+fi
+
 if [ $1 == "uninstall" ]; then
     cd ./fcitx5/build
     sudo xargs -I{} rm {} < ./install_manifest.txt

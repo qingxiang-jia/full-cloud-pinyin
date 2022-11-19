@@ -89,7 +89,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     }
     if (ic_->inputPanel().candidateList() == nullptr) {
         ic_->inputPanel().setCandidateList(makeCandidateList());
-    } // Surprisingly, if you set it list in activate(), it is still null when keyuEvent is called.
+    } // Surprisingly, if you set it in activate(), it is still null when keyuEvent is called.
 
     fcitx::KeySym key = keyEvent.key().sym();
     auto candidateList = ic_->inputPanel().candidateList();
