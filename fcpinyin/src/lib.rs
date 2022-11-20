@@ -10,12 +10,39 @@ use std::fs;
 
 type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
+type FnSetCandidates = unsafe extern "C" fn(candidates: *const *const i8, cnt: usize);
+type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
 type FnSetState = unsafe extern "C" fn(
     preedit: *const i8,
     candidates: *const *const i8,
     lens: *const u16,
     cnt: usize,
 );
+
+struct Fcitx5 {
+    ui: UI,
+    table: Table,
+    engine: Engine,
+}
+
+struct UI {
+    set_loading: FnVoid,
+    set_candidates: FnSetCandidates,
+    append_candidates: FnSetCandidates,
+    set_preedit: FnSetPreedit,
+}
+
+struct Table {
+    page_up: FnVoid,
+    page_down: FnVoid,
+    prev: FnVoid,
+    next: FnVoid,
+}
+
+struct Engine {
+    commit: FnCommit,
+    commit_candidate_by_fixed_key: FnVoid,
+}
 
 #[repr(u8)]
 pub enum Key {
