@@ -1,4 +1,5 @@
 mod ffi;
+mod fcitx_enum;
 
 use std::{cell::Cell, path::PathBuf, sync::Mutex};
 
