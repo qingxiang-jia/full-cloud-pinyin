@@ -156,6 +156,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
             } else {
                 setPreedit(buffer_.userInput());
                 setDummyCandidates();
+                updateUI();
                 getCandidatesAndUpdateAsync();
             }
             return keyEvent.filterAndAccept();
@@ -181,6 +182,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
         buffer_.type(key);
         setPreedit(buffer_.userInput());
         setDummyCandidates();
+        updateUI();
 
         // Use preedit to query pinyin candidates, update candidates, and update UI
         getCandidatesAndUpdateAsync();
@@ -211,8 +213,6 @@ void QuweiEngine::setDummyCandidates()
         lens.push_back(0);
     }
     candidateList->setGlobalCursorIndex(0);
-
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::setPreedit(std::string preedit)
@@ -225,7 +225,6 @@ void QuweiEngine::setPreedit(std::string preedit)
         ic_->inputPanel().setPreedit(text);
     }
     ic_->updatePreedit();
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
@@ -250,8 +249,6 @@ void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bo
     if (!append) {
         candidateList->setGlobalCursorIndex(0);
     }
-
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
@@ -265,8 +262,15 @@ void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
 
 void QuweiEngine::getCandidatesAndUpdateAsync(bool append)
 {
-    call_async([this, append]() { dispatcher->schedule([this, append]() { getUpdateCandidatesRefreshUI(append); }); });
+    call_async([this, append]() {
+        dispatcher->schedule([this, append]() {
+            getUpdateCandidatesRefreshUI(append);
+            updateUI();
+        });
+    });
 }
+
+void QuweiEngine::updateUI() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); }
 
 void QuweiEngine::preeditRemoveFirstN(int lenToRemove)
 {
@@ -281,6 +285,7 @@ void QuweiEngine::reset()
     buffer_.clear();
     ic_->inputPanel().reset();
     setPreedit(buffer_.userInput());
+    updateUI();
 }
 
 void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event)
