@@ -1,4 +1,6 @@
 mod fcitx_enum {
+    
+    #[repr(u32)]
     enum FcitxKeySym {
         FcitxKey_None = 0x0,
         FcitxKey_VoidSymbol = 0xffffff, /* Void symbol */
