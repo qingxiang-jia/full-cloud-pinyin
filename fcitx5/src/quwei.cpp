@@ -99,18 +99,16 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
             auto idx = key - FcitxKey_1;
             // Select a candidate by keying in 0-9
             if (idx >= 0 && idx < candidateList->size()) {
-                keyEvent.accept();
                 select(idx);
-                return;
+                return keyEvent.filterAndAccept();
             }
         }
 
         // Select a candidate by space key
         if (key == FcitxKey_space) {
-            keyEvent.accept();
             auto idx = candidateList->cursorIndex();
             select(idx);
-            return;
+            return keyEvent.filterAndAccept();
         }
 
         // Go to the next page by keying in the next page keys
@@ -130,7 +128,6 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
         // Go to the previous page by previous page keys
         if (key == FcitxKey_minus) {
             if (auto* pageable = candidateList->toPageable(); pageable && pageable->hasPrev()) {
-                keyEvent.accept();
                 pageable->prev();
                 ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
             }
