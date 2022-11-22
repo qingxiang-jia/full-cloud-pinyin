@@ -19,6 +19,11 @@ type FnSetState = unsafe extern "C" fn(
     cnt: usize,
 );
 
+#[no_mangle]
+pub extern "C" fn on_key_press(key: FcitxKey) {
+    println!("Rust: {:#?}", key);
+}
+
 struct Fcitx5 {
     ui: UI,
     table: Table,
@@ -44,8 +49,9 @@ struct Engine {
     commit_candidate_by_fixed_key: FnVoid,
 }
 
+#[derive(Debug)]
 #[repr(u32)]
-enum FcitxKey {
+pub enum FcitxKey {
     None = 0x0,
     VoidSymbol = 0xffffff, /* Void symbol */
     BackSpace = 0xff08,    /* Back space, back char */

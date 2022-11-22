@@ -94,6 +94,8 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     fcitx::KeySym key = keyEvent.key().sym();
     auto candidateList = ic_->inputPanel().candidateList();
 
+    on_key_press(key);
+
     if (candidateList->size() > 0) {
         if (FcitxKey_0 <= key && key <= FcitxKey_9) {
             auto idx = key - FcitxKey_1;

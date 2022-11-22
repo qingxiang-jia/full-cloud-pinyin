@@ -8,6 +8,7 @@
 #pragma once
 
 #include "rustpinyin.h"
+#include "../../fcpinyin/src/include/rust.h"
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>
 #include <fcitx/addonfactory.h>
