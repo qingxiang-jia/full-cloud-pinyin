@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::{ffi::CString, os::raw::c_char};
 
 type Callback = unsafe extern "C" fn(n: u32);
 
@@ -25,8 +25,7 @@ pub extern "C" fn r_run_callbacks(
 
         page_down();
 
-        let preedit = CString::new("abc").expect("CString::new failed");
-        let preedit_ptr = preedit.as_ptr();
+        let preedit_ptr = str_to_char_ptr(&"abc");
 
         let lens = vec![1, 2, 3, 4];
         let lens_ptr = lens.as_ptr();
@@ -55,7 +54,19 @@ pub extern "C" fn r_run_callbacks(
         let cnt = candidates.len();
 
         set_state(preedit_ptr, cstr_ptrs_ptr, lens_ptr, cnt);
+        free_char_ptr(preedit_ptr);
     }
+}
+
+unsafe fn str_to_char_ptr(input: &str) -> *mut c_char {
+    let char_ptr = CString::new(input)
+        .expect("Failed to create C string from &str.")
+        .into_raw();
+    return char_ptr;
+}
+
+unsafe fn free_char_ptr(ptr: *mut c_char) {
+    let _ = CString::from_raw(ptr);
 }
 
 #[no_mangle]
