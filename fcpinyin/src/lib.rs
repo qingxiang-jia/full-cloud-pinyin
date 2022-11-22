@@ -24,27 +24,31 @@ pub extern "C" fn on_key_press(key: FcitxKey) {
     println!("Rust: {:#?}", key);
 }
 
-struct Fcitx5 {
+#[repr(C)]
+pub struct Fcitx5 {
     ui: UI,
     table: Table,
     engine: Engine,
 }
 
-struct UI {
+#[repr(C)]
+pub struct UI {
     set_loading: FnVoid,
     set_candidates: FnSetCandidates,
     append_candidates: FnSetCandidates,
     set_preedit: FnSetPreedit,
 }
 
-struct Table {
+#[repr(C)]
+pub struct Table {
     page_up: FnVoid,
     page_down: FnVoid,
     prev: FnVoid,
     next: FnVoid,
 }
 
-struct Engine {
+#[repr(C)]
+pub struct Engine {
     commit: FnCommit,
     commit_candidate_by_fixed_key: FnVoid,
 }
