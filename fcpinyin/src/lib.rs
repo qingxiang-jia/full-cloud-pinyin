@@ -12,16 +12,30 @@ type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
 type FnSetCandidates = unsafe extern "C" fn(candidates: *const *const i8, cnt: usize);
 type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
-type FnSetState = unsafe extern "C" fn(
-    preedit: *const i8,
-    candidates: *const *const i8,
-    lens: *const u16,
-    cnt: usize,
-);
 
 #[no_mangle]
 pub extern "C" fn on_key_press(key: FcitxKey) {
     println!("Rust: {:#?}", key);
+}
+
+#[no_mangle]
+pub extern "C" fn register_fn_commit(callback: FnCommit) {
+    callback(55);
+}
+
+#[no_mangle]
+pub extern "C" fn register_fn_void(callback: FnVoid) {
+    callback();
+}
+
+#[no_mangle]
+pub extern "C" fn register_fn_set_candidates(callback: FnSetCandidates) {
+
+}
+
+#[no_mangle]
+pub extern "C" fn register_fn_set_preedit(callback: FnSetPreedit) {
+    
 }
 
 #[repr(C)]
