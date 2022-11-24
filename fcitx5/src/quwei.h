@@ -9,6 +9,7 @@
 
 #include "rustpinyin.h"
 #include "../../fcpinyin/src/include/rust.h"
+#include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>
 #include <fcitx/addonfactory.h>
@@ -51,6 +52,12 @@ private:
     void setDummyCandidates();
     void updateUI();
     void reset();
+
+    // Experimental API for Rust to call
+    void commit(uint16_t idx);
+    void page_up();
+    void set_candidates(int16_t** candidates, size_t cnt);
+    void set_preedit(char *preedit);
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
