@@ -1,6 +1,7 @@
+#![feature(vec_into_raw_parts)]
 mod ffi;
 
-use std::{cell::Cell, path::PathBuf, sync::Mutex};
+use std::{cell::Cell, path::PathBuf, sync::Mutex, os::raw::c_char, ffi::CString};
 
 use regex::Regex;
 use reqwest::header::USER_AGENT;
@@ -34,9 +35,9 @@ pub extern "C" fn register_fn_void(callback: FnVoid) {
 
 #[no_mangle]
 pub extern "C" fn register_fn_set_candidates(callback: FnSetCandidates) {
-    let candidates = Vec!["今天".to_owned(), "感觉".to_owned(), "怎么样".to_owned()];
+    let candidates = vec!["今天".to_owned(), "感觉".to_owned(), "怎么样".to_owned()];
     unsafe {
-        let (ptr, len, cap) = string_vec_to_cstring_array(candidates);
+        let (ptr, len, cap) = string_vec_to_cstring_array(&candidates);
         let cnt = 3;
         callback(ptr, cnt);
         free_cstring_array(ptr, len, cap);
