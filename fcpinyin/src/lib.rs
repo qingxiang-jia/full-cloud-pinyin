@@ -10,7 +10,7 @@ use std::fs;
 
 type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
-type FnSetCandidates = unsafe extern "C" fn(candidates: *const *const i8, cnt: usize);
+type FnSetCandidates = unsafe extern "C" fn(candidates: *mut *mut i8, cnt: usize);
 type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
 
 #[no_mangle]
@@ -20,22 +20,60 @@ pub extern "C" fn on_key_press(key: FcitxKey) {
 
 #[no_mangle]
 pub extern "C" fn register_fn_commit(callback: FnCommit) {
-    callback(55);
+    unsafe {
+        callback(55);
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn register_fn_void(callback: FnVoid) {
-    callback();
+    unsafe {
+        callback();
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn register_fn_set_candidates(callback: FnSetCandidates) {
-
+    let candidates = Vec!["今天".to_owned(), "感觉".to_owned(), "怎么样".to_owned()];
+    unsafe {
+        let (ptr, len, cap) = string_vec_to_cstring_array(candidates);
+        let cnt = 3;
+        callback(ptr, cnt);
+        free_cstring_array(ptr, len, cap);
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn register_fn_set_preedit(callback: FnSetPreedit) {
-    
+    let preedit = "abc".to_owned();
+    unsafe {
+        let ptr = str_to_char_ptr(&preedit);
+        callback(ptr);
+        free_char_ptr(ptr);
+    }
+}
+
+unsafe fn string_vec_to_cstring_array(input: &Vec<String>) -> (*mut *mut c_char, usize, usize) {
+    let ptrs: Vec<*mut c_char> = input
+        .iter()
+        .map(|string| str_to_char_ptr(string.as_str()))
+        .collect();
+    ptrs.into_raw_parts()
+}
+
+unsafe fn free_cstring_array(ptr: *mut *mut c_char, len: usize, cap: usize) {
+    let _ = Vec::from_raw_parts(ptr, len, cap);
+}
+
+unsafe fn str_to_char_ptr(input: &str) -> *mut c_char {
+    let char_ptr = CString::new(input)
+        .expect("Failed to create C string from &str.")
+        .into_raw();
+    return char_ptr;
+}
+
+unsafe fn free_char_ptr(ptr: *mut c_char) {
+    let _ = CString::from_raw(ptr);
 }
 
 #[repr(C)]
