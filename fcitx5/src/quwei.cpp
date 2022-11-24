@@ -5,6 +5,7 @@
  *
  */
 #include "quwei.h"
+#include "src/include/rust.h"
 #include <chrono>
 #include <cstddef>
 #include <fcitx-utils/eventdispatcher.h>
@@ -70,6 +71,8 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
 {
     dispatcher = std::make_unique<fcitx::EventDispatcher>();
     dispatcher->attach(&instance->eventLoop());
+
+    register_fn_void(page_up);
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
