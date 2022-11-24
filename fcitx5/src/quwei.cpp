@@ -6,6 +6,7 @@
  */
 #include "quwei.h"
 #include <chrono>
+#include <cstddef>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/key.h>
@@ -294,6 +295,24 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent
 {
     FCITX_UNUSED(event);
     reset();
+}
+
+void QuweiEngine::commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
+
+void QuweiEngine::page_up() { FCITX_INFO() << "C++: page_up"; }
+
+void QuweiEngine::set_candidates(int16_t **candidates, size_t cnt)
+{
+    for (size_t i = 0; i < cnt; i++) {
+        std::string candidate((char*)candidates[i]);
+        FCITX_INFO() << "C++: set_candidates" << candidate;
+    }
+}
+
+void QuweiEngine::set_preedit(char* preedit)
+{
+    std::string preeditStr(preedit);
+    FCITX_INFO() << "C++: set_preedit" << preedit;
 }
 
 RustPinyin::RustPinyin()
