@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "../../fcpinyin/src/include/rust.h"
 #include "rustpinyin.h"
 #include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
