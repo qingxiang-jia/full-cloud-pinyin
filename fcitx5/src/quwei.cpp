@@ -28,6 +28,24 @@
 #include <thread>
 #include <utility>
 
+extern "C" void commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
+
+extern "C" void page_up() { FCITX_INFO() << "C++: page_up"; }
+
+extern "C" void set_candidates(int16_t **candidates, size_t cnt)
+{
+    for (size_t i = 0; i < cnt; i++) {
+        std::string candidate((char*)candidates[i]);
+        FCITX_INFO() << "C++: set_candidates" << candidate;
+    }
+}
+
+extern "C" void set_preedit(char* preedit)
+{
+    std::string preeditStr(preedit);
+    FCITX_INFO() << "C++: set_preedit" << preedit;
+}
+
 namespace {
 
 template <class F, typename... Args> void call_async(F&& lambda)
@@ -304,21 +322,3 @@ RustPinyin::RustPinyin()
 }
 
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
-
-extern "C" void commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
-
-extern "C" void page_up() { FCITX_INFO() << "C++: page_up"; }
-
-extern "C" void set_candidates(int16_t **candidates, size_t cnt)
-{
-    for (size_t i = 0; i < cnt; i++) {
-        std::string candidate((char*)candidates[i]);
-        FCITX_INFO() << "C++: set_candidates" << candidate;
-    }
-}
-
-extern "C" void set_preedit(char* preedit)
-{
-    std::string preeditStr(preedit);
-    FCITX_INFO() << "C++: set_preedit" << preedit;
-}
