@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "rustpinyin.h"
 #include "../../fcpinyin/src/include/rust.h"
+#include "rustpinyin.h"
 #include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>
@@ -44,7 +44,7 @@ private:
 
     void select(const int idx);
     void setPreedit(std::string preedit);
-    void setCandidates(::rust::Vec< ::fcp::CandidateWord> candidates, bool append);
+    void setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append);
     void getCandidatesAndUpdateAsync(bool append = false);
     void getUpdateCandidatesRefreshUI(bool append);
     void preeditRemoveFirstN(int lenToRemove);
@@ -52,12 +52,6 @@ private:
     void setDummyCandidates();
     void updateUI();
     void reset();
-
-    // Experimental API for Rust to call
-    void commit(uint16_t idx);
-    void page_up();
-    void set_candidates(int16_t** candidates, size_t cnt);
-    void set_preedit(char *preedit);
 };
 
 class QuweiEngineFactory : public fcitx::AddonFactory {
@@ -67,3 +61,9 @@ class QuweiEngineFactory : public fcitx::AddonFactory {
         return new QuweiEngine(manager->instance());
     }
 };
+
+// Experimental API for Rust to call
+extern "C" void commit(uint16_t idx);
+extern "C" void page_up();
+extern "C" void set_candidates(int16_t** candidates, size_t cnt);
+extern "C" void set_preedit(char* preedit);

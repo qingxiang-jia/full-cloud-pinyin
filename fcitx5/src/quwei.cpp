@@ -297,24 +297,6 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent
     reset();
 }
 
-void QuweiEngine::commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
-
-void QuweiEngine::page_up() { FCITX_INFO() << "C++: page_up"; }
-
-void QuweiEngine::set_candidates(int16_t **candidates, size_t cnt)
-{
-    for (size_t i = 0; i < cnt; i++) {
-        std::string candidate((char*)candidates[i]);
-        FCITX_INFO() << "C++: set_candidates" << candidate;
-    }
-}
-
-void QuweiEngine::set_preedit(char* preedit)
-{
-    std::string preeditStr(preedit);
-    FCITX_INFO() << "C++: set_preedit" << preedit;
-}
-
 RustPinyin::RustPinyin()
 {
     auto boxedFcp = fcp::init();
@@ -322,3 +304,21 @@ RustPinyin::RustPinyin()
 }
 
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
+
+extern "C" void commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
+
+extern "C" void page_up() { FCITX_INFO() << "C++: page_up"; }
+
+extern "C" void set_candidates(int16_t **candidates, size_t cnt)
+{
+    for (size_t i = 0; i < cnt; i++) {
+        std::string candidate((char*)candidates[i]);
+        FCITX_INFO() << "C++: set_candidates" << candidate;
+    }
+}
+
+extern "C" void set_preedit(char* preedit)
+{
+    std::string preeditStr(preedit);
+    FCITX_INFO() << "C++: set_preedit" << preedit;
+}
