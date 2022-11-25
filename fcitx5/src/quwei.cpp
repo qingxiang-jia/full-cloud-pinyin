@@ -73,6 +73,7 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     dispatcher->attach(&instance->eventLoop());
 
     register_fn_void(page_up);
+    register_fn_commit(commit);
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
