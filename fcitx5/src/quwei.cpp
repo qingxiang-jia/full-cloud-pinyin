@@ -75,6 +75,7 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     register_fn_void(page_up);
     register_fn_commit(commit);
     register_fn_set_preedit(set_preedit);
+    register_fn_set_candidates(set_candidates);
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
