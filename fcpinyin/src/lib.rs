@@ -8,7 +8,7 @@ use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
-use std::sync::Mutex;
+
 
 type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
