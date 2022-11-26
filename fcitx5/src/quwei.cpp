@@ -56,9 +56,9 @@ extern "C" void page_up() { engine->nextPage(); }
 
 extern "C" void page_down() { engine->prevPage(); }
 
-extern "C" void prev();
+extern "C" void prev() { engine->prevCanddiate(); }
 
-extern "C" void next();
+extern "C" void next() { engine->nextCandidate(); }
 /* END TABLE */
 
 /* BEGIN ENGINE */
@@ -153,6 +153,22 @@ void QuweiEngine::prevPage()
 {
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable && pageable->hasPrev()) {
         pageable->prev();
+        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    }
+}
+
+void QuweiEngine::nextCandidate()
+{
+    if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
+        cursorMovable->nextCandidate();
+        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    }
+}
+
+void QuweiEngine::prevCanddiate()
+{
+    if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
+        cursorMovable->prevCandidate();
         ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
 }
