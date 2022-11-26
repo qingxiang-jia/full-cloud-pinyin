@@ -29,11 +29,12 @@
 #include <thread>
 #include <utility>
 
-extern "C" void commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
+QuweiEngine* engine;
 
-extern "C" void page_up() { FCITX_INFO() << "C++: page_up"; }
+/* BEGIN UI */
+extern "C" void set_loading();
 
-extern "C" void set_candidates(int16_t **candidates, size_t cnt)
+extern "C" void set_candidates(int16_t** candidates, size_t cnt)
 {
     for (size_t i = 0; i < cnt; i++) {
         std::string candidate((char*)candidates[i]);
@@ -41,11 +42,30 @@ extern "C" void set_candidates(int16_t **candidates, size_t cnt)
     }
 }
 
+extern "C" void append_candidates(int16_t** candidates, size_t cnt);
+
 extern "C" void set_preedit(char* preedit)
 {
     std::string preeditStr(preedit);
     FCITX_INFO() << "C++: set_preedit" << preedit;
 }
+/* END UI */
+
+/* BEGIN TABLE */
+extern "C" void page_up() { FCITX_INFO() << "C++: page_up"; }
+
+extern "C" void page_down();
+
+extern "C" void prev();
+
+extern "C" void next();
+/* END TABLE */
+
+/* BEGIN ENGINE */
+extern "C" void commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
+
+extern "C" void commit_candidate_by_fixed_key();
+/* END ENGINE */
 
 namespace {
 
@@ -71,6 +91,7 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
 {
     dispatcher = std::make_unique<fcitx::EventDispatcher>();
     dispatcher->attach(&instance->eventLoop());
+    engine = this;
 
     register_fn_void(page_up);
     register_fn_commit(commit);
