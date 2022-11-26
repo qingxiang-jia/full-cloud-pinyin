@@ -41,6 +41,7 @@ public:
     void prevPage();
     void nextCandidate();
     void prevCanddiate();
+    void setPreedit(std::string preedit);
 
 private:
     fcitx::Instance* instance_;
@@ -49,7 +50,6 @@ private:
     std::vector<unsigned long> lens;
 
     void select(const int idx);
-    void setPreedit(std::string preedit);
     void setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append);
     void getCandidatesAndUpdateAsync(bool append = false);
     void getUpdateCandidatesRefreshUI(bool append);

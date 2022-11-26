@@ -47,7 +47,7 @@ extern "C" void append_candidates(int16_t** candidates, size_t cnt);
 extern "C" void set_preedit(char* preedit)
 {
     std::string preeditStr(preedit);
-    FCITX_INFO() << "C++: set_preedit" << preedit;
+    engine->setPreedit(std::move(preeditStr));
 }
 /* END UI */
 
