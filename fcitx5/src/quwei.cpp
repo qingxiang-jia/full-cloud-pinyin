@@ -64,7 +64,7 @@ extern "C" void next();
 /* BEGIN ENGINE */
 extern "C" void commit(uint16_t idx)
 {
-    engine->select(idx);
+    engine->commitCandidateByIndex(idx);
 }
 
 extern "C" void commit_candidate_by_fixed_key();
@@ -128,6 +128,12 @@ void QuweiEngine::select(const int idx)
     } else {
         FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
     }
+}
+
+void QuweiEngine::commitCandidateByIndex(const int idx)
+{
+    auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
+    ic_->commitString(candidate.toStringForCommit());
 }
 
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent)
