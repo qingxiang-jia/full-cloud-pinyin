@@ -32,7 +32,10 @@
 QuweiEngine* engine;
 
 /* BEGIN UI */
-extern "C" void set_loading();
+extern "C" void set_loading()
+{
+    engine->setLoading();
+}
 
 extern "C" void set_candidates(int16_t** candidates, size_t cnt)
 {
@@ -293,6 +296,19 @@ std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
     candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
     candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
     return candidateList;
+}
+
+void QuweiEngine::setLoading()
+{
+    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
+
+    candidateList->clear();
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("☁"));
+        candidateList->append(std::move(candidateWord));
+        lens.push_back(0);
+    }
+    candidateList->setGlobalCursorIndex(0);
 }
 
 void QuweiEngine::setDummyCandidates()

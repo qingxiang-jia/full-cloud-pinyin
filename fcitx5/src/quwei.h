@@ -42,6 +42,7 @@ public:
     void nextCandidate();
     void prevCanddiate();
     void setPreedit(std::string preedit);
+    void setLoading();
 
 private:
     fcitx::Instance* instance_;
