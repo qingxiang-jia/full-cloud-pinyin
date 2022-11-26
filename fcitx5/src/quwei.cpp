@@ -67,7 +67,10 @@ extern "C" void commit(uint16_t idx)
     engine->commitCandidateByIndex(idx);
 }
 
-extern "C" void commit_candidate_by_fixed_key();
+extern "C" void commit_candidate_by_fixed_key()
+{
+    engine->commitCandidateByFixedKey();
+}
 /* END ENGINE */
 
 namespace {
@@ -134,6 +137,12 @@ void QuweiEngine::commitCandidateByIndex(const int idx)
 {
     auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
     ic_->commitString(candidate.toStringForCommit());
+}
+
+void QuweiEngine::commitCandidateByFixedKey()
+{
+    auto idx = ic_->inputPanel().candidateList()->cursorIndex();
+    commitCandidateByIndex(idx);
 }
 
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent)
