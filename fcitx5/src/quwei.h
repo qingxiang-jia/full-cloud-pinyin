@@ -43,6 +43,7 @@ public:
     void prevCanddiate();
     void setPreedit(std::string preedit);
     void setLoading();
+    void setCandidates(std::vector<std::string> candidates);
 
 private:
     fcitx::Instance* instance_;

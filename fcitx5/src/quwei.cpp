@@ -28,6 +28,7 @@
 #include <quickphrase_public.h>
 #include <thread>
 #include <utility>
+#include <vector>
 
 QuweiEngine* engine;
 
@@ -39,10 +40,12 @@ extern "C" void set_loading()
 
 extern "C" void set_candidates(int16_t** candidates, size_t cnt)
 {
+    std::vector<std::string> candidatesToSet;
     for (size_t i = 0; i < cnt; i++) {
         std::string candidate((char*)candidates[i]);
-        FCITX_INFO() << "C++: set_candidates" << candidate;
+        candidatesToSet.push_back(std::move(candidate));
     }
+    engine->setCandidates(candidatesToSet);
 }
 
 extern "C" void append_candidates(int16_t** candidates, size_t cnt);
@@ -335,6 +338,21 @@ void QuweiEngine::setPreedit(std::string preedit)
         ic_->inputPanel().setPreedit(text);
     }
     ic_->updatePreedit();
+}
+
+void QuweiEngine::setCandidates(std::vector<std::string> candidates)
+{
+    if (candidates.empty()) {
+        return;
+    }
+
+    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
+    candidateList->clear();
+    
+    for (auto candidate : candidates) {
+        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(candidate);
+        candidateList->append(std::move(candidateWord));
+    }
 }
 
 void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
