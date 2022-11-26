@@ -62,7 +62,10 @@ extern "C" void next();
 /* END TABLE */
 
 /* BEGIN ENGINE */
-extern "C" void commit(uint16_t idx) { FCITX_INFO() << "C++: commit: " << idx; }
+extern "C" void commit(uint16_t idx)
+{
+    engine->select(idx);
+}
 
 extern "C" void commit_candidate_by_fixed_key();
 /* END ENGINE */

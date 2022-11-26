@@ -35,13 +35,14 @@ public:
     std::unique_ptr<RustPinyin> rustPinyin_;
     std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 
+    void select(const int idx);
+
 private:
     fcitx::Instance* instance_;
     fcitx::InputContext* ic_;
     fcitx::InputBuffer buffer_ { { fcitx::InputBufferOption::AsciiOnly, fcitx::InputBufferOption::FixedCursor } };
     std::vector<unsigned long> lens;
 
-    void select(const int idx);
     void setPreedit(std::string preedit);
     void setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append);
     void getCandidatesAndUpdateAsync(bool append = false);
