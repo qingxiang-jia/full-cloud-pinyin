@@ -52,9 +52,9 @@ extern "C" void set_preedit(char* preedit)
 /* END UI */
 
 /* BEGIN TABLE */
-extern "C" void page_up() { FCITX_INFO() << "C++: page_up"; }
+extern "C" void page_up() { engine->nextPage(); }
 
-extern "C" void page_down();
+extern "C" void page_down() { engine->prevPage(); }
 
 extern "C" void prev();
 
@@ -62,15 +62,9 @@ extern "C" void next();
 /* END TABLE */
 
 /* BEGIN ENGINE */
-extern "C" void commit(uint16_t idx)
-{
-    engine->commitCandidateByIndex(idx);
-}
+extern "C" void commit(uint16_t idx) { engine->commitCandidateByIndex(idx); }
 
-extern "C" void commit_candidate_by_fixed_key()
-{
-    engine->commitCandidateByFixedKey();
-}
+extern "C" void commit_candidate_by_fixed_key() { engine->commitCandidateByFixedKey(); }
 /* END ENGINE */
 
 namespace {
@@ -143,6 +137,24 @@ void QuweiEngine::commitCandidateByFixedKey()
 {
     auto idx = ic_->inputPanel().candidateList()->cursorIndex();
     commitCandidateByIndex(idx);
+}
+
+void QuweiEngine::nextPage()
+{
+    if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
+        if (pageable->hasNext()) {
+            pageable->next();
+            ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        }
+    }
+}
+
+void QuweiEngine::prevPage()
+{
+    if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable && pageable->hasPrev()) {
+        pageable->prev();
+        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    }
 }
 
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent)

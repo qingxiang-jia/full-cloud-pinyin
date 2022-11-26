@@ -37,6 +37,8 @@ public:
 
     void commitCandidateByIndex(const int idx);
     void commitCandidateByFixedKey();
+    void nextPage();
+    void prevPage();
 
 private:
     fcitx::Instance* instance_;
