@@ -60,9 +60,3 @@ class QuweiEngineFactory : public fcitx::AddonFactory {
         return new QuweiEngine(manager->instance());
     }
 };
-
-// Experimental API for Rust to call
-extern "C" void commit(uint16_t idx);
-extern "C" void page_up();
-extern "C" void set_candidates(int16_t** candidates, size_t cnt);
-extern "C" void set_preedit(char* preedit);
