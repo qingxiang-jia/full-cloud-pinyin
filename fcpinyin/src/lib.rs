@@ -1,13 +1,14 @@
 #![feature(vec_into_raw_parts)]
 mod ffi;
 
-use std::{cell::Cell, path::PathBuf, sync::Mutex, os::raw::c_char, ffi::CString};
+use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::Mutex};
 
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
+use std::sync::Mutex;
 
 type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
@@ -75,6 +76,46 @@ unsafe fn str_to_char_ptr(input: &str) -> *mut c_char {
 
 unsafe fn free_char_ptr(ptr: *mut c_char) {
     let _ = CString::from_raw(ptr);
+}
+
+static FCITX5: Mutex<Option<Fcitx5>> = Mutex::new(None);
+
+#[no_mangle]
+pub extern "C" fn register_callbacks(
+    set_loading: FnVoid,
+    set_candidates: FnSetCandidates,
+    append_candidates: FnSetCandidates,
+    set_preedit: FnSetPreedit,
+    page_up: FnVoid,
+    page_down: FnVoid,
+    prev: FnVoid,
+    next: FnVoid,
+    commit: FnCommit,
+    commit_candidate_by_fixed_key: FnVoid,
+) {
+    let ui = UI {
+        set_loading,
+        set_candidates,
+        append_candidates,
+        set_preedit,
+    };
+
+    let table = Table {
+        page_up,
+        page_down,
+        prev,
+        next,
+    };
+
+    let engine = Engine {
+        commit,
+        commit_candidate_by_fixed_key,
+    };
+
+    let fcitx5 = Fcitx5 { ui, table, engine };
+
+    let mut c_api = FCITX5.lock().expect("Failed to lock mutex on Fcitx5.");
+    *c_api = Some(fcitx5);
 }
 
 #[repr(C)]
