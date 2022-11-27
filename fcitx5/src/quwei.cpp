@@ -33,10 +33,7 @@
 QuweiEngine* engine;
 
 /* BEGIN UI */
-extern "C" void set_loading()
-{
-    engine->setLoading();
-}
+extern "C" void set_loading() { engine->setLoading(); }
 
 extern "C" void set_candidates(int16_t** candidates, size_t cnt)
 {
@@ -48,7 +45,15 @@ extern "C" void set_candidates(int16_t** candidates, size_t cnt)
     engine->setCandidates(candidatesToSet);
 }
 
-extern "C" void append_candidates(int16_t** candidates, size_t cnt);
+extern "C" void append_candidates(int16_t** candidates, size_t cnt)
+{
+    std::vector<std::string> candidatesToSet;
+    for (size_t i = 0; i < cnt; i++) {
+        std::string candidate((char*)candidates[i]);
+        candidatesToSet.push_back(std::move(candidate));
+    }
+    engine->appendCandidates(candidatesToSet);
+}
 
 extern "C" void set_preedit(char* preedit)
 {
@@ -340,19 +345,26 @@ void QuweiEngine::setPreedit(std::string preedit)
     ic_->updatePreedit();
 }
 
-void QuweiEngine::setCandidates(std::vector<std::string> candidates)
+void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append)
 {
     if (candidates.empty()) {
         return;
     }
 
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
-    candidateList->clear();
-    
+    if (!append) {
+        candidateList->clear();
+    }
+
     for (auto candidate : candidates) {
         std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(candidate);
         candidateList->append(std::move(candidateWord));
     }
+}
+
+void QuweiEngine::appendCandidates(std::vector<std::string> candidates)
+{
+    setCandidates(candidates, true);
 }
 
 void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
