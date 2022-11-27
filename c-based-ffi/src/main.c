@@ -35,5 +35,7 @@ int main(void) {
 
   r_run_callbacks(commit, pageUp, pageDown, setState);
 
-  // run_callbacks_as_function(); // Run them from C side (they are supposed to be run from Rust side)
+  Car *car = new_car();
+  car_honk(car);
+  free_car(car);
 }

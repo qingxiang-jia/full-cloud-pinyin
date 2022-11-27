@@ -79,3 +79,29 @@ pub extern "C" fn r_add_cb(a: u32, b: u32, cb: Callback) -> u32 {
     }
     a + b
 }
+
+#[repr(C)]
+pub struct Car {}
+
+#[no_mangle]
+pub extern "C" fn new_car() -> *const Car {
+    Box::into_raw(Box::new(Car {}))
+}
+
+#[no_mangle]
+pub extern "C" fn free_car(car: *mut Car) {
+    _ = Box::from(car);
+}
+
+#[no_mangle]
+pub extern "C" fn car_honk(car: *mut Car) {
+    unsafe {
+        (*car).honk();
+    }
+}
+
+impl Car {
+    pub fn honk(&self) {
+        println!("Dee~");
+    }
+}

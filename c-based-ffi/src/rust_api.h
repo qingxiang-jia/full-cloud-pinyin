@@ -15,3 +15,12 @@ typedef void (*FnSetState)(char *, int16_t **, uint16_t *, size_t);
 extern void r_run_callbacks(FnCommit, FnVoid, FnVoid, FnSetState);
 
 extern uint32_t r_add_cb(uint32_t, uint32_t, callback cb);
+
+typedef struct Car {
+} Car;
+
+extern Car *new_car();
+
+extern void car_honk(Car *car);
+
+extern void free_car(Car *car);
