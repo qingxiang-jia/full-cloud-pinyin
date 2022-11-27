@@ -5,39 +5,47 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/* BEGIN CALLBACK TYPES */
+/* ↓ CALLBACK TYPES */
 typedef void (*FnCommit)(uint16_t);
 typedef void (*FnVoid)();
 typedef void (*FnSetCandidates)(int16_t **candidates, size_t cnt);
 typedef void (*FnSetPreedit)(char *preedit);
-/* EDN CALLBACK TYPES */
+/* ↑ CALLBACK TYPES */
 
-/* BEGIN C++ -> Rust */
+/* ↓ C++ -> Rust */
 extern "C" void on_key_press(uint16_t);
-/* END C++ -> Rust */
+/* ↑ C++ -> Rust */
 
-/* BEGIN TEST CALLBACK PASSING */
+/* ↓ CALLBACK REGISTRATION */
+extern "C" void
+register_callbacks(FnVoid set_loading, FnSetCandidates set_candidates,
+                   FnSetCandidates append_candidates, FnSetPreedit set_preedit,
+                   FnVoid page_up, FnVoid page_down, FnVoid prev, FnVoid next,
+                   FnCommit commit, FnVoid commit_candidate_by_fixed_key);
+/* ↑ CALLBACK REGISTRATION */
+
+/* ↓ TEST CALLBACK PASSING */
 extern "C" void register_fn_commit(FnCommit callback);
 extern "C" void register_fn_void(FnVoid callback);
 extern "C" void register_fn_set_candidates(FnSetCandidates callback);
 extern "C" void register_fn_set_preedit(FnSetPreedit callback);
-/* END TEST CALLBACK PASSING */
+/* ↑ TEST CALLBACK PASSING */
 
-/* BEGIN UI */
+/* ↓ UI */
 extern "C" void set_loading();
 extern "C" void set_candidates(int16_t **candidates, size_t cnt);
 extern "C" void append_candidates(int16_t **candidates, size_t cnt);
 extern "C" void set_preedit(char *preedit);
-/* END UI */
+/* ↑ UI */
 
-/* BEGIN TABLE */
+/* ↓ TABLE */
 extern "C" void page_up();
 extern "C" void page_down();
 extern "C" void prev();
 extern "C" void next();
-/* END TABLE */
+/* ↑ TABLE */
 
-/* BEGIN ENGINE */
+/* ↓ ENGINE */
 extern "C" void commit(uint16_t idx);
 extern "C" void commit_candidate_by_fixed_key();
-/* END ENGINE */
+/* ↑ ENGINE */
