@@ -1,5 +1,4 @@
 #![feature(vec_into_raw_parts)]
-mod ffi;
 
 use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::Mutex};
 
@@ -9,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
 
+// New implementation
 
 type FnCommit = unsafe extern "C" fn(idx: u16);
 type FnVoid = unsafe extern "C" fn();
@@ -313,6 +313,8 @@ enum QueryDepth {
     D7 = 641,
     D8 = 1281,
 }
+
+// Old implementation
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Candidates {
