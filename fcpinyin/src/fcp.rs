@@ -76,6 +76,11 @@ impl Fcp {
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
+        let depth = self.decide_query_depth(preedit);
+        return self.get_candidates(preedit, depth).await;
+    }
+
+    fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.last_query.lock().expect("Failed to lock last_query.");
         if last_query.eq(preedit) {
             match self.query_depth.get() {
@@ -92,7 +97,7 @@ impl Fcp {
             *last_query = preedit.to_owned();
             self.query_depth.set(QueryDepth::D1);
         }
-        return self.get_candidates(preedit, self.query_depth.get()).await;
+        self.query_depth.get()
     }
 
     async fn get_candidates(&self, preedit: &str, depth: QueryDepth) -> Vec<Candidate> {
