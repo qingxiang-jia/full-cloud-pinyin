@@ -21,6 +21,19 @@ pub enum QueryDepth {
     D8 = 1281,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Candidate {
+    pub word: String,
+    pub annotation: String,
+    pub matched_len: Option<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Candidates {
+    depth: QueryDepth,
+    candidates: Vec<Candidate>,
+}
+
 pub struct Fcp {
     http: reqwest::Client,
     cache: sled::Db,
@@ -59,15 +72,137 @@ impl Fcp {
     }
 
     pub fn on_key_press(&self, key: FcitxKey) {
-
+        // TODO
     }
 
-    async fn get_candidates_from_network(&self, preedit: &str, depth: i32) {
+    async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
+        let mut last_query = self.last_query.lock().expect("Failed to lock last_query.");
+        if last_query.eq(preedit) {
+            match self.query_depth.get() {
+                QueryDepth::D1 => self.query_depth.set(QueryDepth::D2),
+                QueryDepth::D2 => self.query_depth.set(QueryDepth::D3),
+                QueryDepth::D3 => self.query_depth.set(QueryDepth::D4),
+                QueryDepth::D4 => self.query_depth.set(QueryDepth::D5),
+                QueryDepth::D5 => self.query_depth.set(QueryDepth::D6),
+                QueryDepth::D6 => self.query_depth.set(QueryDepth::D7),
+                QueryDepth::D7 => self.query_depth.set(QueryDepth::D8),
+                QueryDepth::D8 => self.query_depth.set(QueryDepth::D8),
+            }
+        } else {
+            *last_query = preedit.to_owned();
+            self.query_depth.set(QueryDepth::D1);
+        }
+        return self.get_candidates(preedit, self.query_depth.get()).await;
+    }
+
+    async fn get_candidates(&self, preedit: &str, depth: QueryDepth) -> Vec<Candidate> {
+        let has_key = self.cache.contains_key(preedit).expect(&format!(
+            "Cache failed when trying get whether {} exists.",
+            preedit
+        ));
+
+        if has_key {
+            let cached = self
+                .cache
+                .get(preedit)
+                .expect(&format!(
+                    "Error occured when getting cached value for {}",
+                    preedit
+                ))
+                .expect(&format!("The cached value for {} doesn't exist.", preedit));
+
+            let mut deserialized: Candidates =
+                bincode::deserialize(&cached).expect("The cached value cannot be deserialized.");
+
+            if deserialized.depth > depth {
+                deserialized.candidates.truncate(depth as usize);
+            }
+
+            if deserialized.depth >= depth {
+                return deserialized.candidates;
+            }
+        }
+
+        let json_str = self.get_candidates_from_network(preedit, depth as i32).await;
+
+        let candidates = self.from_json_str_to_structured(json_str);
+
+        // Save to cache
+        let to_be_saved = Candidates {
+            depth,
+            candidates: candidates.clone(),
+        };
+        let serialized = match bincode::serialize(&to_be_saved) {
+            Ok(data) => data,
+            Err(error) => panic!("Failed to serialize: {:#?}", error),
+        };
+
+        _ = self.cache.insert(preedit, serialized);
+
+        candidates
+    }
+
+    async fn get_candidates_from_network(&self, preedit: &str, depth: i32) -> String {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
 
-        let resp = self.http.get(url).header(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",).send();
+        let resp = self.http.get(url).header(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",).send().await.expect("Network problems when making the request.");
 
-        // TODO
+        resp.text().await.expect("Network problem when getting the text from the response.")
+    }
+
+    fn from_json_str_to_structured(&self, s: String) -> Vec<Candidate> {
+        let mut linear_data: Vec<String> = Vec::new();
+
+        for caps in self.re.captures_iter(&s) {
+            for cap in caps.iter() {
+                if cap.is_some() {
+                    linear_data.push(cap.unwrap().as_str().to_owned());
+                }
+            }
+        }
+
+        let mut colon_pos: Vec<usize> = Vec::new();
+
+        if linear_data[0] != "SUCCESS" {
+            println!("Rust: Google returned irregular data:\n{}", s.as_str());
+            return Vec::new();
+        }
+
+        for i in 0..linear_data.len() {
+            if linear_data[i] == ":" {
+                colon_pos.push(i);
+            }
+        }
+
+        let has_matched_len = colon_pos.len() == 4;
+
+        let candidates = &linear_data[2..colon_pos[0] - 1];
+        let annotations = &linear_data[colon_pos[0] + 1..colon_pos[1] - 1];
+
+        let matched_len: Option<&[String]>;
+        if has_matched_len {
+            matched_len = Some(&linear_data[colon_pos[3] + 1..]);
+        } else {
+            matched_len = None;
+        }
+
+        let mut aggregate: Vec<Candidate> = Vec::new();
+        for i in 0..candidates.len() {
+            aggregate.push(Candidate {
+                word: candidates[i].to_owned(),
+                annotation: annotations[i].to_owned(),
+                matched_len: match matched_len {
+                    Some(len) => Some(
+                        len[i]
+                            .parse::<i32>()
+                            .expect("Matched length faield to be parsed to i32."),
+                    ),
+                    _ => None,
+                },
+            })
+        }
+
+        aggregate
     }
 
     fn make_config_dir_if_not_already() -> std::io::Result<PathBuf> {
