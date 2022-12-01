@@ -41,7 +41,8 @@ pub struct Fcp {
     query_depth: Cell<QueryDepth>,
     re: Regex,
     ffi: Cell<Option<Fcitx5>>,
-    in_session: Cell<bool>
+    in_session: Cell<bool>,
+    table_size: u8,
 }
 
 impl Fcp {
@@ -70,6 +71,7 @@ impl Fcp {
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             ffi: None.into(),
             in_session: false.into(),
+            table_size: 5,
         }
     }
 
@@ -78,7 +80,77 @@ impl Fcp {
     }
 
     pub fn on_key_press(&self, key: FcitxKey) {
-        // TODO
+        let ffi = self.ffi.get().expect("FFI to Fcitx 5 isn't valid.");
+        if self.in_session.get() == true {
+            // Continue an input session
+            match key {
+                FcitxKey::Num0 | FcitxKey::Num1 | FcitxKey::Num2 | FcitxKey::Num3 | FcitxKey::Num4 | FcitxKey::Num5 | FcitxKey::Num6 | FcitxKey::Num7 | FcitxKey::Num8 | FcitxKey::Num9 => {
+                    // Select a candidate by keying in 0-9
+                    let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
+                    if 0 <= idx && idx < self.table_size {
+                        unsafe {
+                            (ffi.engine.commit)(idx as u16);
+                        }
+                    }
+                },
+                FcitxKey::Space => {
+                    // Select a candidate by Space key
+                    unsafe {
+                        (ffi.engine.commit_candidate_by_fixed_key)();
+                    }
+                },
+                FcitxKey::Equal => {
+                    // Go to the next page by keying in the next page keys
+                    unsafe {
+                        if (ffi.table.can_page_up)() {
+                            (ffi.table.page_up)();
+                        } else {
+                            // Request new candidates
+                            // TODO
+                        }
+                    }
+                },
+                FcitxKey::Minus => {
+                    // Go to the previous page by previous page keys
+                    unsafe {
+                        (ffi.table.page_down)();
+                    }
+                },
+                FcitxKey::Right => {
+                    // Go to the next candidate by ->
+                    unsafe {
+                        (ffi.table.next)();
+                    }
+                },
+                FcitxKey::Left => {
+                    // Go to the previous candidate by <-
+                    unsafe {
+                        (ffi.table.prev)();
+                    }
+                },
+                FcitxKey::BackSpace => {
+                    // Remove one character from buffer
+                    // TODO
+                },
+                FcitxKey::Return => {
+                    // Commit buffer as is (i.e., not Chinese)
+                    // TODO
+                },
+                FcitxKey::Escape => {
+                    // Terminate this input session
+                    // TODO
+                }
+                _ => {
+
+                }
+            }
+        } else {
+            // Create a new input session
+            let val = key as u32;
+            if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32) || (FcitxKey::A as u32 <= val && val <= FcitxKey::Z as u32) {
+                // TODO
+            }
+        }
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
