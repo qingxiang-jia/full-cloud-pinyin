@@ -4,6 +4,7 @@ use crate::fcitx5::{FcitxKey, Table, UI, Engine, Fcitx5};
 
 pub type FnCommit = unsafe extern "C" fn(idx: u16);
 pub type FnVoid = unsafe extern "C" fn();
+pub type FnCanPageUp = unsafe extern "C" fn() -> bool;
 pub type FnSetCandidates = unsafe extern "C" fn(candidates: *mut *mut i8, cnt: usize);
 pub type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
 
@@ -76,6 +77,7 @@ pub extern "C" fn register_callbacks(
     set_candidates: FnSetCandidates,
     append_candidates: FnSetCandidates,
     set_preedit: FnSetPreedit,
+    can_page_up: FnCanPageUp,
     page_up: FnVoid,
     page_down: FnVoid,
     prev: FnVoid,
@@ -91,6 +93,7 @@ pub extern "C" fn register_callbacks(
     };
 
     let table = Table {
+        can_page_up,
         page_up,
         page_down,
         prev,

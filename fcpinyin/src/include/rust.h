@@ -39,6 +39,7 @@ extern "C" void set_preedit(char *preedit);
 /* ↑ UI */
 
 /* ↓ TABLE */
+extern "C" bool can_page_up();
 extern "C" void page_up();
 extern "C" void page_down();
 extern "C" void prev();

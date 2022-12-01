@@ -1,4 +1,4 @@
-use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit};
+use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit, FnCanPageUp};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -20,6 +20,7 @@ pub struct UI {
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct Table {
+    pub can_page_up: FnCanPageUp,
     pub page_up: FnVoid,
     pub page_down: FnVoid,
     pub prev: FnVoid,
