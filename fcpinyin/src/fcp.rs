@@ -40,7 +40,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Cell<QueryDepth>,
     re: Regex,
-    fcitx5: Option<Fcitx5>,
+    fcitx5: Cell<Option<Fcitx5>>,
 }
 
 impl Fcp {
@@ -67,8 +67,12 @@ impl Fcp {
             last_query: Mutex::new("".to_owned()),
             query_depth: Cell::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
-            fcitx5: None,
+            fcitx5: None.into(),
         }
+    }
+
+    pub fn set_fcitx5(&self, fcitx5: Fcitx5) {
+        self.fcitx5.set(Some(fcitx5));
     }
 
     pub fn on_key_press(&self, key: FcitxKey) {
