@@ -77,7 +77,23 @@ impl Fcp {
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
         let depth = self.decide_query_depth(preedit);
-        return self.get_candidates(preedit, depth).await;
+        let candidates = self.get_candidates(preedit, depth).await;
+        candidates
+    }
+
+    async fn get_candidates(&self, preedit: &str, depth: QueryDepth) -> Vec<Candidate> {
+        let cached = self.get_from_cache(preedit, depth);
+        if cached.is_some() {
+            return cached.expect("Cached returns None.").candidates;
+        }
+
+        let json_str = self.get_candidates_from_network(preedit, depth as i32).await;
+
+        let candidates = self.from_json_str_to_structured(json_str);
+
+        self.save_to_cache(preedit, &candidates, depth);
+
+        candidates
     }
 
     fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
@@ -132,39 +148,8 @@ impl Fcp {
             None
         }
     }
-    async fn get_candidates(&self, preedit: &str, depth: QueryDepth) -> Vec<Candidate> {
-        let has_key = self.cache.contains_key(preedit).expect(&format!(
-            "Cache failed when trying get whether {} exists.",
-            preedit
-        ));
 
-        if has_key {
-            let cached = self
-                .cache
-                .get(preedit)
-                .expect(&format!(
-                    "Error occured when getting cached value for {}",
-                    preedit
-                ))
-                .expect(&format!("The cached value for {} doesn't exist.", preedit));
-
-            let mut deserialized: Candidates =
-                bincode::deserialize(&cached).expect("The cached value cannot be deserialized.");
-
-            if deserialized.depth > depth {
-                deserialized.candidates.truncate(depth as usize);
-            }
-
-            if deserialized.depth >= depth {
-                return deserialized.candidates;
-            }
-        }
-
-        let json_str = self.get_candidates_from_network(preedit, depth as i32).await;
-
-        let candidates = self.from_json_str_to_structured(json_str);
-
-        // Save to cache
+    fn save_to_cache(&self, preedit: &str, candidates: &Vec<Candidate>, depth: QueryDepth) {
         let to_be_saved = Candidates {
             depth,
             candidates: candidates.clone(),
@@ -175,8 +160,6 @@ impl Fcp {
         };
 
         _ = self.cache.insert(preedit, serialized);
-
-        candidates
     }
 
     async fn get_candidates_from_network(&self, preedit: &str, depth: i32) -> String {
