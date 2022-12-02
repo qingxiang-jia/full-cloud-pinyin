@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "rustpinyin.h"
 #include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>
@@ -32,9 +31,6 @@ public:
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
 
-    std::unique_ptr<RustPinyin> rustPinyin_;
-    std::unique_ptr<fcitx::EventDispatcher> dispatcher;
-
     void commitCandidateByIndex(const int idx);
     void commitCandidateByFixedKey();
     void nextPage();
@@ -53,7 +49,6 @@ private:
     std::vector<unsigned long> lens;
 
     void select(const int idx);
-    void setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append);
     void getCandidatesAndUpdateAsync(bool append = false);
     void getUpdateCandidatesRefreshUI(bool append);
     void preeditRemoveFirstN(int lenToRemove);

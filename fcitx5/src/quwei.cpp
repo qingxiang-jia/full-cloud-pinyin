@@ -89,7 +89,6 @@ template <class F, typename... Args> void call_async(F&& lambda)
 
 class QuweiCandidate : public fcitx::CandidateWord {
 public:
-    QuweiCandidate(::rust::String text) { setText(fcitx::Text(std::move(text.c_str()))); }
     QuweiCandidate(fcitx::Text text) { setText(text); }
     void select(fcitx::InputContext*) const {};
 };
@@ -97,11 +96,8 @@ public:
 } // namespace
 
 QuweiEngine::QuweiEngine(fcitx::Instance* instance)
-    : rustPinyin_(new RustPinyin())
-    , instance_(instance)
+    : instance_(instance)
 {
-    dispatcher = std::make_unique<fcitx::EventDispatcher>();
-    dispatcher->attach(&instance->eventLoop());
     engine = this;
 
     register_fn_void(page_up);
@@ -357,7 +353,7 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
     }
 
     for (auto candidate : candidates) {
-        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(candidate);
+        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text(candidate));
         candidateList->append(std::move(candidateWord));
     }
 }
@@ -365,49 +361,6 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
 void QuweiEngine::appendCandidates(std::vector<std::string> candidates)
 {
     setCandidates(candidates, true);
-}
-
-void QuweiEngine::setCandidates(::rust::Vec<::fcp::CandidateWord> candidates, bool append)
-{
-    if (candidates.empty()) {
-        return;
-    }
-
-    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
-
-    if (!append) {
-        lens.clear();
-        candidateList->clear();
-    }
-    for (auto& candidate : candidates) {
-        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(candidate.word);
-        candidateList->append(std::move(candidateWord));
-        lens.push_back(candidate.len);
-    }
-    candidates.clear();
-
-    if (!append) {
-        candidateList->setGlobalCursorIndex(0);
-    }
-}
-
-void QuweiEngine::getUpdateCandidatesRefreshUI(bool append)
-{
-    std::string preedit = buffer_.userInput();
-
-    auto candidates = rustPinyin_->fcp->query_candidates(preedit);
-
-    setCandidates(candidates, append);
-}
-
-void QuweiEngine::getCandidatesAndUpdateAsync(bool append)
-{
-    call_async([this, append]() {
-        dispatcher->schedule([this, append]() {
-            getUpdateCandidatesRefreshUI(append);
-            updateUI();
-        });
-    });
 }
 
 void QuweiEngine::updateUI() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); }
@@ -432,12 +385,6 @@ void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent
 {
     FCITX_UNUSED(event);
     reset();
-}
-
-RustPinyin::RustPinyin()
-{
-    auto boxedFcp = fcp::init();
-    this->fcp = boxedFcp.into_raw();
 }
 
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
