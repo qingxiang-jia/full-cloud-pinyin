@@ -44,6 +44,7 @@ pub struct Fcp {
     re: Regex,
     ffi: Cell<Option<Fcitx5>>,
     in_session: Cell<bool>,
+    session_candidates: Mutex<Option<Candidates>>,
     table_size: u8,
 }
 
@@ -74,6 +75,7 @@ impl Fcp {
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             ffi: None.into(),
             in_session: false.into(),
+            session_candidates: Mutex::new(None),
             table_size: 5,
         }
     }
