@@ -87,7 +87,7 @@ impl Fcp {
                 FcitxKey::Num0 | FcitxKey::Num1 | FcitxKey::Num2 | FcitxKey::Num3 | FcitxKey::Num4 | FcitxKey::Num5 | FcitxKey::Num6 | FcitxKey::Num7 | FcitxKey::Num8 | FcitxKey::Num9 => {
                     // Select a candidate by keying in 0-9
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
-                    if 0 <= idx && idx < self.table_size {
+                    if idx < self.table_size {
                         unsafe {
                             (ffi.engine.commit)(idx as u16);
                         }
