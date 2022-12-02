@@ -5,6 +5,7 @@ use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 use sled;
+use tokio::runtime::Runtime;
 use std::fs;
 
 use crate::fcitx5;
@@ -35,6 +36,7 @@ pub struct Candidates {
 }
 
 pub struct Fcp {
+    rt: Runtime,
     http: reqwest::Client,
     cache: sled::Db,
     last_query: Mutex<String>,
@@ -64,6 +66,7 @@ impl Fcp {
         };
 
         Self {
+            rt: Runtime::new().expect("Failed to initialize Tokio runtime."),
             http: reqwest::Client::new(),
             cache: db,
             last_query: Mutex::new("".to_owned()),
