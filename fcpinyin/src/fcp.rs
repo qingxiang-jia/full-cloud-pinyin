@@ -318,4 +318,11 @@ impl Fcp {
         };
         result
     }
+
+    fn candidate_vec_to_str_vec<'a>(candidates: &'a Vec<Candidate>) -> Vec<&'a String> {
+        let strs_only: Vec<&'a String>  = candidates.iter().map(|candidate|
+            &candidate.word
+        ).collect();
+        strs_only
+    }
 }
