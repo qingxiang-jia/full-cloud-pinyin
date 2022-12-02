@@ -1,12 +1,12 @@
 use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::Mutex};
 
-use fcitx5::{UI, Table, Engine, Fcitx5, FcitxKey};
+use fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI};
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 use sled;
-use tokio::runtime::Runtime;
 use std::fs;
+use tokio::runtime::Runtime;
 
 use crate::fcitx5;
 
@@ -89,7 +89,16 @@ impl Fcp {
         if self.in_session.get() == true {
             // Continue an input session
             match key {
-                FcitxKey::Num0 | FcitxKey::Num1 | FcitxKey::Num2 | FcitxKey::Num3 | FcitxKey::Num4 | FcitxKey::Num5 | FcitxKey::Num6 | FcitxKey::Num7 | FcitxKey::Num8 | FcitxKey::Num9 => {
+                FcitxKey::Num0
+                | FcitxKey::Num1
+                | FcitxKey::Num2
+                | FcitxKey::Num3
+                | FcitxKey::Num4
+                | FcitxKey::Num5
+                | FcitxKey::Num6
+                | FcitxKey::Num7
+                | FcitxKey::Num8
+                | FcitxKey::Num9 => {
                     // Select a candidate by keying in 0-9
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
                     if idx < self.table_size {
@@ -97,13 +106,13 @@ impl Fcp {
                             (ffi.engine.commit)(idx as u16);
                         }
                     }
-                },
+                }
                 FcitxKey::Space => {
                     // Select a candidate by Space key
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
-                },
+                }
                 FcitxKey::Equal => {
                     // Go to the next page by keying in the next page keys
                     unsafe {
@@ -114,45 +123,45 @@ impl Fcp {
                             // TODO
                         }
                     }
-                },
+                }
                 FcitxKey::Minus => {
                     // Go to the previous page by previous page keys
                     unsafe {
                         (ffi.table.page_down)();
                     }
-                },
+                }
                 FcitxKey::Right => {
                     // Go to the next candidate by ->
                     unsafe {
                         (ffi.table.next)();
                     }
-                },
+                }
                 FcitxKey::Left => {
                     // Go to the previous candidate by <-
                     unsafe {
                         (ffi.table.prev)();
                     }
-                },
+                }
                 FcitxKey::BackSpace => {
                     // Remove one character from buffer
                     // TODO
-                },
+                }
                 FcitxKey::Return => {
                     // Commit buffer as is (i.e., not Chinese)
                     // TODO
-                },
+                }
                 FcitxKey::Escape => {
                     // Terminate this input session
                     // TODO
                 }
-                _ => {
-
-                }
+                _ => {}
             }
         } else {
             // Create a new input session
             let val = key as u32;
-            if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32) || (FcitxKey::A as u32 <= val && val <= FcitxKey::Z as u32) {
+            if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32)
+                || (FcitxKey::A as u32 <= val && val <= FcitxKey::Z as u32)
+            {
                 // TODO
             }
         }
@@ -170,7 +179,9 @@ impl Fcp {
             return cached.expect("Cached returns None.").candidates;
         }
 
-        let json_str = self.get_candidates_from_network(preedit, depth as i32).await;
+        let json_str = self
+            .get_candidates_from_network(preedit, depth as i32)
+            .await;
 
         let candidates = self.from_json_str_to_structured(json_str);
 
@@ -248,9 +259,20 @@ impl Fcp {
     async fn get_candidates_from_network(&self, preedit: &str, depth: i32) -> String {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
 
-        let resp = self.http.get(url).header(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",).send().await.expect("Network problems when making the request.");
+        let resp = self
+            .http
+            .get(url)
+            .header(
+                USER_AGENT,
+                "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
+            )
+            .send()
+            .await
+            .expect("Network problems when making the request.");
 
-        resp.text().await.expect("Network problem when getting the text from the response.")
+        resp.text()
+            .await
+            .expect("Network problem when getting the text from the response.")
     }
 
     fn from_json_str_to_structured(&self, s: String) -> Vec<Candidate> {
@@ -320,9 +342,8 @@ impl Fcp {
     }
 
     fn candidate_vec_to_str_vec<'a>(candidates: &'a Vec<Candidate>) -> Vec<&'a String> {
-        let strs_only: Vec<&'a String>  = candidates.iter().map(|candidate|
-            &candidate.word
-        ).collect();
+        let strs_only: Vec<&'a String> =
+            candidates.iter().map(|candidate| &candidate.word).collect();
         strs_only
     }
 }
