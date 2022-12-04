@@ -1,4 +1,4 @@
-use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::Mutex};
+use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::{Mutex, Arc}};
 
 use fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI};
 use regex::Regex;
@@ -40,10 +40,10 @@ pub struct Fcp {
     http: reqwest::Client,
     cache: sled::Db,
     last_query: Mutex<String>,
-    query_depth: Cell<QueryDepth>,
+    query_depth: Mutex<QueryDepth>,
     re: Regex,
-    ffi: Cell<Option<Fcitx5>>,
-    in_session: Cell<bool>,
+    ffi: Mutex<Option<Fcitx5>>,
+    in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Candidates>>,
     table_size: u8,
 }
@@ -71,7 +71,7 @@ impl Fcp {
             http: reqwest::Client::new(),
             cache: db,
             last_query: Mutex::new("".to_owned()),
-            query_depth: Cell::new(QueryDepth::D1),
+            query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             ffi: None.into(),
             in_session: false.into(),
@@ -81,12 +81,13 @@ impl Fcp {
     }
 
     pub fn set_fcitx5(&self, fcitx5: Fcitx5) {
-        self.ffi.set(Some(fcitx5));
+        *self.ffi.lock().expect("Failed to lock fcitx5") = Some(fcitx5);
     }
 
-    pub fn on_key_press(&self, key: FcitxKey) {
-        let ffi = self.ffi.get().expect("FFI to Fcitx 5 isn't valid.");
-        if self.in_session.get() == true {
+    pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) {
+        let ffi = (*self.ffi.lock().expect("Failed to lock fcitx5")).expect("fcitx5 is None.");
+        let is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
+        if is_in_session == true {
             // Continue an input session
             match key {
                 FcitxKey::Num0
@@ -120,7 +121,18 @@ impl Fcp {
                             (ffi.table.page_up)();
                         } else {
                             // Request new candidates
+                            let preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
                             // TODO
+                            self.clone().rt.spawn(async move {
+                                self.clone().query_candidates(&preedit);
+
+                                println!("hey");
+                                // Request candidates
+                                
+                                // Set session_candidates
+                                // Make CString array 
+                                // Set it to UI
+                            });
                         }
                     }
                 }
@@ -192,22 +204,23 @@ impl Fcp {
 
     fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.last_query.lock().expect("Failed to lock last_query.");
+        let mut depth = self.query_depth.lock().expect("Failed to lock query_depth.");
         if last_query.eq(preedit) {
-            match self.query_depth.get() {
-                QueryDepth::D1 => self.query_depth.set(QueryDepth::D2),
-                QueryDepth::D2 => self.query_depth.set(QueryDepth::D3),
-                QueryDepth::D3 => self.query_depth.set(QueryDepth::D4),
-                QueryDepth::D4 => self.query_depth.set(QueryDepth::D5),
-                QueryDepth::D5 => self.query_depth.set(QueryDepth::D6),
-                QueryDepth::D6 => self.query_depth.set(QueryDepth::D7),
-                QueryDepth::D7 => self.query_depth.set(QueryDepth::D8),
-                QueryDepth::D8 => self.query_depth.set(QueryDepth::D8),
+            match *depth {
+                QueryDepth::D1 => *depth = QueryDepth::D2,
+                QueryDepth::D2 => *depth = QueryDepth::D3,
+                QueryDepth::D3 => *depth = QueryDepth::D4,
+                QueryDepth::D4 => *depth = QueryDepth::D5,
+                QueryDepth::D5 => *depth = QueryDepth::D6,
+                QueryDepth::D6 => *depth = QueryDepth::D7,
+                QueryDepth::D7 => *depth = QueryDepth::D8,
+                QueryDepth::D8 => *depth = QueryDepth::D8,
             }
         } else {
             *last_query = preedit.to_owned();
-            self.query_depth.set(QueryDepth::D1);
+            *depth = QueryDepth::D1;
         }
-        self.query_depth.get()
+        depth.clone()
     }
 
     fn get_from_cache(&self, preedit: &str, depth: QueryDepth) -> Option<Candidates> {
