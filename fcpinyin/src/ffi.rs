@@ -56,7 +56,7 @@ unsafe fn string_vec_to_cstring_array(input: &Vec<String>) -> (*mut *mut c_char,
     ptrs.into_raw_parts()
 }
 
-unsafe fn str_vec_to_cstring_array(input: Vec<&String>) -> (*mut *mut c_char, usize, usize) {
+pub unsafe fn str_vec_to_cstring_array(input: Vec<&String>) -> (*mut *mut c_char, usize, usize) {
     let ptrs: Vec<*mut c_char> = input
         .into_iter()
         .map(|string| str_to_char_ptr(string.as_str()))
@@ -64,7 +64,7 @@ unsafe fn str_vec_to_cstring_array(input: Vec<&String>) -> (*mut *mut c_char, us
     ptrs.into_raw_parts()
 }
 
-unsafe fn free_cstring_array(ptr: *mut *mut c_char, len: usize, cap: usize) {
+pub unsafe fn free_cstring_array(ptr: *mut *mut c_char, len: usize, cap: usize) {
     let _ = Vec::from_raw_parts(ptr, len, cap);
 }
 

@@ -8,7 +8,7 @@ use sled;
 use std::fs;
 use tokio::runtime::Runtime;
 
-use crate::fcitx5;
+use crate::{fcitx5, ffi};
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
 pub enum QueryDepth {
@@ -44,7 +44,7 @@ pub struct Fcp {
     re: Regex,
     ffi: Mutex<Option<Fcitx5>>,
     in_session: Mutex<bool>,
-    session_candidates: Mutex<Option<Candidates>>,
+    session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
 }
 
@@ -120,18 +120,20 @@ impl Fcp {
                         if (ffi.table.can_page_up)() {
                             (ffi.table.page_up)();
                         } else {
-                            // Request new candidates
                             let preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
                             // TODO
                             self.clone().rt.spawn(async move {
-                                self.clone().query_candidates(&preedit);
-
-                                println!("hey");
-                                // Request candidates
-                                
-                                // Set session_candidates
-                                // Make CString array 
+                                let async_self = self.clone();
+                                // Request new candidates
+                                let new_candidates = async_self.query_candidates(&preedit).await;
+                                // Make CString array
+                                let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                                let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
                                 // Set it to UI
+                                let ffi = async_self.ffi.lock().expect("Failed to lock ffi.").expect("Fcitx5 is None.");
+                                // Set session_candidates
+                                let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                                *session_candidates = Some(new_candidates);
                             });
                         }
                     }
