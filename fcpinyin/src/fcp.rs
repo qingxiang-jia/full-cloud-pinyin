@@ -159,6 +159,15 @@ impl Fcp {
                 FcitxKey::BackSpace => {
                     // Remove one character from buffer
                     // TODO
+                    // Update preedit
+                    let mut preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
+                    preedit.pop();
+                    // Request new candidates
+                    self.clone().rt.spawn(async move {
+                        // Make CString array
+                        // Set it to UI
+                        // Set session candidates
+                    });
                 }
                 FcitxKey::Return => {
                     // Commit buffer as is (i.e., not Chinese)
