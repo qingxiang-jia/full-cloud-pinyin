@@ -121,7 +121,6 @@ impl Fcp {
                             (ffi.table.page_up)();
                         } else {
                             let preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
-                            // TODO
                             self.clone().rt.spawn(async move {
                                 let async_self = self.clone();
                                 // Request new candidates
@@ -130,6 +129,8 @@ impl Fcp {
                                 let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
                                 let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
                                 // Set it to UI
+                                (ffi.ui.append_candidates)(ptr_ptr, len);
+                                ffi::free_cstring_array(ptr_ptr, len, cap);
                                 // Set session_candidates
                                 let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
                                 *session_candidates = Some(new_candidates);
