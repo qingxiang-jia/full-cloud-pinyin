@@ -1,4 +1,4 @@
-use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::{Mutex, Arc}};
+use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::{Mutex, Arc, RwLock}};
 
 use fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI};
 use regex::Regex;
@@ -42,7 +42,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
-    ffi: Mutex<Option<Fcitx5>>,
+    ffi: RwLock<Option<Fcitx5>>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
@@ -81,11 +81,11 @@ impl Fcp {
     }
 
     pub fn set_fcitx5(&self, fcitx5: Fcitx5) {
-        *self.ffi.lock().expect("Failed to lock fcitx5") = Some(fcitx5);
+        *self.ffi.write().expect("Failed to lock ffi.") = Some(fcitx5);
     }
 
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) {
-        let ffi = (*self.ffi.lock().expect("Failed to lock fcitx5")).expect("fcitx5 is None.");
+        let ffi = (*self.ffi.read().expect("Failed to lock fcitx5")).expect("fcitx5 is None.");
         let is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
         if is_in_session == true {
             // Continue an input session
@@ -130,7 +130,6 @@ impl Fcp {
                                 let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
                                 let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
                                 // Set it to UI
-                                let ffi = async_self.ffi.lock().expect("Failed to lock ffi.").expect("Fcitx5 is None.");
                                 // Set session_candidates
                                 let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
                                 *session_candidates = Some(new_candidates);
