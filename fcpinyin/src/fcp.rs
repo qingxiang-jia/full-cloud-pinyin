@@ -218,6 +218,9 @@ impl Fcp {
                     // Set session_candidates
                     let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
                     *session_candidates = Some(new_candidates);
+                    // Set flag
+                    let mut is_in_session = async_self.in_session.lock().expect("Failed to lock in_session.");
+                    *is_in_session = true;
                 });
             }
         }
