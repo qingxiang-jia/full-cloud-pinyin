@@ -196,7 +196,29 @@ impl Fcp {
             if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32)
                 || (FcitxKey::A as u32 <= val && val <= FcitxKey::Z as u32)
             {
-                // TODO
+                // Add one character from preedit
+                let user_input = char::from_u32(val).expect("The user input cannot be converted to a char.");
+                // Update preedit
+                let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                shared_preedit.push(user_input);
+                let preedit = shared_preedit.clone();
+
+                let async_self = self.clone();
+                self.clone().rt.spawn(async move {
+                    // Request new candidates
+                    let new_candidates = async_self.query_candidates(&preedit).await;
+                    // Make CString array
+                    let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                    unsafe {
+                        let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
+                        // Set it to UI
+                        (ffi.ui.set_candidates)(ptr_ptr, len);
+                        ffi::free_cstring_array(ptr_ptr, len, cap);
+                    }
+                    // Set session_candidates
+                    let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                    *session_candidates = Some(new_candidates);
+                });
             }
         }
     }
