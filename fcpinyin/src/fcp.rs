@@ -172,7 +172,7 @@ impl Fcp {
                         unsafe {
                             let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
                             // Set it to UI
-                            (ffi.ui.append_candidates)(ptr_ptr, len);
+                            (ffi.ui.set_candidates)(ptr_ptr, len);
                             ffi::free_cstring_array(ptr_ptr, len, cap);
                         }
                         // Set session_candidates
