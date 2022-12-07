@@ -76,6 +76,12 @@ extern "C" void next() { engine->nextCandidate(); }
 extern "C" void commit(uint16_t idx) { engine->commitCandidateByIndex(idx); }
 
 extern "C" void commit_candidate_by_fixed_key() { engine->commitCandidateByFixedKey(); }
+
+extern "C" void commit_preedit(char* preedit)
+{
+    std::string preeditStr(preedit);
+    engine->commitPreedit(preeditStr);
+}
 /* END ENGINE */
 
 namespace {
@@ -144,6 +150,11 @@ void QuweiEngine::commitCandidateByFixedKey()
 {
     auto idx = ic_->inputPanel().candidateList()->cursorIndex();
     commitCandidateByIndex(idx);
+}
+
+void QuweiEngine::commitPreedit(std::string preedit)
+{
+    ic_->commitString(preedit);
 }
 
 void QuweiEngine::nextPage()

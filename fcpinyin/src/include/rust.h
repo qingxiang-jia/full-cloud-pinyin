@@ -49,4 +49,5 @@ extern "C" void next();
 /* ↓ ENGINE */
 extern "C" void commit(uint16_t idx);
 extern "C" void commit_candidate_by_fixed_key();
+extern "C" void commit_preedit(char *preedit);
 /* ↑ ENGINE */
