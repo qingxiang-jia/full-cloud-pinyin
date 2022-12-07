@@ -121,8 +121,8 @@ impl Fcp {
                             (ffi.table.page_up)();
                         } else {
                             let preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
+                            let async_self = self.clone();
                             self.clone().rt.spawn(async move {
-                                let async_self = self.clone();
                                 // Request new candidates
                                 let new_candidates = async_self.query_candidates(&preedit).await;
                                 // Make CString array
@@ -162,8 +162,11 @@ impl Fcp {
                     // Update preedit
                     let mut preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
                     preedit.pop();
-                    // Request new candidates
+                    
+                    let async_self = self.clone();
                     self.clone().rt.spawn(async move {
+                        // Request new candidates
+                        let new_candidates = async_self.query_candidates(&preedit).await;
                         // Make CString array
                         // Set it to UI
                         // Set session candidates
