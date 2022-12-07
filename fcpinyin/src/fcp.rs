@@ -158,18 +158,25 @@ impl Fcp {
                 }
                 FcitxKey::BackSpace => {
                     // Remove one character from buffer
-                    // TODO
                     // Update preedit
                     let mut preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
                     preedit.pop();
-                    
+
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
                         // Request new candidates
                         let new_candidates = async_self.query_candidates(&preedit).await;
                         // Make CString array
-                        // Set it to UI
-                        // Set session candidates
+                        let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                        unsafe {
+                            let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
+                            // Set it to UI
+                            (ffi.ui.append_candidates)(ptr_ptr, len);
+                            ffi::free_cstring_array(ptr_ptr, len, cap);
+                        }
+                        // Set session_candidates
+                        let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                        *session_candidates = Some(new_candidates);
                     });
                 }
                 FcitxKey::Return => {
