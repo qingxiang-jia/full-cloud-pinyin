@@ -157,7 +157,7 @@ impl Fcp {
                     }
                 }
                 FcitxKey::BackSpace => {
-                    // Remove one character from buffer
+                    // Remove one character from preedit
                     // Update preedit
                     let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
                     shared_preedit.pop();
