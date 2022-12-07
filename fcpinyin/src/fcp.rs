@@ -159,8 +159,9 @@ impl Fcp {
                 FcitxKey::BackSpace => {
                     // Remove one character from buffer
                     // Update preedit
-                    let mut preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
-                    preedit.pop();
+                    let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                    shared_preedit.pop();
+                    let preedit = shared_preedit.clone();
 
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
