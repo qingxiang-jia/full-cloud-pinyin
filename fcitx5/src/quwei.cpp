@@ -144,6 +144,7 @@ void QuweiEngine::commitCandidateByIndex(const int idx)
 {
     auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
     ic_->commitString(candidate.toStringForCommit());
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::commitCandidateByFixedKey()
@@ -325,6 +326,8 @@ void QuweiEngine::setLoading()
         lens.push_back(0);
     }
     candidateList->setGlobalCursorIndex(0);
+
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::setDummyCandidates()
@@ -368,6 +371,8 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
         std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text(candidate));
         candidateList->append(std::move(candidateWord));
     }
+
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::appendCandidates(std::vector<std::string> candidates)
