@@ -35,6 +35,7 @@ extern "C" void register_fn_set_preedit(FnSetPreedit callback);
 extern "C" void set_loading();
 extern "C" void set_candidates(int16_t **candidates, size_t cnt);
 extern "C" void append_candidates(int16_t **candidates, size_t cnt);
+extern "C" void clear_candidates();
 extern "C" void set_preedit(char *preedit);
 /* ↑ UI */
 

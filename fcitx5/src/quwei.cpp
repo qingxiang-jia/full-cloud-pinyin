@@ -55,6 +55,11 @@ extern "C" void append_candidates(int16_t** candidates, size_t cnt)
     engine->appendCandidates(candidatesToSet);
 }
 
+extern "C" void clear_candidates()
+{
+    engine->clearCandidates();
+}
+
 extern "C" void set_preedit(char* preedit)
 {
     std::string preeditStr(preedit);
@@ -363,6 +368,7 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
     }
 
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
+    
     if (!append) {
         candidateList->clear();
     }
@@ -375,9 +381,15 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
-void QuweiEngine::appendCandidates(std::vector<std::string> candidates)
+void QuweiEngine::appendCandidates(std::vector<std::string> candidates) { setCandidates(candidates, true); }
+
+void QuweiEngine::clearCandidates()
 {
-    setCandidates(candidates, true);
+    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
+
+    candidateList->clear();
+
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void QuweiEngine::updateUI() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); }
