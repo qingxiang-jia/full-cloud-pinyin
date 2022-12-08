@@ -182,7 +182,25 @@ impl Fcp {
                 }
                 FcitxKey::Return => {
                     // Commit buffer as is (i.e., not Chinese)
-                    // TODO
+                    // Clear preedit
+                    let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                    let preedit = shared_preedit.clone();
+                    shared_preedit.clear();
+                    // Clear session_candidates
+                    let mut session_candidates = self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                    *session_candidates = None;
+                    // Set flag
+                    let mut is_in_session = self.in_session.lock().expect("Failed to lock in_session.");
+                    *is_in_session = false;
+                    unsafe {
+                        // Make CString
+                        let char_ptr = ffi::str_to_char_ptr(&preedit);
+                        // Commit as is
+                        (ffi.engine.commit_preedit)(char_ptr);
+                        ffi::free_char_ptr(char_ptr);
+                        // Update UI
+                        (ffi.ui.clear_candidates)();
+                    }
                 }
                 FcitxKey::Escape => {
                     // Terminate this input session
