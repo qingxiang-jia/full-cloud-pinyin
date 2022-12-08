@@ -42,7 +42,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
-    ffi: RwLock<Option<Fcitx5>>,
+    ffi: Mutex<Option<Fcitx5>>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
@@ -81,11 +81,11 @@ impl Fcp {
     }
 
     pub fn set_fcitx5(&self, fcitx5: Fcitx5) {
-        *self.ffi.write().expect("Failed to lock ffi.") = Some(fcitx5);
+        *self.ffi.lock().expect("Failed to lock ffi.") = Some(fcitx5);
     }
 
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) {
-        let ffi = (*self.ffi.read().expect("Failed to lock fcitx5")).expect("fcitx5 is None.");
+        let ffi = (*self.ffi.lock().expect("Failed to lock ffi.")).expect("ffi is None, not Fcitx5.");
         let is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
         if is_in_session == true {
             // Continue an input session
