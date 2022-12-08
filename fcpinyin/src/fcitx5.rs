@@ -31,6 +31,7 @@ pub struct Table {
 #[repr(C)]
 pub struct Engine {
     pub commit: FnCommit,
+    pub commit_preedit: FnSetPreedit,
     pub commit_candidate_by_fixed_key: FnVoid,
 }
 

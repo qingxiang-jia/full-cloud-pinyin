@@ -68,14 +68,14 @@ pub unsafe fn free_cstring_array(ptr: *mut *mut c_char, len: usize, cap: usize) 
     let _ = Vec::from_raw_parts(ptr, len, cap);
 }
 
-unsafe fn str_to_char_ptr(input: &str) -> *mut c_char {
+pub unsafe fn str_to_char_ptr(input: &str) -> *mut c_char {
     let char_ptr = CString::new(input)
         .expect("Failed to create C string from &str.")
         .into_raw();
     return char_ptr;
 }
 
-unsafe fn free_char_ptr(ptr: *mut c_char) {
+pub unsafe fn free_char_ptr(ptr: *mut c_char) {
     let _ = CString::from_raw(ptr);
 }
 
@@ -91,6 +91,7 @@ pub extern "C" fn register_callbacks(
     prev: FnVoid,
     next: FnVoid,
     commit: FnCommit,
+    commit_preedit: FnSetPreedit,
     commit_candidate_by_fixed_key: FnVoid,
 ) {
     let ui = UI {
@@ -110,6 +111,7 @@ pub extern "C" fn register_callbacks(
 
     let engine = Engine {
         commit,
+        commit_preedit,
         commit_candidate_by_fixed_key,
     };
 

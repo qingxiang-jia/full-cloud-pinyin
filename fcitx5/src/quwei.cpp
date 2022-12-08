@@ -155,6 +155,7 @@ void QuweiEngine::commitCandidateByFixedKey()
 void QuweiEngine::commitPreedit(std::string preedit)
 {
     ic_->commitString(preedit);
+    reset();
 }
 
 void QuweiEngine::nextPage()
