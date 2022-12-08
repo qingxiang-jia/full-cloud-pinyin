@@ -204,7 +204,19 @@ impl Fcp {
                 }
                 FcitxKey::Escape => {
                     // Terminate this input session
-                    // TODO
+                    // Clear preedit
+                    let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                    shared_preedit.clear();
+                    // Clear session_candidates
+                    let mut session_candidates = self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                    *session_candidates = None;
+                    // Set flag
+                    let mut is_in_session = self.in_session.lock().expect("Failed to lock in_session.");
+                    *is_in_session = false;
+                    unsafe {
+                        // Update UI
+                        (ffi.ui.clear_candidates)();
+                    }
                 }
                 _ => {}
             }
