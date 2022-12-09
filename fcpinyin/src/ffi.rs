@@ -22,6 +22,51 @@ pub extern "C" fn new_fcp() -> *const FcpOpaque {
 }
 
 #[no_mangle]
+pub extern "C" fn register_fcitx5_callbacks(
+    opaque: *mut FcpOpaque,
+    set_loading: FnVoid,
+    set_candidates: FnSetCandidates,
+    append_candidates: FnSetCandidates,
+    clear_candidates: FnVoid,
+    set_preedit: FnSetPreedit,
+    can_page_up: FnCanPageUp,
+    page_up: FnVoid,
+    page_down: FnVoid,
+    prev: FnVoid,
+    next: FnVoid,
+    commit: FnCommit,
+    commit_preedit: FnSetPreedit,
+    commit_candidate_by_fixed_key: FnVoid,
+) {
+    let ui = UI {
+        set_loading,
+        set_candidates,
+        append_candidates,
+        clear_candidates,
+        set_preedit,
+    };
+
+    let table = Table {
+        can_page_up,
+        page_up,
+        page_down,
+        prev,
+        next,
+    };
+
+    let engine = Engine {
+        commit,
+        commit_preedit,
+        commit_candidate_by_fixed_key,
+    };
+
+    let fcitx5 = Fcitx5 { ui, table, engine };
+    unsafe {
+        (*opaque).fcp.set_fcitx5(fcitx5);
+    }
+}
+
+#[no_mangle]
 pub extern "C" fn on_key_press(key: FcitxKey) {
     println!("Rust: {:#?}", key);
 }
