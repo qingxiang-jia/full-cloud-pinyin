@@ -1,6 +1,9 @@
-use std::{os::raw::c_char, ffi::CString};
+use std::{ffi::CString, os::raw::c_char};
 
-use crate::fcitx5::{FcitxKey, Table, UI, Engine, Fcitx5};
+use crate::{
+    fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI},
+    fcp::Fcp,
+};
 
 pub type FnCommit = unsafe extern "C" fn(idx: u16);
 pub type FnVoid = unsafe extern "C" fn();
@@ -17,6 +20,7 @@ pub struct FcpOpaque {
 pub extern "C" fn new_fcp() -> *const FcpOpaque {
     Box::into_raw(Box::new(FcpOpaque { fcp: Fcp::new() }))
 }
+
 #[no_mangle]
 pub extern "C" fn on_key_press(key: FcitxKey) {
     println!("Rust: {:#?}", key);
