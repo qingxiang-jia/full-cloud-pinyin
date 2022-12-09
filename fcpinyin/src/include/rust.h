@@ -16,6 +16,7 @@ typedef void (*FnSetPreedit)(char *preedit);
 extern "C" void on_key_press(uint16_t);
 /* ↑ C++ -> Rust */
 
+/* ↓ Rust -> C++ */
 /* ↓ CALLBACK REGISTRATION */
 extern "C" void
 register_callbacks(FnVoid set_loading, FnSetCandidates set_candidates,
@@ -52,3 +53,4 @@ extern "C" void commit(uint16_t idx);
 extern "C" void commit_candidate_by_fixed_key();
 extern "C" void commit_preedit(char *preedit);
 /* ↑ ENGINE */
+/* ↑ Rust -> C++ */
