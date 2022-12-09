@@ -13,7 +13,7 @@ typedef void (*FnSetPreedit)(char *preedit);
 /* ↑ CALLBACK TYPES */
 
 /* ↓ C++ -> Rust */
-extern "C" void on_key_press(uint16_t);
+extern "C" bool on_key_press(uint16_t);
 /* ↑ C++ -> Rust */
 
 /* ↓ Rust -> C++ */
