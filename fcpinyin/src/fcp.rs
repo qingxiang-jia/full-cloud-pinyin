@@ -1,6 +1,6 @@
-use std::{cell::Cell, ffi::CString, os::raw::c_char, path::PathBuf, sync::{Mutex, Arc, RwLock}};
+use std::{path::PathBuf, sync::{Mutex, Arc}};
 
-use fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI};
+use fcitx5::{Fcitx5, FcitxKey};
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
