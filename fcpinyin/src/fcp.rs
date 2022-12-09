@@ -84,7 +84,8 @@ impl Fcp {
         *self.ffi.lock().expect("Failed to lock ffi.") = Some(fcitx5);
     }
 
-    pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) {
+    // Returns whether the key has been handled
+    pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) -> bool {
         let ffi = (*self.ffi.lock().expect("Failed to lock ffi.")).expect("ffi is None, not Fcitx5.");
         let is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
         if is_in_session == true {
@@ -106,6 +107,9 @@ impl Fcp {
                         unsafe {
                             (ffi.engine.commit)(idx as u16);
                         }
+                        true
+                    } else {
+                        false
                     }
                 }
                 FcitxKey::Space => {
@@ -113,6 +117,7 @@ impl Fcp {
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
+                    true
                 }
                 FcitxKey::Equal => {
                     // Go to the next page by keying in the next page keys
@@ -137,24 +142,28 @@ impl Fcp {
                             });
                         }
                     }
+                    true
                 }
                 FcitxKey::Minus => {
                     // Go to the previous page by previous page keys
                     unsafe {
                         (ffi.table.page_down)();
                     }
+                    true
                 }
                 FcitxKey::Right => {
                     // Go to the next candidate by ->
                     unsafe {
                         (ffi.table.next)();
                     }
+                    true
                 }
                 FcitxKey::Left => {
                     // Go to the previous candidate by <-
                     unsafe {
                         (ffi.table.prev)();
                     }
+                    true
                 }
                 FcitxKey::BackSpace => {
                     // Remove one character from preedit
@@ -179,6 +188,7 @@ impl Fcp {
                         let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
                         *session_candidates = Some(new_candidates);
                     });
+                    true
                 }
                 FcitxKey::Return => {
                     // Commit buffer as is (i.e., not Chinese)
@@ -201,6 +211,7 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
+                    true
                 }
                 FcitxKey::Escape => {
                     // Terminate this input session
@@ -217,8 +228,9 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
+                    true
                 }
-                _ => {}
+                _ => false
             }
         } else {
             // Create a new input session
@@ -252,6 +264,9 @@ impl Fcp {
                     let mut is_in_session = async_self.in_session.lock().expect("Failed to lock in_session.");
                     *is_in_session = true;
                 });
+                true
+            } else {
+                false
             }
         }
     }
