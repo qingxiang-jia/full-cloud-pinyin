@@ -8,6 +8,15 @@ pub type FnCanPageUp = unsafe extern "C" fn() -> bool;
 pub type FnSetCandidates = unsafe extern "C" fn(candidates: *mut *mut i8, cnt: usize);
 pub type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
 
+#[repr(C)]
+pub struct FcpOpaque {
+    fcp: Fcp,
+}
+
+#[no_mangle]
+pub extern "C" fn new_fcp() -> *const FcpOpaque {
+    Box::into_raw(Box::new(FcpOpaque { fcp: Fcp::new() }))
+}
 #[no_mangle]
 pub extern "C" fn on_key_press(key: FcitxKey) {
     println!("Rust: {:#?}", key);
