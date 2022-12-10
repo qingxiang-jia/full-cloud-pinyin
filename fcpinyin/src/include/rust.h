@@ -14,15 +14,13 @@ typedef void (*FnSetPreedit)(char *preedit);
 /* ↑ CALLBACK TYPES */
 
 /* ↓ C++ -> Rust */
-extern "C" bool on_key_press(uint16_t);
-/* ↑ C++ -> Rust */
-
-/* ↓ Rust -> C++ */
-/* ↓ CALLBACK REGISTRATION */
 typedef struct FcpOpaque {
 } FcpOpaque;
 
-extern "C" void register_fcitx5_callbacks(
+extern "C" const FcpOpaque* new_fcp();
+
+/* ↓ CALLBACK REGISTRATION */
+extern "C" void register_callbacks(
     FcpOpaque *opaque, FnVoid set_loading, FnSetCandidates set_candidates,
     FnSetCandidates append_candidates, FnVoid clear_candidates,
     FnSetPreedit set_preedit, FnCanPageUp can_page_up, FnVoid page_up,
@@ -30,6 +28,10 @@ extern "C" void register_fcitx5_callbacks(
     FnSetPreedit commit_preedit, FnVoid commit_candidate_by_fixed_key);
 /* ↑ CALLBACK REGISTRATION */
 
+extern "C" bool on_key_press(uint16_t);
+/* ↑ C++ -> Rust */
+
+/* ↓ Rust -> C++ */
 /* ↓ UI */
 extern "C" void set_loading();
 extern "C" void set_candidates(int16_t **candidates, size_t cnt);

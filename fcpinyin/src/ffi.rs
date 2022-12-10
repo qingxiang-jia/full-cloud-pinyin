@@ -24,7 +24,7 @@ pub extern "C" fn new_fcp() -> *const FcpOpaque {
 }
 
 #[no_mangle]
-pub extern "C" fn register_fcitx5_callbacks(
+pub extern "C" fn register_callbacks(
     opaque: *mut FcpOpaque,
     set_loading: FnVoid,
     set_candidates: FnSetCandidates,
@@ -73,7 +73,7 @@ pub extern "C" fn register_fcitx5_callbacks(
 }
 
 #[no_mangle]
-pub extern "C" fn on_pressed(opaque: *mut FcpOpaque, key: FcitxKey) -> bool {
+pub extern "C" fn on_key_press(opaque: *mut FcpOpaque, key: FcitxKey) -> bool {
     unsafe {
         (*opaque)
             .fcp
