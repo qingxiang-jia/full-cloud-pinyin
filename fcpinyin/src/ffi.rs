@@ -1,4 +1,4 @@
-use std::{ffi::CString, os::raw::c_char};
+use std::{ffi::CString, os::raw::c_char, sync::Arc};
 
 use crate::{
     fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI},
@@ -13,12 +13,14 @@ pub type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
 
 #[repr(C)]
 pub struct FcpOpaque {
-    fcp: Fcp,
+    fcp: Option<Arc<Fcp>>,
 }
 
 #[no_mangle]
 pub extern "C" fn new_fcp() -> *const FcpOpaque {
-    Box::into_raw(Box::new(FcpOpaque { fcp: Fcp::new() }))
+    Box::into_raw(Box::new(FcpOpaque {
+        fcp: Some(Arc::new(Fcp::new())),
+    }))
 }
 
 #[no_mangle]
@@ -62,7 +64,22 @@ pub extern "C" fn register_fcitx5_callbacks(
 
     let fcitx5 = Fcitx5 { ui, table, engine };
     unsafe {
-        (*opaque).fcp.set_fcitx5(fcitx5);
+        (*opaque)
+            .fcp
+            .as_ref()
+            .expect("fcp is no longer valid.")
+            .set_fcitx5(fcitx5);
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn on_pressed(opaque: *mut FcpOpaque, key: FcitxKey) -> bool {
+    unsafe {
+        (*opaque)
+            .fcp
+            .clone()
+            .expect("fcp isn't valid.")
+            .on_key_press(key)
     }
 }
 
