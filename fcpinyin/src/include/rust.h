@@ -8,6 +8,7 @@
 /* ↓ CALLBACK TYPES */
 typedef void (*FnCommit)(uint16_t);
 typedef void (*FnVoid)();
+typedef bool (*FnCanPageUp)();
 typedef void (*FnSetCandidates)(int16_t **candidates, size_t cnt);
 typedef void (*FnSetPreedit)(char *preedit);
 /* ↑ CALLBACK TYPES */
@@ -18,11 +19,15 @@ extern "C" bool on_key_press(uint16_t);
 
 /* ↓ Rust -> C++ */
 /* ↓ CALLBACK REGISTRATION */
-extern "C" void
-register_callbacks(FnVoid set_loading, FnSetCandidates set_candidates,
-                   FnSetCandidates append_candidates, FnSetPreedit set_preedit,
-                   FnVoid page_up, FnVoid page_down, FnVoid prev, FnVoid next,
-                   FnCommit commit, FnVoid commit_candidate_by_fixed_key);
+typedef struct FcpOpaque {
+} FcpOpaque;
+
+extern "C" void register_fcitx5_callbacks(
+    FcpOpaque *opaque, FnVoid set_loading, FnSetCandidates set_candidates,
+    FnSetCandidates append_candidates, FnVoid clear_candidates,
+    FnSetPreedit set_preedit, FnCanPageUp can_page_up, FnVoid page_up,
+    FnVoid page_down, FnVoid prev, FnVoid next, FnCommit commit,
+    FnSetPreedit commit_preedit, FnVoid commit_candidate_by_fixed_key);
 /* ↑ CALLBACK REGISTRATION */
 
 /* ↓ UI */
