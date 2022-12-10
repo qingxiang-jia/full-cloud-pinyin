@@ -25,13 +25,6 @@ register_callbacks(FnVoid set_loading, FnSetCandidates set_candidates,
                    FnCommit commit, FnVoid commit_candidate_by_fixed_key);
 /* ↑ CALLBACK REGISTRATION */
 
-/* ↓ TEST CALLBACK PASSING */
-extern "C" void register_fn_commit(FnCommit callback);
-extern "C" void register_fn_void(FnVoid callback);
-extern "C" void register_fn_set_candidates(FnSetCandidates callback);
-extern "C" void register_fn_set_preedit(FnSetPreedit callback);
-/* ↑ TEST CALLBACK PASSING */
-
 /* ↓ UI */
 extern "C" void set_loading();
 extern "C" void set_candidates(int16_t **candidates, size_t cnt);
