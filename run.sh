@@ -20,13 +20,6 @@ if [ $1 == "rc" ]; then
     exit 0
 fi
 
-if [ $1 == "gen-cxx" ]; then
-    cd ./fcpinyin
-    cxxbridge src/ffi.rs > ffi.h
-    cd ../
-    exit 0
-fi
-
 if [ $1 == "init" ]; then
     cd fcitx5
     rm -rf ./build
