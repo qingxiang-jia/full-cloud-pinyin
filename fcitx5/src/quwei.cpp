@@ -121,26 +121,7 @@ void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputCon
     ic_ = inputContext;
 }
 
-void QuweiEngine::select(const int idx)
-{
-    auto preedit = buffer_.userInput();
-    auto matchedLen = lens[idx];
-    auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
-
-    if (preedit.length() == matchedLen) {
-        ic_->commitString(candidate.toStringForCommit());
-        reset();
-    } else if (preedit.length() > matchedLen) {
-        // Partial match
-        ic_->commitString(candidate.toStringForCommit());
-        // Update preedit
-        preeditRemoveFirstN(matchedLen);
-        // Query and update candidates for updated preedit and update UI
-        getCandidatesAndUpdateAsync();
-    } else {
-        FCITX_INFO() << "Matched length > preedit length, which doesn't make sense.";
-    }
-}
+void QuweiEngine::select(const int idx) { FCITX_UNUSED(idx); }
 
 void QuweiEngine::commitCandidateByIndex(const int idx)
 {
