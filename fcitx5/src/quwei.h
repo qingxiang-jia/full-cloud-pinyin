@@ -50,9 +50,6 @@ private:
     fcitx::InputContext* ic_;
 
     void select(const int idx);
-    void getCandidatesAndUpdateAsync(bool append = false);
-    void getUpdateCandidatesRefreshUI(bool append);
-    void preeditRemoveFirstN(int lenToRemove);
     std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
     void updateUI();
     void reset();
