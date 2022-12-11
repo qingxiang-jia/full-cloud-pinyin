@@ -246,20 +246,6 @@ void QuweiEngine::setLoading()
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
-void QuweiEngine::setDummyCandidates()
-{
-    auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
-
-    lens.clear();
-    candidateList->clear();
-    for (int i = 0; i < 5; i++) {
-        std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("☁"));
-        candidateList->append(std::move(candidateWord));
-        lens.push_back(0);
-    }
-    candidateList->setGlobalCursorIndex(0);
-}
-
 void QuweiEngine::setPreedit(std::string preedit)
 {
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {

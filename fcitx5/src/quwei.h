@@ -56,7 +56,6 @@ private:
     void getUpdateCandidatesRefreshUI(bool append);
     void preeditRemoveFirstN(int lenToRemove);
     std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
-    void setDummyCandidates();
     void updateUI();
     void reset();
 };
