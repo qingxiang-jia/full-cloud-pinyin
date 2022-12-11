@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "src/include/rust.h"
 #include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>
@@ -46,6 +47,7 @@ public:
     void clearCandidates();
 
 private:
+    FcpOpaque* fcpOpaque;
     fcitx::Instance* instance_;
     fcitx::InputContext* ic_;
 

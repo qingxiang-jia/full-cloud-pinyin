@@ -24,7 +24,7 @@ extern "C" void register_callbacks(
     FnSetPreedit set_preedit, FnCanPageUp can_page_up, FnVoid page_up,
     FnVoid page_down, FnVoid prev, FnVoid next, FnCommit commit,
     FnSetPreedit commit_preedit, FnVoid commit_candidate_by_fixed_key);
-extern "C" bool on_key_press(uint16_t);
+extern "C" bool on_key_press(FcpOpaque *opaque, uint16_t);
 /* ↑ C++ -> Rust */
 
 /* ↓ Rust -> C++ */

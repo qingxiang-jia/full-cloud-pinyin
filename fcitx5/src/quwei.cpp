@@ -5,7 +5,6 @@
  *
  */
 #include "quwei.h"
-#include "src/include/rust.h"
 #include <chrono>
 #include <cstddef>
 #include <fcitx-utils/eventdispatcher.h>
@@ -110,6 +109,29 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     : instance_(instance)
 {
     engine = this;
+
+    // Initialize Rust side
+    FcpOpaque* fcpOpaque = new_fcp();
+    this->fcpOpaque = fcpOpaque;
+
+    // Prepare callbacks
+    FnVoid fn_set_loading = &set_loading;
+    FnSetCandidates fn_set_candidates = &set_candidates;
+    FnSetCandidates fn_append_candidates = &append_candidates;
+    FnVoid fn_clear_candidates = &clear_candidates;
+    FnSetPreedit fn_set_preedit = &set_preedit;
+    FnCanPageUp fn_can_page_up = &can_page_up;
+    FnVoid fn_page_up = &page_up;
+    FnVoid fn_page_down = &page_down;
+    FnVoid fn_prev = &prev;
+    FnVoid fn_next = &next;
+    FnCommit fn_commit = &commit;
+    FnSetPreedit fn_commit_preedit = &commit_preedit;
+    FnVoid fn_commit_candidate_by_fixed_key = &commit_candidate_by_fixed_key;
+
+    // Register callbacks
+    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_append_candidates, fn_clear_candidates, fn_set_preedit, fn_can_page_up, fn_page_up,
+        fn_page_down, fn_prev, fn_next, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
@@ -195,7 +217,7 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     fcitx::KeySym key = keyEvent.key().sym();
 
     // Call Rust side to handle
-    bool shouldAccept = on_key_press(key);
+    bool shouldAccept = on_key_press(fcpOpaque, key);
     if (shouldAccept) {
         keyEvent.filterAndAccept();
     }
