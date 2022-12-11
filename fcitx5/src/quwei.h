@@ -48,7 +48,6 @@ public:
 private:
     fcitx::Instance* instance_;
     fcitx::InputContext* ic_;
-    std::vector<unsigned long> lens;
 
     void select(const int idx);
     void getCandidatesAndUpdateAsync(bool append = false);

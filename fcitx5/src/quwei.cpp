@@ -218,7 +218,6 @@ void QuweiEngine::setLoading()
     for (int i = 0; i < 5; i++) {
         std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text("☁"));
         candidateList->append(std::move(candidateWord));
-        lens.push_back(0);
     }
     candidateList->setGlobalCursorIndex(0);
 
