@@ -13,6 +13,7 @@
 #include <fcitx-utils/key.h>
 #include <fcitx-utils/keysymgen.h>
 #include <fcitx-utils/log.h>
+#include <fcitx-utils/macros.h>
 #include <fcitx-utils/utf8.h>
 #include <fcitx/candidatelist.h>
 #include <fcitx/inputpanel.h>
@@ -272,19 +273,10 @@ void QuweiEngine::clearCandidates()
 
 void QuweiEngine::updateUI() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); }
 
-void QuweiEngine::preeditRemoveFirstN(int lenToRemove)
-{
-    auto oldPreedit = buffer_.userInput();
-    auto newPreedit = oldPreedit.substr(lenToRemove, oldPreedit.length() - lenToRemove);
-    buffer_.clear();
-    buffer_.type(newPreedit);
-}
-
 void QuweiEngine::reset()
 {
-    buffer_.clear();
     ic_->inputPanel().reset();
-    setPreedit(buffer_.userInput());
+    setPreedit("");
     updateUI();
 }
 

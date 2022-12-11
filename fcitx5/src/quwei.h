@@ -48,7 +48,6 @@ public:
 private:
     fcitx::Instance* instance_;
     fcitx::InputContext* ic_;
-    fcitx::InputBuffer buffer_ { { fcitx::InputBufferOption::AsciiOnly, fcitx::InputBufferOption::FixedCursor } };
     std::vector<unsigned long> lens;
 
     void select(const int idx);
