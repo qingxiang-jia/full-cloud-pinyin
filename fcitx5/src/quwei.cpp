@@ -214,104 +214,12 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     } // Surprisingly, if you set it in activate(), it is still null when keyuEvent is called.
 
     fcitx::KeySym key = keyEvent.key().sym();
-    auto candidateList = ic_->inputPanel().candidateList();
 
-    if (candidateList->size() > 0) {
-        if (FcitxKey_0 <= key && key <= FcitxKey_9) {
-            auto idx = key - FcitxKey_1;
-            // Select a candidate by keying in 0-9
-            if (idx >= 0 && idx < candidateList->size()) {
-                select(idx);
-                return keyEvent.filterAndAccept();
-            }
-        }
-
-        // Select a candidate by space key
-        if (key == FcitxKey_space) {
-            auto idx = candidateList->cursorIndex();
-            select(idx);
-            return keyEvent.filterAndAccept();
-        }
-
-        // Go to the next page by keying in the next page keys
-        if (key == FcitxKey_equal) {
-            if (auto* pageable = candidateList->toPageable(); pageable) {
-                if (pageable->hasNext()) {
-                    pageable->next();
-                    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-                } else {
-                    // Request more candidates
-                    getCandidatesAndUpdateAsync(true);
-                }
-            }
-            return keyEvent.filterAndAccept();
-        }
-
-        // Go to the previous page by previous page keys
-        if (key == FcitxKey_minus) {
-            if (auto* pageable = candidateList->toPageable(); pageable && pageable->hasPrev()) {
-                pageable->prev();
-                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-            }
-            return keyEvent.filterAndAccept();
-        }
-
-        // Go to the next candidate by ->
-        if (auto* cursorMovable = candidateList->toCursorMovable()) {
-            if (key == FcitxKey_Right) {
-                cursorMovable->nextCandidate();
-                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-                return keyEvent.filterAndAccept();
-            }
-            if (key == FcitxKey_Left) {
-                cursorMovable->prevCandidate();
-                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-                return keyEvent.filterAndAccept();
-            }
-        }
-
-        // Remove one character from buffer
-        if (key == FcitxKey_BackSpace) {
-            buffer_.backspace();
-            if (buffer_.size() == 0) {
-                reset();
-            } else {
-                setPreedit(buffer_.userInput());
-                setDummyCandidates();
-                updateUI();
-                getCandidatesAndUpdateAsync();
-            }
-            return keyEvent.filterAndAccept();
-        }
-
-        // Commit buffer as is (i.e., not Chinese)
-        if (key == FcitxKey_Return) {
-            ic_->commitString(buffer_.userInput());
-            reset();
-            return keyEvent.filterAndAccept();
-        }
-
-        // Terminate this input session
-        if (key == FcitxKey_Escape) {
-            reset();
-            return keyEvent.filterAndAccept();
-        }
+    // Call Rust side to handle
+    bool shouldAccept = on_key_press(key);
+    if (shouldAccept) {
+        keyEvent.filterAndAccept();
     }
-
-    // If buffer is empty and has keyed in a letter, show lookup table
-    if ((FcitxKey_A <= key && key <= FcitxKey_Z) || (FcitxKey_a <= key && key <= FcitxKey_z)) {
-        // Append this key into the buffer
-        buffer_.type(key);
-        setPreedit(buffer_.userInput());
-        setDummyCandidates();
-        updateUI();
-
-        // Use preedit to query pinyin candidates, update candidates, and update UI
-        getCandidatesAndUpdateAsync();
-        return keyEvent.filterAndAccept();
-    }
-
-    return;
 }
 
 std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
