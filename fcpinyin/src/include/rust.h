@@ -17,7 +17,7 @@ typedef void (*FnSetPreedit)(char *preedit);
 typedef struct FcpOpaque {
 } FcpOpaque;
 
-extern "C" const FcpOpaque* new_fcp();
+extern "C" FcpOpaque* new_fcp();
 extern "C" void register_callbacks(
     FcpOpaque *opaque, FnVoid set_loading, FnSetCandidates set_candidates,
     FnSetCandidates append_candidates, FnVoid clear_candidates,

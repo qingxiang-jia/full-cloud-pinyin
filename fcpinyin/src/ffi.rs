@@ -17,7 +17,7 @@ pub struct FcpOpaque {
 }
 
 #[no_mangle]
-pub extern "C" fn new_fcp() -> *const FcpOpaque {
+pub extern "C" fn new_fcp() -> *mut FcpOpaque {
     Box::into_raw(Box::new(FcpOpaque {
         fcp: Some(Arc::new(Fcp::new())),
     }))
