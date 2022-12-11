@@ -34,6 +34,7 @@ public:
     void commitCandidateByIndex(const int idx);
     void commitCandidateByFixedKey();
     void commitPreedit(std::string preedit);
+    bool canPageUp();
     void nextPage();
     void prevPage();
     void nextCandidate();

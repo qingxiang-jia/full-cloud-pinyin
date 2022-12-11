@@ -68,6 +68,8 @@ extern "C" void set_preedit(char* preedit)
 /* END UI */
 
 /* BEGIN TABLE */
+extern "C" bool can_page_up() { return engine->canPageUp(); }
+
 extern "C" void page_up() { engine->nextPage(); }
 
 extern "C" void page_down() { engine->prevPage(); }
@@ -157,6 +159,14 @@ void QuweiEngine::commitPreedit(std::string preedit)
 {
     ic_->commitString(preedit);
     reset();
+}
+
+bool QuweiEngine::canPageUp()
+{
+    if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
+        return pageable->hasNext();
+    }
+    return false;
 }
 
 void QuweiEngine::nextPage()
