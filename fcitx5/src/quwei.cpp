@@ -56,10 +56,7 @@ extern "C" void append_candidates(int16_t** candidates, size_t cnt)
     engine->appendCandidates(candidatesToSet);
 }
 
-extern "C" void clear_candidates()
-{
-    engine->clearCandidates();
-}
+extern "C" void clear_candidates() { engine->clearCandidates(); }
 
 extern "C" void set_preedit(char* preedit)
 {
@@ -247,7 +244,7 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
     }
 
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
-    
+
     if (!append) {
         candidateList->clear();
     }
