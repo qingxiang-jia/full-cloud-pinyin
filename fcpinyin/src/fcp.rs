@@ -207,8 +207,7 @@ impl Fcp {
                     let mut session_candidates = self.session_candidates.lock().expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Set flag
-                    let mut is_in_session = self.in_session.lock().expect("Failed to lock in_session.");
-                    *is_in_session = false;
+                    *self.in_session.lock().expect("Failed to lock in_session.") = false;
                     unsafe {
                         // Make CString
                         let char_ptr = ffi::str_to_char_ptr(&preedit);
@@ -229,8 +228,7 @@ impl Fcp {
                     let mut session_candidates = self.session_candidates.lock().expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Set flag
-                    let mut is_in_session = self.in_session.lock().expect("Failed to lock in_session.");
-                    *is_in_session = false;
+                    *self.in_session.lock().expect("Failed to lock in_session.") = false;
                     unsafe {
                         // Update UI
                         (ffi.ui.clear_candidates)();
