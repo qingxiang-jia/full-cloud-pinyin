@@ -171,6 +171,13 @@ impl Fcp {
                     let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
                     shared_preedit.pop();
                     let preedit = shared_preedit.clone();
+                    // Update preedit UI
+                    unsafe {
+                        let preedit_copy = preedit.clone();
+                        let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
+                        (ffi.ui.set_preedit)(char_ptr);
+                        ffi::free_char_ptr(char_ptr);
+                    }
 
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
@@ -244,6 +251,13 @@ impl Fcp {
                 let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
                 shared_preedit.push(user_input);
                 let preedit = shared_preedit.clone();
+                // Update preedit UI
+                unsafe {
+                    let preedit_copy = preedit.clone();
+                    let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
+                    (ffi.ui.set_preedit)(char_ptr);
+                    ffi::free_char_ptr(char_ptr);
+                }
 
                 let async_self = self.clone();
                 self.clone().rt.spawn(async move {
