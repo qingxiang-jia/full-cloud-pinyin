@@ -88,6 +88,14 @@ impl Fcp {
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) -> bool {
         let ffi = (*self.ffi.lock().expect("Failed to lock ffi.")).expect("ffi is None, not Fcitx5.");
         let is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
+
+        if is_in_session {
+            println!("Rust: is in session");
+        } else {
+            println!("Rust: is not in session")
+        }
+        println!("Rust: key={:#?}", key);
+
         if is_in_session == true {
             // Continue an input session
             match key {
@@ -174,6 +182,9 @@ impl Fcp {
                     // Update preedit UI
                     unsafe {
                         let preedit_copy = preedit.clone();
+
+                        println!("Rust: preedit={}", &preedit_copy);
+
                         let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
                         (ffi.ui.set_preedit)(char_ptr);
                         ffi::free_char_ptr(char_ptr);
