@@ -62,6 +62,9 @@ if [ $1 == "install" ]; then
 fi
 
 if [ $1 == "bir" ]; then
+    cd ./fcpinyin
+    cargo -Z unstable-options rustc --lib --release --crate-type staticlib -- --print native-static-libs
+    cd ../
     cd ./fcitx5/build
     cmake --build .
     cd ../../
