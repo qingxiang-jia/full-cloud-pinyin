@@ -107,9 +107,9 @@ impl Fcp {
                         unsafe {
                             (ffi.engine.commit)(idx as u16);
                         }
-                        true
+                        return true;
                     } else {
-                        false
+                        return false;
                     }
                 }
                 FcitxKey::Space => {
@@ -117,7 +117,7 @@ impl Fcp {
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
-                    true
+                    return true;
                 }
                 FcitxKey::Equal => {
                     // Go to the next page by keying in the next page keys
@@ -142,28 +142,28 @@ impl Fcp {
                             });
                         }
                     }
-                    true
+                    return true;
                 }
                 FcitxKey::Minus => {
                     // Go to the previous page by previous page keys
                     unsafe {
                         (ffi.table.page_down)();
                     }
-                    true
+                    return true;
                 }
                 FcitxKey::Right => {
                     // Go to the next candidate by ->
                     unsafe {
                         (ffi.table.next)();
                     }
-                    true
+                    return true;
                 }
                 FcitxKey::Left => {
                     // Go to the previous candidate by <-
                     unsafe {
                         (ffi.table.prev)();
                     }
-                    true
+                    return true;
                 }
                 FcitxKey::BackSpace => {
                     // Remove one character from preedit
@@ -195,7 +195,7 @@ impl Fcp {
                         let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
                         *session_candidates = Some(new_candidates);
                     });
-                    true
+                    return true;
                 }
                 FcitxKey::Return => {
                     // Commit buffer as is (i.e., not Chinese)
@@ -235,9 +235,9 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
-                    true
+                    return true;
                 }
-                _ => false
+                _ => return false,
             }
         } else {
             // Create a new input session
