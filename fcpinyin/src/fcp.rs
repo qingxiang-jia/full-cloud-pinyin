@@ -217,7 +217,7 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
-                    true
+                    return true;
                 }
                 FcitxKey::Escape => {
                     // Terminate this input session
