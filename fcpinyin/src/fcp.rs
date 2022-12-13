@@ -118,12 +118,12 @@ impl Fcp {
                         unsafe {
                             (ffi.engine.commit)(idx as u16);
                         }
-                        return true;
+                        true
                     } else {
-                        return false;
+                        false
                     }
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Space => {
@@ -132,9 +132,9 @@ impl Fcp {
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Equal => {
@@ -169,9 +169,9 @@ impl Fcp {
                             });
                         }
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Minus => {
@@ -180,9 +180,9 @@ impl Fcp {
                     unsafe {
                         (ffi.table.page_down)();
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Right => {
@@ -191,9 +191,9 @@ impl Fcp {
                     unsafe {
                         (ffi.table.next)();
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Left => {
@@ -202,9 +202,9 @@ impl Fcp {
                     unsafe {
                         (ffi.table.prev)();
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::BackSpace => {
@@ -245,9 +245,9 @@ impl Fcp {
                             .expect("Failed to lock session_candidates.");
                         *session_candidates = Some(new_candidates);
                     });
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Return => {
@@ -275,9 +275,9 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::Escape => {
@@ -299,9 +299,9 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
-                    return true;
+                    true
                 } else {
-                    return false;
+                    false
                 }
             }
             FcitxKey::A
@@ -411,7 +411,7 @@ impl Fcp {
                     false
                 }
             }
-            _ => return false,
+            _ => false,
         }
     }
 
