@@ -1,4 +1,7 @@
-use std::{path::PathBuf, sync::{Mutex, Arc}};
+use std::{
+    path::PathBuf,
+    sync::{Arc, Mutex},
+};
 
 use fcitx5::{Fcitx5, FcitxKey};
 use regex::Regex;
@@ -86,8 +89,9 @@ impl Fcp {
 
     // Returns whether the key has been handled
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) -> bool {
-        let ffi = (*self.ffi.lock().expect("Failed to lock ffi.")).expect("ffi is None, not Fcitx5.");
-        let is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
+        let ffi =
+            (*self.ffi.lock().expect("Failed to lock ffi.")).expect("ffi is None, not Fcitx5.");
+        let mut is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
 
         if is_in_session {
             println!("Rust: is in session");
@@ -96,20 +100,19 @@ impl Fcp {
         }
         println!("Rust: key={:#?}", key);
 
-        if is_in_session == true {
-            // Continue an input session
-            match key {
-                FcitxKey::Num0
-                | FcitxKey::Num1
-                | FcitxKey::Num2
-                | FcitxKey::Num3
-                | FcitxKey::Num4
-                | FcitxKey::Num5
-                | FcitxKey::Num6
-                | FcitxKey::Num7
-                | FcitxKey::Num8
-                | FcitxKey::Num9 => {
-                    // Select a candidate by keying in 0-9
+        match key {
+            FcitxKey::Num0
+            | FcitxKey::Num1
+            | FcitxKey::Num2
+            | FcitxKey::Num3
+            | FcitxKey::Num4
+            | FcitxKey::Num5
+            | FcitxKey::Num6
+            | FcitxKey::Num7
+            | FcitxKey::Num8
+            | FcitxKey::Num9 => {
+                // Select a candidate by keying in 0-9
+                if is_in_session {
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
                     if idx < self.table_size {
                         unsafe {
@@ -119,64 +122,97 @@ impl Fcp {
                     } else {
                         return false;
                     }
+                } else {
+                    return false;
                 }
-                FcitxKey::Space => {
-                    // Select a candidate by Space key
+            }
+            FcitxKey::Space => {
+                // Select a candidate by Space key
+                if is_in_session {
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::Equal => {
-                    // Go to the next page by keying in the next page keys
+            }
+            FcitxKey::Equal => {
+                // Go to the next page by keying in the next page keys
+                if is_in_session {
                     unsafe {
                         if (ffi.table.can_page_up)() {
                             (ffi.table.page_up)();
                         } else {
-                            let preedit = self.last_query.lock().expect("Failed to lock last_query.").clone();
+                            let preedit = self
+                                .last_query
+                                .lock()
+                                .expect("Failed to lock last_query.")
+                                .clone();
                             let async_self = self.clone();
                             self.clone().rt.spawn(async move {
                                 // Request new candidates
                                 let new_candidates = async_self.query_candidates(&preedit).await;
                                 // Make CString array
                                 let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                                let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
+                                let (ptr_ptr, len, cap) =
+                                    ffi::str_vec_to_cstring_array(display_texts);
                                 // Set it to UI
                                 (ffi.ui.append_candidates)(ptr_ptr, len);
                                 ffi::free_cstring_array(ptr_ptr, len, cap);
                                 // Set session_candidates
-                                let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                                let mut session_candidates = async_self
+                                    .session_candidates
+                                    .lock()
+                                    .expect("Failed to lock session_candidates.");
                                 *session_candidates = Some(new_candidates);
                             });
                         }
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::Minus => {
-                    // Go to the previous page by previous page keys
+            }
+            FcitxKey::Minus => {
+                // Go to the previous page by previous page keys
+                if is_in_session {
                     unsafe {
                         (ffi.table.page_down)();
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::Right => {
-                    // Go to the next candidate by ->
+            }
+            FcitxKey::Right => {
+                // Go to the next candidate by ->
+                if is_in_session {
                     unsafe {
                         (ffi.table.next)();
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::Left => {
-                    // Go to the previous candidate by <-
+            }
+            FcitxKey::Left => {
+                // Go to the previous candidate by <-
+                if is_in_session {
                     unsafe {
                         (ffi.table.prev)();
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::BackSpace => {
-                    // Remove one character from preedit
+            }
+            FcitxKey::BackSpace => {
+                // Remove one character from preedit
+                if is_in_session {
                     // Update preedit
-                    let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit =
+                        self.last_query.lock().expect("Failed to lock last_query.");
                     shared_preedit.pop();
                     let preedit = shared_preedit.clone();
                     // Update preedit UI
@@ -203,19 +239,30 @@ impl Fcp {
                             ffi::free_cstring_array(ptr_ptr, len, cap);
                         }
                         // Set session_candidates
-                        let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                        let mut session_candidates = async_self
+                            .session_candidates
+                            .lock()
+                            .expect("Failed to lock session_candidates.");
                         *session_candidates = Some(new_candidates);
                     });
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::Return => {
-                    // Commit buffer as is (i.e., not Chinese)
+            }
+            FcitxKey::Return => {
+                // Commit buffer as is (i.e., not Chinese)
+                if is_in_session {
                     // Clear preedit
-                    let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit =
+                        self.last_query.lock().expect("Failed to lock last_query.");
                     let preedit = shared_preedit.clone();
                     shared_preedit.clear();
                     // Clear session_candidates
-                    let mut session_candidates = self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                    let mut session_candidates = self
+                        .session_candidates
+                        .lock()
+                        .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Set flag
                     *self.in_session.lock().expect("Failed to lock in_session.") = false;
@@ -229,14 +276,22 @@ impl Fcp {
                         (ffi.ui.clear_candidates)();
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                FcitxKey::Escape => {
-                    // Terminate this input session
+            }
+            FcitxKey::Escape => {
+                // Terminate this input session
+                if is_in_session {
                     // Clear preedit
-                    let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit =
+                        self.last_query.lock().expect("Failed to lock last_query.");
                     shared_preedit.clear();
                     // Clear session_candidates
-                    let mut session_candidates = self.session_candidates.lock().expect("Failed to lock session_candidates.");
+                    let mut session_candidates = self
+                        .session_candidates
+                        .lock()
+                        .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Set flag
                     *self.in_session.lock().expect("Failed to lock in_session.") = false;
@@ -245,57 +300,118 @@ impl Fcp {
                         (ffi.ui.clear_candidates)();
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                _ => return false,
             }
-        }
+            FcitxKey::A
+            | FcitxKey::B
+            | FcitxKey::C
+            | FcitxKey::D
+            | FcitxKey::E
+            | FcitxKey::F
+            | FcitxKey::G
+            | FcitxKey::H
+            | FcitxKey::I
+            | FcitxKey::J
+            | FcitxKey::K
+            | FcitxKey::L
+            | FcitxKey::M
+            | FcitxKey::N
+            | FcitxKey::O
+            | FcitxKey::P
+            | FcitxKey::Q
+            | FcitxKey::R
+            | FcitxKey::S
+            | FcitxKey::T
+            | FcitxKey::U
+            | FcitxKey::V
+            | FcitxKey::W
+            | FcitxKey::X
+            | FcitxKey::Y
+            | FcitxKey::Z
+            | FcitxKey::a
+            | FcitxKey::b
+            | FcitxKey::c
+            | FcitxKey::d
+            | FcitxKey::e
+            | FcitxKey::f
+            | FcitxKey::g
+            | FcitxKey::h
+            | FcitxKey::i
+            | FcitxKey::j
+            | FcitxKey::k
+            | FcitxKey::l
+            | FcitxKey::m
+            | FcitxKey::n
+            | FcitxKey::o
+            | FcitxKey::p
+            | FcitxKey::q
+            | FcitxKey::r
+            | FcitxKey::s
+            | FcitxKey::t
+            | FcitxKey::u
+            | FcitxKey::v
+            | FcitxKey::w
+            | FcitxKey::x
+            | FcitxKey::y
+            | FcitxKey::z => {
+                is_in_session = true;
+                // Create new query to get candidates
+                let val = key as u32;
+                if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32)
+                    || (FcitxKey::A as u32 <= val && val <= FcitxKey::Z as u32)
+                {
+                    // Add one character from preedit
+                    let user_input =
+                        char::from_u32(val).expect("The user input cannot be converted to a char.");
+                    // Update preedit
+                    let mut shared_preedit =
+                        self.last_query.lock().expect("Failed to lock last_query.");
+                    shared_preedit.push(user_input);
+                    let preedit = shared_preedit.clone();
+                    // Update preedit UI
+                    unsafe {
+                        let preedit_copy = preedit.clone();
 
-        // Create new query to get candidates
-        let val = key as u32;
-        if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32)
-            || (FcitxKey::A as u32 <= val && val <= FcitxKey::Z as u32)
-        {
-            // Create a new input session if not already
-            *self.in_session.lock().expect("Failed to lock in_session.") = true;
-            // Add one character from preedit
-            let user_input = char::from_u32(val).expect("The user input cannot be converted to a char.");
-            // Update preedit
-            let mut shared_preedit = self.last_query.lock().expect("Failed to lock last_query.");
-            shared_preedit.push(user_input);
-            let preedit = shared_preedit.clone();
-            // Update preedit UI
-            unsafe {
-                let preedit_copy = preedit.clone();
-                
-                println!("Rust: preedit={}", &preedit_copy);
+                        println!("Rust: preedit={}", &preedit_copy);
 
-                let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-                (ffi.ui.set_preedit)(char_ptr);
-                ffi::free_char_ptr(char_ptr);
-            }
+                        let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
+                        (ffi.ui.set_preedit)(char_ptr);
+                        ffi::free_char_ptr(char_ptr);
+                    }
 
-            let async_self = self.clone();
-            self.clone().rt.spawn(async move {
-                // Request new candidates
-                let new_candidates = async_self.query_candidates(&preedit).await;
-                // Make CString array
-                let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                unsafe {
-                    let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
-                    // Set it to UI
-                    (ffi.ui.set_candidates)(ptr_ptr, len);
-                    ffi::free_cstring_array(ptr_ptr, len, cap);
+                    let async_self = self.clone();
+                    self.clone().rt.spawn(async move {
+                        // Request new candidates
+                        let new_candidates = async_self.query_candidates(&preedit).await;
+                        // Make CString array
+                        let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                        unsafe {
+                            let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
+                            // Set it to UI
+                            (ffi.ui.set_candidates)(ptr_ptr, len);
+                            ffi::free_cstring_array(ptr_ptr, len, cap);
+                        }
+                        // Set session_candidates
+                        let mut session_candidates = async_self
+                            .session_candidates
+                            .lock()
+                            .expect("Failed to lock session_candidates.");
+                        *session_candidates = Some(new_candidates);
+                        // Set flag
+                        let mut is_in_session = async_self
+                            .in_session
+                            .lock()
+                            .expect("Failed to lock in_session.");
+                        *is_in_session = true;
+                    });
+                    true
+                } else {
+                    false
                 }
-                // Set session_candidates
-                let mut session_candidates = async_self.session_candidates.lock().expect("Failed to lock session_candidates.");
-                *session_candidates = Some(new_candidates);
-                // Set flag
-                let mut is_in_session = async_self.in_session.lock().expect("Failed to lock in_session.");
-                *is_in_session = true;
-            });
-            true
-        } else {
-            false
+            }
+            _ => return false,
         }
     }
 
@@ -324,7 +440,10 @@ impl Fcp {
 
     fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.last_query.lock().expect("Failed to lock last_query.");
-        let mut depth = self.query_depth.lock().expect("Failed to lock query_depth.");
+        let mut depth = self
+            .query_depth
+            .lock()
+            .expect("Failed to lock query_depth.");
         if last_query.eq(preedit) {
             match *depth {
                 QueryDepth::D1 => *depth = QueryDepth::D2,
