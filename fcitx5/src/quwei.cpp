@@ -153,6 +153,10 @@ void QuweiEngine::commitCandidateByIndex(const int idx)
 void QuweiEngine::commitCandidateByFixedKey()
 {
     auto idx = ic_->inputPanel().candidateList()->cursorIndex();
+    if (idx == -1) {
+        // When you type and didn't interact with the candidates, it's -1, but we know you mean 0
+        idx = 0;
+    }
     commitCandidateByIndex(idx);
 }
 
