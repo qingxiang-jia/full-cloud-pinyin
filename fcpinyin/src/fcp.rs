@@ -91,9 +91,9 @@ impl Fcp {
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) -> bool {
         let ffi =
             (*self.ffi.lock().expect("Failed to lock ffi.")).expect("ffi is None, not Fcitx5.");
-        let mut is_in_session = *self.in_session.lock().expect("Failed to lock in_session.");
+        let mut in_session_mtx = self.in_session.lock().expect("Failed to lock in_session.");
 
-        if is_in_session {
+        if *in_session_mtx {
             println!("Rust: is in session");
         } else {
             println!("Rust: is not in session")
@@ -112,12 +112,13 @@ impl Fcp {
             | FcitxKey::Num8
             | FcitxKey::Num9 => {
                 // Select a candidate by keying in 0-9
-                if is_in_session {
+                if *in_session_mtx {
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
                     if idx < self.table_size {
                         unsafe {
                             (ffi.engine.commit)(idx as u16);
                         }
+                        *in_session_mtx = false;
                         true
                     } else {
                         false
@@ -128,7 +129,7 @@ impl Fcp {
             }
             FcitxKey::Space => {
                 // Select a candidate by Space key
-                if is_in_session {
+                if *in_session_mtx {
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
@@ -139,7 +140,7 @@ impl Fcp {
             }
             FcitxKey::Equal => {
                 // Go to the next page by keying in the next page keys
-                if is_in_session {
+                if *in_session_mtx {
                     unsafe {
                         if (ffi.table.can_page_up)() {
                             (ffi.table.page_up)();
@@ -176,7 +177,7 @@ impl Fcp {
             }
             FcitxKey::Minus => {
                 // Go to the previous page by previous page keys
-                if is_in_session {
+                if *in_session_mtx {
                     unsafe {
                         (ffi.table.page_down)();
                     }
@@ -187,7 +188,7 @@ impl Fcp {
             }
             FcitxKey::Right => {
                 // Go to the next candidate by ->
-                if is_in_session {
+                if *in_session_mtx {
                     unsafe {
                         (ffi.table.next)();
                     }
@@ -198,7 +199,7 @@ impl Fcp {
             }
             FcitxKey::Left => {
                 // Go to the previous candidate by <-
-                if is_in_session {
+                if *in_session_mtx {
                     unsafe {
                         (ffi.table.prev)();
                     }
@@ -209,7 +210,7 @@ impl Fcp {
             }
             FcitxKey::BackSpace => {
                 // Remove one character from preedit
-                if is_in_session {
+                if *in_session_mtx {
                     // Update preedit
                     let mut shared_preedit =
                         self.last_query.lock().expect("Failed to lock last_query.");
@@ -252,7 +253,7 @@ impl Fcp {
             }
             FcitxKey::Return => {
                 // Commit buffer as is (i.e., not Chinese)
-                if is_in_session {
+                if *in_session_mtx {
                     // Clear preedit
                     let mut shared_preedit =
                         self.last_query.lock().expect("Failed to lock last_query.");
@@ -282,7 +283,7 @@ impl Fcp {
             }
             FcitxKey::Escape => {
                 // Terminate this input session
-                if is_in_session {
+                if *in_session_mtx {
                     // Clear preedit
                     let mut shared_preedit =
                         self.last_query.lock().expect("Failed to lock last_query.");
@@ -356,7 +357,7 @@ impl Fcp {
             | FcitxKey::x
             | FcitxKey::y
             | FcitxKey::z => {
-                is_in_session = true;
+                *in_session_mtx = true;
                 // Create new query to get candidates
                 let val = key as u32;
                 if (FcitxKey::a as u32 <= val && val <= FcitxKey::z as u32)
