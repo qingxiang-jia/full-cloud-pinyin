@@ -147,6 +147,7 @@ void QuweiEngine::commitCandidateByIndex(const int idx)
 {
     auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
     ic_->commitString(candidate.toStringForCommit());
+    clearCandidates();
     ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
