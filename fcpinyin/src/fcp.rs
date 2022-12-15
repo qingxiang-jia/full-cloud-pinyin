@@ -155,6 +155,7 @@ impl Fcp {
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
+                    *in_session_mtx = false;
                     true
                 } else {
                     false
@@ -298,6 +299,7 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
+                    *in_session_mtx = false;
                     true
                 } else {
                     false
@@ -322,6 +324,7 @@ impl Fcp {
                         // Update UI
                         (ffi.ui.clear_candidates)();
                     }
+                    *in_session_mtx = false;
                     true
                 } else {
                     false
