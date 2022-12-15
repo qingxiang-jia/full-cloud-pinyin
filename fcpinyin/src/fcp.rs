@@ -115,6 +115,17 @@ impl Fcp {
                 if *in_session_mtx {
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
                     if idx < self.table_size {
+                        // Clear preedit
+                        let mut shared_preedit =
+                            self.last_query.lock().expect("Failed to lock last_query.");
+                        shared_preedit.clear();
+                        // Clear session_candidates
+                        let mut session_candidates = self
+                            .session_candidates
+                            .lock()
+                            .expect("Failed to lock session_candidates.");
+                        *session_candidates = None;
+                        // Commit candidate
                         unsafe {
                             (ffi.engine.commit)(idx as u16);
                         }
@@ -130,6 +141,17 @@ impl Fcp {
             FcitxKey::Space => {
                 // Select a candidate by Space key
                 if *in_session_mtx {
+                    // Clear preedit
+                    let mut shared_preedit =
+                        self.last_query.lock().expect("Failed to lock last_query.");
+                    shared_preedit.clear();
+                    // Clear session_candidates
+                    let mut session_candidates = self
+                        .session_candidates
+                        .lock()
+                        .expect("Failed to lock session_candidates.");
+                    *session_candidates = None;
+                    // Select candidate
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
