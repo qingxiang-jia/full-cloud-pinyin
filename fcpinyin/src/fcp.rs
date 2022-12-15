@@ -239,6 +239,21 @@ impl Fcp {
                         self.last_query.lock().expect("Failed to lock last_query.");
                     shared_preedit.pop();
                     let preedit = shared_preedit.clone();
+                    // If nothing left, we are out of session
+                    if preedit.len() == 0 {
+                        // Clear session_candidates
+                        let mut session_candidates = self
+                            .session_candidates
+                            .lock()
+                            .expect("Failed to lock session_candidates.");
+                        *session_candidates = None;
+                        *in_session_mtx = false;
+                        // Update UI
+                        unsafe {
+                            (ffi.ui.clear_candidates)();
+                        }
+                        return true;
+                    }
                     // Update preedit UI
                     unsafe {
                         let preedit_copy = preedit.clone();
@@ -262,7 +277,7 @@ impl Fcp {
                             (ffi.ui.set_candidates)(ptr_ptr, len);
                             ffi::free_cstring_array(ptr_ptr, len, cap);
                         }
-                        // Set session_candidates
+                        // Clear session_candidates
                         let mut session_candidates = async_self
                             .session_candidates
                             .lock()
