@@ -125,8 +125,8 @@ impl Fcp {
                         *session_candidates = None;
                         // Commit candidate
                         unsafe {
-                            let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                                .expect("ffi is None, not Fcitx5.");
+                            let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                             (ffi.engine.commit)(idx as u16);
                         }
                         *in_session_mtx = false;
@@ -152,8 +152,8 @@ impl Fcp {
                         .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Select candidate
-                    let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                        .expect("ffi is None, not Fcitx5.");
+                    let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                    let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                     unsafe {
                         (ffi.engine.commit_candidate_by_fixed_key)();
                     }
@@ -167,8 +167,8 @@ impl Fcp {
                 // Go to the next page by keying in the next page keys
                 if *in_session_mtx {
                     unsafe {
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         if (ffi.table.can_page_up)() {
                             (ffi.table.page_up)();
                         } else {
@@ -186,8 +186,8 @@ impl Fcp {
                                 let (ptr_ptr, len, cap) =
                                     ffi::str_vec_to_cstring_array(display_texts);
                                 // Set it to UI
-                                let ffi = (*async_self.ffi.lock().expect("Failed to lock ffi."))
-                                    .expect("ffi is None, not Fcitx5.");
+                                let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
+                                let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                                 (ffi.ui.append_candidates)(ptr_ptr, len);
                                 ffi::free_cstring_array(ptr_ptr, len, cap);
                                 // Set session_candidates
@@ -208,8 +208,8 @@ impl Fcp {
                 // Go to the previous page by previous page keys
                 if *in_session_mtx {
                     unsafe {
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.table.page_down)();
                     }
                     true
@@ -221,8 +221,8 @@ impl Fcp {
                 // Go to the next candidate by ->
                 if *in_session_mtx {
                     unsafe {
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.table.next)();
                     }
                     true
@@ -234,8 +234,8 @@ impl Fcp {
                 // Go to the previous candidate by <-
                 if *in_session_mtx {
                     unsafe {
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.table.prev)();
                     }
                     true
@@ -262,8 +262,8 @@ impl Fcp {
                         *in_session_mtx = false;
                         // Update UI
                         unsafe {
-                            let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                                .expect("ffi is None, not Fcitx5.");
+                            let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                             (ffi.ui.clear_candidates)();
                         }
                         return true;
@@ -275,8 +275,8 @@ impl Fcp {
                         println!("Rust: preedit={}", &preedit_copy);
 
                         let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.ui.set_preedit)(char_ptr);
                         ffi::free_char_ptr(char_ptr);
                     }
@@ -290,8 +290,8 @@ impl Fcp {
                         unsafe {
                             let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
                             // Set it to UI
-                            let ffi = (*async_self.ffi.lock().expect("Failed to lock ffi."))
-                                .expect("ffi is None, not Fcitx5.");
+                            let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
+                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                             (ffi.ui.set_candidates)(ptr_ptr, len);
                             ffi::free_cstring_array(ptr_ptr, len, cap);
                         }
@@ -327,8 +327,8 @@ impl Fcp {
                         // Make CString
                         let char_ptr = ffi::str_to_char_ptr(&preedit);
                         // Commit as is
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.engine.commit_preedit)(char_ptr);
                         ffi::free_char_ptr(char_ptr);
                         // Update UI
@@ -357,8 +357,8 @@ impl Fcp {
                     *self.in_session.lock().expect("Failed to lock in_session.") = false;
                     unsafe {
                         // Update UI
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.ui.clear_candidates)();
                     }
                     *in_session_mtx = false;
@@ -440,8 +440,8 @@ impl Fcp {
                         println!("Rust: preedit={}", &preedit_copy);
 
                         let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-                        let ffi = (*self.ffi.lock().expect("Failed to lock ffi."))
-                            .expect("ffi is None, not Fcitx5.");
+                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
+                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                         (ffi.ui.set_preedit)(char_ptr);
                         ffi::free_char_ptr(char_ptr);
                     }
@@ -455,8 +455,8 @@ impl Fcp {
                         unsafe {
                             let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
                             // Set it to UI
-                            let ffi = (*async_self.ffi.lock().expect("Failed to lock ffi."))
-                                .expect("ffi is None, not Fcitx5.");
+                            let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
+                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                             (ffi.ui.set_candidates)(ptr_ptr, len);
                             ffi::free_cstring_array(ptr_ptr, len, cap);
                         }
