@@ -20,7 +20,7 @@ typedef struct FcpOpaque {
 extern "C" FcpOpaque *new_fcp();
 extern "C" void register_callbacks(
     FcpOpaque *opaque, FnVoid set_loading, FnSetCandidates set_candidates,
-    FnSetCandidates append_candidates, FnVoid clear_candidates, FnVoid update,
+    FnSetCandidates append_candidates, FnVoid clear_candidates,
     FnSetPreedit set_preedit, FnCanPageUp can_page_up, FnVoid page_up,
     FnVoid page_down, FnVoid prev, FnVoid next, FnCommit commit,
     FnSetPreedit commit_preedit, FnVoid commit_candidate_by_fixed_key);
@@ -34,7 +34,6 @@ extern "C" void set_candidates(int16_t **candidates, size_t cnt);
 extern "C" void append_candidates(int16_t **candidates, size_t cnt);
 extern "C" void clear_candidates();
 extern "C" void set_preedit(char *preedit);
-extern "C" void update();
 /* ↑ UI */
 
 /* ↓ TABLE */

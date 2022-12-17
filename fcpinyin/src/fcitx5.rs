@@ -16,7 +16,6 @@ pub struct UI {
     pub append_candidates: FnSetCandidates,
     pub clear_candidates: FnVoid,
     pub set_preedit: FnSetPreedit,
-    pub update: FnVoid,
 }
 
 #[derive(Clone)]
