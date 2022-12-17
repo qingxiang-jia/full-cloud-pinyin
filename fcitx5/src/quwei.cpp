@@ -57,6 +57,8 @@ extern "C" void append_candidates(int16_t** candidates, size_t cnt)
 
 extern "C" void clear_candidates() { engine->clearCandidates(); }
 
+extern "C" void update() { engine->updateUI(); }
+
 extern "C" void set_preedit(char* preedit)
 {
     std::string preeditStr(preedit);
@@ -119,6 +121,7 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     FnSetCandidates fn_set_candidates = &set_candidates;
     FnSetCandidates fn_append_candidates = &append_candidates;
     FnVoid fn_clear_candidates = &clear_candidates;
+    FnVoid fn_update = &update;
     FnSetPreedit fn_set_preedit = &set_preedit;
     FnCanPageUp fn_can_page_up = &can_page_up;
     FnVoid fn_page_up = &page_up;
@@ -130,8 +133,8 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     FnVoid fn_commit_candidate_by_fixed_key = &commit_candidate_by_fixed_key;
 
     // Register callbacks
-    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_append_candidates, fn_clear_candidates, fn_set_preedit, fn_can_page_up, fn_page_up,
-        fn_page_down, fn_prev, fn_next, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
+    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_append_candidates, fn_clear_candidates, fn_update, fn_set_preedit, fn_can_page_up,
+        fn_page_up, fn_page_down, fn_prev, fn_next, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)

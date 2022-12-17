@@ -30,6 +30,7 @@ pub extern "C" fn register_callbacks(
     set_candidates: FnSetCandidates,
     append_candidates: FnSetCandidates,
     clear_candidates: FnVoid,
+    update: FnVoid,
     set_preedit: FnSetPreedit,
     can_page_up: FnCanPageUp,
     page_up: FnVoid,
@@ -46,6 +47,7 @@ pub extern "C" fn register_callbacks(
         append_candidates,
         clear_candidates,
         set_preedit,
+        update,
     };
 
     let table = Table {

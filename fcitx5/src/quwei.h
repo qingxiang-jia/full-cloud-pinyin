@@ -45,6 +45,7 @@ public:
     void setCandidates(std::vector<std::string> candidates, bool append = false);
     void appendCandidates(std::vector<std::string> candidates);
     void clearCandidates();
+    void updateUI();
 
 private:
     FcpOpaque* fcpOpaque;
@@ -53,7 +54,6 @@ private:
 
     void select(const int idx);
     std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
-    void updateUI();
     void reset();
 };
 
