@@ -27,10 +27,12 @@ class QuweiEngine;
 class QuweiEngine : public fcitx::InputMethodEngineV2 {
 public:
     QuweiEngine(fcitx::Instance* instance);
+    
 
     void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
+    std::unique_ptr<fcitx::EventDispatcher> dispatcher;
 
     void commitCandidateByIndex(const int idx);
     void commitCandidateByFixedKey();
@@ -46,6 +48,7 @@ public:
     void appendCandidates(std::vector<std::string> candidates);
     void clearCandidates();
     void updateUI();
+    void threadSafeUiUpdate();
 
 private:
     FcpOpaque* fcpOpaque;

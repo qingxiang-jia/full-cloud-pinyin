@@ -135,6 +135,10 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     // Register callbacks
     register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_append_candidates, fn_clear_candidates, fn_update, fn_set_preedit, fn_can_page_up,
         fn_page_up, fn_page_down, fn_prev, fn_next, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
+
+    // Initialize dispatcher
+    dispatcher = std::make_unique<fcitx::EventDispatcher>();
+    dispatcher->attach(&instance->eventLoop());
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
@@ -152,7 +156,7 @@ void QuweiEngine::commitCandidateByIndex(const int idx)
     ic_->commitString(candidate.toStringForCommit());
     clearCandidates();
     setPreedit("");
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    threadSafeUiUpdate();
 }
 
 void QuweiEngine::commitCandidateByFixedKey()
@@ -184,7 +188,7 @@ void QuweiEngine::nextPage()
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
         if (pageable->hasNext()) {
             pageable->next();
-            ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+            threadSafeUiUpdate();
         }
     }
 }
@@ -193,7 +197,7 @@ void QuweiEngine::prevPage()
 {
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable && pageable->hasPrev()) {
         pageable->prev();
-        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        threadSafeUiUpdate();
     }
 }
 
@@ -201,7 +205,7 @@ void QuweiEngine::nextCandidate()
 {
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->nextCandidate();
-        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        threadSafeUiUpdate();
     }
 }
 
@@ -209,7 +213,7 @@ void QuweiEngine::prevCanddiate()
 {
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->prevCandidate();
-        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        threadSafeUiUpdate();
     }
 }
 
@@ -252,7 +256,7 @@ void QuweiEngine::setLoading()
     }
     candidateList->setGlobalCursorIndex(0);
 
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    threadSafeUiUpdate();
 }
 
 void QuweiEngine::setPreedit(std::string preedit)
@@ -284,7 +288,7 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
         candidateList->append(std::move(candidateWord));
     }
 
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    threadSafeUiUpdate();
 }
 
 void QuweiEngine::appendCandidates(std::vector<std::string> candidates) { setCandidates(candidates, true); }
@@ -295,10 +299,15 @@ void QuweiEngine::clearCandidates()
 
     candidateList->clear();
 
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    threadSafeUiUpdate();
 }
 
-void QuweiEngine::updateUI() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); }
+void QuweiEngine::updateUI() { threadSafeUiUpdate(); }
+
+void QuweiEngine::threadSafeUiUpdate()
+{
+    dispatcher->schedule([this]() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); });
+}
 
 void QuweiEngine::reset()
 {
