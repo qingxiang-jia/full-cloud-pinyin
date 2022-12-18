@@ -283,8 +283,6 @@ void QuweiEngine::clearCandidates()
     threadSafeUiUpdate();
 }
 
-void QuweiEngine::updateUI() { threadSafeUiUpdate(); }
-
 void QuweiEngine::threadSafeUiUpdate()
 {
     dispatcher->schedule([this]() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); });
@@ -294,7 +292,7 @@ void QuweiEngine::reset()
 {
     ic_->inputPanel().reset();
     setPreedit("");
-    updateUI();
+    threadSafeUiUpdate();
 }
 
 void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event)
