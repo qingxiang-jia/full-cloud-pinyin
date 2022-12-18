@@ -459,6 +459,8 @@ impl Fcp {
                             let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                             (ffi.ui.set_candidates)(ptr_ptr, len);
                             ffi::free_cstring_array(ptr_ptr, len, cap);
+                            // Reset the lookup table page to the first
+                            (ffi.table.set_page)(0);
                         }
                         // Set session_candidates
                         let mut session_candidates = async_self
