@@ -188,7 +188,7 @@ impl Fcp {
                                 // Set it to UI
                                 let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
                                 let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                                (ffi.ui.append_candidates)(ptr_ptr, len);
+                                (ffi.ui.set_candidates)(ptr_ptr, len);
                                 ffi::free_cstring_array(ptr_ptr, len, cap);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
