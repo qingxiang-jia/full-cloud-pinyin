@@ -44,7 +44,7 @@ public:
     void prevCanddiate();
     void setPreedit(std::string preedit);
     void setLoading();
-    void setCandidates(std::vector<std::string> candidates, bool append = false);
+    void setCandidates(std::vector<std::string> candidates);
     void appendCandidates(std::vector<std::string> candidates);
     void clearCandidates();
     void updateUI();

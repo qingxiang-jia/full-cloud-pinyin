@@ -13,7 +13,6 @@ pub struct Fcitx5 {
 pub struct UI {
     pub set_loading: FnVoid,
     pub set_candidates: FnSetCandidates,
-    pub append_candidates: FnSetCandidates,
     pub clear_candidates: FnVoid,
     pub set_preedit: FnSetPreedit,
 }

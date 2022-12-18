@@ -45,16 +45,6 @@ extern "C" void set_candidates(int16_t** candidates, size_t cnt)
     engine->setCandidates(candidatesToSet);
 }
 
-extern "C" void append_candidates(int16_t** candidates, size_t cnt)
-{
-    std::vector<std::string> candidatesToSet;
-    for (size_t i = 0; i < cnt; i++) {
-        std::string candidate((char*)candidates[i]);
-        candidatesToSet.push_back(std::move(candidate));
-    }
-    engine->appendCandidates(candidatesToSet);
-}
-
 extern "C" void clear_candidates() { engine->clearCandidates(); }
 
 extern "C" void set_preedit(char* preedit)
@@ -117,7 +107,6 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     // Prepare callbacks
     FnVoid fn_set_loading = &set_loading;
     FnSetCandidates fn_set_candidates = &set_candidates;
-    FnSetCandidates fn_append_candidates = &append_candidates;
     FnVoid fn_clear_candidates = &clear_candidates;
     FnSetPreedit fn_set_preedit = &set_preedit;
     FnCanPageUp fn_can_page_up = &can_page_up;
@@ -130,7 +119,7 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     FnVoid fn_commit_candidate_by_fixed_key = &commit_candidate_by_fixed_key;
 
     // Register callbacks
-    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_append_candidates, fn_clear_candidates, fn_set_preedit, fn_can_page_up, fn_page_up,
+    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_clear_candidates, fn_set_preedit, fn_can_page_up, fn_page_up,
         fn_page_down, fn_prev, fn_next, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
 
     // Initialize dispatcher
@@ -268,17 +257,14 @@ void QuweiEngine::setPreedit(std::string preedit)
     ic_->updatePreedit();
 }
 
-void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append)
+void QuweiEngine::setCandidates(std::vector<std::string> candidates)
 {
     if (candidates.empty()) {
         return;
     }
 
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
-
-    if (!append) {
-        candidateList->clear();
-    }
+    candidateList->clear();
 
     for (auto candidate : candidates) {
         std::unique_ptr<fcitx::CandidateWord> candidateWord = std::make_unique<QuweiCandidate>(fcitx::Text(candidate));
@@ -287,8 +273,6 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates, bool append
 
     threadSafeUiUpdate();
 }
-
-void QuweiEngine::appendCandidates(std::vector<std::string> candidates) { setCandidates(candidates, true); }
 
 void QuweiEngine::clearCandidates()
 {

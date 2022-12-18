@@ -28,7 +28,6 @@ pub extern "C" fn register_callbacks(
     opaque: *mut FcpOpaque,
     set_loading: FnVoid,
     set_candidates: FnSetCandidates,
-    append_candidates: FnSetCandidates,
     clear_candidates: FnVoid,
     set_preedit: FnSetPreedit,
     can_page_up: FnCanPageUp,
@@ -43,7 +42,6 @@ pub extern "C" fn register_callbacks(
     let ui = UI {
         set_loading,
         set_candidates,
-        append_candidates,
         clear_candidates,
         set_preedit,
     };
