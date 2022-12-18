@@ -10,6 +10,7 @@ pub type FnVoid = unsafe extern "C" fn();
 pub type FnCanPageUp = unsafe extern "C" fn() -> bool;
 pub type FnSetCandidates = unsafe extern "C" fn(candidates: *mut *mut i8, cnt: usize);
 pub type FnSetPreedit = unsafe extern "C" fn(preedit: *const i8);
+pub type FnSetPage = unsafe extern "C" fn(idx: i32);
 
 #[repr(C)]
 pub struct FcpOpaque {
@@ -35,6 +36,7 @@ pub extern "C" fn register_callbacks(
     page_down: FnVoid,
     prev: FnVoid,
     next: FnVoid,
+    set_page: FnSetPage,
     commit: FnCommit,
     commit_preedit: FnSetPreedit,
     commit_candidate_by_fixed_key: FnVoid,
@@ -52,6 +54,7 @@ pub extern "C" fn register_callbacks(
         page_down,
         prev,
         next,
+        set_page,
     };
 
     let engine = Engine {

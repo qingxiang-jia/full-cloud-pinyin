@@ -42,6 +42,7 @@ public:
     void prevPage();
     void nextCandidate();
     void prevCanddiate();
+    void setPage(int idx);
     void setPreedit(std::string preedit);
     void setLoading();
     void setCandidates(std::vector<std::string> candidates);

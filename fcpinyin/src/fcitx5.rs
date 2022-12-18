@@ -1,4 +1,4 @@
-use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit, FnCanPageUp};
+use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit, FnCanPageUp, FnSetPage};
 
 #[derive(Clone)]
 #[repr(C)]
@@ -25,6 +25,7 @@ pub struct Table {
     pub page_down: FnVoid,
     pub prev: FnVoid,
     pub next: FnVoid,
+    pub set_page: FnSetPage,
 }
 
 #[derive(Clone)]

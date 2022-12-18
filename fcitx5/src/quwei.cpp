@@ -64,6 +64,8 @@ extern "C" void page_down() { engine->prevPage(); }
 extern "C" void prev() { engine->prevCanddiate(); }
 
 extern "C" void next() { engine->nextCandidate(); }
+
+extern "C" void set_page(int idx) { engine->setPage(idx); }
 /* END TABLE */
 
 /* BEGIN ENGINE */
@@ -114,13 +116,14 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     FnVoid fn_page_down = &page_down;
     FnVoid fn_prev = &prev;
     FnVoid fn_next = &next;
+    FnSetPage fn_set_page = &set_page;
     FnCommit fn_commit = &commit;
     FnSetPreedit fn_commit_preedit = &commit_preedit;
     FnVoid fn_commit_candidate_by_fixed_key = &commit_candidate_by_fixed_key;
 
     // Register callbacks
-    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_clear_candidates, fn_set_preedit, fn_can_page_up, fn_page_up,
-        fn_page_down, fn_prev, fn_next, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
+    register_callbacks(fcpOpaque, fn_set_loading, fn_set_candidates, fn_clear_candidates, fn_set_preedit, fn_can_page_up, fn_page_up, fn_page_down, fn_prev,
+        fn_next, fn_set_page, fn_commit, fn_commit_preedit, fn_commit_candidate_by_fixed_key);
 
     // Initialize dispatcher
     dispatcher = std::make_unique<fcitx::EventDispatcher>();
@@ -199,6 +202,14 @@ void QuweiEngine::prevCanddiate()
 {
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->prevCandidate();
+        threadSafeUiUpdate();
+    }
+}
+
+void QuweiEngine::setPage(int idx)
+{
+    if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
+        pageable->setPage(idx);
         threadSafeUiUpdate();
     }
 }
