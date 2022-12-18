@@ -83,14 +83,6 @@ pub extern "C" fn on_key_press(opaque: *mut FcpOpaque, key: FcitxKey) -> bool {
     }
 }
 
-unsafe fn string_vec_to_cstring_array(input: &Vec<String>) -> (*mut *mut c_char, usize, usize) {
-    let ptrs: Vec<*mut c_char> = input
-        .iter()
-        .map(|string| str_to_char_ptr(string.as_str()))
-        .collect();
-    ptrs.into_raw_parts()
-}
-
 pub unsafe fn str_vec_to_cstring_array(input: Vec<&String>) -> (*mut *mut c_char, usize, usize) {
     let ptrs: Vec<*mut c_char> = input
         .into_iter()
