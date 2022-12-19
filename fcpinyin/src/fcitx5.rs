@@ -1,4 +1,71 @@
+use std::sync::Mutex;
+
 use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit, FnCanPageUp, FnSetPage};
+
+pub struct Fcitx5 {
+    fn_ptrs: Mutex<Fcitx5FnPtrs>,
+}
+
+impl Fcitx5 {
+    pub fn new(from_cpp: Fcitx5FnPtrs) -> Self {
+        Fcitx5 { fn_ptrs: Mutex::new(from_cpp) }
+    }
+    
+    pub fn ui_set_loading(&self) {
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            (fn_ptr_mtx.ui.set_loading)();
+        }
+    }
+
+    pub fn ui_set_candidates() {
+
+    }
+
+    pub fn ui_clear_candidates() {
+
+    }
+
+    pub fn ui_set_preedit() {
+
+    }
+
+    pub fn table_can_page_up() {
+
+    }
+
+    pub fn table_page_up() {
+
+    }
+
+    pub fn table_page_down() {
+
+    }
+
+    pub fn table_prev() {
+
+    }
+
+    pub fn table_next() {
+
+    }
+
+    pub fn table_set_page() {
+
+    }
+
+    pub fn engine_commit() {
+
+    }
+
+    pub fn engine_commit_preedit() {
+
+    }
+
+    pub fn engine_commit_candidate_by_fixed_key() {
+
+    }
+}
 
 #[derive(Clone)]
 pub struct Fcitx5FnPtrs {
