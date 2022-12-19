@@ -74,7 +74,12 @@ impl Fcitx5 {
         }
     }
 
-    pub fn table_set_page() {}
+    pub fn table_set_page(&self, idx: usize) {
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            (fn_ptr_mtx.table.set_page)(idx as i32);
+        }
+    }
 
     pub fn engine_commit(&self, idx: usize) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
