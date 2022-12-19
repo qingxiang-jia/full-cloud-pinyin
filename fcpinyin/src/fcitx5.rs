@@ -98,7 +98,12 @@ impl Fcitx5 {
         }
     }
 
-    pub fn engine_commit_candidate_by_fixed_key() {}
+    pub fn engine_commit_candidate_by_fixed_key(&self) {
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            (fn_ptr_mtx.engine.commit_candidate_by_fixed_key)();
+        }
+    }
 }
 
 #[derive(Clone)]
