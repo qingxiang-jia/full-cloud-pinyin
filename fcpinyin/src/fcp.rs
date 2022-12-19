@@ -13,7 +13,6 @@ use tokio::runtime::Runtime;
 
 use crate::{
     fcitx5::{self, Fcitx5},
-    ffi,
 };
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
