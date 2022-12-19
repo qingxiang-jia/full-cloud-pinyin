@@ -1,7 +1,7 @@
 use std::{ffi::CString, os::raw::c_char, sync::Arc};
 
 use crate::{
-    fcitx5::{Engine, Fcitx5, FcitxKey, Table, UI},
+    fcitx5::{Engine, Fcitx5FnPtrs, FcitxKey, Table, UI},
     fcp::Fcp,
 };
 
@@ -63,7 +63,7 @@ pub extern "C" fn register_callbacks(
         commit_candidate_by_fixed_key,
     };
 
-    let fcitx5 = Fcitx5 { ui, table, engine };
+    let fcitx5 = Fcitx5FnPtrs { ui, table, engine };
     unsafe {
         (*opaque)
             .fcp

@@ -2,7 +2,7 @@ use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit, FnCanPageUp, F
 
 #[derive(Clone)]
 #[repr(C)]
-pub struct Fcitx5 {
+pub struct Fcitx5FnPtrs {
     pub ui: UI,
     pub table: Table,
     pub engine: Engine,

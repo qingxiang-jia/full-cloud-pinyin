@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use fcitx5::{Fcitx5, FcitxKey};
+use fcitx5::{Fcitx5FnPtrs, FcitxKey};
 use regex::Regex;
 use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
@@ -45,7 +45,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
-    ffi: Mutex<Option<Fcitx5>>,
+    ffi: Mutex<Option<Fcitx5FnPtrs>>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
@@ -83,7 +83,7 @@ impl Fcp {
         }
     }
 
-    pub fn set_fcitx5(&self, fcitx5: Fcitx5) {
+    pub fn set_fcitx5(&self, fcitx5: Fcitx5FnPtrs) {
         *self.ffi.lock().expect("Failed to lock ffi.") = Some(fcitx5);
     }
 
