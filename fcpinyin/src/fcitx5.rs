@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use crate::ffi::{FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid};
+use crate::ffi::{FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid, self};
 
 pub struct Fcitx5 {
     fn_ptrs: Mutex<Fcitx5FnPtrs>,
@@ -29,7 +29,15 @@ impl Fcitx5 {
         }
     }
 
-    pub fn ui_set_preedit() {}
+    pub fn ui_set_preedit(&self, preedit: &String) {
+        let preedit_copy = preedit.clone();
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
+            (fn_ptr_mtx.ui.set_preedit)(char_ptr);
+            ffi::free_char_ptr(char_ptr);
+        }
+    }
 
     pub fn table_can_page_up(&self) -> bool {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
@@ -70,7 +78,15 @@ impl Fcitx5 {
 
     pub fn engine_commit() {}
 
-    pub fn engine_commit_preedit() {}
+    pub fn engine_commit_preedit(&self, preedit: &String) {
+        let preedit_copy = preedit.clone();
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
+            (fn_ptr_mtx.engine.commit_preedit)(char_ptr);
+            ffi::free_char_ptr(char_ptr);
+        }
+    }
 
     pub fn engine_commit_candidate_by_fixed_key() {}
 }
