@@ -31,7 +31,12 @@ impl Fcitx5 {
 
     pub fn ui_set_preedit() {}
 
-    pub fn table_can_page_up() {}
+    pub fn table_can_page_up(&self) -> bool {
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            (fn_ptr_mtx.table.can_page_up)()
+        }
+    }
 
     pub fn table_page_up(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
