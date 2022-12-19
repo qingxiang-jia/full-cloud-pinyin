@@ -91,13 +91,6 @@ impl Fcp {
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) -> bool {
         let mut in_session_mtx = self.in_session.lock().expect("Failed to lock in_session.");
 
-        if *in_session_mtx {
-            println!("Rust: is in session");
-        } else {
-            println!("Rust: is not in session")
-        }
-        println!("Rust: key={:#?}", key);
-
         match key {
             FcitxKey::Num0
             | FcitxKey::Num1
@@ -113,10 +106,31 @@ impl Fcp {
                 if *in_session_mtx {
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
                     if idx < self.table_size {
-                        // Clear preedit
+                        // Get matched length of this selected candidate
+                        let current_candidates_mtx = self
+                            .session_candidates
+                            .lock()
+                            .expect("Failed to lock session_candidates.");
+                        let current_candidates = current_candidates_mtx
+                            .as_ref()
+                            .expect("session_candidate is None.");
+                        let matched_len = (&current_candidates[idx as usize]).matched_len;
+                        // Drop the mutex since later we will lock again to avoid deadlock
+                        drop(current_candidates_mtx);
+                        // Update preedit
                         let mut shared_preedit =
                             self.last_query.lock().expect("Failed to lock last_query.");
-                        shared_preedit.clear();
+                        if matched_len.is_none() {
+                            // Full match (by Google Input Tools' convention)
+                            shared_preedit.clear();
+                        } else {
+                            let len = matched_len.expect("matched_len is None.") as usize;
+                            if len >= shared_preedit.len() {
+                                shared_preedit.clear();
+                            } else {
+                                shared_preedit.drain(0..len);
+                            }
+                        }
                         // Clear session_candidates
                         let mut session_candidates = self
                             .session_candidates
@@ -129,7 +143,37 @@ impl Fcp {
                             let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
                             (ffi.engine.commit)(idx as u16);
                         }
-                        *in_session_mtx = false;
+                        if shared_preedit.is_empty() {
+                            *in_session_mtx = false;
+                        } else {
+                            *in_session_mtx = true;
+                            // Request new candidates for the rest of the preedit
+                            let preedit = shared_preedit.clone();
+                            let async_self = self.clone();
+                            self.clone().rt.spawn(async move {
+                                // Request new candidates
+                                let new_candidates = async_self.query_candidates(&preedit).await;
+                                // Make CString array
+                                let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                                unsafe {
+                                    let (ptr_ptr, len, cap) =
+                                        ffi::str_vec_to_cstring_array(display_texts);
+                                    // Set it to UI
+                                    let ffi_mtx =
+                                        async_self.ffi.lock().expect("Failed to lock ffi.");
+                                    let ffi =
+                                        (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
+                                    (ffi.ui.set_candidates)(ptr_ptr, len);
+                                    ffi::free_cstring_array(ptr_ptr, len, cap);
+                                }
+                                // Set session_candidates
+                                let mut session_candidates = async_self
+                                    .session_candidates
+                                    .lock()
+                                    .expect("Failed to lock session_candidates.");
+                                *session_candidates = Some(new_candidates);
+                            });
+                        }
                         true
                     } else {
                         false
@@ -271,9 +315,6 @@ impl Fcp {
                     // Update preedit UI
                     unsafe {
                         let preedit_copy = preedit.clone();
-
-                        println!("Rust: preedit={}", &preedit_copy);
-
                         let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
                         let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
                         let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
@@ -436,9 +477,6 @@ impl Fcp {
                     // Update preedit UI
                     unsafe {
                         let preedit_copy = preedit.clone();
-
-                        println!("Rust: preedit={}", &preedit_copy);
-
                         let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
                         let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
                         let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
