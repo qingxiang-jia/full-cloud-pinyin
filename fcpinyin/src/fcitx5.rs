@@ -20,14 +20,14 @@ impl Fcitx5 {
         }
     }
 
-    pub fn ui_set_candidates(&self) {
+    pub fn ui_set_candidates() {}
+
+    pub fn ui_clear_candidates(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             (fn_ptr_mtx.ui.clear_candidates)();
         }
     }
-
-    pub fn ui_clear_candidates() {}
 
     pub fn ui_set_preedit() {}
 
