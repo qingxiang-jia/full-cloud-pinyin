@@ -6,6 +6,9 @@ pub struct Fcitx5 {
     fn_ptrs: Mutex<Fcitx5FnPtrs>,
 }
 
+unsafe impl Send for Fcitx5 {}
+unsafe impl Sync for Fcitx5 {}
+
 impl Fcitx5 {
     pub fn new(from_cpp: Fcitx5FnPtrs) -> Self {
         Fcitx5 {
