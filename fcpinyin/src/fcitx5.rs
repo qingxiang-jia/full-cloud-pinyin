@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use crate::ffi::{FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid, self};
+use crate::ffi::{self, FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid};
 
 pub struct Fcitx5 {
     fn_ptrs: Mutex<Fcitx5FnPtrs>,
@@ -20,7 +20,14 @@ impl Fcitx5 {
         }
     }
 
-    pub fn ui_set_candidates() {}
+    pub fn ui_set_candidates(&self, display_texts: Vec<&String>) {
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
+            (fn_ptr_mtx.ui.set_candidates)(ptr_ptr, len);
+            ffi::free_cstring_array(ptr_ptr, len, cap);
+        }
+    }
 
     pub fn ui_clear_candidates(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
@@ -41,9 +48,7 @@ impl Fcitx5 {
 
     pub fn table_can_page_up(&self) -> bool {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
-        unsafe {
-            (fn_ptr_mtx.table.can_page_up)()
-        }
+        unsafe { (fn_ptr_mtx.table.can_page_up)() }
     }
 
     pub fn table_page_up(&self) {
