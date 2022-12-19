@@ -1,7 +1,6 @@
 use crate::ffi::{FnVoid, FnSetCandidates, FnSetPreedit, FnCommit, FnCanPageUp, FnSetPage};
 
 #[derive(Clone)]
-#[repr(C)]
 pub struct Fcitx5FnPtrs {
     pub ui: UI,
     pub table: Table,
@@ -9,7 +8,6 @@ pub struct Fcitx5FnPtrs {
 }
 
 #[derive(Clone)]
-#[repr(C)]
 pub struct UI {
     pub set_loading: FnVoid,
     pub set_candidates: FnSetCandidates,
@@ -18,7 +16,6 @@ pub struct UI {
 }
 
 #[derive(Clone)]
-#[repr(C)]
 pub struct Table {
     pub can_page_up: FnCanPageUp,
     pub page_up: FnVoid,
@@ -29,7 +26,6 @@ pub struct Table {
 }
 
 #[derive(Clone)]
-#[repr(C)]
 pub struct Engine {
     pub commit: FnCommit,
     pub commit_preedit: FnSetPreedit,
