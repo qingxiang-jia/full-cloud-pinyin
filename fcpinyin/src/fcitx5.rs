@@ -76,7 +76,12 @@ impl Fcitx5 {
 
     pub fn table_set_page() {}
 
-    pub fn engine_commit() {}
+    pub fn engine_commit(&self, idx: usize) {
+        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
+        unsafe {
+            (fn_ptr_mtx.engine.commit)(idx as u16);
+        }
+    }
 
     pub fn engine_commit_preedit(&self, preedit: &String) {
         let preedit_copy = preedit.clone();
