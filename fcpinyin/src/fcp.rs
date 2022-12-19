@@ -1,6 +1,6 @@
 use std::{
     path::PathBuf,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, RwLock},
 };
 
 use fcitx5::{Fcitx5FnPtrs, FcitxKey};
@@ -11,7 +11,10 @@ use sled;
 use std::fs;
 use tokio::runtime::Runtime;
 
-use crate::{fcitx5, ffi};
+use crate::{
+    fcitx5::{self, Fcitx5},
+    ffi,
+};
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
 pub enum QueryDepth {
@@ -45,7 +48,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
-    ffi: Mutex<Option<Fcitx5FnPtrs>>,
+    fcitx5: RwLock<Option<Fcitx5>>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
@@ -76,15 +79,18 @@ impl Fcp {
             last_query: Mutex::new("".to_owned()),
             query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
-            ffi: None.into(),
+            fcitx5: RwLock::new(None),
             in_session: false.into(),
             session_candidates: Mutex::new(None),
             table_size: 5,
         }
     }
 
-    pub fn set_fcitx5(&self, fcitx5: Fcitx5FnPtrs) {
-        *self.ffi.lock().expect("Failed to lock ffi.") = Some(fcitx5);
+    pub fn set_fcitx5(&self, fn_ptrs: Fcitx5FnPtrs) {
+        *self
+            .fcitx5
+            .write()
+            .expect("Failed to lock fcitx5 in write mode.") = Some(Fcitx5::new(fn_ptrs));
     }
 
     // Returns whether the key has been handled
@@ -138,11 +144,12 @@ impl Fcp {
                             .expect("Failed to lock session_candidates.");
                         *session_candidates = None;
                         // Commit candidate
-                        unsafe {
-                            let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                            (ffi.engine.commit)(idx as u16);
-                        }
+                        self.fcitx5
+                            .read()
+                            .expect("Failed to read fcitx5.")
+                            .as_ref()
+                            .expect("fcitx5 is None.")
+                            .engine_commit(idx as usize);
                         if shared_preedit.is_empty() {
                             *in_session_mtx = false;
                         } else {
@@ -155,17 +162,14 @@ impl Fcp {
                                 let new_candidates = async_self.query_candidates(&preedit).await;
                                 // Make CString array
                                 let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                                unsafe {
-                                    let (ptr_ptr, len, cap) =
-                                        ffi::str_vec_to_cstring_array(display_texts);
-                                    // Set it to UI
-                                    let ffi_mtx =
-                                        async_self.ffi.lock().expect("Failed to lock ffi.");
-                                    let ffi =
-                                        (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                                    (ffi.ui.set_candidates)(ptr_ptr, len);
-                                    ffi::free_cstring_array(ptr_ptr, len, cap);
-                                }
+                                async_self
+                                    .clone()
+                                    .fcitx5
+                                    .read()
+                                    .expect("Failed to read fcitx5.")
+                                    .as_ref()
+                                    .expect("fcitx5 is None.")
+                                    .ui_set_candidates(display_texts);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
                                     .session_candidates
@@ -196,11 +200,12 @@ impl Fcp {
                         .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Select candidate
-                    let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                    let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                    unsafe {
-                        (ffi.engine.commit_candidate_by_fixed_key)();
-                    }
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .engine_commit_candidate_by_fixed_key();
                     *in_session_mtx = false;
                     true
                 } else {
@@ -211,10 +216,20 @@ impl Fcp {
                 // Go to the next page by keying in the next page keys
                 if *in_session_mtx {
                     unsafe {
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        if (ffi.table.can_page_up)() {
-                            (ffi.table.page_up)();
+                        if self
+                            .fcitx5
+                            .read()
+                            .expect("Failed to read fcitx5.")
+                            .as_ref()
+                            .expect("fcitx5 is None.")
+                            .table_can_page_up()
+                        {
+                            self.fcitx5
+                                .read()
+                                .expect("Failed to read fcitx5.")
+                                .as_ref()
+                                .expect("fcitx5 is None.")
+                                .table_page_up();
                         } else {
                             let preedit = self
                                 .last_query
@@ -225,15 +240,15 @@ impl Fcp {
                             self.clone().rt.spawn(async move {
                                 // Request new candidates
                                 let new_candidates = async_self.query_candidates(&preedit).await;
-                                // Make CString array
-                                let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                                let (ptr_ptr, len, cap) =
-                                    ffi::str_vec_to_cstring_array(display_texts);
                                 // Set it to UI
-                                let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
-                                let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                                (ffi.ui.set_candidates)(ptr_ptr, len);
-                                ffi::free_cstring_array(ptr_ptr, len, cap);
+                                let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                                async_self
+                                    .fcitx5
+                                    .read()
+                                    .expect("Failed to read fcitx5.")
+                                    .as_ref()
+                                    .expect("fcitx5 is None.")
+                                    .ui_set_candidates(display_texts);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
                                     .session_candidates
@@ -251,11 +266,12 @@ impl Fcp {
             FcitxKey::Minus => {
                 // Go to the previous page by previous page keys
                 if *in_session_mtx {
-                    unsafe {
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.table.page_down)();
-                    }
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .table_page_down();
                     true
                 } else {
                     false
@@ -264,11 +280,12 @@ impl Fcp {
             FcitxKey::Right => {
                 // Go to the next candidate by ->
                 if *in_session_mtx {
-                    unsafe {
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.table.next)();
-                    }
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .table_next();
                     true
                 } else {
                     false
@@ -277,11 +294,12 @@ impl Fcp {
             FcitxKey::Left => {
                 // Go to the previous candidate by <-
                 if *in_session_mtx {
-                    unsafe {
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.table.prev)();
-                    }
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .table_prev();
                     true
                 } else {
                     false
@@ -305,37 +323,35 @@ impl Fcp {
                         *session_candidates = None;
                         *in_session_mtx = false;
                         // Update UI
-                        unsafe {
-                            let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                            (ffi.ui.clear_candidates)();
-                        }
+                        self.fcitx5
+                            .read()
+                            .expect("Failed to read fcitx5.")
+                            .as_ref()
+                            .expect("fcitx5 is None.")
+                            .ui_clear_candidates();
                         return true;
                     }
                     // Update preedit UI
-                    unsafe {
-                        let preedit_copy = preedit.clone();
-                        let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.ui.set_preedit)(char_ptr);
-                        ffi::free_char_ptr(char_ptr);
-                    }
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .ui_set_preedit(&preedit);
 
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
                         // Request new candidates
                         let new_candidates = async_self.query_candidates(&preedit).await;
-                        // Make CString array
+                        // Set candidates to UI
                         let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                        unsafe {
-                            let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
-                            // Set it to UI
-                            let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
-                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                            (ffi.ui.set_candidates)(ptr_ptr, len);
-                            ffi::free_cstring_array(ptr_ptr, len, cap);
-                        }
+                        async_self
+                            .fcitx5
+                            .read()
+                            .expect("Failed to read fcitx5.")
+                            .as_ref()
+                            .expect("fcitx5 is None.")
+                            .ui_set_candidates(display_texts);
                         // Clear session_candidates
                         let mut session_candidates = async_self
                             .session_candidates
@@ -364,17 +380,21 @@ impl Fcp {
                     *session_candidates = None;
                     // Set flag
                     *self.in_session.lock().expect("Failed to lock in_session.") = false;
-                    unsafe {
-                        // Make CString
-                        let char_ptr = ffi::str_to_char_ptr(&preedit);
-                        // Commit as is
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.engine.commit_preedit)(char_ptr);
-                        ffi::free_char_ptr(char_ptr);
-                        // Update UI
-                        (ffi.ui.clear_candidates)();
-                    }
+                    // Commit preedit
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .engine_commit_preedit(&preedit);
+                    // Update UI
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .ui_clear_candidates();
+
                     *in_session_mtx = false;
                     true
                 } else {
@@ -396,12 +416,14 @@ impl Fcp {
                     *session_candidates = None;
                     // Set flag
                     *self.in_session.lock().expect("Failed to lock in_session.") = false;
-                    unsafe {
-                        // Update UI
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.ui.clear_candidates)();
-                    }
+                    // Update UI
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .ui_clear_candidates();
+
                     *in_session_mtx = false;
                     true
                 } else {
@@ -475,31 +497,34 @@ impl Fcp {
                     shared_preedit.push(user_input);
                     let preedit = shared_preedit.clone();
                     // Update preedit UI
-                    unsafe {
-                        let preedit_copy = preedit.clone();
-                        let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-                        let ffi_mtx = self.ffi.lock().expect("Failed to lock ffi.");
-                        let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                        (ffi.ui.set_preedit)(char_ptr);
-                        ffi::free_char_ptr(char_ptr);
-                    }
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to read fcitx5.")
+                        .as_ref()
+                        .expect("fcitx5 is None.")
+                        .ui_set_preedit(&preedit);
 
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
                         // Request new candidates
                         let new_candidates = async_self.query_candidates(&preedit).await;
-                        // Make CString array
+                        // Update candidates to UI
                         let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                        unsafe {
-                            let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
-                            // Set it to UI
-                            let ffi_mtx = async_self.ffi.lock().expect("Failed to lock ffi.");
-                            let ffi = (*ffi_mtx).as_ref().expect("ffi is &None, not &Fcitx5.");
-                            (ffi.ui.set_candidates)(ptr_ptr, len);
-                            ffi::free_cstring_array(ptr_ptr, len, cap);
-                            // Reset the lookup table page to the first
-                            (ffi.table.set_page)(0);
-                        }
+                        // Reset the lookup table page to the first
+                        async_self
+                            .fcitx5
+                            .read()
+                            .expect("Failed to read fcitx5.")
+                            .as_ref()
+                            .expect("fcitx5 is None.")
+                            .ui_set_candidates(display_texts);
+                        async_self
+                            .fcitx5
+                            .read()
+                            .expect("Failed to read fcitx5.")
+                            .as_ref()
+                            .expect("fcitx5 is None.")
+                            .table_set_page(0);
                         // Set session_candidates
                         let mut session_candidates = async_self
                             .session_candidates
