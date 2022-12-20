@@ -11,9 +11,7 @@ use sled;
 use std::fs;
 use tokio::runtime::Runtime;
 
-use crate::{
-    fcitx5::{self, Fcitx5},
-};
+use crate::fcitx5::{self, Fcitx5};
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
 pub enum QueryDepth {
