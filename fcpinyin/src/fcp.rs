@@ -165,6 +165,12 @@ impl Fcp {
                                     .read()
                                     .expect("Failed to lock fcitx5 in read mode.")
                                     .ui_set_candidates(display_texts);
+                                // Reset the lookup table page to the first
+                                async_self
+                                    .fcitx5
+                                    .read()
+                                    .expect("Failed to lock fcitx5 in read mode.")
+                                    .table_set_page(0);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
                                     .session_candidates
@@ -337,6 +343,12 @@ impl Fcp {
                             .read()
                             .expect("Failed to lock fcitx5 in read mode.")
                             .ui_set_candidates(display_texts);
+                        // Reset the lookup table page to the first
+                        async_self
+                            .fcitx5
+                            .read()
+                            .expect("Failed to lock fcitx5 in read mode.")
+                            .table_set_page(0);
                         // Clear session_candidates
                         let mut session_candidates = async_self
                             .session_candidates
@@ -487,12 +499,12 @@ impl Fcp {
                         let new_candidates = async_self.query_candidates(&preedit).await;
                         // Update candidates to UI
                         let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                        // Reset the lookup table page to the first
                         async_self
                             .fcitx5
                             .read()
                             .expect("Failed to lock fcitx5 in read mode.")
                             .ui_set_candidates(display_texts);
+                        // Reset the lookup table page to the first
                         async_self
                             .fcitx5
                             .read()
