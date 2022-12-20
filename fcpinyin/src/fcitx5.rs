@@ -3,20 +3,28 @@ use std::sync::Mutex;
 use crate::ffi::{self, FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid};
 
 pub struct Fcitx5 {
-    fn_ptrs: Mutex<Fcitx5FnPtrs>,
+    fn_ptrs: Mutex<Option<Fcitx5FnPtrs>>,
 }
 
 impl Fcitx5 {
-    pub fn new(from_cpp: Fcitx5FnPtrs) -> Self {
+    pub fn new() -> Self {
         Fcitx5 {
-            fn_ptrs: Mutex::new(from_cpp),
+            fn_ptrs: Mutex::new(None),
         }
+    }
+
+    pub fn set_fn_ptrs(&self, from_cpp: Fcitx5FnPtrs) {
+        *(self.fn_ptrs).lock().expect("Failed to lock fn_ptrs.") = Some(from_cpp);
     }
 
     pub fn ui_set_loading(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.ui.set_loading)();
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .ui
+                .set_loading)();
         }
     }
 
@@ -24,7 +32,11 @@ impl Fcitx5 {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
-            (fn_ptr_mtx.ui.set_candidates)(ptr_ptr, len);
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .ui
+                .set_candidates)(ptr_ptr, len);
             ffi::free_cstring_array(ptr_ptr, len, cap);
         }
     }
@@ -32,7 +44,11 @@ impl Fcitx5 {
     pub fn ui_clear_candidates(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.ui.clear_candidates)();
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .ui
+                .clear_candidates)();
         }
     }
 
@@ -41,55 +57,73 @@ impl Fcitx5 {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-            (fn_ptr_mtx.ui.set_preedit)(char_ptr);
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .ui
+                .set_preedit)(char_ptr);
             ffi::free_char_ptr(char_ptr);
         }
     }
 
     pub fn table_can_page_up(&self) -> bool {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
-        unsafe { (fn_ptr_mtx.table.can_page_up)() }
+        unsafe {
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .table
+                .can_page_up)()
+        }
     }
 
     pub fn table_page_up(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.table.page_up)();
+            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").table.page_up)();
         }
     }
 
     pub fn table_page_down(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.table.page_down)();
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .table
+                .page_down)();
         }
     }
 
     pub fn table_prev(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.table.prev)();
+            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").table.prev)();
         }
     }
 
     pub fn table_next(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.table.next)();
+            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").table.next)();
         }
     }
 
     pub fn table_set_page(&self, idx: usize) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.table.set_page)(idx as i32);
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .table
+                .set_page)(idx as i32);
         }
     }
 
     pub fn engine_commit(&self, idx: usize) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.engine.commit)(idx as u16);
+            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").engine.commit)(idx as u16);
         }
     }
 
@@ -98,7 +132,11 @@ impl Fcitx5 {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-            (fn_ptr_mtx.engine.commit_preedit)(char_ptr);
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .engine
+                .commit_preedit)(char_ptr);
             ffi::free_char_ptr(char_ptr);
         }
     }
@@ -106,7 +144,11 @@ impl Fcitx5 {
     pub fn engine_commit_candidate_by_fixed_key(&self) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.engine.commit_candidate_by_fixed_key)();
+            (fn_ptr_mtx
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .engine
+                .commit_candidate_by_fixed_key)();
         }
     }
 }

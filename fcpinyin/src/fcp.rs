@@ -45,7 +45,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
-    fcitx5: RwLock<Option<Fcitx5>>,
+    fcitx5: RwLock<Fcitx5>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
@@ -76,7 +76,7 @@ impl Fcp {
             last_query: Mutex::new("".to_owned()),
             query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
-            fcitx5: RwLock::new(None),
+            fcitx5: RwLock::new(Fcitx5::new()),
             in_session: false.into(),
             session_candidates: Mutex::new(None),
             table_size: 5,
@@ -84,10 +84,10 @@ impl Fcp {
     }
 
     pub fn set_fcitx5(&self, fn_ptrs: Fcitx5FnPtrs) {
-        *self
-            .fcitx5
+        self.fcitx5
             .write()
-            .expect("Failed to lock fcitx5 in write mode.") = Some(Fcitx5::new(fn_ptrs));
+            .expect("Failed to lock fcitx5 in write mode.")
+            .set_fn_ptrs(fn_ptrs);
     }
 
     // Returns whether the key has been handled
@@ -143,9 +143,7 @@ impl Fcp {
                         // Commit candidate
                         self.fcitx5
                             .read()
-                            .expect("Failed to read fcitx5.")
-                            .as_ref()
-                            .expect("fcitx5 is None.")
+                            .expect("Failed to lock fcitx5 in read mode.")
                             .engine_commit(idx as usize);
                         if shared_preedit.is_empty() {
                             *in_session_mtx = false;
@@ -163,9 +161,7 @@ impl Fcp {
                                     .clone()
                                     .fcitx5
                                     .read()
-                                    .expect("Failed to read fcitx5.")
-                                    .as_ref()
-                                    .expect("fcitx5 is None.")
+                                    .expect("Failed to lock fcitx5 in read mode.")
                                     .ui_set_candidates(display_texts);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
@@ -199,9 +195,7 @@ impl Fcp {
                     // Select candidate
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .engine_commit_candidate_by_fixed_key();
                     *in_session_mtx = false;
                     true
@@ -216,16 +210,12 @@ impl Fcp {
                         if self
                             .fcitx5
                             .read()
-                            .expect("Failed to read fcitx5.")
-                            .as_ref()
-                            .expect("fcitx5 is None.")
+                            .expect("Failed to lock fcitx5 in read mode.")
                             .table_can_page_up()
                         {
                             self.fcitx5
                                 .read()
-                                .expect("Failed to read fcitx5.")
-                                .as_ref()
-                                .expect("fcitx5 is None.")
+                                .expect("Failed to lock fcitx5 in read mode.")
                                 .table_page_up();
                         } else {
                             let preedit = self
@@ -242,9 +232,7 @@ impl Fcp {
                                 async_self
                                     .fcitx5
                                     .read()
-                                    .expect("Failed to read fcitx5.")
-                                    .as_ref()
-                                    .expect("fcitx5 is None.")
+                                    .expect("Failed to lock fcitx5 in read mode.")
                                     .ui_set_candidates(display_texts);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
@@ -265,9 +253,7 @@ impl Fcp {
                 if *in_session_mtx {
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .table_page_down();
                     true
                 } else {
@@ -279,9 +265,7 @@ impl Fcp {
                 if *in_session_mtx {
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .table_next();
                     true
                 } else {
@@ -293,9 +277,7 @@ impl Fcp {
                 if *in_session_mtx {
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .table_prev();
                     true
                 } else {
@@ -322,18 +304,14 @@ impl Fcp {
                         // Update UI
                         self.fcitx5
                             .read()
-                            .expect("Failed to read fcitx5.")
-                            .as_ref()
-                            .expect("fcitx5 is None.")
+                            .expect("Failed to lock fcitx5 in read mode.")
                             .ui_clear_candidates();
                         return true;
                     }
                     // Update preedit UI
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .ui_set_preedit(&preedit);
 
                     let async_self = self.clone();
@@ -345,9 +323,7 @@ impl Fcp {
                         async_self
                             .fcitx5
                             .read()
-                            .expect("Failed to read fcitx5.")
-                            .as_ref()
-                            .expect("fcitx5 is None.")
+                            .expect("Failed to lock fcitx5 in read mode.")
                             .ui_set_candidates(display_texts);
                         // Clear session_candidates
                         let mut session_candidates = async_self
@@ -380,16 +356,12 @@ impl Fcp {
                     // Commit preedit
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .engine_commit_preedit(&preedit);
                     // Update UI
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .ui_clear_candidates();
 
                     *in_session_mtx = false;
@@ -416,9 +388,7 @@ impl Fcp {
                     // Update UI
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .ui_clear_candidates();
 
                     *in_session_mtx = false;
@@ -496,9 +466,7 @@ impl Fcp {
                     // Update preedit UI
                     self.fcitx5
                         .read()
-                        .expect("Failed to read fcitx5.")
-                        .as_ref()
-                        .expect("fcitx5 is None.")
+                        .expect("Failed to lock fcitx5 in read mode.")
                         .ui_set_preedit(&preedit);
 
                     let async_self = self.clone();
@@ -511,16 +479,12 @@ impl Fcp {
                         async_self
                             .fcitx5
                             .read()
-                            .expect("Failed to read fcitx5.")
-                            .as_ref()
-                            .expect("fcitx5 is None.")
+                            .expect("Failed to lock fcitx5 in read mode.")
                             .ui_set_candidates(display_texts);
                         async_self
                             .fcitx5
                             .read()
-                            .expect("Failed to read fcitx5.")
-                            .as_ref()
-                            .expect("fcitx5 is None.")
+                            .expect("Failed to lock fcitx5 in read mode.")
                             .table_set_page(0);
                         // Set session_candidates
                         let mut session_candidates = async_self
