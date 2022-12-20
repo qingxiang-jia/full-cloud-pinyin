@@ -206,42 +206,40 @@ impl Fcp {
             FcitxKey::Equal => {
                 // Go to the next page by keying in the next page keys
                 if *in_session_mtx {
-                    unsafe {
-                        if self
-                            .fcitx5
+                    if self
+                        .fcitx5
+                        .read()
+                        .expect("Failed to lock fcitx5 in read mode.")
+                        .table_can_page_up()
+                    {
+                        self.fcitx5
                             .read()
                             .expect("Failed to lock fcitx5 in read mode.")
-                            .table_can_page_up()
-                        {
-                            self.fcitx5
+                            .table_page_up();
+                    } else {
+                        let preedit = self
+                            .last_query
+                            .lock()
+                            .expect("Failed to lock last_query.")
+                            .clone();
+                        let async_self = self.clone();
+                        self.clone().rt.spawn(async move {
+                            // Request new candidates
+                            let new_candidates = async_self.query_candidates(&preedit).await;
+                            // Set it to UI
+                            let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
+                            async_self
+                                .fcitx5
                                 .read()
                                 .expect("Failed to lock fcitx5 in read mode.")
-                                .table_page_up();
-                        } else {
-                            let preedit = self
-                                .last_query
+                                .ui_set_candidates(display_texts);
+                            // Set session_candidates
+                            let mut session_candidates = async_self
+                                .session_candidates
                                 .lock()
-                                .expect("Failed to lock last_query.")
-                                .clone();
-                            let async_self = self.clone();
-                            self.clone().rt.spawn(async move {
-                                // Request new candidates
-                                let new_candidates = async_self.query_candidates(&preedit).await;
-                                // Set it to UI
-                                let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                                async_self
-                                    .fcitx5
-                                    .read()
-                                    .expect("Failed to lock fcitx5 in read mode.")
-                                    .ui_set_candidates(display_texts);
-                                // Set session_candidates
-                                let mut session_candidates = async_self
-                                    .session_candidates
-                                    .lock()
-                                    .expect("Failed to lock session_candidates.");
-                                *session_candidates = Some(new_candidates);
-                            });
-                        }
+                                .expect("Failed to lock session_candidates.");
+                            *session_candidates = Some(new_candidates);
+                        });
                     }
                     true
                 } else {
