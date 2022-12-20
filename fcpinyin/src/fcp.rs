@@ -517,6 +517,7 @@ impl Fcp {
             FcitxKey::Comma
             | FcitxKey::Period
             | FcitxKey::Colon
+            | FcitxKey::Backslash
             | FcitxKey::Semicolon
             | FcitxKey::Question
             | FcitxKey::Exclam
@@ -756,6 +757,7 @@ impl ZhCnSymbolHandler {
             FcitxKey::Comma => "，".to_owned(),
             FcitxKey::Period => "。".to_owned(),
             FcitxKey::Colon => "：".to_owned(),
+            FcitxKey::Backslash => "、".to_owned(),
             FcitxKey::Semicolon => "；".to_owned(),
             FcitxKey::Question => "？".to_owned(),
             FcitxKey::Exclam => "！".to_owned(),

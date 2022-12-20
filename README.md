@@ -46,6 +46,7 @@ Note: the installation directory is specific to Arch. If you use something else,
 |，|Comma|
 |。|Period|
 |：|Colon|
+|、|Backslash|
 |；|Semicolon|
 |？|Question|
 |！|Exclam|
