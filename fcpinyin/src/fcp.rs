@@ -38,80 +38,6 @@ pub struct Candidates {
     candidates: Vec<Candidate>,
 }
 
-pub struct ZhCnSymbolHandler {
-    quote_1_open: Mutex<bool>,
-    quote_2_open: Mutex<bool>,
-}
-
-impl ZhCnSymbolHandler {
-    pub fn new() -> Self {
-        ZhCnSymbolHandler { quote_1_open: Mutex::new(true), quote_2_open: Mutex::new(true) }
-    }
-
-    pub fn handle(&self, key: FcitxKey) -> String {
-        match key {
-            FcitxKey::Comma => "，".to_owned(),
-            FcitxKey::Period => "。".to_owned(),
-            FcitxKey::Colon => "：".to_owned(),
-            FcitxKey::Semicolon => "；".to_owned(),
-            FcitxKey::Question => "？".to_owned(),
-            FcitxKey::Exclam => "！".to_owned(),
-            FcitxKey::QuoteDbl => {
-                if *self
-                    .quote_2_open
-                    .lock()
-                    .expect("Failed to lock quote_2_open")
-                {
-                    *self
-                        .quote_2_open
-                        .lock()
-                        .expect("Failed to lock quote_2_open") = false;
-                    "“".to_owned()
-                } else {
-                    *self
-                        .quote_2_open
-                        .lock()
-                        .expect("Failed to lock quote_2_open") = true;
-                    "”".to_owned()
-                }
-            }
-            FcitxKey::Apostrophe => {
-                if *self
-                    .quote_1_open
-                    .lock()
-                    .expect("Failed to lock quote_2_open")
-                {
-                    *self
-                        .quote_1_open
-                        .lock()
-                        .expect("Failed to lock quote_2_open") = false;
-                    "‘".to_owned()
-                } else {
-                    *self
-                        .quote_1_open
-                        .lock()
-                        .expect("Failed to lock quote_2_open") = true;
-                    "’".to_owned()
-                }
-            }
-            FcitxKey::AsciiCircum => "…".to_owned(),
-            FcitxKey::ParenLeft => "（".to_owned(),
-            FcitxKey::ParenRight => "）".to_owned(),
-            FcitxKey::Less => "《".to_owned(),
-            FcitxKey::Hreater => "》".to_owned(),
-            FcitxKey::Minus => "－".to_owned(),
-            FcitxKey::Underscore => "".to_owned(),
-            FcitxKey::Slash => "／".to_owned(),
-            FcitxKey::BracketLeft => "【".to_owned(),
-            FcitxKey::BracketRight => "】".to_owned(),
-            FcitxKey::BraceLeft => "｛".to_owned(),
-            FcitxKey::Dollar => "￥".to_owned(),
-            FcitxKey::Asterisk => "×".to_owned(),
-            _ => "".to_owned(),
-        }
-    }
-}
-
 pub struct Fcp {
     rt: Runtime,
     http: reqwest::Client,
@@ -762,5 +688,79 @@ impl Fcp {
         let strs_only: Vec<&'a String> =
             candidates.iter().map(|candidate| &candidate.word).collect();
         strs_only
+    }
+}
+
+pub struct ZhCnSymbolHandler {
+    quote_1_open: Mutex<bool>,
+    quote_2_open: Mutex<bool>,
+}
+
+impl ZhCnSymbolHandler {
+    pub fn new() -> Self {
+        ZhCnSymbolHandler { quote_1_open: Mutex::new(true), quote_2_open: Mutex::new(true) }
+    }
+
+    pub fn handle(&self, key: FcitxKey) -> String {
+        match key {
+            FcitxKey::Comma => "，".to_owned(),
+            FcitxKey::Period => "。".to_owned(),
+            FcitxKey::Colon => "：".to_owned(),
+            FcitxKey::Semicolon => "；".to_owned(),
+            FcitxKey::Question => "？".to_owned(),
+            FcitxKey::Exclam => "！".to_owned(),
+            FcitxKey::QuoteDbl => {
+                if *self
+                    .quote_2_open
+                    .lock()
+                    .expect("Failed to lock quote_2_open")
+                {
+                    *self
+                        .quote_2_open
+                        .lock()
+                        .expect("Failed to lock quote_2_open") = false;
+                    "“".to_owned()
+                } else {
+                    *self
+                        .quote_2_open
+                        .lock()
+                        .expect("Failed to lock quote_2_open") = true;
+                    "”".to_owned()
+                }
+            }
+            FcitxKey::Apostrophe => {
+                if *self
+                    .quote_1_open
+                    .lock()
+                    .expect("Failed to lock quote_2_open")
+                {
+                    *self
+                        .quote_1_open
+                        .lock()
+                        .expect("Failed to lock quote_2_open") = false;
+                    "‘".to_owned()
+                } else {
+                    *self
+                        .quote_1_open
+                        .lock()
+                        .expect("Failed to lock quote_2_open") = true;
+                    "’".to_owned()
+                }
+            }
+            FcitxKey::AsciiCircum => "…".to_owned(),
+            FcitxKey::ParenLeft => "（".to_owned(),
+            FcitxKey::ParenRight => "）".to_owned(),
+            FcitxKey::Less => "《".to_owned(),
+            FcitxKey::Hreater => "》".to_owned(),
+            FcitxKey::Minus => "－".to_owned(),
+            FcitxKey::Underscore => "".to_owned(),
+            FcitxKey::Slash => "／".to_owned(),
+            FcitxKey::BracketLeft => "【".to_owned(),
+            FcitxKey::BracketRight => "】".to_owned(),
+            FcitxKey::BraceLeft => "｛".to_owned(),
+            FcitxKey::Dollar => "￥".to_owned(),
+            FcitxKey::Asterisk => "×".to_owned(),
+            _ => "".to_owned(),
+        }
     }
 }
