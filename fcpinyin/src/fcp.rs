@@ -45,6 +45,7 @@ pub struct Fcp {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
+    sym: ZhCnSymbolHandler,
     fcitx5: RwLock<Fcitx5>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
@@ -76,6 +77,7 @@ impl Fcp {
             last_query: Mutex::new("".to_owned()),
             query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
+            sym: ZhCnSymbolHandler::new(),
             fcitx5: RwLock::new(Fcitx5::new()),
             in_session: false.into(),
             session_candidates: Mutex::new(None),
@@ -255,7 +257,17 @@ impl Fcp {
                         .table_page_down();
                     true
                 } else {
-                    false
+                    // Hanlde special symbol input
+                    let sym_to_commit = self.sym.handle(key);
+                    if sym_to_commit.len() == 0 {
+                        return false;
+                    }
+                    // Commit that symbol
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to lock fcitx5 in read mode.")
+                        .engine_commit_preedit(&sym_to_commit);
+                    true
                 }
             }
             FcitxKey::Right => {
@@ -502,6 +514,41 @@ impl Fcp {
                     false
                 }
             }
+            FcitxKey::Comma
+            | FcitxKey::Period
+            | FcitxKey::Colon
+            | FcitxKey::Semicolon
+            | FcitxKey::Question
+            | FcitxKey::Exclam
+            | FcitxKey::QuoteDbl
+            | FcitxKey::Apostrophe
+            | FcitxKey::AsciiCircum
+            | FcitxKey::ParenLeft
+            | FcitxKey::ParenRight
+            | FcitxKey::Less
+            | FcitxKey::Hreater
+            | FcitxKey::Underscore
+            | FcitxKey::Slash
+            | FcitxKey::BracketLeft
+            | FcitxKey::BracketRight
+            | FcitxKey::BraceLeft
+            | FcitxKey::BraceRight
+            | FcitxKey::Dollar
+            | FcitxKey::Asterisk => {
+                if !*in_session_mtx {
+                    let sym_to_commit = self.sym.handle(key);
+                    if sym_to_commit.len() == 0 {
+                        return false;
+                    }
+                    // Commit that symbol
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to lock fcitx5 in read mode.")
+                        .engine_commit_preedit(&sym_to_commit);
+                    return true;
+                }
+                false
+            }
             _ => false,
         }
     }
@@ -698,7 +745,10 @@ pub struct ZhCnSymbolHandler {
 
 impl ZhCnSymbolHandler {
     pub fn new() -> Self {
-        ZhCnSymbolHandler { quote_1_open: Mutex::new(true), quote_2_open: Mutex::new(true) }
+        ZhCnSymbolHandler {
+            quote_1_open: Mutex::new(true),
+            quote_2_open: Mutex::new(true),
+        }
     }
 
     pub fn handle(&self, key: FcitxKey) -> String {
