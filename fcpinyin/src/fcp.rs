@@ -44,6 +44,10 @@ pub struct ZhCnSymbolHandler {
 }
 
 impl ZhCnSymbolHandler {
+    pub fn new() -> Self {
+        ZhCnSymbolHandler { quote_1_open: Mutex::new(true), quote_2_open: Mutex::new(true) }
+    }
+
     pub fn handle(&self, key: FcitxKey) -> String {
         match key {
             FcitxKey::Comma => "，".to_owned(),
