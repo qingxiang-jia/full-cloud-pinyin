@@ -302,6 +302,13 @@ impl Fcp {
                         self.last_query.lock().expect("Failed to lock last_query.");
                     shared_preedit.pop();
                     let preedit = shared_preedit.clone();
+
+                    // Update preedit UI
+                    self.fcitx5
+                        .read()
+                        .expect("Failed to lock fcitx5 in read mode.")
+                        .ui_set_preedit(&preedit);
+
                     // If nothing left, we are out of session
                     if preedit.len() == 0 {
                         // Clear session_candidates
@@ -318,11 +325,6 @@ impl Fcp {
                             .ui_clear_candidates();
                         return true;
                     }
-                    // Update preedit UI
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .ui_set_preedit(&preedit);
 
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
