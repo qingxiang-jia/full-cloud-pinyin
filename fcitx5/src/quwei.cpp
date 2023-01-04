@@ -287,6 +287,9 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates)
 
 void QuweiEngine::clearCandidates()
 {
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        return; // It seems this could happen too
+    }
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
 
     if (candidateList == nullptr) {
