@@ -376,7 +376,7 @@ impl Fcp {
                         .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Set flag
-                    *self.in_session.lock().expect("Failed to lock in_session.") = false;
+                    *in_session_mtx = false;
                     // Commit preedit
                     self.fcitx5
                         .read()
@@ -387,8 +387,7 @@ impl Fcp {
                         .read()
                         .expect("Failed to lock fcitx5 in read mode.")
                         .ui_clear_candidates();
-
-                    *in_session_mtx = false;
+                    
                     true
                 } else {
                     false
@@ -408,14 +407,13 @@ impl Fcp {
                         .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Set flag
-                    *self.in_session.lock().expect("Failed to lock in_session.") = false;
+                    *in_session_mtx = false;
                     // Update UI
                     self.fcitx5
                         .read()
                         .expect("Failed to lock fcitx5 in read mode.")
                         .ui_clear_candidates();
 
-                    *in_session_mtx = false;
                     true
                 } else {
                     false
