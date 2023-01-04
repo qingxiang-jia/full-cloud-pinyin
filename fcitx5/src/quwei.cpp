@@ -289,6 +289,9 @@ void QuweiEngine::clearCandidates()
 {
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
 
+    if (candidateList == nullptr) {
+        return; // Other operations may have already cause it to be null
+    }
     candidateList->clear();
 
     threadSafeUiUpdate();
