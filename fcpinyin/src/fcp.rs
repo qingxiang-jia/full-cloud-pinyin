@@ -1,6 +1,6 @@
 use std::{
     path::PathBuf,
-    sync::{Arc, Mutex, RwLock},
+    sync::{Arc, Mutex},
 };
 
 use fcitx5::{Fcitx5FnPtrs, FcitxKey};
@@ -46,7 +46,7 @@ pub struct Fcp {
     query_depth: Mutex<QueryDepth>,
     re: Regex,
     sym: ZhCnSymbolHandler,
-    fcitx5: RwLock<Fcitx5>,
+    fcitx5: Fcitx5,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
@@ -78,7 +78,7 @@ impl Fcp {
             query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             sym: ZhCnSymbolHandler::new(),
-            fcitx5: RwLock::new(Fcitx5::new()),
+            fcitx5: Fcitx5::new(),
             in_session: false.into(),
             session_candidates: Mutex::new(None),
             table_size: 5,
@@ -86,10 +86,7 @@ impl Fcp {
     }
 
     pub fn set_fcitx5(&self, fn_ptrs: Fcitx5FnPtrs) {
-        self.fcitx5
-            .write()
-            .expect("Failed to lock fcitx5 in write mode.")
-            .set_fn_ptrs(fn_ptrs);
+        self.fcitx5.set_fn_ptrs(fn_ptrs);
     }
 
     // Returns whether the key has been handled
@@ -143,10 +140,7 @@ impl Fcp {
                             .expect("Failed to lock session_candidates.");
                         *session_candidates = None;
                         // Commit candidate
-                        self.fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .engine_commit(idx as usize);
+                        self.fcitx5.engine_commit(idx as usize);
                         if shared_preedit.is_empty() {
                             *in_session_mtx = false;
                         } else {
@@ -159,18 +153,9 @@ impl Fcp {
                                 let new_candidates = async_self.query_candidates(&preedit).await;
                                 // Make CString array
                                 let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                                async_self
-                                    .clone()
-                                    .fcitx5
-                                    .read()
-                                    .expect("Failed to lock fcitx5 in read mode.")
-                                    .ui_set_candidates(display_texts);
+                                async_self.clone().fcitx5.ui_set_candidates(display_texts);
                                 // Reset the lookup table page to the first
-                                async_self
-                                    .fcitx5
-                                    .read()
-                                    .expect("Failed to lock fcitx5 in read mode.")
-                                    .table_set_page(0);
+                                async_self.fcitx5.table_set_page(0);
                                 // Set session_candidates
                                 let mut session_candidates = async_self
                                     .session_candidates
@@ -201,10 +186,7 @@ impl Fcp {
                         .expect("Failed to lock session_candidates.");
                     *session_candidates = None;
                     // Select candidate
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .engine_commit_candidate_by_fixed_key();
+                    self.fcitx5.engine_commit_candidate_by_fixed_key();
                     *in_session_mtx = false;
                     true
                 } else {
@@ -214,16 +196,8 @@ impl Fcp {
             FcitxKey::Equal => {
                 // Go to the next page by keying in the next page keys
                 if *in_session_mtx {
-                    if self
-                        .fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .table_can_page_up()
-                    {
-                        self.fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .table_page_up();
+                    if self.fcitx5.table_can_page_up() {
+                        self.fcitx5.table_page_up();
                     } else {
                         let preedit = self
                             .last_query
@@ -236,11 +210,7 @@ impl Fcp {
                             let new_candidates = async_self.query_candidates(&preedit).await;
                             // Set it to UI
                             let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                            async_self
-                                .fcitx5
-                                .read()
-                                .expect("Failed to lock fcitx5 in read mode.")
-                                .ui_set_candidates(display_texts);
+                            async_self.fcitx5.ui_set_candidates(display_texts);
                             // Set session_candidates
                             let mut session_candidates = async_self
                                 .session_candidates
@@ -257,10 +227,7 @@ impl Fcp {
             FcitxKey::Minus => {
                 // Go to the previous page by previous page keys
                 if *in_session_mtx {
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .table_page_down();
+                    self.fcitx5.table_page_down();
                     true
                 } else {
                     // Hanlde special symbol input
@@ -269,20 +236,14 @@ impl Fcp {
                         return false;
                     }
                     // Commit that symbol
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .engine_commit_preedit(&sym_to_commit);
+                    self.fcitx5.engine_commit_preedit(&sym_to_commit);
                     true
                 }
             }
             FcitxKey::Right => {
                 // Go to the next candidate by ->
                 if *in_session_mtx {
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .table_next();
+                    self.fcitx5.table_next();
                     true
                 } else {
                     false
@@ -291,10 +252,7 @@ impl Fcp {
             FcitxKey::Left => {
                 // Go to the previous candidate by <-
                 if *in_session_mtx {
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .table_prev();
+                    self.fcitx5.table_prev();
                     true
                 } else {
                     false
@@ -310,10 +268,7 @@ impl Fcp {
                     let preedit = shared_preedit.clone();
 
                     // Update preedit UI
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .ui_set_preedit(&preedit);
+                    self.fcitx5.ui_set_preedit(&preedit);
 
                     // If nothing left, we are out of session
                     if preedit.len() == 0 {
@@ -325,10 +280,7 @@ impl Fcp {
                         *session_candidates = None;
                         *in_session_mtx = false;
                         // Update UI
-                        self.fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .ui_clear_candidates();
+                        self.fcitx5.ui_clear_candidates();
                         return true;
                     }
 
@@ -338,17 +290,9 @@ impl Fcp {
                         let new_candidates = async_self.query_candidates(&preedit).await;
                         // Set candidates to UI
                         let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                        async_self
-                            .fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .ui_set_candidates(display_texts);
+                        async_self.fcitx5.ui_set_candidates(display_texts);
                         // Reset the lookup table page to the first
-                        async_self
-                            .fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .table_set_page(0);
+                        async_self.fcitx5.table_set_page(0);
                         // Clear session_candidates
                         let mut session_candidates = async_self
                             .session_candidates
@@ -378,16 +322,10 @@ impl Fcp {
                     // Set flag
                     *in_session_mtx = false;
                     // Commit preedit
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .engine_commit_preedit(&preedit);
+                    self.fcitx5.engine_commit_preedit(&preedit);
                     // Update UI
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .ui_clear_candidates();
-                    
+                    self.fcitx5.ui_clear_candidates();
+
                     true
                 } else {
                     false
@@ -409,10 +347,7 @@ impl Fcp {
                     // Set flag
                     *in_session_mtx = false;
                     // Update UI
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .ui_clear_candidates();
+                    self.fcitx5.ui_clear_candidates();
 
                     true
                 } else {
@@ -486,10 +421,7 @@ impl Fcp {
                     shared_preedit.push(user_input);
                     let preedit = shared_preedit.clone();
                     // Update preedit UI
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .ui_set_preedit(&preedit);
+                    self.fcitx5.ui_set_preedit(&preedit);
 
                     let async_self = self.clone();
                     self.clone().rt.spawn(async move {
@@ -497,17 +429,9 @@ impl Fcp {
                         let new_candidates = async_self.query_candidates(&preedit).await;
                         // Update candidates to UI
                         let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
-                        async_self
-                            .fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .ui_set_candidates(display_texts);
+                        async_self.fcitx5.ui_set_candidates(display_texts);
                         // Reset the lookup table page to the first
-                        async_self
-                            .fcitx5
-                            .read()
-                            .expect("Failed to lock fcitx5 in read mode.")
-                            .table_set_page(0);
+                        async_self.fcitx5.table_set_page(0);
                         // Set session_candidates
                         let mut session_candidates = async_self
                             .session_candidates
@@ -554,10 +478,7 @@ impl Fcp {
                         return false;
                     }
                     // Commit that symbol
-                    self.fcitx5
-                        .read()
-                        .expect("Failed to lock fcitx5 in read mode.")
-                        .engine_commit_preedit(&sym_to_commit);
+                    self.fcitx5.engine_commit_preedit(&sym_to_commit);
                     return true;
                 }
                 false

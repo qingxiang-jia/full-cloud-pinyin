@@ -6,6 +6,8 @@ pub struct Fcitx5 {
     fn_ptrs: Mutex<Option<Fcitx5FnPtrs>>,
 }
 
+unsafe impl Sync for Fcitx5 {} // Safe to share between threads
+
 impl Fcitx5 {
     pub fn new() -> Self {
         Fcitx5 {
