@@ -46,6 +46,10 @@ impl State {
         }
     }
 
+    pub fn last_query_mtx(&self) -> MutexGuard<String> {
+        self.last_query.lock().expect("Failed to lock last_query in last_query_mtx().")
+    }
+
     pub fn clone_last_query(&self) -> String {
         self.last_query.lock().expect("Failed to lock last_query in clone_last_query().").clone() // Unlock immediately
     }
