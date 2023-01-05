@@ -54,7 +54,7 @@ impl State {
         self.last_query.lock().expect("Failed to lock last_query in clone_last_query().").clone() // Unlock immediately
     }
 
-    pub fn replace_last_query(&self, query: String) {
+    pub fn set_last_query(&self, query: String) {
         let mut lq = self.last_query.lock().expect("Failed to lock last_query in replace_last_query().");
         *lq = query;
     }
@@ -63,7 +63,7 @@ impl State {
         *self.query_depth.lock().expect("Failed to lock query_depth in clone_query_depth().") // Unlock immediately
     }
 
-    pub fn replace_query_depth(&self, depth: QueryDepth) {
+    pub fn set_query_depth(&self, depth: QueryDepth) {
         *self.query_depth.lock().expect("Failed to lock query_depth in replace_query_depth().") = depth;
     }
 
@@ -71,7 +71,7 @@ impl State {
         *self.in_session.lock().expect("Failed to lock query_depth in clone_in_session().") // Unlock immediately
     }
 
-    pub fn replace_in_session(&self, is_in_session: bool) {
+    pub fn set_in_session(&self, is_in_session: bool) {
         *self.in_session.lock().expect("Failed to lock query_depth in replace_in_session().") = is_in_session;
     }
 
@@ -79,7 +79,7 @@ impl State {
         self.session_candidates.lock().expect("Failed to lock session_candidate in session_candidates().")
     }
 
-    pub fn replace_session_candidates(&self, candidates: Vec<Candidate>) {
+    pub fn set_session_candidates(&self, candidates: Vec<Candidate>) {
         let mut mtx = self.session_candidates.lock().expect("Failed to lock session_candidate in replace_session_candidates().");
         *mtx = Some(candidates);
     }
