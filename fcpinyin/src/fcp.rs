@@ -1,6 +1,6 @@
 use std::{
     path::PathBuf,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, MutexGuard},
 };
 
 use fcitx5::{Fcitx5FnPtrs, FcitxKey};
@@ -29,7 +29,7 @@ pub struct State {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     in_session: Mutex<bool>,
-    session_candidates: Mutex<Vec<Candidate>>,
+    session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
 }
 
@@ -41,9 +41,43 @@ impl State {
             last_query: Mutex::new("".to_owned()),
             query_depth: Mutex::new(QueryDepth::D1),
             in_session: Mutex::new(false),
-            session_candidates: Mutex::new(vec![]),
+            session_candidates: Mutex::new(None),
             table_size: 5,
         }
+    }
+
+    pub fn clone_last_query(&self) -> String {
+        self.last_query.lock().expect("Failed to lock last_query in clone_last_query().").clone() // Unlock immediately
+    }
+
+    pub fn replace_last_query(&self, query: String) {
+        let mut lq = self.last_query.lock().expect("Failed to lock last_query in replace_last_query().");
+        *lq = query;
+    }
+
+    pub fn clone_query_depth(&self) -> QueryDepth {
+        *self.query_depth.lock().expect("Failed to lock query_depth in clone_query_depth().") // Unlock immediately
+    }
+
+    pub fn replace_query_depth(&self, depth: QueryDepth) {
+        *self.query_depth.lock().expect("Failed to lock query_depth in replace_query_depth().") = depth;
+    }
+
+    pub fn clone_in_session(&self) -> bool {
+        *self.in_session.lock().expect("Failed to lock query_depth in clone_in_session().") // Unlock immediately
+    }
+
+    pub fn replace_in_session(&self, is_in_session: bool) {
+        *self.in_session.lock().expect("Failed to lock query_depth in replace_in_session().") = is_in_session;
+    }
+
+    pub fn session_candidates(&self) -> MutexGuard<Option<Vec<Candidate>>> {
+        self.session_candidates.lock().expect("Failed to lock session_candidate in session_candidates().")
+    }
+
+    pub fn replace_session_candidates(&self, candidates: Vec<Candidate>) {
+        let mut mtx = self.session_candidates.lock().expect("Failed to lock session_candidate in replace_session_candidates().");
+        *mtx = Some(candidates);
     }
 }
 
