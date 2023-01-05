@@ -102,7 +102,6 @@ pub struct Fcp {
     rt: Runtime,
     http: reqwest::Client,
     cache: sled::Db,
-    last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     re: Regex,
     sym: ZhCnSymbolHandler,
@@ -110,6 +109,7 @@ pub struct Fcp {
     in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
+    state: State
 }
 
 impl Fcp {
@@ -134,7 +134,6 @@ impl Fcp {
             rt: Runtime::new().expect("Failed to initialize Tokio runtime."),
             http: reqwest::Client::new(),
             cache: db,
-            last_query: Mutex::new("".to_owned()),
             query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             sym: ZhCnSymbolHandler::new(),
@@ -142,6 +141,7 @@ impl Fcp {
             in_session: false.into(),
             session_candidates: Mutex::new(None),
             table_size: 5,
+            state: State::new(),
         }
     }
 
@@ -181,7 +181,7 @@ impl Fcp {
                         drop(current_candidates_mtx);
                         // Update preedit
                         let mut shared_preedit =
-                            self.last_query.lock().expect("Failed to lock last_query.");
+                            self.state.last_query_mtx();
                         if matched_len.is_none() {
                             // Full match (by Google Input Tools' convention)
                             shared_preedit.clear();
@@ -237,7 +237,7 @@ impl Fcp {
                 if *in_session_mtx {
                     // Clear preedit
                     let mut shared_preedit =
-                        self.last_query.lock().expect("Failed to lock last_query.");
+                        self.state.last_query_mtx();
                     shared_preedit.clear();
                     // Clear session_candidates
                     let mut session_candidates = self
@@ -259,11 +259,7 @@ impl Fcp {
                     if self.fcitx5.table_can_page_up() {
                         self.fcitx5.table_page_up();
                     } else {
-                        let preedit = self
-                            .last_query
-                            .lock()
-                            .expect("Failed to lock last_query.")
-                            .clone();
+                        let preedit = self.state.clone_last_query();
                         let async_self = self.clone();
                         self.clone().rt.spawn(async move {
                             // Request new candidates
@@ -322,8 +318,7 @@ impl Fcp {
                 // Remove one character from preedit
                 if *in_session_mtx {
                     // Update preedit
-                    let mut shared_preedit =
-                        self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit = self.state.last_query_mtx();
                     shared_preedit.pop();
                     let preedit = shared_preedit.clone();
 
@@ -369,8 +364,7 @@ impl Fcp {
                 // Commit buffer as is (i.e., not Chinese)
                 if *in_session_mtx {
                     // Clear preedit
-                    let mut shared_preedit =
-                        self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit = self.state.last_query_mtx();
                     let preedit = shared_preedit.clone();
                     shared_preedit.clear();
                     // Clear session_candidates
@@ -395,8 +389,7 @@ impl Fcp {
                 // Terminate this input session
                 if *in_session_mtx {
                     // Clear preedit
-                    let mut shared_preedit =
-                        self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit = self.state.last_query_mtx();
                     shared_preedit.clear();
                     // Clear session_candidates
                     let mut session_candidates = self
@@ -476,8 +469,7 @@ impl Fcp {
                     let user_input =
                         char::from_u32(val).expect("The user input cannot be converted to a char.");
                     // Update preedit
-                    let mut shared_preedit =
-                        self.last_query.lock().expect("Failed to lock last_query.");
+                    let mut shared_preedit = self.state.last_query_mtx();
                     shared_preedit.push(user_input);
                     let preedit = shared_preedit.clone();
                     // Update preedit UI
@@ -571,7 +563,7 @@ impl Fcp {
     }
 
     fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
-        let mut last_query = self.last_query.lock().expect("Failed to lock last_query.");
+        let mut last_query = self.state.last_query_mtx();
         let mut depth = self
             .query_depth
             .lock()
