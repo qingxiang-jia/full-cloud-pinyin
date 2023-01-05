@@ -25,6 +25,26 @@ pub enum QueryDepth {
     D8 = 1281,
 }
 
+pub struct State {
+    last_query: Mutex<String>,
+    query_depth: Mutex<QueryDepth>,
+    in_session: Mutex<bool>,
+    session_candidates: Mutex<Vec<Candidate>>,
+    table_size: u8,
+}
+
+impl State {
+    pub fn new() -> Self {
+        State {
+            last_query: Mutex::new("".to_owned()),
+            query_depth: Mutex::new(QueryDepth::D1),
+            in_session: Mutex::new(false),
+            session_candidates: Mutex::new(vec![]),
+            table_size: 5,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Candidate {
     pub word: String,
