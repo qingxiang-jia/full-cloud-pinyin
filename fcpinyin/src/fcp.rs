@@ -75,7 +75,7 @@ impl State {
         *self.in_session.lock().expect("Failed to lock query_depth in replace_in_session().") = is_in_session;
     }
 
-    pub fn session_candidates(&self) -> MutexGuard<Option<Vec<Candidate>>> {
+    pub fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
         self.session_candidates.lock().expect("Failed to lock session_candidate in session_candidates().")
     }
 
