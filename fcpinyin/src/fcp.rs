@@ -33,6 +33,8 @@ pub struct State {
     table_size: u8,
 }
 
+unsafe impl Sync for State {} // State is safe to share between threads
+
 impl State {
     pub fn new() -> Self {
         State {
