@@ -54,18 +54,10 @@ impl State {
         self.last_query.lock().expect("Failed to lock last_query in clone_last_query().").clone() // Unlock immediately
     }
 
-    pub fn set_last_query(&self, query: String) {
-        let mut lq = self.last_query.lock().expect("Failed to lock last_query in replace_last_query().");
-        *lq = query;
+    pub fn query_depth_mtx(&self) -> MutexGuard<QueryDepth> {
+        self.query_depth.lock().expect("Failed to lock query_depth in query_depth_mtx().")
     }
 
-    pub fn clone_query_depth(&self) -> QueryDepth {
-        *self.query_depth.lock().expect("Failed to lock query_depth in clone_query_depth().") // Unlock immediately
-    }
-
-    pub fn set_query_depth(&self, depth: QueryDepth) {
-        *self.query_depth.lock().expect("Failed to lock query_depth in replace_query_depth().") = depth;
-    }
 
     pub fn clone_in_session(&self) -> bool {
         *self.in_session.lock().expect("Failed to lock query_depth in clone_in_session().") // Unlock immediately
