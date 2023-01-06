@@ -439,6 +439,9 @@ impl Fcp {
                         // Update candidates to UI
                         let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
                         async_self.fcitx5.ui_set_candidates(display_texts);
+                        // Update preedit UI again (with segmentation)
+                        let preedit = &new_candidates[0].annotation;
+                        async_self.fcitx5.ui_set_preedit(preedit);
                         // Reset the lookup table page to the first
                         async_self.fcitx5.table_set_page(0);
                         // Set session_candidates
