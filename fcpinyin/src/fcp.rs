@@ -47,23 +47,34 @@ impl State {
     }
 
     pub fn last_query_mtx(&self) -> MutexGuard<String> {
-        self.last_query.lock().expect("Failed to lock last_query in last_query_mtx().")
+        self.last_query
+            .lock()
+            .expect("Failed to lock last_query in last_query_mtx().")
     }
 
     pub fn clone_last_query(&self) -> String {
-        self.last_query.lock().expect("Failed to lock last_query in clone_last_query().").clone() // Unlock immediately
+        self.last_query
+            .lock()
+            .expect("Failed to lock last_query in clone_last_query().")
+            .clone() // Unlock immediately
     }
 
     pub fn query_depth_mtx(&self) -> MutexGuard<QueryDepth> {
-        self.query_depth.lock().expect("Failed to lock query_depth in query_depth_mtx().")
+        self.query_depth
+            .lock()
+            .expect("Failed to lock query_depth in query_depth_mtx().")
     }
 
     pub fn in_session_mtx(&self) -> MutexGuard<bool> {
-        self.in_session.lock().expect("Failed to lock in_session in in_session_mtx().")
+        self.in_session
+            .lock()
+            .expect("Failed to lock in_session in in_session_mtx().")
     }
 
     pub fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
-        self.session_candidates.lock().expect("Failed to lock session_candidate in session_candidates().")
+        self.session_candidates
+            .lock()
+            .expect("Failed to lock session_candidate in session_candidates().")
     }
 }
 
@@ -87,7 +98,7 @@ pub struct Fcp {
     re: Regex,
     sym: ZhCnSymbolHandler,
     fcitx5: Fcitx5,
-    state: State
+    state: State,
 }
 
 impl Fcp {
@@ -151,8 +162,7 @@ impl Fcp {
                         // Drop the mutex since later we will lock again to avoid deadlock
                         drop(current_candidates_mtx);
                         // Update preedit
-                        let mut shared_preedit =
-                            self.state.last_query_mtx();
+                        let mut shared_preedit = self.state.last_query_mtx();
                         if matched_len.is_none() {
                             // Full match (by Google Input Tools' convention)
                             shared_preedit.clear();
@@ -185,7 +195,8 @@ impl Fcp {
                                 // Reset the lookup table page to the first
                                 async_self.fcitx5.table_set_page(0);
                                 // Set session_candidates
-                                let mut session_candidates = async_self.state.session_candidates_mtx();
+                                let mut session_candidates =
+                                    async_self.state.session_candidates_mtx();
                                 *session_candidates = Some(new_candidates);
                             });
                         }
@@ -201,8 +212,7 @@ impl Fcp {
                 // Select a candidate by Space key
                 if *in_session_mtx {
                     // Clear preedit
-                    let mut shared_preedit =
-                        self.state.last_query_mtx();
+                    let mut shared_preedit = self.state.last_query_mtx();
                     shared_preedit.clear();
                     // Clear session_candidates
                     let mut session_candidates = self.state.session_candidates_mtx();
