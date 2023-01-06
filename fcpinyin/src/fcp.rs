@@ -92,7 +92,6 @@ pub struct Fcp {
     re: Regex,
     sym: ZhCnSymbolHandler,
     fcitx5: Fcitx5,
-    table_size: u8,
     state: State
 }
 
@@ -121,7 +120,6 @@ impl Fcp {
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             sym: ZhCnSymbolHandler::new(),
             fcitx5: Fcitx5::new(),
-            table_size: 5,
             state: State::new(),
         }
     }
@@ -148,7 +146,7 @@ impl Fcp {
                 // Select a candidate by keying in 0-9
                 if *in_session_mtx {
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
-                    if idx < self.table_size {
+                    if idx < self.state.table_size {
                         // Get matched length of this selected candidate
                         let current_candidates_mtx = self.state.session_candidates_mtx();
                         let current_candidates = current_candidates_mtx
