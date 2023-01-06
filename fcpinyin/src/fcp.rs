@@ -94,7 +94,6 @@ pub struct Fcp {
     rt: Runtime,
     http: reqwest::Client,
     cache: sled::Db,
-    query_depth: Mutex<QueryDepth>,
     re: Regex,
     sym: ZhCnSymbolHandler,
     fcitx5: Fcitx5,
@@ -126,7 +125,6 @@ impl Fcp {
             rt: Runtime::new().expect("Failed to initialize Tokio runtime."),
             http: reqwest::Client::new(),
             cache: db,
-            query_depth: Mutex::new(QueryDepth::D1),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             sym: ZhCnSymbolHandler::new(),
             fcitx5: Fcitx5::new(),
@@ -556,10 +554,7 @@ impl Fcp {
 
     fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.state.last_query_mtx();
-        let mut depth = self
-            .query_depth
-            .lock()
-            .expect("Failed to lock query_depth.");
+        let mut depth = self.state.query_depth_mtx();
         if last_query.eq(preedit) {
             match *depth {
                 QueryDepth::D1 => *depth = QueryDepth::D2,
