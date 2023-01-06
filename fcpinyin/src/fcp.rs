@@ -92,7 +92,6 @@ pub struct Fcp {
     re: Regex,
     sym: ZhCnSymbolHandler,
     fcitx5: Fcitx5,
-    session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
     state: State
 }
@@ -122,7 +121,6 @@ impl Fcp {
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             sym: ZhCnSymbolHandler::new(),
             fcitx5: Fcitx5::new(),
-            session_candidates: Mutex::new(None),
             table_size: 5,
             state: State::new(),
         }
@@ -152,10 +150,7 @@ impl Fcp {
                     let idx: u8 = (key as u32 - FcitxKey::Num1 as u32) as u8;
                     if idx < self.table_size {
                         // Get matched length of this selected candidate
-                        let current_candidates_mtx = self
-                            .session_candidates
-                            .lock()
-                            .expect("Failed to lock session_candidates.");
+                        let current_candidates_mtx = self.state.session_candidates_mtx();
                         let current_candidates = current_candidates_mtx
                             .as_ref()
                             .expect("session_candidate is None.");
@@ -177,10 +172,7 @@ impl Fcp {
                             }
                         }
                         // Clear session_candidates
-                        let mut session_candidates = self
-                            .session_candidates
-                            .lock()
-                            .expect("Failed to lock session_candidates.");
+                        let mut session_candidates = self.state.session_candidates_mtx();
                         *session_candidates = None;
                         // Commit candidate
                         self.fcitx5.engine_commit(idx as usize);
@@ -200,10 +192,7 @@ impl Fcp {
                                 // Reset the lookup table page to the first
                                 async_self.fcitx5.table_set_page(0);
                                 // Set session_candidates
-                                let mut session_candidates = async_self
-                                    .session_candidates
-                                    .lock()
-                                    .expect("Failed to lock session_candidates.");
+                                let mut session_candidates = async_self.state.session_candidates_mtx();
                                 *session_candidates = Some(new_candidates);
                             });
                         }
@@ -223,10 +212,7 @@ impl Fcp {
                         self.state.last_query_mtx();
                     shared_preedit.clear();
                     // Clear session_candidates
-                    let mut session_candidates = self
-                        .session_candidates
-                        .lock()
-                        .expect("Failed to lock session_candidates.");
+                    let mut session_candidates = self.state.session_candidates_mtx();
                     *session_candidates = None;
                     // Select candidate
                     self.fcitx5.engine_commit_candidate_by_fixed_key();
@@ -251,10 +237,7 @@ impl Fcp {
                             let display_texts = Fcp::candidate_vec_to_str_vec(&new_candidates);
                             async_self.fcitx5.ui_set_candidates(display_texts);
                             // Set session_candidates
-                            let mut session_candidates = async_self
-                                .session_candidates
-                                .lock()
-                                .expect("Failed to lock session_candidates.");
+                            let mut session_candidates = async_self.state.session_candidates_mtx();
                             *session_candidates = Some(new_candidates);
                         });
                     }
@@ -311,10 +294,7 @@ impl Fcp {
                     // If nothing left, we are out of session
                     if preedit.len() == 0 {
                         // Clear session_candidates
-                        let mut session_candidates = self
-                            .session_candidates
-                            .lock()
-                            .expect("Failed to lock session_candidates.");
+                        let mut session_candidates = self.state.session_candidates_mtx();
                         *session_candidates = None;
                         *in_session_mtx = false;
                         // Update UI
@@ -332,10 +312,7 @@ impl Fcp {
                         // Reset the lookup table page to the first
                         async_self.fcitx5.table_set_page(0);
                         // Clear session_candidates
-                        let mut session_candidates = async_self
-                            .session_candidates
-                            .lock()
-                            .expect("Failed to lock session_candidates.");
+                        let mut session_candidates = async_self.state.session_candidates_mtx();
                         *session_candidates = Some(new_candidates);
                     });
                     true
@@ -351,10 +328,7 @@ impl Fcp {
                     let preedit = shared_preedit.clone();
                     shared_preedit.clear();
                     // Clear session_candidates
-                    let mut session_candidates = self
-                        .session_candidates
-                        .lock()
-                        .expect("Failed to lock session_candidates.");
+                    let mut session_candidates = self.state.session_candidates_mtx();
                     *session_candidates = None;
                     // Set flag
                     *in_session_mtx = false;
@@ -375,10 +349,7 @@ impl Fcp {
                     let mut shared_preedit = self.state.last_query_mtx();
                     shared_preedit.clear();
                     // Clear session_candidates
-                    let mut session_candidates = self
-                        .session_candidates
-                        .lock()
-                        .expect("Failed to lock session_candidates.");
+                    let mut session_candidates = self.state.session_candidates_mtx();
                     *session_candidates = None;
                     // Set flag
                     *in_session_mtx = false;
@@ -468,10 +439,7 @@ impl Fcp {
                         // Reset the lookup table page to the first
                         async_self.fcitx5.table_set_page(0);
                         // Set session_candidates
-                        let mut session_candidates = async_self
-                            .session_candidates
-                            .lock()
-                            .expect("Failed to lock session_candidates.");
+                        let mut session_candidates = async_self.state.session_candidates_mtx();
                         *session_candidates = Some(new_candidates);
                         // Set flag
                         let mut is_in_session = async_self.state.in_session_mtx();
