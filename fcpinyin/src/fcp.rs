@@ -65,11 +65,6 @@ impl State {
     pub fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
         self.session_candidates.lock().expect("Failed to lock session_candidate in session_candidates().")
     }
-
-    pub fn set_session_candidates(&self, candidates: Vec<Candidate>) {
-        let mut mtx = self.session_candidates.lock().expect("Failed to lock session_candidate in replace_session_candidates().");
-        *mtx = Some(candidates);
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
