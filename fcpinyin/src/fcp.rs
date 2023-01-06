@@ -58,13 +58,8 @@ impl State {
         self.query_depth.lock().expect("Failed to lock query_depth in query_depth_mtx().")
     }
 
-
-    pub fn clone_in_session(&self) -> bool {
-        *self.in_session.lock().expect("Failed to lock query_depth in clone_in_session().") // Unlock immediately
-    }
-
-    pub fn set_in_session(&self, is_in_session: bool) {
-        *self.in_session.lock().expect("Failed to lock query_depth in replace_in_session().") = is_in_session;
+    pub fn in_session_mtx(&self) -> MutexGuard<bool> {
+        self.in_session.lock().expect("Failed to lock in_session in in_session_mtx().")
     }
 
     pub fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
