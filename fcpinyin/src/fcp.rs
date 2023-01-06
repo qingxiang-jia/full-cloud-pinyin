@@ -92,7 +92,6 @@ pub struct Fcp {
     re: Regex,
     sym: ZhCnSymbolHandler,
     fcitx5: Fcitx5,
-    in_session: Mutex<bool>,
     session_candidates: Mutex<Option<Vec<Candidate>>>,
     table_size: u8,
     state: State
@@ -123,7 +122,6 @@ impl Fcp {
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             sym: ZhCnSymbolHandler::new(),
             fcitx5: Fcitx5::new(),
-            in_session: false.into(),
             session_candidates: Mutex::new(None),
             table_size: 5,
             state: State::new(),
@@ -136,7 +134,7 @@ impl Fcp {
 
     // Returns whether the key has been handled
     pub fn on_key_press(self: Arc<Fcp>, key: FcitxKey) -> bool {
-        let mut in_session_mtx = self.in_session.lock().expect("Failed to lock in_session.");
+        let mut in_session_mtx = self.state.in_session_mtx();
 
         match key {
             FcitxKey::Num0
@@ -476,10 +474,7 @@ impl Fcp {
                             .expect("Failed to lock session_candidates.");
                         *session_candidates = Some(new_candidates);
                         // Set flag
-                        let mut is_in_session = async_self
-                            .in_session
-                            .lock()
-                            .expect("Failed to lock in_session.");
+                        let mut is_in_session = async_self.state.in_session_mtx();
                         *is_in_session = true;
                     });
                     true
