@@ -19,17 +19,6 @@ impl Fcitx5 {
         *(self.fn_ptrs).lock().expect("Failed to lock fn_ptrs.") = Some(from_cpp);
     }
 
-    pub fn ui_set_loading(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
-        unsafe {
-            (fn_ptr_mtx
-                .as_ref()
-                .expect("fn_ptrs is None.")
-                .ui
-                .set_loading)();
-        }
-    }
-
     pub fn ui_set_candidates(&self, display_texts: Vec<&String>) {
         let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
