@@ -48,7 +48,7 @@ public:
     void setCandidates(std::vector<std::string> candidates);
     void appendCandidates(std::vector<std::string> candidates);
     void clearCandidates();
-    void threadSafeUiUpdate();
+    void uiUpdate();
 
 private:
     FcpOpaque* fcpOpaque;

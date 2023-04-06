@@ -207,7 +207,7 @@ void QuweiEngine::commitCandidateByIndex(const int idx)
     ic_->commitString(candidate.toStringForCommit());
     clearCandidates();
     setPreedit("");
-    threadSafeUiUpdate();
+    uiUpdate();
     
     std::cout << "end commitCandidateByIndex\n";
 }
@@ -255,7 +255,7 @@ void QuweiEngine::nextPage()
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
         if (pageable->hasNext()) {
             pageable->next();
-            threadSafeUiUpdate();
+            uiUpdate();
         }
     }
     
@@ -268,7 +268,7 @@ void QuweiEngine::prevPage()
     
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable && pageable->hasPrev()) {
         pageable->prev();
-        threadSafeUiUpdate();
+        uiUpdate();
     }
     
     std::cout << "end prevPage\n";
@@ -280,7 +280,7 @@ void QuweiEngine::nextCandidate()
     
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->nextCandidate();
-        threadSafeUiUpdate();
+        uiUpdate();
     }
     
     std::cout << "end nextCandidate\n";
@@ -292,7 +292,7 @@ void QuweiEngine::prevCanddiate()
     
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->prevCandidate();
-        threadSafeUiUpdate();
+        uiUpdate();
     }
     
     std::cout << "end prevCanddiate\n";
@@ -304,7 +304,7 @@ void QuweiEngine::setPage(int idx)
     
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
         pageable->setPage(idx);
-        threadSafeUiUpdate();
+        uiUpdate();
     }
     
     std::cout << "end setPage\n";
@@ -363,7 +363,7 @@ void QuweiEngine::setLoading()
     }
     candidateList->setGlobalCursorIndex(0);
 
-    threadSafeUiUpdate();
+    uiUpdate();
     
     std::cout << "end setLoading\n";
 }
@@ -402,7 +402,7 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates)
         candidateList->append(std::move(candidateWord));
     }
 
-    threadSafeUiUpdate();
+    uiUpdate();
 
     std::cout << "end setCandidates\n";
 }
@@ -423,12 +423,12 @@ void QuweiEngine::clearCandidates()
     }
     candidateList->clear();
 
-    threadSafeUiUpdate();
+    uiUpdate();
  
     std::cout << "end clearCandidates\n";
 }
 
-void QuweiEngine::threadSafeUiUpdate()
+void QuweiEngine::uiUpdate()
 {
     std::cout << "Begin threadSafeUiUpdate\n";
     
@@ -443,7 +443,7 @@ void QuweiEngine::reset()
     
     ic_->inputPanel().reset();
     setPreedit("");
-    threadSafeUiUpdate();
+    uiUpdate();
     
     std::cout << "end QuweiEngine::reset\n";
 }
