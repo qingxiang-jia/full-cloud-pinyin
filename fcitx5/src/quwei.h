@@ -27,7 +27,6 @@ class QuweiEngine;
 class QuweiEngine : public fcitx::InputMethodEngineV2 {
 public:
     QuweiEngine(fcitx::Instance* instance);
-    
 
     void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
