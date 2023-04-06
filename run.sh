@@ -6,13 +6,6 @@ if [ $# == 0 ]; then
 fi
 
 # If we specify cdylib or staticlib in Cargo.toml, the main.rs can't properly reference contents in lib.rs.
-if [ $1 == "gen-lib" ]; then
-    cd ./fcpinyin
-    cargo -Z unstable-options rustc --lib --release --crate-type staticlib -- --print native-static-libs
-    cd ../
-    exit 0
-fi
-
 if [ $1 == "rc" ]; then
     cd ./c-based-ffi
     cargo -Z unstable-options rustc --lib --release --crate-type staticlib -- --print native-static-libs
@@ -22,16 +15,6 @@ fi
 
 if [ $1 == "init" ]; then
     cd fcitx5
-    rm -rf ./build
-    mkdir build
-    cd ./build
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
-    cd ../../
-    exit 0
-fi
-
-if [ $1 == "ci" ]; then
-    cd ./c-based-ffi
     rm -rf ./build
     mkdir build
     cd ./build
