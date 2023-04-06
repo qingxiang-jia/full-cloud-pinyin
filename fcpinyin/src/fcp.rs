@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
 use tokio::runtime::Runtime;
+use tokio::runtime::Builder;
 
 use crate::fcitx5::{self, Fcitx5};
 
@@ -120,7 +121,7 @@ impl Fcp {
         };
 
         Self {
-            rt: Runtime::new().expect("Failed to initialize Tokio runtime."),
+            rt: Builder::new_current_thread().build().expect("Failed to initialize Tokio runtime."),
             http: reqwest::Client::new(),
             cache: db,
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
