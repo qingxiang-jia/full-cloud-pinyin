@@ -9,8 +9,8 @@ use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 use sled;
 use std::fs;
-use tokio::runtime::Runtime;
 use tokio::runtime::Builder;
+use tokio::runtime::Runtime;
 
 use crate::fcitx5::{self, Fcitx5};
 
@@ -121,7 +121,12 @@ impl Fcp {
         };
 
         Self {
-            rt: Builder::new_current_thread().build().expect("Failed to initialize Tokio runtime."),
+            rt: Builder::new_multi_thread()
+                .worker_threads(1)
+                .enable_time()
+                .enable_io()
+                .build()
+                .expect("Failed to initialize Tokio runtime."),
             http: reqwest::Client::new(),
             cache: db,
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
