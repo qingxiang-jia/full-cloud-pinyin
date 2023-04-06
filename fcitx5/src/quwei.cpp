@@ -432,7 +432,7 @@ void QuweiEngine::threadSafeUiUpdate()
 {
     std::cout << "Begin threadSafeUiUpdate\n";
     
-    dispatcher->schedule([this]() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); });
+    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     
     std::cout << "end threadSafeUiUpdate\n";
 }
