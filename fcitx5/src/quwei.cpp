@@ -395,6 +395,12 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates)
     }
 
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList()); //
+    
+    if (candidateList == nullptr) {
+        std::cout << "end setCandidates 1\n";
+
+        return;
+    }
     candidateList->clear();
 
     for (auto candidate : candidates) {
@@ -432,7 +438,9 @@ void QuweiEngine::uiUpdate()
 {
     std::cout << "Begin threadSafeUiUpdate\n";
     
-    ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    if (ic_ != nullptr) {
+        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    }
     
     std::cout << "end threadSafeUiUpdate\n";
 }
