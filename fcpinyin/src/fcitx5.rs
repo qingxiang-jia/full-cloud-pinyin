@@ -1,31 +1,30 @@
-use std::sync::Mutex;
+use std::cell::RefCell;
 
 use crate::ffi::{self, FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid};
 
 unsafe impl Sync for Fcitx5 {} // It's not safe to send it between threads but we are only using one thread for async. Tokio is not smart enough to figure out this, so we add this to make it happy.
 
 pub struct Fcitx5 {
-    fn_ptrs: Mutex<Option<Fcitx5FnPtrs>>,
+    fn_ptrs: RefCell<Option<Fcitx5FnPtrs>>,
 }
-
-unsafe impl Sync for Fcitx5 {} // Safe to share between threads
 
 impl Fcitx5 {
     pub fn new() -> Self {
         Fcitx5 {
-            fn_ptrs: Mutex::new(None),
+            fn_ptrs: RefCell::new(None),
         }
     }
 
     pub fn set_fn_ptrs(&self, from_cpp: Fcitx5FnPtrs) {
-        *(self.fn_ptrs).lock().expect("Failed to lock fn_ptrs.") = Some(from_cpp);
+        *(self.fn_ptrs.borrow_mut()) = Some(from_cpp);
     }
 
     pub fn ui_set_candidates(&self, display_texts: Vec<&String>) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             let (ptr_ptr, len, cap) = ffi::str_vec_to_cstring_array(display_texts);
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .ui
@@ -35,9 +34,10 @@ impl Fcitx5 {
     }
 
     pub fn ui_clear_candidates(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .ui
@@ -47,10 +47,11 @@ impl Fcitx5 {
 
     pub fn ui_set_preedit(&self, preedit: &String) {
         let preedit_copy = preedit.clone();
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .ui
@@ -60,9 +61,10 @@ impl Fcitx5 {
     }
 
     pub fn table_can_page_up(&self) -> bool {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .table
@@ -71,16 +73,22 @@ impl Fcitx5 {
     }
 
     pub fn table_page_up(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").table.page_up)();
+            (self
+                .fn_ptrs
+                .borrow()
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .table
+                .page_up)();
         }
     }
 
     pub fn table_page_down(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .table
@@ -89,23 +97,34 @@ impl Fcitx5 {
     }
 
     pub fn table_prev(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").table.prev)();
+            (self
+                .fn_ptrs
+                .borrow()
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .table
+                .prev)();
         }
     }
 
     pub fn table_next(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").table.next)();
+            (self
+                .fn_ptrs
+                .borrow()
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .table
+                .next)();
         }
     }
 
     pub fn table_set_page(&self, idx: usize) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .table
@@ -114,18 +133,24 @@ impl Fcitx5 {
     }
 
     pub fn engine_commit(&self, idx: usize) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx.as_ref().expect("fn_ptrs is None.").engine.commit)(idx as u16);
+            (self
+                .fn_ptrs
+                .borrow()
+                .as_ref()
+                .expect("fn_ptrs is None.")
+                .engine
+                .commit)(idx as u16);
         }
     }
 
     pub fn engine_commit_preedit(&self, preedit: &String) {
         let preedit_copy = preedit.clone();
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
             let char_ptr = ffi::str_to_char_ptr(&preedit_copy);
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .engine
@@ -135,9 +160,10 @@ impl Fcitx5 {
     }
 
     pub fn engine_commit_candidate_by_fixed_key(&self) {
-        let fn_ptr_mtx = &self.fn_ptrs.lock().expect("Failed to lock fn_ptrs.");
         unsafe {
-            (fn_ptr_mtx
+            (self
+                .fn_ptrs
+                .borrow()
                 .as_ref()
                 .expect("fn_ptrs is None.")
                 .engine
