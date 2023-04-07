@@ -412,7 +412,7 @@ void QuweiEngine::clearCandidates()
     std::cout << "Begin clearCandidates\n";
     
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "Begin clearCandidates 1\n";
+        std::cout << "end clearCandidates 1\n";
         return; // It seems this could happen too
     }
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
