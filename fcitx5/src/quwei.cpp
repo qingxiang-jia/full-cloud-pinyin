@@ -436,13 +436,13 @@ void QuweiEngine::clearCandidates()
 
 void QuweiEngine::uiUpdate()
 {
-    std::cout << "Begin threadSafeUiUpdate\n";
+    std::cout << "Begin uiUpdate\n";
     
     if (ic_ != nullptr) {
         ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
     
-    std::cout << "end threadSafeUiUpdate\n";
+    std::cout << "end uiUpdate\n";
 }
 
 void QuweiEngine::reset()
