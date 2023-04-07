@@ -2,6 +2,8 @@ use std::sync::Mutex;
 
 use crate::ffi::{self, FnCanPageUp, FnCommit, FnSetCandidates, FnSetPage, FnSetPreedit, FnVoid};
 
+unsafe impl Sync for Fcitx5 {} // It's not safe to send it between threads but we are only using one thread for async. Tokio is not smart enough to figure out this, so we add this to make it happy.
+
 pub struct Fcitx5 {
     fn_ptrs: Mutex<Option<Fcitx5FnPtrs>>,
 }
