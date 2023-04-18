@@ -230,6 +230,10 @@ void QuweiEngine::commitPreedit(std::string preedit)
 {
     std::cout << "Begin commitPreedit\n";
     
+    if (ic_ == nullptr) {
+        std::cout << "end commitPreedit 1\n";
+        return;
+    }
     ic_->commitString(preedit);
     reset();
     
@@ -240,6 +244,11 @@ bool QuweiEngine::canPageUp()
 {
     std::cout << "Begin canPageUp\n";
     
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        std::cout << "end canPageUp 1\n";
+        return false;
+    }
+
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
         return pageable->hasNext();
     }
@@ -251,12 +260,15 @@ bool QuweiEngine::canPageUp()
 void QuweiEngine::nextPage()
 {
     std::cout << "Begin nextPage\n";
+
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        std::cout << "end nextPage 1\n";
+        return;
+    }
     
-    if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
-        if (pageable->hasNext()) {
-            pageable->next();
-            uiUpdate();
-        }
+    if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable && pageable->hasNext()) {
+        pageable->next();
+        uiUpdate();
     }
     
     std::cout << "end nextPage\n";
@@ -265,6 +277,11 @@ void QuweiEngine::nextPage()
 void QuweiEngine::prevPage()
 {
     std::cout << "Begin prevPage\n";
+
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        std::cout << "end prevPage 1\n";
+        return;
+    } 
     
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable && pageable->hasPrev()) {
         pageable->prev();
@@ -278,6 +295,11 @@ void QuweiEngine::nextCandidate()
 {
     std::cout << "Begin nextCandidate\n";
     
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        std::cout << "end nextCandidate 1\n";
+        return;
+    }
+    
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->nextCandidate();
         uiUpdate();
@@ -289,6 +311,11 @@ void QuweiEngine::nextCandidate()
 void QuweiEngine::prevCanddiate()
 {
     std::cout << "Begin prevCanddiate\n";
+
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        std::cout << "end prevCanddiate 1\n";
+        return;
+    }
     
     if (auto* cursorMovable = ic_->inputPanel().candidateList()->toCursorMovable()) {
         cursorMovable->prevCandidate();
@@ -302,6 +329,11 @@ void QuweiEngine::setPage(int idx)
 {
     std::cout << "Begin setPage\n";
     
+    if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
+        std::cout << "end setPage (early return)\n";
+        return;
+    }
+
     if (auto* pageable = ic_->inputPanel().candidateList()->toPageable(); pageable) {
         pageable->setPage(idx);
         uiUpdate();
@@ -387,7 +419,7 @@ void QuweiEngine::setPreedit(std::string preedit)
 void QuweiEngine::setCandidates(std::vector<std::string> candidates)
 {
     std::cout << "Begin setCandidates\n";
-    if (candidates.empty()) {
+    if (candidates.empty() || ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
         
         std::cout << "end setCandidates\n";
         
