@@ -471,7 +471,11 @@ void QuweiEngine::uiUpdate()
     std::cout << "Begin uiUpdate\n";
     
     if (ic_ != nullptr) {
-        dispatcher->schedule([this]() { ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel); });
+        dispatcher->schedule([this]() { 
+            if (ic_ != nullptr) {
+                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+            }
+        });
     }
     
     std::cout << "end uiUpdate\n";
