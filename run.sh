@@ -18,7 +18,7 @@ if [ $1 == "init" ]; then
     rm -rf ./build
     mkdir build
     cd ./build
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Debug ..
     cd ../../
     exit 0
 fi
