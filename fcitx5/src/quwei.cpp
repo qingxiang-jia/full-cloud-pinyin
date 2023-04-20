@@ -35,44 +35,28 @@ QuweiEngine* engine;
 /* BEGIN UI */
 extern "C" void set_loading()
 {
-    std::cout << "Begin set_loading\n";
-    
     engine->setLoading();
-    
-    std::cout << "end set_loading\n";
 }
 
 extern "C" void set_candidates(int16_t** candidates, size_t cnt)
 {
-    std::cout << "Begin set_candidates\n";
-
     std::vector<std::string> candidatesToSet;
     for (size_t i = 0; i < cnt; i++) {
         std::string candidate((char*)candidates[i]);
         candidatesToSet.push_back(std::move(candidate));
     }
     engine->setCandidates(candidatesToSet);
-    
-    std::cout << "end set_candidates\n";
 }
 
 extern "C" void clear_candidates()
 {
-    std::cout << "Begin clear_candidates\n";
-    
     engine->clearCandidates();
-    
-    std::cout << "end clear_candidates\n";
 }
 
 extern "C" void set_preedit(char* preedit)
 {
-    std::cout << "Begin set_preedit\n";
-    
     std::string preeditStr(preedit);
     engine->setPreedit(std::move(preeditStr));
-    
-    std::cout << "end set_preedit\n";
 }
 /* END UI */
 
@@ -121,12 +105,8 @@ extern "C" void commit_candidate_by_fixed_key()
 
 extern "C" void commit_preedit(char* preedit)
 {
-    std::cout << "Begin commit_preedit\n";
-    
     std::string preeditStr(preedit);
     engine->commitPreedit(preeditStr);
-    
-    std::cout << "end commit_preedit\n";
 }
 /* END ENGINE */
 
@@ -150,7 +130,6 @@ public:
 QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     : instance_(instance)
 {
-    std::cout << "Begin QuweiEngine\n";
     engine = this;
 
     // Initialize Rust side
@@ -179,19 +158,13 @@ QuweiEngine::QuweiEngine(fcitx::Instance* instance)
     // Initialize dispatcher
     dispatcher = std::make_unique<fcitx::EventDispatcher>();
     dispatcher->attach(&instance->eventLoop());
-    
-    std::cout << "end QuweiEngine\n";
 }
 
 void QuweiEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
 {
-    std::cout << "Begin activate\n";
-    
     FCITX_UNUSED(entry);
     auto* inputContext = event.inputContext();
     ic_ = inputContext;
-    
-    std::cout << "end activate\n";
 }
 
 void QuweiEngine::select(const int idx)
@@ -201,51 +174,35 @@ void QuweiEngine::select(const int idx)
 
 void QuweiEngine::commitCandidateByIndex(const int idx)
 {
-    std::cout << "Begin commitCandidateByIndex\n";
-    
     auto candidate = ic_->inputPanel().candidateList()->candidate(idx).text();
     ic_->commitString(candidate.toStringForCommit());
     clearCandidates();
     setPreedit("");
     uiUpdate();
-    
-    std::cout << "end commitCandidateByIndex\n";
 }
 
 void QuweiEngine::commitCandidateByFixedKey()
 {
-    std::cout << "Begin commitCandidateByFixedKey\n";
-    
     auto idx = ic_->inputPanel().candidateList()->cursorIndex();
     if (idx == -1) {
         // When you type and didn't interact with the candidates, it's -1, but we know you mean 0
         idx = 0;
     }
     commitCandidateByIndex(idx);
-    
-    std::cout << "end commitCandidateByFixedKey\n";
 }
 
 void QuweiEngine::commitPreedit(std::string preedit)
 {
-    std::cout << "Begin commitPreedit\n";
-    
     if (ic_ == nullptr) {
-        std::cout << "end commitPreedit 1\n";
         return;
     }
     ic_->commitString(preedit);
     reset();
-    
-    std::cout << "end commitPreedit\n";
 }
 
 bool QuweiEngine::canPageUp()
 {
-    std::cout << "Begin canPageUp\n";
-    
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end canPageUp 1\n";
         return false;
     }
 
@@ -253,16 +210,12 @@ bool QuweiEngine::canPageUp()
         return pageable->hasNext();
     }
     
-    std::cout << "end canPageUp\n";
     return false;
 }
 
 void QuweiEngine::nextPage()
 {
-    std::cout << "Begin nextPage\n";
-
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end nextPage 1\n";
         return;
     }
     
@@ -270,16 +223,11 @@ void QuweiEngine::nextPage()
         pageable->next();
         uiUpdate();
     }
-    
-    std::cout << "end nextPage\n";
 }
 
 void QuweiEngine::prevPage()
 {
-    std::cout << "Begin prevPage\n";
-
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end prevPage 1\n";
         return;
     } 
     
@@ -287,16 +235,11 @@ void QuweiEngine::prevPage()
         pageable->prev();
         uiUpdate();
     }
-    
-    std::cout << "end prevPage\n";
 }
 
 void QuweiEngine::nextCandidate()
 {
-    std::cout << "Begin nextCandidate\n";
-    
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end nextCandidate 1\n";
         return;
     }
     
@@ -304,16 +247,11 @@ void QuweiEngine::nextCandidate()
         cursorMovable->nextCandidate();
         uiUpdate();
     }
-    
-    std::cout << "end nextCandidate\n";
 }
 
 void QuweiEngine::prevCanddiate()
 {
-    std::cout << "Begin prevCanddiate\n";
-
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end prevCanddiate 1\n";
         return;
     }
     
@@ -321,16 +259,11 @@ void QuweiEngine::prevCanddiate()
         cursorMovable->prevCandidate();
         uiUpdate();
     }
-    
-    std::cout << "end prevCanddiate\n";
 }
 
 void QuweiEngine::setPage(int idx)
 {
-    std::cout << "Begin setPage\n";
-    
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end setPage (early return)\n";
         return;
     }
 
@@ -338,19 +271,12 @@ void QuweiEngine::setPage(int idx)
         pageable->setPage(idx);
         uiUpdate();
     }
-    
-    std::cout << "end setPage\n";
 }
 
 void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent)
 {
-    std::cout << "Begin keyEvent\n";
-    
     FCITX_UNUSED(entry);
     if (keyEvent.isRelease() || keyEvent.key().states()) {
-        
-        std::cout << "end keyEvent\n";
-        
         return;
     }
     if (ic_->inputPanel().candidateList() == nullptr) {
@@ -364,28 +290,20 @@ void QuweiEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent
     if (shouldAccept) {
         keyEvent.filterAndAccept();
     }
-    
-    std::cout << "end keyEvent\n";
 }
 
 std::unique_ptr<fcitx::CommonCandidateList> QuweiEngine::makeCandidateList()
 {
-    std::cout << "Begin makeCandidateList\n";
-    
     auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
     candidateList->setLabels(std::vector<std::string> { "1. ", "2. ", "3. ", "4. ", "5. ", "6. ", "7. ", "8. ", "9. ", "10. " });
     candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
     candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
-    
-    std::cout << "end makeCandidateList\n";
     
     return candidateList;
 }
 
 void QuweiEngine::setLoading()
 {
-    std::cout << "Begin setLoading\n";
-    
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
 
     candidateList->clear();
@@ -396,14 +314,10 @@ void QuweiEngine::setLoading()
     candidateList->setGlobalCursorIndex(0);
 
     uiUpdate();
-    
-    std::cout << "end setLoading\n";
 }
 
 void QuweiEngine::setPreedit(std::string preedit)
 {
-    std::cout << "Begin setPreedit\n";
-    
     if (ic_->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
         fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
         ic_->inputPanel().setClientPreedit(text);
@@ -412,25 +326,17 @@ void QuweiEngine::setPreedit(std::string preedit)
         ic_->inputPanel().setPreedit(text);
     }
     ic_->updatePreedit();
-    
-    std::cout << "end setPreedit\n";
 }
 
 void QuweiEngine::setCandidates(std::vector<std::string> candidates)
 {
-    std::cout << "Begin setCandidates\n";
     if (candidates.empty() || ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        
-        std::cout << "end setCandidates\n";
-        
         return;
     }
 
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList()); //
     
     if (candidateList == nullptr) {
-        std::cout << "end setCandidates 1\n";
-
         return;
     }
     candidateList->clear();
@@ -441,35 +347,25 @@ void QuweiEngine::setCandidates(std::vector<std::string> candidates)
     }
 
     uiUpdate();
-
-    std::cout << "end setCandidates\n";
 }
 
 void QuweiEngine::clearCandidates()
 {
-    std::cout << "Begin clearCandidates\n";
-    
     if (ic_ == nullptr || ic_->inputPanel().candidateList() == nullptr) {
-        std::cout << "end clearCandidates 1\n";
         return; // It seems this could happen too
     }
     auto candidateList = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic_->inputPanel().candidateList());
 
     if (candidateList == nullptr) {
-        std::cout << "Begin clearCandidates 2\n";
         return; // Other operations may have already cause it to be null
     }
     candidateList->clear();
 
     uiUpdate();
- 
-    std::cout << "end clearCandidates\n";
 }
 
 void QuweiEngine::uiUpdate()
 {
-    std::cout << "Begin uiUpdate\n";
-    
     if (ic_ != nullptr) {
         dispatcher->schedule([this]() { 
             if (ic_ != nullptr) {
@@ -477,29 +373,19 @@ void QuweiEngine::uiUpdate()
             }
         });
     }
-    
-    std::cout << "end uiUpdate\n";
 }
 
 void QuweiEngine::reset()
 {
-    std::cout << "Begin QuweiEngine::reset\n";
-    
     ic_->inputPanel().reset();
     setPreedit("");
     uiUpdate();
-    
-    std::cout << "end QuweiEngine::reset\n";
 }
 
 void QuweiEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event)
 {
-    std::cout << "Begin QuweiEngine::reset 2 args\n";
-    
     FCITX_UNUSED(event);
     reset();
-    
-    std::cout << "end QuweiEngine::reset 2 args\n";
 }
 
 FCITX_ADDON_FACTORY(QuweiEngineFactory);
