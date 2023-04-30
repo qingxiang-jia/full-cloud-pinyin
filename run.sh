@@ -46,7 +46,7 @@ fi
 
 if [ $1 == "bir" ]; then
     cd ./fcpinyin
-    cargo -Z unstable-options rustc --lib --release --crate-type staticlib -- --print native-static-libs
+    cargo -Z unstable-options rustc --lib --profile=dev --crate-type staticlib -- --print native-static-libs
     cd ../
     cd ./fcitx5/build
     cmake --build .

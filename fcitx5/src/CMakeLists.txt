@@ -2,7 +2,7 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 # Take the static lib (Rust code) and a C++ header so C++ sees it as C++ code
-set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/release/libfcp.a")
+set(RUST_PART_LIB "${CMAKE_SOURCE_DIR}/../fcpinyin/target/debug/libfcp.a")
 set(RUST_PART_CXX "${CMAKE_SOURCE_DIR}/../fcpinyin/src/include/rust.h")
 
 add_library(rust_part STATIC ${RUST_PART_CXX})
