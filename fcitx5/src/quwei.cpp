@@ -367,11 +367,7 @@ void QuweiEngine::clearCandidates()
 void QuweiEngine::uiUpdate()
 {
     if (ic_ != nullptr) {
-        dispatcher->schedule([this]() { 
-            if (ic_ != nullptr) {
-                ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-            }
-        });
+        ic_->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
 }
 
