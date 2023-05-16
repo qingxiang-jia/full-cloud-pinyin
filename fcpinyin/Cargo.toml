@@ -21,4 +21,4 @@ name = "fcp"
 
 [[bin]]
 path = "src/main.rs"
-name = "fcp_demo"
+name = "fcp_ibus"
