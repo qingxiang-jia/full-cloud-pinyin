@@ -1,3 +1,3 @@
 fn main() {
-  println!("This is the entry point for IBus integration.");
+    println!("This is the entry point for IBus integration.");
 }
