@@ -1,2 +1,2 @@
-mod ibus;
-mod proxy;
+pub mod ibus;
+pub mod proxy;
