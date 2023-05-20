@@ -9,184 +9,3703 @@
 //! [Writing a client proxy](https://dbus.pages.freedesktop.org/zbus/client.html)
 //! section of the zbus documentation.
 //!
-
-use zbus::dbus_proxy;
-
-#[dbus_proxy(interface = "org.freedesktop.IBus.Panel", assume_defaults = true)]
-trait Panel {
-    /// CandidateClickedLookupTable method
-    fn candidate_clicked_lookup_table(
+impl<'a> ::zbus::ProxyDefault for PanelProxyBlocking<'a> {
+    const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
+    const DESTINATION: &'static str = "org.freedesktop.IBus.Panel";
+    const PATH: &'static str = "/org/freedesktop/Panel";
+}
+pub struct PanelProxyBlocking<'c>(::zbus::blocking::Proxy<'c>);
+#[automatically_derived]
+impl<'c> ::core::clone::Clone for PanelProxyBlocking<'c> {
+    #[inline]
+    fn clone(&self) -> PanelProxyBlocking<'c> {
+        PanelProxyBlocking(::core::clone::Clone::clone(&self.0))
+    }
+}
+#[automatically_derived]
+impl<'c> ::core::fmt::Debug for PanelProxyBlocking<'c> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelProxyBlocking", &&self.0)
+    }
+}
+impl<'c> PanelProxyBlocking<'c> {
+    #[doc = r" Creates a new proxy with the default service and path."]
+    pub fn new(conn: &::zbus::blocking::Connection) -> ::zbus::Result<PanelProxyBlocking<'c>> {
+        Self::builder(conn).build()
+    }
+    #[doc = r" Returns a customizable builder for this proxy."]
+    pub fn builder(
+        conn: &::zbus::blocking::Connection,
+    ) -> ::zbus::blocking::ProxyBuilder<'c, Self> {
+        let mut builder = ::zbus::blocking::ProxyBuilder::new(conn);
+        if false {
+            let uncached = Vec::new();
+            builder
+                .cache_properties(::zbus::CacheProperties::default())
+                .uncached_properties(&uncached)
+        } else {
+            builder.cache_properties(::zbus::CacheProperties::No)
+        }
+    }
+    #[doc = r" Consumes `self`, returning the underlying `zbus::Proxy`."]
+    pub fn into_inner(self) -> ::zbus::blocking::Proxy<'c> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::Proxy`."]
+    pub fn inner(&self) -> &::zbus::blocking::Proxy<'c> {
+        &self.0
+    }
+    #[doc = " CandidateClickedLookupTable method"]
+    pub fn candidate_clicked_lookup_table(
         &self,
         index: u32,
         button: u32,
         state: u32,
-    ) -> zbus::Result<()>;
-
-    /// CommitTextReceived method
-    fn commit_text_received(&self, text: &zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// ContentType method
-    fn content_type(&self, purpose: u32, hints: u32) -> zbus::Result<()>;
-
-    /// CursorDownLookupTable method
-    fn cursor_down_lookup_table(&self) -> zbus::Result<()>;
-
-    /// CursorUpLookupTable method
-    fn cursor_up_lookup_table(&self) -> zbus::Result<()>;
-
-    /// DestroyContext method
-    fn destroy_context(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
-
-    /// FocusIn method
-    fn focus_in(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
-
-    /// FocusOut method
-    fn focus_out(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
-
-    /// HideAuxiliaryText method
-    fn hide_auxiliary_text(&self) -> zbus::Result<()>;
-
-    /// HideLanguageBar method
-    fn hide_language_bar(&self) -> zbus::Result<()>;
-
-    /// HideLookupTable method
-    fn hide_lookup_table(&self) -> zbus::Result<()>;
-
-    /// HidePreeditText method
-    fn hide_preedit_text(&self) -> zbus::Result<()>;
-
-    /// PageDownLookupTable method
-    fn page_down_lookup_table(&self) -> zbus::Result<()>;
-
-    /// PageUpLookupTable method
-    fn page_up_lookup_table(&self) -> zbus::Result<()>;
-
-    /// PanelExtensionReceived method
-    fn panel_extension_received(&self, event: &zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// PanelExtensionRegisterKeys method
-    fn panel_extension_register_keys(&self, data: &zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// ProcessKeyEvent method
-    fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> zbus::Result<bool>;
-
-    /// RegisterProperties method
-    fn register_properties(&self, props: &zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// Reset method
-    fn reset(&self) -> zbus::Result<()>;
-
-    /// SetCursorLocation method
-    fn set_cursor_location(&self, x: i32, y: i32, w: i32, h: i32) -> zbus::Result<()>;
-
-    /// SetCursorLocationRelative method
-    fn set_cursor_location_relative(&self, x: i32, y: i32, w: i32, h: i32) -> zbus::Result<()>;
-
-    /// ShowAuxiliaryText method
-    fn show_auxiliary_text(&self) -> zbus::Result<()>;
-
-    /// ShowLanguageBar method
-    fn show_language_bar(&self) -> zbus::Result<()>;
-
-    /// ShowLookupTable method
-    fn show_lookup_table(&self) -> zbus::Result<()>;
-
-    /// ShowPreeditText method
-    fn show_preedit_text(&self) -> zbus::Result<()>;
-
-    /// StartSetup method
-    fn start_setup(&self) -> zbus::Result<()>;
-
-    /// StateChanged method
-    fn state_changed(&self) -> zbus::Result<()>;
-
-    /// UpdateAuxiliaryText method
-    fn update_auxiliary_text(
+    ) -> zbus::Result<()> {
+        let reply = self
+            .0
+            .call("CandidateClickedLookupTable", &(index, button, state))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CommitTextReceived method"]
+    pub fn commit_text_received(&self, text: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("CommitTextReceived", &(text,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ContentType method"]
+    pub fn content_type(&self, purpose: u32, hints: u32) -> zbus::Result<()> {
+        let reply = self.0.call("ContentType", &(purpose, hints))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CursorDownLookupTable method"]
+    pub fn cursor_down_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("CursorDownLookupTable", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CursorUpLookupTable method"]
+    pub fn cursor_up_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("CursorUpLookupTable", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " DestroyContext method"]
+    pub fn destroy_context(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("DestroyContext", &(ic,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " FocusIn method"]
+    pub fn focus_in(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("FocusIn", &(ic,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " FocusOut method"]
+    pub fn focus_out(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("FocusOut", &(ic,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HideAuxiliaryText method"]
+    pub fn hide_auxiliary_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HideAuxiliaryText", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HideLanguageBar method"]
+    pub fn hide_language_bar(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HideLanguageBar", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HideLookupTable method"]
+    pub fn hide_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HideLookupTable", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HidePreeditText method"]
+    pub fn hide_preedit_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HidePreeditText", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PageDownLookupTable method"]
+    pub fn page_down_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("PageDownLookupTable", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PageUpLookupTable method"]
+    pub fn page_up_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("PageUpLookupTable", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PanelExtensionReceived method"]
+    pub fn panel_extension_received(&self, event: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("PanelExtensionReceived", &(event,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PanelExtensionRegisterKeys method"]
+    pub fn panel_extension_register_keys(
+        &self,
+        data: &zbus::zvariant::Value<'_>,
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("PanelExtensionRegisterKeys", &(data,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ProcessKeyEvent method"]
+    pub fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> zbus::Result<bool> {
+        let reply = self.0.call("ProcessKeyEvent", &(keyval, keycode, state))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " RegisterProperties method"]
+    pub fn register_properties(&self, props: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("RegisterProperties", &(props,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Reset method"]
+    pub fn reset(&self) -> zbus::Result<()> {
+        let reply = self.0.call("Reset", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " SetCursorLocation method"]
+    pub fn set_cursor_location(&self, x: i32, y: i32, w: i32, h: i32) -> zbus::Result<()> {
+        let reply = self.0.call("SetCursorLocation", &(x, y, w, h))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " SetCursorLocationRelative method"]
+    pub fn set_cursor_location_relative(&self, x: i32, y: i32, w: i32, h: i32) -> zbus::Result<()> {
+        let reply = self.0.call("SetCursorLocationRelative", &(x, y, w, h))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowAuxiliaryText method"]
+    pub fn show_auxiliary_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowAuxiliaryText", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowLanguageBar method"]
+    pub fn show_language_bar(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowLanguageBar", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowLookupTable method"]
+    pub fn show_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowLookupTable", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowPreeditText method"]
+    pub fn show_preedit_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowPreeditText", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " StartSetup method"]
+    pub fn start_setup(&self) -> zbus::Result<()> {
+        let reply = self.0.call("StartSetup", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " StateChanged method"]
+    pub fn state_changed(&self) -> zbus::Result<()> {
+        let reply = self.0.call("StateChanged", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdateAuxiliaryText method"]
+    pub fn update_auxiliary_text(
         &self,
         text: &zbus::zvariant::Value<'_>,
         visible: bool,
-    ) -> zbus::Result<()>;
-
-    /// UpdateLookupTable method
-    fn update_lookup_table(
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("UpdateAuxiliaryText", &(text, visible))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdateLookupTable method"]
+    pub fn update_lookup_table(
         &self,
         table: &zbus::zvariant::Value<'_>,
         visible: bool,
-    ) -> zbus::Result<()>;
-
-    /// UpdatePreeditText method
-    fn update_preedit_text(
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("UpdateLookupTable", &(table, visible))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdatePreeditText method"]
+    pub fn update_preedit_text(
         &self,
         text: &zbus::zvariant::Value<'_>,
         cursor_pos: u32,
         visible: bool,
-    ) -> zbus::Result<()>;
-
-    /// UpdateProperty method
-    fn update_property(&self, prop: &zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// CandidateClicked signal
-    #[dbus_proxy(signal)]
-    fn candidate_clicked(&self, index: u32, button: u32, state: u32) -> zbus::Result<()>;
-
-    /// CommitText signal
-    #[dbus_proxy(signal)]
-    fn commit_text(&self, text: zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// CursorDown signal
-    #[dbus_proxy(signal)]
-    fn cursor_down(&self) -> zbus::Result<()>;
-
-    /// CursorUp signal
-    #[dbus_proxy(signal)]
-    fn cursor_up(&self) -> zbus::Result<()>;
-
-    /// PageDown signal
-    #[dbus_proxy(signal)]
-    fn page_down(&self) -> zbus::Result<()>;
-
-    /// PageUp signal
-    #[dbus_proxy(signal)]
-    fn page_up(&self) -> zbus::Result<()>;
-
-    /// PanelExtension signal
-    #[dbus_proxy(signal)]
-    fn panel_extension(&self, event: zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// PropertyActivate signal
-    #[dbus_proxy(signal)]
-    fn property_activate(&self, prop_name: &str, prop_state: i32) -> zbus::Result<()>;
-
-    /// PropertyHide signal
-    #[dbus_proxy(signal)]
-    fn property_hide(&self, prop_name: &str) -> zbus::Result<()>;
-
-    /// PropertyShow signal
-    #[dbus_proxy(signal)]
-    fn property_show(&self, prop_name: &str) -> zbus::Result<()>;
-
-    /// UpdateAuxiliaryTextReceived signal
-    #[dbus_proxy(signal)]
-    fn update_auxiliary_text_received(
+    ) -> zbus::Result<()> {
+        let reply = self
+            .0
+            .call("UpdatePreeditText", &(text, cursor_pos, visible))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdateProperty method"]
+    pub fn update_property(&self, prop: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("UpdateProperty", &(prop,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = "Create a stream that receives `CandidateClicked` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CandidateClicked signal"]
+    pub fn receive_candidate_clicked(&self) -> ::zbus::Result<CandidateClickedIterator<'static>> {
+        self.receive_signal("CandidateClicked")
+            .map(CandidateClickedIterator)
+    }
+    #[doc = "Create a stream that receives `CandidateClicked` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " CandidateClicked signal"]
+    pub fn receive_candidate_clicked_with_args(
         &self,
-        text: zbus::zvariant::Value<'_>,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<CandidateClickedIterator<'static>> {
+        self.receive_signal_with_args("CandidateClicked", args)
+            .map(CandidateClickedIterator)
+    }
+    #[doc = "Create a stream that receives `CommitText` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CommitText signal"]
+    pub fn receive_commit_text(&self) -> ::zbus::Result<CommitTextIterator<'static>> {
+        self.receive_signal("CommitText").map(CommitTextIterator)
+    }
+    #[doc = "Create a stream that receives `CommitText` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " CommitText signal"]
+    pub fn receive_commit_text_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<CommitTextIterator<'static>> {
+        self.receive_signal_with_args("CommitText", args)
+            .map(CommitTextIterator)
+    }
+    #[doc = "Create a stream that receives `CursorDown` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CursorDown signal"]
+    pub fn receive_cursor_down(&self) -> ::zbus::Result<CursorDownIterator<'static>> {
+        self.receive_signal("CursorDown").map(CursorDownIterator)
+    }
+    #[doc = "Create a stream that receives `CursorUp` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CursorUp signal"]
+    pub fn receive_cursor_up(&self) -> ::zbus::Result<CursorUpIterator<'static>> {
+        self.receive_signal("CursorUp").map(CursorUpIterator)
+    }
+    #[doc = "Create a stream that receives `PageDown` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PageDown signal"]
+    pub fn receive_page_down(&self) -> ::zbus::Result<PageDownIterator<'static>> {
+        self.receive_signal("PageDown").map(PageDownIterator)
+    }
+    #[doc = "Create a stream that receives `PageUp` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PageUp signal"]
+    pub fn receive_page_up(&self) -> ::zbus::Result<PageUpIterator<'static>> {
+        self.receive_signal("PageUp").map(PageUpIterator)
+    }
+    #[doc = "Create a stream that receives `PanelExtension` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PanelExtension signal"]
+    pub fn receive_panel_extension(&self) -> ::zbus::Result<PanelExtensionIterator<'static>> {
+        self.receive_signal("PanelExtension")
+            .map(PanelExtensionIterator)
+    }
+    #[doc = "Create a stream that receives `PanelExtension` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PanelExtension signal"]
+    pub fn receive_panel_extension_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PanelExtensionIterator<'static>> {
+        self.receive_signal_with_args("PanelExtension", args)
+            .map(PanelExtensionIterator)
+    }
+    #[doc = "Create a stream that receives `PropertyActivate` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PropertyActivate signal"]
+    pub fn receive_property_activate(&self) -> ::zbus::Result<PropertyActivateIterator<'static>> {
+        self.receive_signal("PropertyActivate")
+            .map(PropertyActivateIterator)
+    }
+    #[doc = "Create a stream that receives `PropertyActivate` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PropertyActivate signal"]
+    pub fn receive_property_activate_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PropertyActivateIterator<'static>> {
+        self.receive_signal_with_args("PropertyActivate", args)
+            .map(PropertyActivateIterator)
+    }
+    #[doc = "Create a stream that receives `PropertyHide` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PropertyHide signal"]
+    pub fn receive_property_hide(&self) -> ::zbus::Result<PropertyHideIterator<'static>> {
+        self.receive_signal("PropertyHide")
+            .map(PropertyHideIterator)
+    }
+    #[doc = "Create a stream that receives `PropertyHide` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PropertyHide signal"]
+    pub fn receive_property_hide_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PropertyHideIterator<'static>> {
+        self.receive_signal_with_args("PropertyHide", args)
+            .map(PropertyHideIterator)
+    }
+    #[doc = "Create a stream that receives `PropertyShow` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PropertyShow signal"]
+    pub fn receive_property_show(&self) -> ::zbus::Result<PropertyShowIterator<'static>> {
+        self.receive_signal("PropertyShow")
+            .map(PropertyShowIterator)
+    }
+    #[doc = "Create a stream that receives `PropertyShow` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PropertyShow signal"]
+    pub fn receive_property_show_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PropertyShowIterator<'static>> {
+        self.receive_signal_with_args("PropertyShow", args)
+            .map(PropertyShowIterator)
+    }
+    #[doc = "Create a stream that receives `UpdateAuxiliaryTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " UpdateAuxiliaryTextReceived signal"]
+    pub fn receive_update_auxiliary_text_received(
+        &self,
+    ) -> ::zbus::Result<UpdateAuxiliaryTextReceivedIterator<'static>> {
+        self.receive_signal("UpdateAuxiliaryTextReceived")
+            .map(UpdateAuxiliaryTextReceivedIterator)
+    }
+    #[doc = "Create a stream that receives `UpdateAuxiliaryTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " UpdateAuxiliaryTextReceived signal"]
+    pub fn receive_update_auxiliary_text_received_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<UpdateAuxiliaryTextReceivedIterator<'static>> {
+        self.receive_signal_with_args("UpdateAuxiliaryTextReceived", args)
+            .map(UpdateAuxiliaryTextReceivedIterator)
+    }
+    #[doc = "Create a stream that receives `UpdateLookupTableReceived` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " UpdateLookupTableReceived signal"]
+    pub fn receive_update_lookup_table_received(
+        &self,
+    ) -> ::zbus::Result<UpdateLookupTableReceivedIterator<'static>> {
+        self.receive_signal("UpdateLookupTableReceived")
+            .map(UpdateLookupTableReceivedIterator)
+    }
+    #[doc = "Create a stream that receives `UpdateLookupTableReceived` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " UpdateLookupTableReceived signal"]
+    pub fn receive_update_lookup_table_received_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<UpdateLookupTableReceivedIterator<'static>> {
+        self.receive_signal_with_args("UpdateLookupTableReceived", args)
+            .map(UpdateLookupTableReceivedIterator)
+    }
+    #[doc = "Create a stream that receives `UpdatePreeditTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " UpdatePreeditTextReceived signal"]
+    pub fn receive_update_preedit_text_received(
+        &self,
+    ) -> ::zbus::Result<UpdatePreeditTextReceivedIterator<'static>> {
+        self.receive_signal("UpdatePreeditTextReceived")
+            .map(UpdatePreeditTextReceivedIterator)
+    }
+    #[doc = "Create a stream that receives `UpdatePreeditTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " UpdatePreeditTextReceived signal"]
+    pub fn receive_update_preedit_text_received_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<UpdatePreeditTextReceivedIterator<'static>> {
+        self.receive_signal_with_args("UpdatePreeditTextReceived", args)
+            .map(UpdatePreeditTextReceivedIterator)
+    }
+}
+impl<'c> ::std::convert::From<::zbus::Proxy<'c>> for PanelProxyBlocking<'c> {
+    fn from(proxy: ::zbus::Proxy<'c>) -> Self {
+        PanelProxyBlocking(::std::convert::Into::into(proxy))
+    }
+}
+impl<'c> ::std::ops::Deref for PanelProxyBlocking<'c> {
+    type Target = ::zbus::blocking::Proxy<'c>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl<'c> ::std::ops::DerefMut for PanelProxyBlocking<'c> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl<'c> ::std::convert::AsRef<::zbus::blocking::Proxy<'c>> for PanelProxyBlocking<'c> {
+    fn as_ref(&self) -> &::zbus::blocking::Proxy<'c> {
+        &*self
+    }
+}
+impl<'c> ::std::convert::AsMut<::zbus::blocking::Proxy<'c>> for PanelProxyBlocking<'c> {
+    fn as_mut(&mut self) -> &mut ::zbus::blocking::Proxy<'c> {
+        &mut *self
+    }
+}
+impl<'c> ::zbus::zvariant::Type for PanelProxyBlocking<'c> {
+    fn signature() -> ::zbus::zvariant::Signature<'static> {
+        ::zbus::zvariant::OwnedObjectPath::signature()
+    }
+}
+impl<'c> ::zbus::export::serde::ser::Serialize for PanelProxyBlocking<'c> {
+    fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
+    where
+        S: ::zbus::export::serde::ser::Serializer,
+    {
+        ::std::string::String::serialize(
+            &::std::string::ToString::to_string(self.inner().path()),
+            serializer,
+        )
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`CandidateClicked`] signals.\n\nUse [`PanelProxyBlocking::receive_candidate_clicked`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct CandidateClickedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CandidateClickedIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CandidateClickedIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CandidateClickedIterator<'_>>();
+};
+impl<'a> CandidateClickedIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CandidateClickedIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CandidateClickedIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for CandidateClickedIterator<'_> {
+    type Item = CandidateClicked;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(CandidateClicked)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`CommitText`] signals.\n\nUse [`PanelProxyBlocking::receive_commit_text`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct CommitTextIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CommitTextIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CommitTextIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CommitTextIterator<'_>>();
+};
+impl<'a> CommitTextIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CommitTextIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CommitTextIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for CommitTextIterator<'_> {
+    type Item = CommitText;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(CommitText)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`CursorDown`] signals.\n\nUse [`PanelProxyBlocking::receive_cursor_down`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct CursorDownIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CursorDownIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorDownIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CursorDownIterator<'_>>();
+};
+impl<'a> CursorDownIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CursorDownIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CursorDownIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for CursorDownIterator<'_> {
+    type Item = CursorDown;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(CursorDown)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`CursorUp`] signals.\n\nUse [`PanelProxyBlocking::receive_cursor_up`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct CursorUpIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CursorUpIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorUpIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CursorUpIterator<'_>>();
+};
+impl<'a> CursorUpIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CursorUpIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CursorUpIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for CursorUpIterator<'_> {
+    type Item = CursorUp;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(CursorUp)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`PageDown`] signals.\n\nUse [`PanelProxyBlocking::receive_page_down`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct PageDownIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PageDownIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageDownIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PageDownIterator<'_>>();
+};
+impl<'a> PageDownIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PageDownIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PageDownIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for PageDownIterator<'_> {
+    type Item = PageDown;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(PageDown)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`PageUp`] signals.\n\nUse [`PanelProxyBlocking::receive_page_up`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct PageUpIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PageUpIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageUpIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PageUpIterator<'_>>();
+};
+impl<'a> PageUpIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PageUpIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PageUpIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for PageUpIterator<'_> {
+    type Item = PageUp;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(PageUp)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`PanelExtension`] signals.\n\nUse [`PanelProxyBlocking::receive_panel_extension`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct PanelExtensionIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PanelExtensionIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelExtensionIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PanelExtensionIterator<'_>>();
+};
+impl<'a> PanelExtensionIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PanelExtensionIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PanelExtensionIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for PanelExtensionIterator<'_> {
+    type Item = PanelExtension;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(PanelExtension)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`PropertyActivate`] signals.\n\nUse [`PanelProxyBlocking::receive_property_activate`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct PropertyActivateIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PropertyActivateIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyActivateIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PropertyActivateIterator<'_>>();
+};
+impl<'a> PropertyActivateIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PropertyActivateIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PropertyActivateIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for PropertyActivateIterator<'_> {
+    type Item = PropertyActivate;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(PropertyActivate)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`PropertyHide`] signals.\n\nUse [`PanelProxyBlocking::receive_property_hide`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct PropertyHideIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PropertyHideIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyHideIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PropertyHideIterator<'_>>();
+};
+impl<'a> PropertyHideIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PropertyHideIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PropertyHideIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for PropertyHideIterator<'_> {
+    type Item = PropertyHide;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(PropertyHide)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`PropertyShow`] signals.\n\nUse [`PanelProxyBlocking::receive_property_show`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct PropertyShowIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PropertyShowIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyShowIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PropertyShowIterator<'_>>();
+};
+impl<'a> PropertyShowIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PropertyShowIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PropertyShowIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for PropertyShowIterator<'_> {
+    type Item = PropertyShow;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(PropertyShow)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`UpdateAuxiliaryTextReceived`] signals.\n\nUse [`PanelProxyBlocking::receive_update_auxiliary_text_received`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct UpdateAuxiliaryTextReceivedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for UpdateAuxiliaryTextReceivedIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdateAuxiliaryTextReceivedIterator",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<UpdateAuxiliaryTextReceivedIterator<'_>>();
+};
+impl<'a> UpdateAuxiliaryTextReceivedIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for UpdateAuxiliaryTextReceivedIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for UpdateAuxiliaryTextReceivedIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for UpdateAuxiliaryTextReceivedIterator<'_> {
+    type Item = UpdateAuxiliaryTextReceived;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(UpdateAuxiliaryTextReceived)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`UpdateLookupTableReceived`] signals.\n\nUse [`PanelProxyBlocking::receive_update_lookup_table_received`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct UpdateLookupTableReceivedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for UpdateLookupTableReceivedIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdateLookupTableReceivedIterator",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<UpdateLookupTableReceivedIterator<'_>>();
+};
+impl<'a> UpdateLookupTableReceivedIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for UpdateLookupTableReceivedIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for UpdateLookupTableReceivedIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for UpdateLookupTableReceivedIterator<'_> {
+    type Item = UpdateLookupTableReceived;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(UpdateLookupTableReceived)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`UpdatePreeditTextReceived`] signals.\n\nUse [`PanelProxyBlocking::receive_update_preedit_text_received`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct UpdatePreeditTextReceivedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for UpdatePreeditTextReceivedIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdatePreeditTextReceivedIterator",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<UpdatePreeditTextReceivedIterator<'_>>();
+};
+impl<'a> UpdatePreeditTextReceivedIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for UpdatePreeditTextReceivedIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for UpdatePreeditTextReceivedIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for UpdatePreeditTextReceivedIterator<'_> {
+    type Item = UpdatePreeditTextReceived;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(UpdatePreeditTextReceived)
+    }
+}
+impl<'a> ::zbus::ProxyDefault for PanelProxy<'a> {
+    const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
+    const DESTINATION: &'static str = "org.freedesktop.IBus.Panel";
+    const PATH: &'static str = "/org/freedesktop/Panel";
+}
+pub struct PanelProxy<'c>(::zbus::Proxy<'c>);
+#[automatically_derived]
+impl<'c> ::core::clone::Clone for PanelProxy<'c> {
+    #[inline]
+    fn clone(&self) -> PanelProxy<'c> {
+        PanelProxy(::core::clone::Clone::clone(&self.0))
+    }
+}
+#[automatically_derived]
+impl<'c> ::core::fmt::Debug for PanelProxy<'c> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelProxy", &&self.0)
+    }
+}
+impl<'c> PanelProxy<'c> {
+    #[doc = r" Creates a new proxy with the default service and path."]
+    pub async fn new(conn: &::zbus::Connection) -> ::zbus::Result<PanelProxy<'c>> {
+        Self::builder(conn).build().await
+    }
+    #[doc = r" Returns a customizable builder for this proxy."]
+    pub fn builder(conn: &::zbus::Connection) -> ::zbus::ProxyBuilder<'c, Self> {
+        let mut builder = ::zbus::ProxyBuilder::new(conn);
+        if false {
+            let uncached = Vec::new();
+            builder
+                .cache_properties(::zbus::CacheProperties::default())
+                .uncached_properties(&uncached)
+        } else {
+            builder.cache_properties(::zbus::CacheProperties::No)
+        }
+    }
+    #[doc = r" Consumes `self`, returning the underlying `zbus::Proxy`."]
+    pub fn into_inner(self) -> ::zbus::Proxy<'c> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::Proxy`."]
+    pub fn inner(&self) -> &::zbus::Proxy<'c> {
+        &self.0
+    }
+    #[doc = " CandidateClickedLookupTable method"]
+    pub async fn candidate_clicked_lookup_table(
+        &self,
+        index: u32,
+        button: u32,
+        state: u32,
+    ) -> zbus::Result<()> {
+        let reply = self
+            .0
+            .call("CandidateClickedLookupTable", &(index, button, state))
+            .await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CommitTextReceived method"]
+    pub async fn commit_text_received(&self, text: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("CommitTextReceived", &(text,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ContentType method"]
+    pub async fn content_type(&self, purpose: u32, hints: u32) -> zbus::Result<()> {
+        let reply = self.0.call("ContentType", &(purpose, hints)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CursorDownLookupTable method"]
+    pub async fn cursor_down_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("CursorDownLookupTable", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CursorUpLookupTable method"]
+    pub async fn cursor_up_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("CursorUpLookupTable", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " DestroyContext method"]
+    pub async fn destroy_context(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("DestroyContext", &(ic,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " FocusIn method"]
+    pub async fn focus_in(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("FocusIn", &(ic,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " FocusOut method"]
+    pub async fn focus_out(&self, ic: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("FocusOut", &(ic,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HideAuxiliaryText method"]
+    pub async fn hide_auxiliary_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HideAuxiliaryText", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HideLanguageBar method"]
+    pub async fn hide_language_bar(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HideLanguageBar", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HideLookupTable method"]
+    pub async fn hide_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HideLookupTable", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " HidePreeditText method"]
+    pub async fn hide_preedit_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("HidePreeditText", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PageDownLookupTable method"]
+    pub async fn page_down_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("PageDownLookupTable", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PageUpLookupTable method"]
+    pub async fn page_up_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("PageUpLookupTable", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PanelExtensionReceived method"]
+    pub async fn panel_extension_received(
+        &self,
+        event: &zbus::zvariant::Value<'_>,
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("PanelExtensionReceived", &(event,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " PanelExtensionRegisterKeys method"]
+    pub async fn panel_extension_register_keys(
+        &self,
+        data: &zbus::zvariant::Value<'_>,
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("PanelExtensionRegisterKeys", &(data,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ProcessKeyEvent method"]
+    pub async fn process_key_event(
+        &self,
+        keyval: u32,
+        keycode: u32,
+        state: u32,
+    ) -> zbus::Result<bool> {
+        let reply = self
+            .0
+            .call("ProcessKeyEvent", &(keyval, keycode, state))
+            .await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " RegisterProperties method"]
+    pub async fn register_properties(&self, props: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("RegisterProperties", &(props,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Reset method"]
+    pub async fn reset(&self) -> zbus::Result<()> {
+        let reply = self.0.call("Reset", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " SetCursorLocation method"]
+    pub async fn set_cursor_location(&self, x: i32, y: i32, w: i32, h: i32) -> zbus::Result<()> {
+        let reply = self.0.call("SetCursorLocation", &(x, y, w, h)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " SetCursorLocationRelative method"]
+    pub async fn set_cursor_location_relative(
+        &self,
+        x: i32,
+        y: i32,
+        w: i32,
+        h: i32,
+    ) -> zbus::Result<()> {
+        let reply = self
+            .0
+            .call("SetCursorLocationRelative", &(x, y, w, h))
+            .await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowAuxiliaryText method"]
+    pub async fn show_auxiliary_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowAuxiliaryText", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowLanguageBar method"]
+    pub async fn show_language_bar(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowLanguageBar", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowLookupTable method"]
+    pub async fn show_lookup_table(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowLookupTable", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ShowPreeditText method"]
+    pub async fn show_preedit_text(&self) -> zbus::Result<()> {
+        let reply = self.0.call("ShowPreeditText", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " StartSetup method"]
+    pub async fn start_setup(&self) -> zbus::Result<()> {
+        let reply = self.0.call("StartSetup", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " StateChanged method"]
+    pub async fn state_changed(&self) -> zbus::Result<()> {
+        let reply = self.0.call("StateChanged", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdateAuxiliaryText method"]
+    pub async fn update_auxiliary_text(
+        &self,
+        text: &zbus::zvariant::Value<'_>,
         visible: bool,
-    ) -> zbus::Result<()>;
-
-    /// UpdateLookupTableReceived signal
-    #[dbus_proxy(signal)]
-    fn update_lookup_table_received(
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("UpdateAuxiliaryText", &(text, visible)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdateLookupTable method"]
+    pub async fn update_lookup_table(
         &self,
-        table: zbus::zvariant::Value<'_>,
+        table: &zbus::zvariant::Value<'_>,
         visible: bool,
-    ) -> zbus::Result<()>;
-
-    /// UpdatePreeditTextReceived signal
-    #[dbus_proxy(signal)]
-    fn update_preedit_text_received(
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("UpdateLookupTable", &(table, visible)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdatePreeditText method"]
+    pub async fn update_preedit_text(
         &self,
-        text: zbus::zvariant::Value<'_>,
+        text: &zbus::zvariant::Value<'_>,
         cursor_pos: u32,
         visible: bool,
-    ) -> zbus::Result<()>;
+    ) -> zbus::Result<()> {
+        let reply = self
+            .0
+            .call("UpdatePreeditText", &(text, cursor_pos, visible))
+            .await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " UpdateProperty method"]
+    pub async fn update_property(&self, prop: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("UpdateProperty", &(prop,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = "Create a stream that receives `CandidateClicked` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CandidateClicked signal"]
+    pub async fn receive_candidate_clicked(
+        &self,
+    ) -> ::zbus::Result<CandidateClickedStream<'static>> {
+        self.receive_signal("CandidateClicked")
+            .await
+            .map(CandidateClickedStream)
+    }
+    #[doc = "Create a stream that receives `CandidateClicked` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " CandidateClicked signal"]
+    pub async fn receive_candidate_clicked_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<CandidateClickedStream<'static>> {
+        self.receive_signal_with_args("CandidateClicked", args)
+            .await
+            .map(CandidateClickedStream)
+    }
+    #[doc = "Create a stream that receives `CommitText` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CommitText signal"]
+    pub async fn receive_commit_text(&self) -> ::zbus::Result<CommitTextStream<'static>> {
+        self.receive_signal("CommitText")
+            .await
+            .map(CommitTextStream)
+    }
+    #[doc = "Create a stream that receives `CommitText` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " CommitText signal"]
+    pub async fn receive_commit_text_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<CommitTextStream<'static>> {
+        self.receive_signal_with_args("CommitText", args)
+            .await
+            .map(CommitTextStream)
+    }
+    #[doc = "Create a stream that receives `CursorDown` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CursorDown signal"]
+    pub async fn receive_cursor_down(&self) -> ::zbus::Result<CursorDownStream<'static>> {
+        self.receive_signal("CursorDown")
+            .await
+            .map(CursorDownStream)
+    }
+    #[doc = "Create a stream that receives `CursorUp` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " CursorUp signal"]
+    pub async fn receive_cursor_up(&self) -> ::zbus::Result<CursorUpStream<'static>> {
+        self.receive_signal("CursorUp").await.map(CursorUpStream)
+    }
+    #[doc = "Create a stream that receives `PageDown` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PageDown signal"]
+    pub async fn receive_page_down(&self) -> ::zbus::Result<PageDownStream<'static>> {
+        self.receive_signal("PageDown").await.map(PageDownStream)
+    }
+    #[doc = "Create a stream that receives `PageUp` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PageUp signal"]
+    pub async fn receive_page_up(&self) -> ::zbus::Result<PageUpStream<'static>> {
+        self.receive_signal("PageUp").await.map(PageUpStream)
+    }
+    #[doc = "Create a stream that receives `PanelExtension` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PanelExtension signal"]
+    pub async fn receive_panel_extension(&self) -> ::zbus::Result<PanelExtensionStream<'static>> {
+        self.receive_signal("PanelExtension")
+            .await
+            .map(PanelExtensionStream)
+    }
+    #[doc = "Create a stream that receives `PanelExtension` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PanelExtension signal"]
+    pub async fn receive_panel_extension_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PanelExtensionStream<'static>> {
+        self.receive_signal_with_args("PanelExtension", args)
+            .await
+            .map(PanelExtensionStream)
+    }
+    #[doc = "Create a stream that receives `PropertyActivate` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PropertyActivate signal"]
+    pub async fn receive_property_activate(
+        &self,
+    ) -> ::zbus::Result<PropertyActivateStream<'static>> {
+        self.receive_signal("PropertyActivate")
+            .await
+            .map(PropertyActivateStream)
+    }
+    #[doc = "Create a stream that receives `PropertyActivate` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PropertyActivate signal"]
+    pub async fn receive_property_activate_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PropertyActivateStream<'static>> {
+        self.receive_signal_with_args("PropertyActivate", args)
+            .await
+            .map(PropertyActivateStream)
+    }
+    #[doc = "Create a stream that receives `PropertyHide` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PropertyHide signal"]
+    pub async fn receive_property_hide(&self) -> ::zbus::Result<PropertyHideStream<'static>> {
+        self.receive_signal("PropertyHide")
+            .await
+            .map(PropertyHideStream)
+    }
+    #[doc = "Create a stream that receives `PropertyHide` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PropertyHide signal"]
+    pub async fn receive_property_hide_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PropertyHideStream<'static>> {
+        self.receive_signal_with_args("PropertyHide", args)
+            .await
+            .map(PropertyHideStream)
+    }
+    #[doc = "Create a stream that receives `PropertyShow` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " PropertyShow signal"]
+    pub async fn receive_property_show(&self) -> ::zbus::Result<PropertyShowStream<'static>> {
+        self.receive_signal("PropertyShow")
+            .await
+            .map(PropertyShowStream)
+    }
+    #[doc = "Create a stream that receives `PropertyShow` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " PropertyShow signal"]
+    pub async fn receive_property_show_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<PropertyShowStream<'static>> {
+        self.receive_signal_with_args("PropertyShow", args)
+            .await
+            .map(PropertyShowStream)
+    }
+    #[doc = "Create a stream that receives `UpdateAuxiliaryTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " UpdateAuxiliaryTextReceived signal"]
+    pub async fn receive_update_auxiliary_text_received(
+        &self,
+    ) -> ::zbus::Result<UpdateAuxiliaryTextReceivedStream<'static>> {
+        self.receive_signal("UpdateAuxiliaryTextReceived")
+            .await
+            .map(UpdateAuxiliaryTextReceivedStream)
+    }
+    #[doc = "Create a stream that receives `UpdateAuxiliaryTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " UpdateAuxiliaryTextReceived signal"]
+    pub async fn receive_update_auxiliary_text_received_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<UpdateAuxiliaryTextReceivedStream<'static>> {
+        self.receive_signal_with_args("UpdateAuxiliaryTextReceived", args)
+            .await
+            .map(UpdateAuxiliaryTextReceivedStream)
+    }
+    #[doc = "Create a stream that receives `UpdateLookupTableReceived` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " UpdateLookupTableReceived signal"]
+    pub async fn receive_update_lookup_table_received(
+        &self,
+    ) -> ::zbus::Result<UpdateLookupTableReceivedStream<'static>> {
+        self.receive_signal("UpdateLookupTableReceived")
+            .await
+            .map(UpdateLookupTableReceivedStream)
+    }
+    #[doc = "Create a stream that receives `UpdateLookupTableReceived` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " UpdateLookupTableReceived signal"]
+    pub async fn receive_update_lookup_table_received_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<UpdateLookupTableReceivedStream<'static>> {
+        self.receive_signal_with_args("UpdateLookupTableReceived", args)
+            .await
+            .map(UpdateLookupTableReceivedStream)
+    }
+    #[doc = "Create a stream that receives `UpdatePreeditTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " UpdatePreeditTextReceived signal"]
+    pub async fn receive_update_preedit_text_received(
+        &self,
+    ) -> ::zbus::Result<UpdatePreeditTextReceivedStream<'static>> {
+        self.receive_signal("UpdatePreeditTextReceived")
+            .await
+            .map(UpdatePreeditTextReceivedStream)
+    }
+    #[doc = "Create a stream that receives `UpdatePreeditTextReceived` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " UpdatePreeditTextReceived signal"]
+    pub async fn receive_update_preedit_text_received_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<UpdatePreeditTextReceivedStream<'static>> {
+        self.receive_signal_with_args("UpdatePreeditTextReceived", args)
+            .await
+            .map(UpdatePreeditTextReceivedStream)
+    }
+}
+impl<'c> ::std::convert::From<::zbus::Proxy<'c>> for PanelProxy<'c> {
+    fn from(proxy: ::zbus::Proxy<'c>) -> Self {
+        PanelProxy(::std::convert::Into::into(proxy))
+    }
+}
+impl<'c> ::std::ops::Deref for PanelProxy<'c> {
+    type Target = ::zbus::Proxy<'c>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl<'c> ::std::ops::DerefMut for PanelProxy<'c> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl<'c> ::std::convert::AsRef<::zbus::Proxy<'c>> for PanelProxy<'c> {
+    fn as_ref(&self) -> &::zbus::Proxy<'c> {
+        &*self
+    }
+}
+impl<'c> ::std::convert::AsMut<::zbus::Proxy<'c>> for PanelProxy<'c> {
+    fn as_mut(&mut self) -> &mut ::zbus::Proxy<'c> {
+        &mut *self
+    }
+}
+impl<'c> ::zbus::zvariant::Type for PanelProxy<'c> {
+    fn signature() -> ::zbus::zvariant::Signature<'static> {
+        ::zbus::zvariant::OwnedObjectPath::signature()
+    }
+}
+impl<'c> ::zbus::export::serde::ser::Serialize for PanelProxy<'c> {
+    fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
+    where
+        S: ::zbus::export::serde::ser::Serializer,
+    {
+        ::std::string::String::serialize(
+            &::std::string::ToString::to_string(self.inner().path()),
+            serializer,
+        )
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`CandidateClicked`] signals.\n\nUse [`PanelProxy::receive_candidate_clicked`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct CandidateClickedStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CandidateClickedStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CandidateClickedStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CandidateClickedStream<'_>>();
+};
+impl<'a> CandidateClickedStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CandidateClickedStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CandidateClickedStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for CandidateClickedStream<'_> {
+    type Item = CandidateClicked;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(CandidateClicked))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for CandidateClickedStream<'_> {
+    type Data = CandidateClicked;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(CandidateClicked))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for CandidateClickedStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for CandidateClickedStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `CandidateClicked` signal."]
+pub struct CandidateClicked(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for CandidateClicked {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CandidateClicked", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for CandidateClicked {
+    #[inline]
+    fn clone(&self) -> CandidateClicked {
+        CandidateClicked(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for CandidateClicked {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for CandidateClicked {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for CandidateClicked {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl CandidateClicked {
+    #[doc = "Try to construct a "]
+    #[doc = "CandidateClicked"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("CandidateClicked"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl CandidateClicked {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<CandidateClickedArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`CandidateClicked` signal arguments."]
+pub struct CandidateClickedArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub index: u32,
+    pub button: u32,
+    pub state: u32,
+}
+impl<'s> CandidateClickedArgs<'s> {
+    pub fn index(&self) -> &u32 {
+        &self.index
+    }
+    pub fn button(&self) -> &u32 {
+        &self.button
+    }
+    pub fn state(&self) -> &u32 {
+        &self.state
+    }
+}
+impl<'s> std::fmt::Debug for CandidateClickedArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("CandidateClicked")
+            .field("index", &self.index)
+            .field("button", &self.button)
+            .field("state", &self.state)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for CandidateClickedArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(u32, u32, u32)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| CandidateClickedArgs {
+                phantom: ::std::marker::PhantomData,
+                index: args.0,
+                button: args.1,
+                state: args.2,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`CommitText`] signals.\n\nUse [`PanelProxy::receive_commit_text`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct CommitTextStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CommitTextStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CommitTextStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CommitTextStream<'_>>();
+};
+impl<'a> CommitTextStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CommitTextStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CommitTextStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for CommitTextStream<'_> {
+    type Item = CommitText;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(CommitText))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for CommitTextStream<'_> {
+    type Data = CommitText;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(CommitText))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for CommitTextStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for CommitTextStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `CommitText` signal."]
+pub struct CommitText(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for CommitText {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CommitText", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for CommitText {
+    #[inline]
+    fn clone(&self) -> CommitText {
+        CommitText(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for CommitText {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for CommitText {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for CommitText {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl CommitText {
+    #[doc = "Try to construct a "]
+    #[doc = "CommitText"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("CommitText"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl CommitText {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<CommitTextArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`CommitText` signal arguments."]
+pub struct CommitTextArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub text: zbus::zvariant::Value<'s>,
+}
+impl<'s> CommitTextArgs<'s> {
+    pub fn text(&self) -> &zbus::zvariant::Value<'s> {
+        &self.text
+    }
+}
+impl<'s> std::fmt::Debug for CommitTextArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("CommitText")
+            .field("text", &self.text)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for CommitTextArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(zbus::zvariant::Value<'_>)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| CommitTextArgs {
+                phantom: ::std::marker::PhantomData,
+                text: args,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`CursorDown`] signals.\n\nUse [`PanelProxy::receive_cursor_down`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct CursorDownStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CursorDownStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorDownStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CursorDownStream<'_>>();
+};
+impl<'a> CursorDownStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CursorDownStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CursorDownStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for CursorDownStream<'_> {
+    type Item = CursorDown;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(CursorDown))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for CursorDownStream<'_> {
+    type Data = CursorDown;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(CursorDown))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for CursorDownStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for CursorDownStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `CursorDown` signal."]
+pub struct CursorDown(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for CursorDown {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorDown", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for CursorDown {
+    #[inline]
+    fn clone(&self) -> CursorDown {
+        CursorDown(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for CursorDown {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for CursorDown {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for CursorDown {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl CursorDown {
+    #[doc = "Try to construct a "]
+    #[doc = "CursorDown"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("CursorDown"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`CursorUp`] signals.\n\nUse [`PanelProxy::receive_cursor_up`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct CursorUpStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for CursorUpStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorUpStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<CursorUpStream<'_>>();
+};
+impl<'a> CursorUpStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for CursorUpStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for CursorUpStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for CursorUpStream<'_> {
+    type Item = CursorUp;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(CursorUp))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for CursorUpStream<'_> {
+    type Data = CursorUp;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(CursorUp))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for CursorUpStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for CursorUpStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `CursorUp` signal."]
+pub struct CursorUp(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for CursorUp {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorUp", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for CursorUp {
+    #[inline]
+    fn clone(&self) -> CursorUp {
+        CursorUp(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for CursorUp {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for CursorUp {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for CursorUp {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl CursorUp {
+    #[doc = "Try to construct a "]
+    #[doc = "CursorUp"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (::zbus::MessageType::Signal, Some("org.freedesktop.IBus.Panel"), Some("CursorUp")) => {
+                Some(Self(msg))
+            }
+            _ => None,
+        }
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`PageDown`] signals.\n\nUse [`PanelProxy::receive_page_down`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct PageDownStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PageDownStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageDownStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PageDownStream<'_>>();
+};
+impl<'a> PageDownStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PageDownStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PageDownStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for PageDownStream<'_> {
+    type Item = PageDown;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(PageDown))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for PageDownStream<'_> {
+    type Data = PageDown;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(PageDown))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for PageDownStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for PageDownStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `PageDown` signal."]
+pub struct PageDown(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for PageDown {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageDown", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for PageDown {
+    #[inline]
+    fn clone(&self) -> PageDown {
+        PageDown(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for PageDown {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for PageDown {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for PageDown {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl PageDown {
+    #[doc = "Try to construct a "]
+    #[doc = "PageDown"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (::zbus::MessageType::Signal, Some("org.freedesktop.IBus.Panel"), Some("PageDown")) => {
+                Some(Self(msg))
+            }
+            _ => None,
+        }
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`PageUp`] signals.\n\nUse [`PanelProxy::receive_page_up`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct PageUpStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PageUpStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageUpStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PageUpStream<'_>>();
+};
+impl<'a> PageUpStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PageUpStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PageUpStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for PageUpStream<'_> {
+    type Item = PageUp;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(PageUp))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for PageUpStream<'_> {
+    type Data = PageUp;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(PageUp))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for PageUpStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for PageUpStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `PageUp` signal."]
+pub struct PageUp(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for PageUp {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageUp", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for PageUp {
+    #[inline]
+    fn clone(&self) -> PageUp {
+        PageUp(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for PageUp {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for PageUp {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for PageUp {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl PageUp {
+    #[doc = "Try to construct a "]
+    #[doc = "PageUp"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (::zbus::MessageType::Signal, Some("org.freedesktop.IBus.Panel"), Some("PageUp")) => {
+                Some(Self(msg))
+            }
+            _ => None,
+        }
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`PanelExtension`] signals.\n\nUse [`PanelProxy::receive_panel_extension`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct PanelExtensionStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PanelExtensionStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelExtensionStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PanelExtensionStream<'_>>();
+};
+impl<'a> PanelExtensionStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PanelExtensionStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PanelExtensionStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for PanelExtensionStream<'_> {
+    type Item = PanelExtension;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(PanelExtension))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for PanelExtensionStream<'_> {
+    type Data = PanelExtension;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(PanelExtension))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for PanelExtensionStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for PanelExtensionStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `PanelExtension` signal."]
+pub struct PanelExtension(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for PanelExtension {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelExtension", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for PanelExtension {
+    #[inline]
+    fn clone(&self) -> PanelExtension {
+        PanelExtension(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for PanelExtension {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for PanelExtension {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for PanelExtension {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl PanelExtension {
+    #[doc = "Try to construct a "]
+    #[doc = "PanelExtension"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("PanelExtension"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl PanelExtension {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<PanelExtensionArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`PanelExtension` signal arguments."]
+pub struct PanelExtensionArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub event: zbus::zvariant::Value<'s>,
+}
+impl<'s> PanelExtensionArgs<'s> {
+    pub fn event(&self) -> &zbus::zvariant::Value<'s> {
+        &self.event
+    }
+}
+impl<'s> std::fmt::Debug for PanelExtensionArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PanelExtension")
+            .field("event", &self.event)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PanelExtensionArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(zbus::zvariant::Value<'_>)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| PanelExtensionArgs {
+                phantom: ::std::marker::PhantomData,
+                event: args,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`PropertyActivate`] signals.\n\nUse [`PanelProxy::receive_property_activate`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct PropertyActivateStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PropertyActivateStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyActivateStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PropertyActivateStream<'_>>();
+};
+impl<'a> PropertyActivateStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PropertyActivateStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PropertyActivateStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for PropertyActivateStream<'_> {
+    type Item = PropertyActivate;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(PropertyActivate))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for PropertyActivateStream<'_> {
+    type Data = PropertyActivate;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(PropertyActivate))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for PropertyActivateStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for PropertyActivateStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `PropertyActivate` signal."]
+pub struct PropertyActivate(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for PropertyActivate {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyActivate", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for PropertyActivate {
+    #[inline]
+    fn clone(&self) -> PropertyActivate {
+        PropertyActivate(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for PropertyActivate {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for PropertyActivate {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for PropertyActivate {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl PropertyActivate {
+    #[doc = "Try to construct a "]
+    #[doc = "PropertyActivate"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("PropertyActivate"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl PropertyActivate {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<PropertyActivateArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`PropertyActivate` signal arguments."]
+pub struct PropertyActivateArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub prop_name: &'s str,
+    pub prop_state: i32,
+}
+impl<'s> PropertyActivateArgs<'s> {
+    pub fn prop_name(&self) -> &&'s str {
+        &self.prop_name
+    }
+    pub fn prop_state(&self) -> &i32 {
+        &self.prop_state
+    }
+}
+impl<'s> std::fmt::Debug for PropertyActivateArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PropertyActivate")
+            .field("prop_name", &self.prop_name)
+            .field("prop_state", &self.prop_state)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyActivateArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(&str, i32)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| PropertyActivateArgs {
+                phantom: ::std::marker::PhantomData,
+                prop_name: args.0,
+                prop_state: args.1,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`PropertyHide`] signals.\n\nUse [`PanelProxy::receive_property_hide`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct PropertyHideStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PropertyHideStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyHideStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PropertyHideStream<'_>>();
+};
+impl<'a> PropertyHideStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PropertyHideStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PropertyHideStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for PropertyHideStream<'_> {
+    type Item = PropertyHide;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(PropertyHide))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for PropertyHideStream<'_> {
+    type Data = PropertyHide;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(PropertyHide))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for PropertyHideStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for PropertyHideStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `PropertyHide` signal."]
+pub struct PropertyHide(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for PropertyHide {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyHide", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for PropertyHide {
+    #[inline]
+    fn clone(&self) -> PropertyHide {
+        PropertyHide(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for PropertyHide {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for PropertyHide {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for PropertyHide {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl PropertyHide {
+    #[doc = "Try to construct a "]
+    #[doc = "PropertyHide"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("PropertyHide"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl PropertyHide {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<PropertyHideArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`PropertyHide` signal arguments."]
+pub struct PropertyHideArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub prop_name: &'s str,
+}
+impl<'s> PropertyHideArgs<'s> {
+    pub fn prop_name(&self) -> &&'s str {
+        &self.prop_name
+    }
+}
+impl<'s> std::fmt::Debug for PropertyHideArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PropertyHide")
+            .field("prop_name", &self.prop_name)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyHideArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(&str)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| PropertyHideArgs {
+                phantom: ::std::marker::PhantomData,
+                prop_name: args,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`PropertyShow`] signals.\n\nUse [`PanelProxy::receive_property_show`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct PropertyShowStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for PropertyShowStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyShowStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<PropertyShowStream<'_>>();
+};
+impl<'a> PropertyShowStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for PropertyShowStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for PropertyShowStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for PropertyShowStream<'_> {
+    type Item = PropertyShow;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(PropertyShow))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for PropertyShowStream<'_> {
+    type Data = PropertyShow;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(PropertyShow))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for PropertyShowStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for PropertyShowStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `PropertyShow` signal."]
+pub struct PropertyShow(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for PropertyShow {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyShow", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for PropertyShow {
+    #[inline]
+    fn clone(&self) -> PropertyShow {
+        PropertyShow(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for PropertyShow {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for PropertyShow {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for PropertyShow {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl PropertyShow {
+    #[doc = "Try to construct a "]
+    #[doc = "PropertyShow"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("PropertyShow"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl PropertyShow {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<PropertyShowArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`PropertyShow` signal arguments."]
+pub struct PropertyShowArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub prop_name: &'s str,
+}
+impl<'s> PropertyShowArgs<'s> {
+    pub fn prop_name(&self) -> &&'s str {
+        &self.prop_name
+    }
+}
+impl<'s> std::fmt::Debug for PropertyShowArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PropertyShow")
+            .field("prop_name", &self.prop_name)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyShowArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(&str)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| PropertyShowArgs {
+                phantom: ::std::marker::PhantomData,
+                prop_name: args,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`UpdateAuxiliaryTextReceived`] signals.\n\nUse [`PanelProxy::receive_update_auxiliary_text_received`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct UpdateAuxiliaryTextReceivedStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for UpdateAuxiliaryTextReceivedStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdateAuxiliaryTextReceivedStream",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<UpdateAuxiliaryTextReceivedStream<'_>>();
+};
+impl<'a> UpdateAuxiliaryTextReceivedStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for UpdateAuxiliaryTextReceivedStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for UpdateAuxiliaryTextReceivedStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for UpdateAuxiliaryTextReceivedStream<'_> {
+    type Item = UpdateAuxiliaryTextReceived;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(UpdateAuxiliaryTextReceived))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for UpdateAuxiliaryTextReceivedStream<'_> {
+    type Data = UpdateAuxiliaryTextReceived;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(UpdateAuxiliaryTextReceived))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for UpdateAuxiliaryTextReceivedStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for UpdateAuxiliaryTextReceivedStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `UpdateAuxiliaryTextReceived` signal."]
+pub struct UpdateAuxiliaryTextReceived(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for UpdateAuxiliaryTextReceived {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdateAuxiliaryTextReceived",
+            &&self.0,
+        )
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for UpdateAuxiliaryTextReceived {
+    #[inline]
+    fn clone(&self) -> UpdateAuxiliaryTextReceived {
+        UpdateAuxiliaryTextReceived(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for UpdateAuxiliaryTextReceived {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for UpdateAuxiliaryTextReceived {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for UpdateAuxiliaryTextReceived {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl UpdateAuxiliaryTextReceived {
+    #[doc = "Try to construct a "]
+    #[doc = "UpdateAuxiliaryTextReceived"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("UpdateAuxiliaryTextReceived"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl UpdateAuxiliaryTextReceived {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<UpdateAuxiliaryTextReceivedArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`UpdateAuxiliaryTextReceived` signal arguments."]
+pub struct UpdateAuxiliaryTextReceivedArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub text: zbus::zvariant::Value<'s>,
+    pub visible: bool,
+}
+impl<'s> UpdateAuxiliaryTextReceivedArgs<'s> {
+    pub fn text(&self) -> &zbus::zvariant::Value<'s> {
+        &self.text
+    }
+    pub fn visible(&self) -> &bool {
+        &self.visible
+    }
+}
+impl<'s> std::fmt::Debug for UpdateAuxiliaryTextReceivedArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("UpdateAuxiliaryTextReceived")
+            .field("text", &self.text)
+            .field("visible", &self.visible)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for UpdateAuxiliaryTextReceivedArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(zbus::zvariant::Value<'_>, bool)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| UpdateAuxiliaryTextReceivedArgs {
+                phantom: ::std::marker::PhantomData,
+                text: args.0,
+                visible: args.1,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`UpdateLookupTableReceived`] signals.\n\nUse [`PanelProxy::receive_update_lookup_table_received`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct UpdateLookupTableReceivedStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for UpdateLookupTableReceivedStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdateLookupTableReceivedStream",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<UpdateLookupTableReceivedStream<'_>>();
+};
+impl<'a> UpdateLookupTableReceivedStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for UpdateLookupTableReceivedStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for UpdateLookupTableReceivedStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for UpdateLookupTableReceivedStream<'_> {
+    type Item = UpdateLookupTableReceived;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(UpdateLookupTableReceived))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for UpdateLookupTableReceivedStream<'_> {
+    type Data = UpdateLookupTableReceived;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(UpdateLookupTableReceived))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for UpdateLookupTableReceivedStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for UpdateLookupTableReceivedStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `UpdateLookupTableReceived` signal."]
+pub struct UpdateLookupTableReceived(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for UpdateLookupTableReceived {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "UpdateLookupTableReceived", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for UpdateLookupTableReceived {
+    #[inline]
+    fn clone(&self) -> UpdateLookupTableReceived {
+        UpdateLookupTableReceived(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for UpdateLookupTableReceived {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for UpdateLookupTableReceived {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for UpdateLookupTableReceived {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl UpdateLookupTableReceived {
+    #[doc = "Try to construct a "]
+    #[doc = "UpdateLookupTableReceived"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("UpdateLookupTableReceived"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl UpdateLookupTableReceived {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<UpdateLookupTableReceivedArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`UpdateLookupTableReceived` signal arguments."]
+pub struct UpdateLookupTableReceivedArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub table: zbus::zvariant::Value<'s>,
+    pub visible: bool,
+}
+impl<'s> UpdateLookupTableReceivedArgs<'s> {
+    pub fn table(&self) -> &zbus::zvariant::Value<'s> {
+        &self.table
+    }
+    pub fn visible(&self) -> &bool {
+        &self.visible
+    }
+}
+impl<'s> std::fmt::Debug for UpdateLookupTableReceivedArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("UpdateLookupTableReceived")
+            .field("table", &self.table)
+            .field("visible", &self.visible)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for UpdateLookupTableReceivedArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(zbus::zvariant::Value<'_>, bool)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| UpdateLookupTableReceivedArgs {
+                phantom: ::std::marker::PhantomData,
+                table: args.0,
+                visible: args.1,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`UpdatePreeditTextReceived`] signals.\n\nUse [`PanelProxy::receive_update_preedit_text_received`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct UpdatePreeditTextReceivedStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for UpdatePreeditTextReceivedStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "UpdatePreeditTextReceivedStream",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<UpdatePreeditTextReceivedStream<'_>>();
+};
+impl<'a> UpdatePreeditTextReceivedStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for UpdatePreeditTextReceivedStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for UpdatePreeditTextReceivedStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for UpdatePreeditTextReceivedStream<'_> {
+    type Item = UpdatePreeditTextReceived;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(UpdatePreeditTextReceived))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for UpdatePreeditTextReceivedStream<'_> {
+    type Data = UpdatePreeditTextReceived;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(UpdatePreeditTextReceived))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for UpdatePreeditTextReceivedStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for UpdatePreeditTextReceivedStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `UpdatePreeditTextReceived` signal."]
+pub struct UpdatePreeditTextReceived(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for UpdatePreeditTextReceived {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "UpdatePreeditTextReceived", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for UpdatePreeditTextReceived {
+    #[inline]
+    fn clone(&self) -> UpdatePreeditTextReceived {
+        UpdatePreeditTextReceived(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for UpdatePreeditTextReceived {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for UpdatePreeditTextReceived {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for UpdatePreeditTextReceived {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl UpdatePreeditTextReceived {
+    #[doc = "Try to construct a "]
+    #[doc = "UpdatePreeditTextReceived"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus.Panel"),
+                Some("UpdatePreeditTextReceived"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl UpdatePreeditTextReceived {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<UpdatePreeditTextReceivedArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`UpdatePreeditTextReceived` signal arguments."]
+pub struct UpdatePreeditTextReceivedArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub text: zbus::zvariant::Value<'s>,
+    pub cursor_pos: u32,
+    pub visible: bool,
+}
+impl<'s> UpdatePreeditTextReceivedArgs<'s> {
+    pub fn text(&self) -> &zbus::zvariant::Value<'s> {
+        &self.text
+    }
+    pub fn cursor_pos(&self) -> &u32 {
+        &self.cursor_pos
+    }
+    pub fn visible(&self) -> &bool {
+        &self.visible
+    }
+}
+impl<'s> std::fmt::Debug for UpdatePreeditTextReceivedArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("UpdatePreeditTextReceived")
+            .field("text", &self.text)
+            .field("cursor_pos", &self.cursor_pos)
+            .field("visible", &self.visible)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for UpdatePreeditTextReceivedArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(zbus::zvariant::Value<'_>, u32, bool)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| UpdatePreeditTextReceivedArgs {
+                phantom: ::std::marker::PhantomData,
+                text: args.0,
+                cursor_pos: args.1,
+                visible: args.2,
+            })
+    }
 }

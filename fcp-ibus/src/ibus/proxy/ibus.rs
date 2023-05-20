@@ -9,87 +9,1071 @@
 //! [Writing a client proxy](https://dbus.pages.freedesktop.org/zbus/client.html)
 //! section of the zbus documentation.
 //!
-
 use zbus::dbus_proxy;
-
-#[dbus_proxy(interface = "org.freedesktop.IBus", assume_defaults = true)]
-trait IBus {
-    /// CreateInputContext method
-    fn create_input_context(
+impl<'a> ::zbus::ProxyDefault for IBusProxyBlocking<'a> {
+    const INTERFACE: &'static str = "org.freedesktop.IBus";
+    const DESTINATION: &'static str = "org.freedesktop.IBus";
+    const PATH: &'static str = "/org/freedesktop/IBus";
+}
+pub struct IBusProxyBlocking<'c>(::zbus::blocking::Proxy<'c>);
+#[automatically_derived]
+impl<'c> ::core::clone::Clone for IBusProxyBlocking<'c> {
+    #[inline]
+    fn clone(&self) -> IBusProxyBlocking<'c> {
+        IBusProxyBlocking(::core::clone::Clone::clone(&self.0))
+    }
+}
+#[automatically_derived]
+impl<'c> ::core::fmt::Debug for IBusProxyBlocking<'c> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "IBusProxyBlocking", &&self.0)
+    }
+}
+impl<'c> IBusProxyBlocking<'c> {
+    #[doc = r" Creates a new proxy with the default service and path."]
+    pub fn new(conn: &::zbus::blocking::Connection) -> ::zbus::Result<IBusProxyBlocking<'c>> {
+        Self::builder(conn).build()
+    }
+    #[doc = r" Returns a customizable builder for this proxy."]
+    pub fn builder(
+        conn: &::zbus::blocking::Connection,
+    ) -> ::zbus::blocking::ProxyBuilder<'c, Self> {
+        let mut builder = ::zbus::blocking::ProxyBuilder::new(conn);
+        if true {
+            let uncached = Vec::new();
+            builder
+                .cache_properties(::zbus::CacheProperties::default())
+                .uncached_properties(&uncached)
+        } else {
+            builder.cache_properties(::zbus::CacheProperties::No)
+        }
+    }
+    #[doc = r" Consumes `self`, returning the underlying `zbus::Proxy`."]
+    pub fn into_inner(self) -> ::zbus::blocking::Proxy<'c> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::Proxy`."]
+    pub fn inner(&self) -> &::zbus::blocking::Proxy<'c> {
+        &self.0
+    }
+    #[doc = " CreateInputContext method"]
+    pub fn create_input_context(
         &self,
         client_name: &str,
-    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
-
-    /// CurrentInputContext method
-    fn current_input_context(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
-
-    /// Exit method
-    fn exit(&self, restart: bool) -> zbus::Result<()>;
-
-    /// GetAddress method
-    fn get_address(&self) -> zbus::Result<String>;
-
-    /// GetEnginesByNames method
-    fn get_engines_by_names(&self, names: &[&str])
-        -> zbus::Result<Vec<zbus::zvariant::OwnedValue>>;
-
-    /// GetGlobalEngine method
-    fn get_global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue>;
-
-    /// GetUseGlobalEngine method
-    fn get_use_global_engine(&self) -> zbus::Result<bool>;
-
-    /// GetUseSysLayout method
-    fn get_use_sys_layout(&self) -> zbus::Result<bool>;
-
-    /// IsGlobalEngineEnabled method
-    fn is_global_engine_enabled(&self) -> zbus::Result<bool>;
-
-    /// ListActiveEngines method
-    fn list_active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>>;
-
-    /// ListEngines method
-    fn list_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>>;
-
-    /// Ping method
-    fn ping(&self, data: &zbus::zvariant::Value<'_>) -> zbus::Result<zbus::zvariant::OwnedValue>;
-
-    /// RegisterComponent method
-    fn register_component(&self, component: &zbus::zvariant::Value<'_>) -> zbus::Result<()>;
-
-    /// SetGlobalEngine method
-    fn set_global_engine(&self, engine_name: &str) -> zbus::Result<()>;
-
-    /// GlobalEngineChanged signal
-    #[dbus_proxy(signal)]
-    fn global_engine_changed(&self, engine_name: &str) -> zbus::Result<()>;
-
-    /// RegistryChanged signal
-    #[dbus_proxy(signal)]
-    fn registry_changed(&self) -> zbus::Result<()>;
-
-    /// ActiveEngines property
-    #[dbus_proxy(property)]
-    fn active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>>;
-
-    /// Address property
-    #[dbus_proxy(property)]
-    fn address(&self) -> zbus::Result<String>;
-
-    /// EmbedPreeditText property
-    #[dbus_proxy(property)]
-    fn embed_preedit_text(&self) -> zbus::Result<bool>;
-    fn set_embed_preedit_text(&self, value: bool) -> zbus::Result<()>;
-
-    /// Engines property
-    #[dbus_proxy(property)]
-    fn engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>>;
-
-    /// GlobalEngine property
-    #[dbus_proxy(property)]
-    fn global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue>;
-
-    /// PreloadEngines property
-    #[dbus_proxy(property)]
-    fn set_preload_engines(&self, value: &[&str]) -> zbus::Result<()>;
+    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
+        let reply = self.0.call("CreateInputContext", &(client_name,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CurrentInputContext method"]
+    pub fn current_input_context(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
+        let reply = self.0.call("CurrentInputContext", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Exit method"]
+    pub fn exit(&self, restart: bool) -> zbus::Result<()> {
+        let reply = self.0.call("Exit", &(restart,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetAddress method"]
+    pub fn get_address(&self) -> zbus::Result<String> {
+        let reply = self.0.call("GetAddress", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetEnginesByNames method"]
+    pub fn get_engines_by_names(
+        &self,
+        names: &[&str],
+    ) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        let reply = self.0.call("GetEnginesByNames", &(names,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetGlobalEngine method"]
+    pub fn get_global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue> {
+        let reply = self.0.call("GetGlobalEngine", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetUseGlobalEngine method"]
+    pub fn get_use_global_engine(&self) -> zbus::Result<bool> {
+        let reply = self.0.call("GetUseGlobalEngine", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetUseSysLayout method"]
+    pub fn get_use_sys_layout(&self) -> zbus::Result<bool> {
+        let reply = self.0.call("GetUseSysLayout", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " IsGlobalEngineEnabled method"]
+    pub fn is_global_engine_enabled(&self) -> zbus::Result<bool> {
+        let reply = self.0.call("IsGlobalEngineEnabled", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ListActiveEngines method"]
+    pub fn list_active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        let reply = self.0.call("ListActiveEngines", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ListEngines method"]
+    pub fn list_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        let reply = self.0.call("ListEngines", &())?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Ping method"]
+    pub fn ping(
+        &self,
+        data: &zbus::zvariant::Value<'_>,
+    ) -> zbus::Result<zbus::zvariant::OwnedValue> {
+        let reply = self.0.call("Ping", &(data,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " RegisterComponent method"]
+    pub fn register_component(&self, component: &zbus::zvariant::Value<'_>) -> zbus::Result<()> {
+        let reply = self.0.call("RegisterComponent", &(component,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " SetGlobalEngine method"]
+    pub fn set_global_engine(&self, engine_name: &str) -> zbus::Result<()> {
+        let reply = self.0.call("SetGlobalEngine", &(engine_name,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = "Create a stream that receives `GlobalEngineChanged` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " GlobalEngineChanged signal"]
+    pub fn receive_global_engine_changed(
+        &self,
+    ) -> ::zbus::Result<GlobalEngineChangedIterator<'static>> {
+        self.receive_signal("GlobalEngineChanged")
+            .map(GlobalEngineChangedIterator)
+    }
+    #[doc = "Create a stream that receives `GlobalEngineChanged` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " GlobalEngineChanged signal"]
+    pub fn receive_global_engine_changed_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<GlobalEngineChangedIterator<'static>> {
+        self.receive_signal_with_args("GlobalEngineChanged", args)
+            .map(GlobalEngineChangedIterator)
+    }
+    #[doc = "Create a stream that receives `RegistryChanged` signals.\n\nThis a convenient wrapper around [`zbus::blocking::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/blocking/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " RegistryChanged signal"]
+    pub fn receive_registry_changed(&self) -> ::zbus::Result<RegistryChangedIterator<'static>> {
+        self.receive_signal("RegistryChanged")
+            .map(RegistryChangedIterator)
+    }
+    #[doc = " ActiveEngines property"]
+    #[allow(clippy::needless_question_mark)]
+    pub fn active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        ::std::result::Result::Ok(self.0.get_property("ActiveEngines")?)
+    }
+    #[doc = " Get the cached value of the `ActiveEngines` property, or `None` if the property is not cached."]
+    pub fn cached_active_engines(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<
+            <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+        >,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("ActiveEngines")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `ActiveEngines` property changes. This is a convenient wrapper around [`zbus::blocking::Proxy::receive_property_changed`]."]
+    pub fn receive_active_engines_changed(
+        &self,
+    ) -> ::zbus::blocking::PropertyIterator<
+        'c,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+    > {
+        self.0.receive_property_changed("ActiveEngines")
+    }
+    #[doc = " Address property"]
+    #[allow(clippy::needless_question_mark)]
+    pub fn address(&self) -> zbus::Result<String> {
+        ::std::result::Result::Ok(self.0.get_property("Address")?)
+    }
+    #[doc = " Get the cached value of the `Address` property, or `None` if the property is not cached."]
+    pub fn cached_address(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<<zbus::Result<String> as ::zbus::ResultAdapter>::Ok>,
+        <zbus::Result<String> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("Address")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `Address` property changes. This is a convenient wrapper around [`zbus::blocking::Proxy::receive_property_changed`]."]
+    pub fn receive_address_changed(
+        &self,
+    ) -> ::zbus::blocking::PropertyIterator<'c, <zbus::Result<String> as ::zbus::ResultAdapter>::Ok>
+    {
+        self.0.receive_property_changed("Address")
+    }
+    #[doc = " EmbedPreeditText property"]
+    #[allow(clippy::needless_question_mark)]
+    pub fn embed_preedit_text(&self) -> zbus::Result<bool> {
+        ::std::result::Result::Ok(self.0.get_property("EmbedPreeditText")?)
+    }
+    #[doc = " Get the cached value of the `EmbedPreeditText` property, or `None` if the property is not cached."]
+    pub fn cached_embed_preedit_text(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<<zbus::Result<bool> as ::zbus::ResultAdapter>::Ok>,
+        <zbus::Result<bool> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("EmbedPreeditText")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `EmbedPreeditText` property changes. This is a convenient wrapper around [`zbus::blocking::Proxy::receive_property_changed`]."]
+    pub fn receive_embed_preedit_text_changed(
+        &self,
+    ) -> ::zbus::blocking::PropertyIterator<'c, <zbus::Result<bool> as ::zbus::ResultAdapter>::Ok>
+    {
+        self.0.receive_property_changed("EmbedPreeditText")
+    }
+    pub fn set_embed_preedit_text(&self, value: bool) -> zbus::Result<()> {
+        let reply = self.0.call("SetEmbedPreeditText", &(value,))?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Engines property"]
+    #[allow(clippy::needless_question_mark)]
+    pub fn engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        ::std::result::Result::Ok(self.0.get_property("Engines")?)
+    }
+    #[doc = " Get the cached value of the `Engines` property, or `None` if the property is not cached."]
+    pub fn cached_engines(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<
+            <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+        >,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("Engines")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `Engines` property changes. This is a convenient wrapper around [`zbus::blocking::Proxy::receive_property_changed`]."]
+    pub fn receive_engines_changed(
+        &self,
+    ) -> ::zbus::blocking::PropertyIterator<
+        'c,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+    > {
+        self.0.receive_property_changed("Engines")
+    }
+    #[doc = " GlobalEngine property"]
+    #[allow(clippy::needless_question_mark)]
+    pub fn global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue> {
+        ::std::result::Result::Ok(self.0.get_property("GlobalEngine")?)
+    }
+    #[doc = " Get the cached value of the `GlobalEngine` property, or `None` if the property is not cached."]
+    pub fn cached_global_engine(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<
+            <zbus::Result<zbus::zvariant::OwnedValue> as ::zbus::ResultAdapter>::Ok,
+        >,
+        <zbus::Result<zbus::zvariant::OwnedValue> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("GlobalEngine")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `GlobalEngine` property changes. This is a convenient wrapper around [`zbus::blocking::Proxy::receive_property_changed`]."]
+    pub fn receive_global_engine_changed_2(
+        &self,
+    ) -> ::zbus::blocking::PropertyIterator<
+        'c,
+        <zbus::Result<zbus::zvariant::OwnedValue> as ::zbus::ResultAdapter>::Ok,
+    > {
+        self.0.receive_property_changed("GlobalEngine")
+    }
+    #[doc = " PreloadEngines property"]
+    #[allow(clippy::needless_question_mark)]
+    pub fn set_preload_engines(&self, value: &[&str]) -> zbus::Result<()> {
+        ::std::result::Result::Ok(self.0.set_property("PreloadEngines", value)?)
+    }
+}
+impl<'c> ::std::convert::From<::zbus::Proxy<'c>> for IBusProxyBlocking<'c> {
+    fn from(proxy: ::zbus::Proxy<'c>) -> Self {
+        IBusProxyBlocking(::std::convert::Into::into(proxy))
+    }
+}
+impl<'c> ::std::ops::Deref for IBusProxyBlocking<'c> {
+    type Target = ::zbus::blocking::Proxy<'c>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl<'c> ::std::ops::DerefMut for IBusProxyBlocking<'c> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl<'c> ::std::convert::AsRef<::zbus::blocking::Proxy<'c>> for IBusProxyBlocking<'c> {
+    fn as_ref(&self) -> &::zbus::blocking::Proxy<'c> {
+        &*self
+    }
+}
+impl<'c> ::std::convert::AsMut<::zbus::blocking::Proxy<'c>> for IBusProxyBlocking<'c> {
+    fn as_mut(&mut self) -> &mut ::zbus::blocking::Proxy<'c> {
+        &mut *self
+    }
+}
+impl<'c> ::zbus::zvariant::Type for IBusProxyBlocking<'c> {
+    fn signature() -> ::zbus::zvariant::Signature<'static> {
+        ::zbus::zvariant::OwnedObjectPath::signature()
+    }
+}
+impl<'c> ::zbus::export::serde::ser::Serialize for IBusProxyBlocking<'c> {
+    fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
+    where
+        S: ::zbus::export::serde::ser::Serializer,
+    {
+        ::std::string::String::serialize(
+            &::std::string::ToString::to_string(self.inner().path()),
+            serializer,
+        )
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`GlobalEngineChanged`] signals.\n\nUse [`IBusProxyBlocking::receive_global_engine_changed`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct GlobalEngineChangedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for GlobalEngineChangedIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(
+            f,
+            "GlobalEngineChangedIterator",
+            &&self.0,
+        )
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<GlobalEngineChangedIterator<'_>>();
+};
+impl<'a> GlobalEngineChangedIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for GlobalEngineChangedIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for GlobalEngineChangedIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for GlobalEngineChangedIterator<'_> {
+    type Item = GlobalEngineChanged;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(GlobalEngineChanged)
+    }
+}
+#[doc = "A [`Iterator`] implementation that yields [`RegistryChanged`] signals.\n\nUse [`IBusProxyBlocking::receive_registry_changed`] to create an instance of this type.\n\n[`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html"]
+pub struct RegistryChangedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for RegistryChangedIterator<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "RegistryChangedIterator", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<RegistryChangedIterator<'_>>();
+};
+impl<'a> RegistryChangedIterator<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::blocking::SignalIterator<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::blocking::SignalIterator<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for RegistryChangedIterator<'a> {
+    type Target = ::zbus::blocking::SignalIterator<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for RegistryChangedIterator<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::std::iter::Iterator for RegistryChangedIterator<'_> {
+    type Item = RegistryChanged;
+    fn next(&mut self) -> ::std::option::Option<Self::Item> {
+        ::std::iter::Iterator::next(&mut self.0).map(RegistryChanged)
+    }
+}
+impl<'a> ::zbus::ProxyDefault for IBusProxy<'a> {
+    const INTERFACE: &'static str = "org.freedesktop.IBus";
+    const DESTINATION: &'static str = "org.freedesktop.IBus";
+    const PATH: &'static str = "/org/freedesktop/IBus";
+}
+pub struct IBusProxy<'c>(::zbus::Proxy<'c>);
+#[automatically_derived]
+impl<'c> ::core::clone::Clone for IBusProxy<'c> {
+    #[inline]
+    fn clone(&self) -> IBusProxy<'c> {
+        IBusProxy(::core::clone::Clone::clone(&self.0))
+    }
+}
+#[automatically_derived]
+impl<'c> ::core::fmt::Debug for IBusProxy<'c> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "IBusProxy", &&self.0)
+    }
+}
+impl<'c> IBusProxy<'c> {
+    #[doc = r" Creates a new proxy with the default service and path."]
+    pub async fn new(conn: &::zbus::Connection) -> ::zbus::Result<IBusProxy<'c>> {
+        Self::builder(conn).build().await
+    }
+    #[doc = r" Returns a customizable builder for this proxy."]
+    pub fn builder(conn: &::zbus::Connection) -> ::zbus::ProxyBuilder<'c, Self> {
+        let mut builder = ::zbus::ProxyBuilder::new(conn);
+        if true {
+            let uncached = Vec::new();
+            builder
+                .cache_properties(::zbus::CacheProperties::default())
+                .uncached_properties(&uncached)
+        } else {
+            builder.cache_properties(::zbus::CacheProperties::No)
+        }
+    }
+    #[doc = r" Consumes `self`, returning the underlying `zbus::Proxy`."]
+    pub fn into_inner(self) -> ::zbus::Proxy<'c> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::Proxy`."]
+    pub fn inner(&self) -> &::zbus::Proxy<'c> {
+        &self.0
+    }
+    #[doc = " CreateInputContext method"]
+    pub async fn create_input_context(
+        &self,
+        client_name: &str,
+    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
+        let reply = self.0.call("CreateInputContext", &(client_name,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " CurrentInputContext method"]
+    pub async fn current_input_context(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
+        let reply = self.0.call("CurrentInputContext", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Exit method"]
+    pub async fn exit(&self, restart: bool) -> zbus::Result<()> {
+        let reply = self.0.call("Exit", &(restart,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetAddress method"]
+    pub async fn get_address(&self) -> zbus::Result<String> {
+        let reply = self.0.call("GetAddress", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetEnginesByNames method"]
+    pub async fn get_engines_by_names(
+        &self,
+        names: &[&str],
+    ) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        let reply = self.0.call("GetEnginesByNames", &(names,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetGlobalEngine method"]
+    pub async fn get_global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue> {
+        let reply = self.0.call("GetGlobalEngine", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetUseGlobalEngine method"]
+    pub async fn get_use_global_engine(&self) -> zbus::Result<bool> {
+        let reply = self.0.call("GetUseGlobalEngine", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " GetUseSysLayout method"]
+    pub async fn get_use_sys_layout(&self) -> zbus::Result<bool> {
+        let reply = self.0.call("GetUseSysLayout", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " IsGlobalEngineEnabled method"]
+    pub async fn is_global_engine_enabled(&self) -> zbus::Result<bool> {
+        let reply = self.0.call("IsGlobalEngineEnabled", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ListActiveEngines method"]
+    pub async fn list_active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        let reply = self.0.call("ListActiveEngines", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " ListEngines method"]
+    pub async fn list_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        let reply = self.0.call("ListEngines", &()).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Ping method"]
+    pub async fn ping(
+        &self,
+        data: &zbus::zvariant::Value<'_>,
+    ) -> zbus::Result<zbus::zvariant::OwnedValue> {
+        let reply = self.0.call("Ping", &(data,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " RegisterComponent method"]
+    pub async fn register_component(
+        &self,
+        component: &zbus::zvariant::Value<'_>,
+    ) -> zbus::Result<()> {
+        let reply = self.0.call("RegisterComponent", &(component,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " SetGlobalEngine method"]
+    pub async fn set_global_engine(&self, engine_name: &str) -> zbus::Result<()> {
+        let reply = self.0.call("SetGlobalEngine", &(engine_name,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = "Create a stream that receives `GlobalEngineChanged` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " GlobalEngineChanged signal"]
+    pub async fn receive_global_engine_changed(
+        &self,
+    ) -> ::zbus::Result<GlobalEngineChangedStream<'static>> {
+        self.receive_signal("GlobalEngineChanged")
+            .await
+            .map(GlobalEngineChangedStream)
+    }
+    #[doc = "Create a stream that receives `GlobalEngineChanged` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal_with_args`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal_with_args)."]
+    #[doc = " GlobalEngineChanged signal"]
+    pub async fn receive_global_engine_changed_with_args(
+        &self,
+        args: &[(u8, &str)],
+    ) -> ::zbus::Result<GlobalEngineChangedStream<'static>> {
+        self.receive_signal_with_args("GlobalEngineChanged", args)
+            .await
+            .map(GlobalEngineChangedStream)
+    }
+    #[doc = "Create a stream that receives `RegistryChanged` signals.\n\nThis a convenient wrapper around [`zbus::Proxy::receive_signal`](https://docs.rs/zbus/latest/zbus/struct.Proxy.html#method.receive_signal)."]
+    #[doc = " RegistryChanged signal"]
+    pub async fn receive_registry_changed(&self) -> ::zbus::Result<RegistryChangedStream<'static>> {
+        self.receive_signal("RegistryChanged")
+            .await
+            .map(RegistryChangedStream)
+    }
+    #[doc = " ActiveEngines property"]
+    #[allow(clippy::needless_question_mark)]
+    pub async fn active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        ::std::result::Result::Ok(self.0.get_property("ActiveEngines").await?)
+    }
+    #[doc = " Get the cached value of the `ActiveEngines` property, or `None` if the property is not cached."]
+    pub fn cached_active_engines(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<
+            <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+        >,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("ActiveEngines")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `ActiveEngines` property changes. This is a convenient wrapper around [`zbus::Proxy::receive_property_changed`]."]
+    pub async fn receive_active_engines_changed(
+        &self,
+    ) -> ::zbus::PropertyStream<
+        'c,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+    > {
+        self.0.receive_property_changed("ActiveEngines").await
+    }
+    #[doc = " Address property"]
+    #[allow(clippy::needless_question_mark)]
+    pub async fn address(&self) -> zbus::Result<String> {
+        ::std::result::Result::Ok(self.0.get_property("Address").await?)
+    }
+    #[doc = " Get the cached value of the `Address` property, or `None` if the property is not cached."]
+    pub fn cached_address(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<<zbus::Result<String> as ::zbus::ResultAdapter>::Ok>,
+        <zbus::Result<String> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("Address")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `Address` property changes. This is a convenient wrapper around [`zbus::Proxy::receive_property_changed`]."]
+    pub async fn receive_address_changed(
+        &self,
+    ) -> ::zbus::PropertyStream<'c, <zbus::Result<String> as ::zbus::ResultAdapter>::Ok> {
+        self.0.receive_property_changed("Address").await
+    }
+    #[doc = " EmbedPreeditText property"]
+    #[allow(clippy::needless_question_mark)]
+    pub async fn embed_preedit_text(&self) -> zbus::Result<bool> {
+        ::std::result::Result::Ok(self.0.get_property("EmbedPreeditText").await?)
+    }
+    #[doc = " Get the cached value of the `EmbedPreeditText` property, or `None` if the property is not cached."]
+    pub fn cached_embed_preedit_text(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<<zbus::Result<bool> as ::zbus::ResultAdapter>::Ok>,
+        <zbus::Result<bool> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("EmbedPreeditText")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `EmbedPreeditText` property changes. This is a convenient wrapper around [`zbus::Proxy::receive_property_changed`]."]
+    pub async fn receive_embed_preedit_text_changed(
+        &self,
+    ) -> ::zbus::PropertyStream<'c, <zbus::Result<bool> as ::zbus::ResultAdapter>::Ok> {
+        self.0.receive_property_changed("EmbedPreeditText").await
+    }
+    pub async fn set_embed_preedit_text(&self, value: bool) -> zbus::Result<()> {
+        let reply = self.0.call("SetEmbedPreeditText", &(value,)).await?;
+        ::std::result::Result::Ok(reply)
+    }
+    #[doc = " Engines property"]
+    #[allow(clippy::needless_question_mark)]
+    pub async fn engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
+        ::std::result::Result::Ok(self.0.get_property("Engines").await?)
+    }
+    #[doc = " Get the cached value of the `Engines` property, or `None` if the property is not cached."]
+    pub fn cached_engines(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<
+            <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+        >,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("Engines")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `Engines` property changes. This is a convenient wrapper around [`zbus::Proxy::receive_property_changed`]."]
+    pub async fn receive_engines_changed(
+        &self,
+    ) -> ::zbus::PropertyStream<
+        'c,
+        <zbus::Result<Vec<zbus::zvariant::OwnedValue>> as ::zbus::ResultAdapter>::Ok,
+    > {
+        self.0.receive_property_changed("Engines").await
+    }
+    #[doc = " GlobalEngine property"]
+    #[allow(clippy::needless_question_mark)]
+    pub async fn global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue> {
+        ::std::result::Result::Ok(self.0.get_property("GlobalEngine").await?)
+    }
+    #[doc = " Get the cached value of the `GlobalEngine` property, or `None` if the property is not cached."]
+    pub fn cached_global_engine(
+        &self,
+    ) -> ::std::result::Result<
+        ::std::option::Option<
+            <zbus::Result<zbus::zvariant::OwnedValue> as ::zbus::ResultAdapter>::Ok,
+        >,
+        <zbus::Result<zbus::zvariant::OwnedValue> as ::zbus::ResultAdapter>::Err,
+    > {
+        self.0
+            .cached_property("GlobalEngine")
+            .map_err(::std::convert::Into::into)
+    }
+    #[doc = "Create a stream for the `GlobalEngine` property changes. This is a convenient wrapper around [`zbus::Proxy::receive_property_changed`]."]
+    pub async fn receive_global_engine_changed_async(
+        &self,
+    ) -> ::zbus::PropertyStream<
+        'c,
+        <zbus::Result<zbus::zvariant::OwnedValue> as ::zbus::ResultAdapter>::Ok,
+    > {
+        self.0.receive_property_changed("GlobalEngine").await
+    }
+    #[doc = " PreloadEngines property"]
+    #[allow(clippy::needless_question_mark)]
+    pub async fn set_preload_engines(&self, value: &[&str]) -> zbus::Result<()> {
+        ::std::result::Result::Ok(self.0.set_property("PreloadEngines", value).await?)
+    }
+}
+impl<'c> ::std::convert::From<::zbus::Proxy<'c>> for IBusProxy<'c> {
+    fn from(proxy: ::zbus::Proxy<'c>) -> Self {
+        IBusProxy(::std::convert::Into::into(proxy))
+    }
+}
+impl<'c> ::std::ops::Deref for IBusProxy<'c> {
+    type Target = ::zbus::Proxy<'c>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl<'c> ::std::ops::DerefMut for IBusProxy<'c> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl<'c> ::std::convert::AsRef<::zbus::Proxy<'c>> for IBusProxy<'c> {
+    fn as_ref(&self) -> &::zbus::Proxy<'c> {
+        &*self
+    }
+}
+impl<'c> ::std::convert::AsMut<::zbus::Proxy<'c>> for IBusProxy<'c> {
+    fn as_mut(&mut self) -> &mut ::zbus::Proxy<'c> {
+        &mut *self
+    }
+}
+impl<'c> ::zbus::zvariant::Type for IBusProxy<'c> {
+    fn signature() -> ::zbus::zvariant::Signature<'static> {
+        ::zbus::zvariant::OwnedObjectPath::signature()
+    }
+}
+impl<'c> ::zbus::export::serde::ser::Serialize for IBusProxy<'c> {
+    fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
+    where
+        S: ::zbus::export::serde::ser::Serializer,
+    {
+        ::std::string::String::serialize(
+            &::std::string::ToString::to_string(self.inner().path()),
+            serializer,
+        )
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`GlobalEngineChanged`] signals.\n\nUse [`IBusProxy::receive_global_engine_changed`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct GlobalEngineChangedStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for GlobalEngineChangedStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "GlobalEngineChangedStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<GlobalEngineChangedStream<'_>>();
+};
+impl<'a> GlobalEngineChangedStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for GlobalEngineChangedStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for GlobalEngineChangedStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for GlobalEngineChangedStream<'_> {
+    type Item = GlobalEngineChanged;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(GlobalEngineChanged))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for GlobalEngineChangedStream<'_> {
+    type Data = GlobalEngineChanged;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(GlobalEngineChanged))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for GlobalEngineChangedStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for GlobalEngineChangedStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `GlobalEngineChanged` signal."]
+pub struct GlobalEngineChanged(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for GlobalEngineChanged {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "GlobalEngineChanged", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for GlobalEngineChanged {
+    #[inline]
+    fn clone(&self) -> GlobalEngineChanged {
+        GlobalEngineChanged(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for GlobalEngineChanged {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for GlobalEngineChanged {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for GlobalEngineChanged {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl GlobalEngineChanged {
+    #[doc = "Try to construct a "]
+    #[doc = "GlobalEngineChanged"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus"),
+                Some("GlobalEngineChanged"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
+}
+impl GlobalEngineChanged {
+    #[doc = r" Retrieve the signal arguments."]
+    pub fn args<'s>(&'s self) -> ::zbus::Result<GlobalEngineChangedArgs<'s>> {
+        ::std::convert::TryFrom::try_from(&**self)
+    }
+}
+#[doc = "`GlobalEngineChanged` signal arguments."]
+pub struct GlobalEngineChangedArgs<'s> {
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub engine_name: &'s str,
+}
+impl<'s> GlobalEngineChangedArgs<'s> {
+    pub fn engine_name(&self) -> &&'s str {
+        &self.engine_name
+    }
+}
+impl<'s> std::fmt::Debug for GlobalEngineChangedArgs<'s> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("GlobalEngineChanged")
+            .field("engine_name", &self.engine_name)
+            .finish()
+    }
+}
+impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for GlobalEngineChangedArgs<'s> {
+    type Error = ::zbus::Error;
+    fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
+        message
+            .body::<(&str)>()
+            .map_err(::std::convert::Into::into)
+            .map(|args| GlobalEngineChangedArgs {
+                phantom: ::std::marker::PhantomData,
+                engine_name: args,
+            })
+    }
+}
+#[doc = "A [`Stream`] implementation that yields [`RegistryChanged`] signals.\n\nUse [`IBusProxy::receive_registry_changed`] to create an instance of this type.\n\n[`Stream`]: https://docs.rs/futures/0.3.15/futures/stream/trait.Stream.html"]
+pub struct RegistryChangedStream<'a>(::zbus::SignalStream<'a>);
+#[automatically_derived]
+impl<'a> ::core::fmt::Debug for RegistryChangedStream<'a> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "RegistryChangedStream", &&self.0)
+    }
+}
+const _: fn() = || {
+    fn assert_impl_all<T: ?Sized + ::std::marker::Send + ::std::marker::Unpin>() {}
+    assert_impl_all::<RegistryChangedStream<'_>>();
+};
+impl<'a> RegistryChangedStream<'a> {
+    #[doc = r" Consumes `self`, returning the underlying `zbus::#signal_type`."]
+    pub fn into_inner(self) -> ::zbus::SignalStream<'a> {
+        self.0
+    }
+    #[doc = r" The reference to the underlying `zbus::#signal_type`."]
+    pub fn inner(&self) -> &::zbus::SignalStream<'a> {
+        &self.0
+    }
+}
+impl<'a> std::ops::Deref for RegistryChangedStream<'a> {
+    type Target = ::zbus::SignalStream<'a>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl ::std::ops::DerefMut for RegistryChangedStream<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl ::zbus::export::futures_core::stream::Stream for RegistryChangedStream<'_> {
+    type Item = RegistryChanged;
+    fn poll_next(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+    ) -> ::std::task::Poll<::std::option::Option<Self::Item>> {
+        ::zbus::export::futures_core::stream::Stream::poll_next(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+        )
+        .map(|msg| msg.map(RegistryChanged))
+    }
+}
+impl ::zbus::export::ordered_stream::OrderedStream for RegistryChangedStream<'_> {
+    type Data = RegistryChanged;
+    type Ordering = ::zbus::MessageSequence;
+    fn poll_next_before(
+        self: ::std::pin::Pin<&mut Self>,
+        cx: &mut ::std::task::Context<'_>,
+        before: ::std::option::Option<&Self::Ordering>,
+    ) -> ::std::task::Poll<::zbus::export::ordered_stream::PollResult<Self::Ordering, Self::Data>>
+    {
+        ::zbus::export::ordered_stream::OrderedStream::poll_next_before(
+            ::std::pin::Pin::new(&mut self.get_mut().0),
+            cx,
+            before,
+        )
+        .map(|msg| msg.map_data(RegistryChanged))
+    }
+}
+impl ::zbus::export::futures_core::stream::FusedStream for RegistryChangedStream<'_> {
+    fn is_terminated(&self) -> bool {
+        self.0.is_terminated()
+    }
+}
+impl ::zbus::AsyncDrop for RegistryChangedStream<'_> {
+    #[allow(
+        clippy::async_yields_async,
+        clippy::let_unit_value,
+        clippy::no_effect_underscore_binding,
+        clippy::shadow_same,
+        clippy::type_complexity,
+        clippy::type_repetition_in_bounds,
+        clippy::used_underscore_binding
+    )]
+    fn async_drop<'async_trait>(
+        self,
+    ) -> ::core::pin::Pin<
+        Box<dyn ::core::future::Future<Output = ()> + ::core::marker::Send + 'async_trait>,
+    >
+    where
+        Self: 'async_trait,
+    {
+        Box::pin(async move {
+            let __self = self;
+            let _: () = { __self.0.async_drop().await };
+        })
+    }
+}
+#[doc = "A `RegistryChanged` signal."]
+pub struct RegistryChanged(::std::sync::Arc<::zbus::Message>);
+#[automatically_derived]
+impl ::core::fmt::Debug for RegistryChanged {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "RegistryChanged", &&self.0)
+    }
+}
+#[automatically_derived]
+impl ::core::clone::Clone for RegistryChanged {
+    #[inline]
+    fn clone(&self) -> RegistryChanged {
+        RegistryChanged(::core::clone::Clone::clone(&self.0))
+    }
+}
+impl ::std::ops::Deref for RegistryChanged {
+    type Target = ::zbus::Message;
+    fn deref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::std::sync::Arc<::zbus::Message>> for RegistryChanged {
+    fn as_ref(&self) -> &::std::sync::Arc<::zbus::Message> {
+        &self.0
+    }
+}
+impl ::std::convert::AsRef<::zbus::Message> for RegistryChanged {
+    fn as_ref(&self) -> &::zbus::Message {
+        &self.0
+    }
+}
+impl RegistryChanged {
+    #[doc = "Try to construct a "]
+    #[doc = "RegistryChanged"]
+    #[doc = " from a [::zbus::Message]."]
+    pub fn from_message<M>(msg: M) -> ::std::option::Option<Self>
+    where
+        M: ::std::convert::Into<::std::sync::Arc<::zbus::Message>>,
+    {
+        let msg = msg.into();
+        let message_type = msg.message_type();
+        let interface = msg.interface();
+        let member = msg.member();
+        let interface = interface.as_ref().map(|i| i.as_str());
+        let member = member.as_ref().map(|m| m.as_str());
+        match (message_type, interface, member) {
+            (
+                ::zbus::MessageType::Signal,
+                Some("org.freedesktop.IBus"),
+                Some("RegistryChanged"),
+            ) => Some(Self(msg)),
+            _ => None,
+        }
+    }
 }
