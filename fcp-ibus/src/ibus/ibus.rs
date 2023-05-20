@@ -1,3 +1,5 @@
+use zbus::Connection;
+
 // DBus addresses
 static WELL_KNOWN_IBUS_ADDRESS: &str = "/org/freedesktop/IBus";
 static WELL_KNOWN_IBUS_FACTORY_ADDRESS: &str = "/org/freedesktop/IBus/Factory";
@@ -39,9 +41,9 @@ impl IBus {
         }
     }
 
-    pub fn init() {
+    pub async fn init() {
         // client init
-        // let conn_m2i = Connection::session().await?;
+        let conn_to_ibus = Connection::session().await.expect("Failed to get a DBus session connection.");
         // server object init
     }
 }
