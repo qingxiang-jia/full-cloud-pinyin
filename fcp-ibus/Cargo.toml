@@ -1,13 +1,8 @@
 [package]
-name = "c-based-ffi"
+name = "fcp-ibus"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.137"
-
-[lib]
-path = "src/rust_api.rs"
-name = "rust_api"

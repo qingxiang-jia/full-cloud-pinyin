@@ -41,6 +41,7 @@ impl IBus {
 
     pub fn init() {
         // client init
+        let connection = Connection::
         // server object init
     }
 }

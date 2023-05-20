@@ -18,7 +18,3 @@ home = "0.5.4"
 [lib]
 path = "src/lib.rs"
 name = "fcp"
-
-[[bin]]
-path = "src/main.rs"
-name = "fcp_ibus"

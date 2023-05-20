@@ -3,4 +3,3 @@
 mod fcitx5;
 mod ffi;
 mod fcp;
-mod ibus;
