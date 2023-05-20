@@ -18,8 +18,7 @@ impl IBus {
         let proxy_ibus = IBusProxy::new(&conn_to_ibus)
             .await
             .expect("Failed to get a connection to IBus.");
-        let address = proxy_ibus.address().await.expect("Failed to get address.");
-        println!("Address of IBus: {}", address);
+        proxy_ibus.exit(false).await.expect("Failed to exit.");
         // server object init
     }
 }
