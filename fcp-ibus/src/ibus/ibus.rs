@@ -41,7 +41,7 @@ impl IBus {
 
     pub fn init() {
         // client init
-        let connection = Connection::
+        // let conn_m2i = Connection::session().await?;
         // server object init
     }
 }
