@@ -7,7 +7,7 @@ use zbus::AuthMechanism;
 use zbus::Connection;
 use zbus::ConnectionBuilder;
 
-use super::proxy::ibus::IBusProxy;
+use super::proxy_zbus::ibus::IBusProxy;
 
 // DBus interfaces
 pub struct IBus {}
@@ -21,19 +21,19 @@ impl IBus {
         let ibus_address = IBus::get_ibus_address().expect("Failed to get IBus address.");
         println!("IBus address: {}", ibus_address);
         // client init
-        // let conn_to_ibus = ConnectionBuilder::session()
-        //     .expect("Failed to get a connection to the session bus.")
-        //     .auth_mechanisms(&[AuthMechanism::External])
-        //     .build()
-        //     .await
-        //     .expect("Failed to build a DBus connection.");
+        let conn_to_ibus = ConnectionBuilder::session()
+            .expect("Failed to get a connection to the session bus.")
+            .auth_mechanisms(&[AuthMechanism::External])
+            .build()
+            .await
+            .expect("Failed to build a DBus connection.");
 
-        // let proxy_ibus = IBusProxy::new(&conn_to_ibus)
-        //     .await
-        //     .expect("Failed to get a connection to IBus.");
-        // let val = Value::new(1);
-        // let ping_result = proxy_ibus.ping(&val).await.expect("ping failed.");
-        // proxy_ibus.exit(false).await.expect("Failed to exit.");
+        let proxy_ibus = IBusProxy::new(&conn_to_ibus)
+            .await
+            .expect("Failed to get a connection to IBus.");
+        let val = Value::new(1);
+        let ping_result = proxy_ibus.ping(&val).await.expect("ping failed.");
+        proxy_ibus.exit(false).await.expect("Failed to exit.");
         // server object init
     }
 
