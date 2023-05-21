@@ -4,7 +4,7 @@ use dbus as dbus;
 use dbus::arg;
 use dbus_crossroads as crossroads;
 
-pub trait OrgFreedesktopIBusEngine {
+pub trait IBusEngine {
     fn process_key_event(&mut self, keyval: u32, keycode: u32, state: u32) -> Result<bool, dbus::MethodErr>;
     fn set_cursor_location(&mut self, x_: i32, y_: i32, w_: i32, h_: i32) -> Result<(), dbus::MethodErr>;
     fn process_hand_writing_event(&mut self, coordinates: Vec<f64>) -> Result<(), dbus::MethodErr>;
@@ -34,38 +34,38 @@ pub trait OrgFreedesktopIBusEngine {
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineCommitText {
+pub struct CommitText {
     pub text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineCommitText {
+impl arg::AppendAll for CommitText {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.text, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineCommitText {
+impl arg::ReadAll for CommitText {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineCommitText {
+        Ok(CommitText {
             text: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineCommitText {
+impl dbus::message::SignalArgs for CommitText {
     const NAME: &'static str = "CommitText";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineUpdatePreeditText {
+pub struct UpdatePreeditText {
     pub text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
     pub cursor_pos: u32,
     pub visible: bool,
     pub mode: u32,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineUpdatePreeditText {
+impl arg::AppendAll for UpdatePreeditText {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.text, i);
         arg::RefArg::append(&self.cursor_pos, i);
@@ -74,9 +74,9 @@ impl arg::AppendAll for OrgFreedesktopIBusEngineUpdatePreeditText {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineUpdatePreeditText {
+impl arg::ReadAll for UpdatePreeditText {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineUpdatePreeditText {
+        Ok(UpdatePreeditText {
             text: i.read()?,
             cursor_pos: i.read()?,
             visible: i.read()?,
@@ -85,121 +85,121 @@ impl arg::ReadAll for OrgFreedesktopIBusEngineUpdatePreeditText {
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineUpdatePreeditText {
+impl dbus::message::SignalArgs for UpdatePreeditText {
     const NAME: &'static str = "UpdatePreeditText";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineUpdateAuxiliaryText {
+pub struct UpdateAuxiliaryText {
     pub text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
     pub visible: bool,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineUpdateAuxiliaryText {
+impl arg::AppendAll for UpdateAuxiliaryText {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.text, i);
         arg::RefArg::append(&self.visible, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineUpdateAuxiliaryText {
+impl arg::ReadAll for UpdateAuxiliaryText {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineUpdateAuxiliaryText {
+        Ok(UpdateAuxiliaryText {
             text: i.read()?,
             visible: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineUpdateAuxiliaryText {
+impl dbus::message::SignalArgs for UpdateAuxiliaryText {
     const NAME: &'static str = "UpdateAuxiliaryText";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineUpdateLookupTable {
+pub struct UpdateLookupTable {
     pub table: arg::Variant<Box<dyn arg::RefArg + 'static>>,
     pub visible: bool,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineUpdateLookupTable {
+impl arg::AppendAll for UpdateLookupTable {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.table, i);
         arg::RefArg::append(&self.visible, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineUpdateLookupTable {
+impl arg::ReadAll for UpdateLookupTable {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineUpdateLookupTable {
+        Ok(UpdateLookupTable {
             table: i.read()?,
             visible: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineUpdateLookupTable {
+impl dbus::message::SignalArgs for UpdateLookupTable {
     const NAME: &'static str = "UpdateLookupTable";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineRegisterProperties {
+pub struct RegisterProperties {
     pub props: arg::Variant<Box<dyn arg::RefArg + 'static>>,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineRegisterProperties {
+impl arg::AppendAll for RegisterProperties {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.props, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineRegisterProperties {
+impl arg::ReadAll for RegisterProperties {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineRegisterProperties {
+        Ok(RegisterProperties {
             props: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineRegisterProperties {
+impl dbus::message::SignalArgs for RegisterProperties {
     const NAME: &'static str = "RegisterProperties";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineUpdateProperty {
+pub struct UpdateProperty {
     pub prop: arg::Variant<Box<dyn arg::RefArg + 'static>>,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineUpdateProperty {
+impl arg::AppendAll for UpdateProperty {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.prop, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineUpdateProperty {
+impl arg::ReadAll for UpdateProperty {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineUpdateProperty {
+        Ok(UpdateProperty {
             prop: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineUpdateProperty {
+impl dbus::message::SignalArgs for UpdateProperty {
     const NAME: &'static str = "UpdateProperty";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEngineForwardKeyEvent {
+pub struct ForwardKeyEvent {
     pub keyval: u32,
     pub keycode: u32,
     pub state: u32,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEngineForwardKeyEvent {
+impl arg::AppendAll for ForwardKeyEvent {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.keyval, i);
         arg::RefArg::append(&self.keycode, i);
@@ -207,9 +207,9 @@ impl arg::AppendAll for OrgFreedesktopIBusEngineForwardKeyEvent {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEngineForwardKeyEvent {
+impl arg::ReadAll for ForwardKeyEvent {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEngineForwardKeyEvent {
+        Ok(ForwardKeyEvent {
             keyval: i.read()?,
             keycode: i.read()?,
             state: i.read()?,
@@ -217,37 +217,37 @@ impl arg::ReadAll for OrgFreedesktopIBusEngineForwardKeyEvent {
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEngineForwardKeyEvent {
+impl dbus::message::SignalArgs for ForwardKeyEvent {
     const NAME: &'static str = "ForwardKeyEvent";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusEnginePanelExtension {
+pub struct PanelExtension {
     pub data: arg::Variant<Box<dyn arg::RefArg + 'static>>,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusEnginePanelExtension {
+impl arg::AppendAll for PanelExtension {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.data, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusEnginePanelExtension {
+impl arg::ReadAll for PanelExtension {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusEnginePanelExtension {
+        Ok(PanelExtension {
             data: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusEnginePanelExtension {
+impl dbus::message::SignalArgs for PanelExtension {
     const NAME: &'static str = "PanelExtension";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Engine";
 }
 
 pub fn register_org_freedesktop_ibus_engine<T>(cr: &mut crossroads::Crossroads) -> crossroads::IfaceToken<T>
-where T: OrgFreedesktopIBusEngine + Send + 'static
+where T: IBusEngine + Send + 'static
 {
     cr.register("org.freedesktop.IBus.Engine", |b| {
         b.signal::<(arg::Variant<Box<dyn arg::RefArg + 'static>>,), _>("CommitText", ("text",));

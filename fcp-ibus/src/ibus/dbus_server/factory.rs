@@ -4,12 +4,12 @@ use dbus as dbus;
 use dbus::arg;
 use dbus_crossroads as crossroads;
 
-pub trait OrgFreedesktopIBusFactory {
+pub trait IBusFactory {
     fn create_engine(&mut self, name: String) -> Result<dbus::Path<'static>, dbus::MethodErr>;
 }
 
 pub fn register_org_freedesktop_ibus_factory<T>(cr: &mut crossroads::Crossroads) -> crossroads::IfaceToken<T>
-where T: OrgFreedesktopIBusFactory + Send + 'static
+where T: IBusFactory + Send + 'static
 {
     cr.register("org.freedesktop.IBus.Factory", |b| {
         b.method("CreateEngine", ("name",), ("",), |_, t: &mut T, (name,)| {

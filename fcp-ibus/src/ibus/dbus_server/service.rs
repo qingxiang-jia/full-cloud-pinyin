@@ -4,12 +4,12 @@ use dbus as dbus;
 use dbus::arg;
 use dbus_crossroads as crossroads;
 
-pub trait OrgFreedesktopIBusService {
+pub trait IBusService {
     fn destroy(&mut self) -> Result<(), dbus::MethodErr>;
 }
 
 pub fn register_org_freedesktop_ibus_service<T>(cr: &mut crossroads::Crossroads) -> crossroads::IfaceToken<T>
-where T: OrgFreedesktopIBusService + Send + 'static
+where T: IBusService + Send + 'static
 {
     cr.register("org.freedesktop.IBus.Service", |b| {
         b.method("Destroy", (), (), |_, t: &mut T, ()| {
