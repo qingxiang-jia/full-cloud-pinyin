@@ -37,6 +37,7 @@ impl IBus {
         // server object init
     }
 
+    // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
     pub fn get_ibus_address() -> Result<String, String> {
         if let Ok(addr) = std::env::var("IBUS_ADDRESS") {
             return Ok(addr);
@@ -109,6 +110,7 @@ impl IBus {
         Err(format!("Failed to find {:?} in the address file", prefix))
     }
 
+    // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
     fn get_machine_id() -> Result<String, String> {
         if let Ok(id) = std::fs::read_to_string("/etc/machine-id") {
             return Ok(id.trim().to_owned());
