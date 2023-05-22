@@ -6,6 +6,7 @@ use std::time::Duration;
 use dbus::blocking::Connection;
 
 use crate::ibus::dbus_client::ibus_proxy::IBusProxy;
+use crate::ibus::dbus_client::panel_proxy::IBusPanelProxy;
 
 pub struct IBus {}
 
