@@ -4,7 +4,7 @@ use dbus as dbus;
 use dbus::arg;
 use dbus::blocking;
 
-pub trait OrgFreedesktopIBus {
+pub trait IBus {
     fn create_input_context(&self, client_name: &str) -> Result<dbus::Path<'static>, dbus::Error>;
     fn register_component(&self, component: arg::Variant<Box<dyn arg::RefArg>>) -> Result<(), dbus::Error>;
     fn get_engines_by_names(&self, names: Vec<&str>) -> Result<Vec<arg::Variant<Box<dyn arg::RefArg + 'static>>>, dbus::Error>;
@@ -23,51 +23,51 @@ pub trait OrgFreedesktopIBus {
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusRegistryChanged {
+pub struct RegistryChanged {
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusRegistryChanged {
+impl arg::AppendAll for RegistryChanged {
     fn append(&self, _: &mut arg::IterAppend) {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusRegistryChanged {
+impl arg::ReadAll for RegistryChanged {
     fn read(_: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusRegistryChanged {
+        Ok(RegistryChanged {
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusRegistryChanged {
+impl dbus::message::SignalArgs for RegistryChanged {
     const NAME: &'static str = "RegistryChanged";
     const INTERFACE: &'static str = "org.freedesktop.IBus";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusGlobalEngineChanged {
+pub struct GlobalEngineChanged {
     pub engine_name: String,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusGlobalEngineChanged {
+impl arg::AppendAll for GlobalEngineChanged {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.engine_name, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusGlobalEngineChanged {
+impl arg::ReadAll for GlobalEngineChanged {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusGlobalEngineChanged {
+        Ok(GlobalEngineChanged {
             engine_name: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusGlobalEngineChanged {
+impl dbus::message::SignalArgs for GlobalEngineChanged {
     const NAME: &'static str = "GlobalEngineChanged";
     const INTERFACE: &'static str = "org.freedesktop.IBus";
 }
 
-impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> OrgFreedesktopIBus for blocking::Proxy<'a, C> {
+impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> IBus for blocking::Proxy<'a, C> {
 
     fn create_input_context(&self, client_name: &str) -> Result<dbus::Path<'static>, dbus::Error> {
         self.method_call("org.freedesktop.IBus", "CreateInputContext", (client_name, ))
