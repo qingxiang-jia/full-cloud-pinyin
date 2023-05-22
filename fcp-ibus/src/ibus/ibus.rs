@@ -3,6 +3,7 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use zbus::zvariant::Value;
+use zbus::Address;
 use zbus::AuthMechanism;
 use zbus::Connection;
 use zbus::ConnectionBuilder;
@@ -21,7 +22,7 @@ impl IBus {
         let ibus_address = IBus::get_ibus_address().expect("Failed to get IBus address.");
         println!("IBus address: {}", ibus_address);
         // client init
-        let conn_to_ibus = ConnectionBuilder::session()
+        let conn_to_ibus = ConnectionBuilder::address(Address::Unix(ibus_address.into()))
             .expect("Failed to get a connection to the session bus.")
             .auth_mechanisms(&[AuthMechanism::External])
             .build()
