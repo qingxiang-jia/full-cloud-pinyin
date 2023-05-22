@@ -1,9 +1,12 @@
 use std::io::BufRead;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use dbus::blocking::Connection;
 use dbus::{blocking::stdintf::org_freedesktop_dbus::Introspectable, channel::Watch};
+
+use crate::ibus::dbus_client::ibus::IBus as IBusProxy;
 
 pub struct IBus {}
 
@@ -21,6 +24,9 @@ impl IBus {
             .register()
             .expect("Failed to register the channel to DBus.");
         let conn = Connection::from(channel);
+        let proxy: dbus::blocking::Proxy<&Connection> = conn.with_proxy("org.freedesktop.IBus", "/org/freedesktop/IBus", Duration::from_millis(1000));
+        let engines = proxy.engines().expect("Failed to get engines.");
+        println!("Number of IBus engines: {}", engines.len());
     }
 
     // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
