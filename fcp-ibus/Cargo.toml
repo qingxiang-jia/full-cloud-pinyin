@@ -8,5 +8,4 @@ edition = "2021"
 [dependencies]
 dbus = "0.9.7"
 dbus-crossroads = "0.5.2"
-zbus = "3.13.1"
 tokio = { version = "1", features = ["full"] }

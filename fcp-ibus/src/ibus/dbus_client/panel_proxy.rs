@@ -4,7 +4,7 @@ use dbus as dbus;
 use dbus::arg;
 use dbus::blocking;
 
-pub trait OrgFreedesktopIBusPanel {
+pub trait IBusPanelProxy {
     fn update_preedit_text(&self, text: arg::Variant<Box<dyn arg::RefArg>>, cursor_pos: u32, visible: bool) -> Result<(), dbus::Error>;
     fn show_preedit_text(&self) -> Result<(), dbus::Error>;
     fn hide_preedit_text(&self) -> Result<(), dbus::Error>;
@@ -39,172 +39,172 @@ pub trait OrgFreedesktopIBusPanel {
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelCursorUp {
+pub struct CursorUp {
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelCursorUp {
+impl arg::AppendAll for CursorUp {
     fn append(&self, _: &mut arg::IterAppend) {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelCursorUp {
+impl arg::ReadAll for CursorUp {
     fn read(_: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelCursorUp {
+        Ok(CursorUp {
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelCursorUp {
+impl dbus::message::SignalArgs for CursorUp {
     const NAME: &'static str = "CursorUp";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelCursorDown {
+pub struct CursorDown {
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelCursorDown {
+impl arg::AppendAll for CursorDown {
     fn append(&self, _: &mut arg::IterAppend) {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelCursorDown {
+impl arg::ReadAll for CursorDown {
     fn read(_: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelCursorDown {
+        Ok(CursorDown {
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelCursorDown {
+impl dbus::message::SignalArgs for CursorDown {
     const NAME: &'static str = "CursorDown";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelPageUp {
+pub struct PageUp {
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelPageUp {
+impl arg::AppendAll for PageUp {
     fn append(&self, _: &mut arg::IterAppend) {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelPageUp {
+impl arg::ReadAll for PageUp {
     fn read(_: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelPageUp {
+        Ok(PageUp {
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelPageUp {
+impl dbus::message::SignalArgs for PageUp {
     const NAME: &'static str = "PageUp";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelPageDown {
+pub struct PageDown {
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelPageDown {
+impl arg::AppendAll for PageDown {
     fn append(&self, _: &mut arg::IterAppend) {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelPageDown {
+impl arg::ReadAll for PageDown {
     fn read(_: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelPageDown {
+        Ok(PageDown {
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelPageDown {
+impl dbus::message::SignalArgs for PageDown {
     const NAME: &'static str = "PageDown";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelPropertyActivate {
+pub struct PropertyActivate {
     pub prop_name: String,
     pub prop_state: i32,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelPropertyActivate {
+impl arg::AppendAll for PropertyActivate {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.prop_name, i);
         arg::RefArg::append(&self.prop_state, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelPropertyActivate {
+impl arg::ReadAll for PropertyActivate {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelPropertyActivate {
+        Ok(PropertyActivate {
             prop_name: i.read()?,
             prop_state: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelPropertyActivate {
+impl dbus::message::SignalArgs for PropertyActivate {
     const NAME: &'static str = "PropertyActivate";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelPropertyShow {
+pub struct PropertyShow {
     pub prop_name: String,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelPropertyShow {
+impl arg::AppendAll for PropertyShow {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.prop_name, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelPropertyShow {
+impl arg::ReadAll for PropertyShow {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelPropertyShow {
+        Ok(PropertyShow {
             prop_name: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelPropertyShow {
+impl dbus::message::SignalArgs for PropertyShow {
     const NAME: &'static str = "PropertyShow";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelPropertyHide {
+pub struct PropertyHide {
     pub prop_name: String,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelPropertyHide {
+impl arg::AppendAll for PropertyHide {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.prop_name, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelPropertyHide {
+impl arg::ReadAll for PropertyHide {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelPropertyHide {
+        Ok(PropertyHide {
             prop_name: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelPropertyHide {
+impl dbus::message::SignalArgs for PropertyHide {
     const NAME: &'static str = "PropertyHide";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelCandidateClicked {
+pub struct CandidateClicked {
     pub index: u32,
     pub button: u32,
     pub state: u32,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelCandidateClicked {
+impl arg::AppendAll for CandidateClicked {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.index, i);
         arg::RefArg::append(&self.button, i);
@@ -212,9 +212,9 @@ impl arg::AppendAll for OrgFreedesktopIBusPanelCandidateClicked {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelCandidateClicked {
+impl arg::ReadAll for CandidateClicked {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelCandidateClicked {
+        Ok(CandidateClicked {
             index: i.read()?,
             button: i.read()?,
             state: i.read()?,
@@ -222,67 +222,67 @@ impl arg::ReadAll for OrgFreedesktopIBusPanelCandidateClicked {
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelCandidateClicked {
+impl dbus::message::SignalArgs for CandidateClicked {
     const NAME: &'static str = "CandidateClicked";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelCommitText {
+pub struct CommitText {
     pub text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelCommitText {
+impl arg::AppendAll for CommitText {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.text, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelCommitText {
+impl arg::ReadAll for CommitText {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelCommitText {
+        Ok(CommitText {
             text: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelCommitText {
+impl dbus::message::SignalArgs for CommitText {
     const NAME: &'static str = "CommitText";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelPanelExtension {
+pub struct PanelExtension {
     pub event: arg::Variant<Box<dyn arg::RefArg + 'static>>,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelPanelExtension {
+impl arg::AppendAll for PanelExtension {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.event, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelPanelExtension {
+impl arg::ReadAll for PanelExtension {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelPanelExtension {
+        Ok(PanelExtension {
             event: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelPanelExtension {
+impl dbus::message::SignalArgs for PanelExtension {
     const NAME: &'static str = "PanelExtension";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
+pub struct UpdatePreeditTextReceived {
     pub text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
     pub cursor_pos: u32,
     pub visible: bool,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
+impl arg::AppendAll for UpdatePreeditTextReceived {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.text, i);
         arg::RefArg::append(&self.cursor_pos, i);
@@ -290,9 +290,9 @@ impl arg::AppendAll for OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
+impl arg::ReadAll for UpdatePreeditTextReceived {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
+        Ok(UpdatePreeditTextReceived {
             text: i.read()?,
             cursor_pos: i.read()?,
             visible: i.read()?,
@@ -300,66 +300,66 @@ impl arg::ReadAll for OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelUpdatePreeditTextReceived {
+impl dbus::message::SignalArgs for UpdatePreeditTextReceived {
     const NAME: &'static str = "UpdatePreeditTextReceived";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelUpdateAuxiliaryTextReceived {
+pub struct UpdateAuxiliaryTextReceived {
     pub text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
     pub visible: bool,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelUpdateAuxiliaryTextReceived {
+impl arg::AppendAll for UpdateAuxiliaryTextReceived {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.text, i);
         arg::RefArg::append(&self.visible, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelUpdateAuxiliaryTextReceived {
+impl arg::ReadAll for UpdateAuxiliaryTextReceived {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelUpdateAuxiliaryTextReceived {
+        Ok(UpdateAuxiliaryTextReceived {
             text: i.read()?,
             visible: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelUpdateAuxiliaryTextReceived {
+impl dbus::message::SignalArgs for UpdateAuxiliaryTextReceived {
     const NAME: &'static str = "UpdateAuxiliaryTextReceived";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
 #[derive(Debug)]
-pub struct OrgFreedesktopIBusPanelUpdateLookupTableReceived {
+pub struct UpdateLookupTableReceived {
     pub table: arg::Variant<Box<dyn arg::RefArg + 'static>>,
     pub visible: bool,
 }
 
-impl arg::AppendAll for OrgFreedesktopIBusPanelUpdateLookupTableReceived {
+impl arg::AppendAll for UpdateLookupTableReceived {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.table, i);
         arg::RefArg::append(&self.visible, i);
     }
 }
 
-impl arg::ReadAll for OrgFreedesktopIBusPanelUpdateLookupTableReceived {
+impl arg::ReadAll for UpdateLookupTableReceived {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
-        Ok(OrgFreedesktopIBusPanelUpdateLookupTableReceived {
+        Ok(UpdateLookupTableReceived {
             table: i.read()?,
             visible: i.read()?,
         })
     }
 }
 
-impl dbus::message::SignalArgs for OrgFreedesktopIBusPanelUpdateLookupTableReceived {
+impl dbus::message::SignalArgs for UpdateLookupTableReceived {
     const NAME: &'static str = "UpdateLookupTableReceived";
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
 }
 
-impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> OrgFreedesktopIBusPanel for blocking::Proxy<'a, C> {
+impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> IBusPanelProxy for blocking::Proxy<'a, C> {
 
     fn update_preedit_text(&self, text: arg::Variant<Box<dyn arg::RefArg>>, cursor_pos: u32, visible: bool) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.IBus.Panel", "UpdatePreeditText", (text, cursor_pos, visible, ))

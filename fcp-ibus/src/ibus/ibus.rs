@@ -4,9 +4,8 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use dbus::blocking::Connection;
-use dbus::{blocking::stdintf::org_freedesktop_dbus::Introspectable, channel::Watch};
 
-use crate::ibus::dbus_client::ibus::IBus as IBusProxy;
+use crate::ibus::dbus_client::ibus_proxy::IBusProxy;
 
 pub struct IBus {}
 

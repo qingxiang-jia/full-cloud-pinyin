@@ -4,7 +4,7 @@ use dbus as dbus;
 use dbus::arg;
 use dbus::blocking;
 
-pub trait IBus {
+pub trait IBusProxy {
     fn create_input_context(&self, client_name: &str) -> Result<dbus::Path<'static>, dbus::Error>;
     fn register_component(&self, component: arg::Variant<Box<dyn arg::RefArg>>) -> Result<(), dbus::Error>;
     fn get_engines_by_names(&self, names: Vec<&str>) -> Result<Vec<arg::Variant<Box<dyn arg::RefArg + 'static>>>, dbus::Error>;
@@ -67,7 +67,7 @@ impl dbus::message::SignalArgs for GlobalEngineChanged {
     const INTERFACE: &'static str = "org.freedesktop.IBus";
 }
 
-impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> IBus for blocking::Proxy<'a, C> {
+impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> IBusProxy for blocking::Proxy<'a, C> {
 
     fn create_input_context(&self, client_name: &str) -> Result<dbus::Path<'static>, dbus::Error> {
         self.method_call("org.freedesktop.IBus", "CreateInputContext", (client_name, ))
