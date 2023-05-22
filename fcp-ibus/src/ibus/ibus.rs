@@ -2,15 +2,9 @@ use std::io::BufRead;
 use std::path::Path;
 use std::path::PathBuf;
 
-use zbus::zvariant::Value;
-use zbus::Address;
-use zbus::AuthMechanism;
-use zbus::Connection;
-use zbus::ConnectionBuilder;
+use dbus::blocking::Connection;
+use dbus::{blocking::stdintf::org_freedesktop_dbus::Introspectable, channel::Watch};
 
-use super::proxy_zbus::ibus::IBusProxy;
-
-// DBus interfaces
 pub struct IBus {}
 
 impl IBus {
@@ -21,21 +15,12 @@ impl IBus {
     pub async fn init(&self) {
         let ibus_address = IBus::get_ibus_address().expect("Failed to get IBus address.");
         println!("IBus address: {}", ibus_address);
-        // client init
-        let conn_to_ibus = ConnectionBuilder::address(Address::Unix(ibus_address.into()))
-            .expect("Failed to get a connection to the session bus.")
-            .auth_mechanisms(&[AuthMechanism::External])
-            .build()
-            .await
-            .expect("Failed to build a DBus connection.");
-
-        let proxy_ibus = IBusProxy::new(&conn_to_ibus)
-            .await
-            .expect("Failed to get a connection to IBus.");
-        let val = Value::new(1);
-        let ping_result = proxy_ibus.ping(&val).await.expect("ping failed.");
-        proxy_ibus.exit(false).await.expect("Failed to exit.");
-        // server object init
+        let mut channel = dbus::channel::Channel::open_private(&ibus_address)
+            .expect("Failed to open a channel to IBus.");
+        channel
+            .register()
+            .expect("Failed to register the channel to DBus.");
+        let conn = Connection::from(channel);
     }
 
     // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
