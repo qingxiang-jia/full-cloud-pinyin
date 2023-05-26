@@ -1,10 +1,9 @@
 #![feature(fmt_helpers_for_derive)]
 
-use ibus::ibus::IBus;
+use ibus::client_factory::new_ibus_client;
 mod ibus;
 
 #[tokio::main]
 async fn main() {
-    let ibus = IBus::new();
-    ibus.init().await;
+    let ibus = new_ibus_client();
 }
