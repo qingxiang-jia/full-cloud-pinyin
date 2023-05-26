@@ -3,6 +3,7 @@ use dbus::arg;
 use super::dbus_server::engine::IBusEngine;
 use super::dbus_server::engine::IBUsFactory;
 use super::dbus_server::factory::IBusFactory;
+use super::dbus_server::service::IBusService;
 
 pub struct FcpEngine {}
 
@@ -117,5 +118,11 @@ impl IBusFactory for FcpEngine {
     fn create_engine(&mut self, name: String) -> Result<dbus::Path<'static>, dbus::MethodErr> {
         let path = dbus::Path::from_slice("/org/freedesktop/IBus/Factory").expect("Failed to create DBus path.");
         Ok(path)
+    }
+}
+
+impl IBusService for FcpEngine {
+    fn destroy(&mut self) -> Result<(), dbus::MethodErr> {
+        Ok(())
     }
 }
