@@ -1,7 +1,6 @@
 use dbus::arg;
 
 use super::dbus_server::engine::IBusEngine;
-use super::dbus_server::engine::IBUsFactory;
 use super::dbus_server::factory::IBusFactory;
 use super::dbus_server::service::IBusService;
 
