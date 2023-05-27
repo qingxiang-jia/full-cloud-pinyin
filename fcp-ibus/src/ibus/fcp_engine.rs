@@ -142,7 +142,7 @@ impl IBusEngine for FcpEngine {
 
 impl IBusFactory for FcpEngine {
     fn create_engine(&mut self, name: String) -> Result<dbus::Path<'static>, dbus::MethodErr> {
-        // TODO: export the fcp engine to IBus, three interfaces
+        println!("create_engine: name={name}");
         let path = dbus::Path::from_slice("/org/freedesktop/IBus/Engine/FcPinyin")
             .expect("Failed to create DBus path.");
         Ok(path)
