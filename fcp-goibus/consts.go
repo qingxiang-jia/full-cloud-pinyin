@@ -1,4 +1,4 @@
-package consts
+package main
 
 const (
 	CandCntA = 11

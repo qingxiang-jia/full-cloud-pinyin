@@ -1,4 +1,4 @@
-package cloudpinyin
+package main
 
 import (
 	"fmt"

@@ -1,17 +1,15 @@
-package engine
+package main
 
 import (
 	"fmt"
 
 	"github.com/godbus/dbus/v5"
 	"github.com/haunt98/goibus/ibus"
-	cp "github.com/qingxiang-jia/full-cloud-pinyin/internal/cloudPinyin"
-	"github.com/qingxiang-jia/full-cloud-pinyin/internal/consts"
 )
 
 type FcpEngine struct {
 	ibus.Engine
-	CloudPinyin cp.CloudPinyin
+	CloudPinyin *CloudPinyin
 	PropList    *ibus.PropList
 	Preedit     []rune
 	lt          *ibus.LookupTable
@@ -25,14 +23,14 @@ type FcpEngine struct {
 func NewFcpEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpEngine {
 	return &FcpEngine{
 		Engine:      ibus.BaseEngine(conn, *path),
-		CloudPinyin: *cp.NewCloudPinyin(),
+		CloudPinyin: NewCloudPinyin(),
 		PropList:    ibus.NewPropList(prop),
 		Preedit:     []rune{},
 		lt:          ibus.NewLookupTable(),
 		ltVisible:   false,
 		matchedLen:  []int{},
 		enMode:      false,
-		cpDepth:     [8]int{consts.CandCntA, consts.CandCntB, consts.CandCntC, consts.CandCntD, consts.CandCntE, consts.CandCntF, consts.CandCntG, consts.CandCntH},
+		cpDepth:     [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
 		cpCurDepth:  0,
 	}
 }
@@ -42,24 +40,24 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 	fmt.Println(key, string(key))
 
 	// Decides whether need to switch to/out of English mode
-	if state == consts.IBusButtonUp && (key == consts.IBusShiftL || key == consts.IBusShiftR) {
+	if state == IBusButtonUp && (key == IBusShiftL || key == IBusShiftR) {
 		e.cpCurDepth = 0
 		e.enMode = !e.enMode
 	}
 
-	if state == consts.IBusButtonDown && !e.enMode {
+	if state == IBusButtonDown && !e.enMode {
 		// a-z
-		if consts.IBusA <= key && key <= consts.IBusZ {
+		if IBusA <= key && key <= IBusZ {
 			e.cpCurDepth = 0
 
-			hasHandled := e.HandlePinyinInput(key, consts.AddRune, consts.CandCntA)
+			hasHandled := e.HandlePinyinInput(key, AddRune, CandCntA)
 
 			return hasHandled, nil
 		}
 
 		if e.ltVisible {
 			// Remove a character from preedit
-			if key == consts.IBusBackspace {
+			if key == IBusBackspace {
 				e.cpCurDepth = 0
 
 				if len(e.Preedit) == 0 {
@@ -67,12 +65,12 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 					return true, nil
 				}
 
-				hasHandled := e.HandlePinyinInput('_', consts.RemoveRune, consts.CandCntA)
+				hasHandled := e.HandlePinyinInput('_', RemoveRune, CandCntA)
 				return hasHandled, nil
 			}
 
 			// Terminate typing
-			if key == consts.IBusEsc {
+			if key == IBusEsc {
 				e.cpCurDepth = 0
 
 				e.Preedit = e.Preedit[:0]
@@ -82,7 +80,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			}
 
 			// Commit preedit as latin
-			if key == consts.IBusEnter {
+			if key == IBusEnter {
 				e.cpCurDepth = 0
 
 				e.CommitText(ibus.NewText(string(e.Preedit)))
@@ -93,7 +91,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			}
 
 			// Commit preedit as Chinese
-			if key == consts.IBusSpace {
+			if key == IBusSpace {
 				e.cpCurDepth = 0
 
 				e.CommitCandidate(int(e.lt.CursorPos))
@@ -101,7 +99,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			}
 
 			// Commit candidate by keying in candidate index
-			if consts.IBus0 <= key && key <= consts.IBus9 {
+			if IBus0 <= key && key <= IBus9 {
 				idx := int(key) - 48 - 1
 				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
 				idx += base
@@ -114,7 +112,7 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			}
 
 			// Cursor up lookup table
-			if key == consts.IBusUp {
+			if key == IBusUp {
 				if e.MoveCursorDown() {
 					e.UpdateLookupTable(e.lt, true)
 				}
@@ -122,33 +120,33 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 			}
 
 			// Cursor down lookup table
-			if key == consts.IBusDown {
+			if key == IBusDown {
 				if e.MoveCursorUp() {
 					e.UpdateLookupTable(e.lt, true)
 				}
 				return true, nil
 			}
 
-			if key == consts.IBusLeft || key == consts.IBusRight {
+			if key == IBusLeft || key == IBusRight {
 				// Currently I don't plan to support moving preedit cursor
 				return true, nil
 			}
 
 			// + to go to next page
-			if key == consts.IBusEqual {
+			if key == IBusEqual {
 				e.MovePageUp()
 				if e.AtLastPage() {
 					// We may want to load more candidates
 					if e.cpCurDepth < len(e.cpDepth) {
 						e.cpCurDepth++
 					}
-					e.HandlePinyinInput('_', consts.UnchangedRune, e.cpDepth[e.cpCurDepth])
+					e.HandlePinyinInput('_', UnchangedRune, e.cpDepth[e.cpCurDepth])
 				}
 				return true, nil
 			}
 
 			// - to go to previous page
-			if key == consts.IBusMinus {
+			if key == IBusMinus {
 				e.MovePageDown()
 				return true, nil
 			}
@@ -160,11 +158,11 @@ func (e *FcpEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32)
 
 func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 	switch op {
-	case consts.AddRune:
+	case AddRune:
 		e.Preedit = append(e.Preedit, key)
-	case consts.RemoveRune:
+	case RemoveRune:
 		e.Preedit = e.Preedit[0 : len(e.Preedit)-1]
-	case consts.UnchangedRune:
+	case UnchangedRune:
 	default:
 		fmt.Println("Not a valid operation")
 		return false
@@ -184,7 +182,7 @@ func (e *FcpEngine) HandlePinyinInput(key rune, op int, depth int) bool {
 	e.matchedLen = matchedLen
 
 	e.UpdateLookupTable(e.lt, true)
-	if op == consts.AddRune || op == consts.RemoveRune {
+	if op == AddRune || op == RemoveRune {
 		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(len(e.Preedit)), true)
 	}
 	e.ShowLt()
@@ -269,7 +267,7 @@ func (e *FcpEngine) CommitCandidate(i int) {
 		e.HideLt()
 		e.ClearLt()
 	} else {
-		e.HandlePinyinInput('_', consts.UnchangedRune, consts.CandCntA)
+		e.HandlePinyinInput('_', UnchangedRune, CandCntA)
 	}
 }
 
