@@ -7,11 +7,22 @@ use super::dbus_server::service::IBusService;
 pub struct FcpEngine {}
 
 impl IBusEngine for FcpEngine {
-    fn process_key_event(&mut self, keyval: u32, keycode: u32, state: u32) -> Result<bool, dbus::MethodErr> {
+    fn process_key_event(
+        &mut self,
+        keyval: u32,
+        keycode: u32,
+        state: u32,
+    ) -> Result<bool, dbus::MethodErr> {
         println!("process_key_event: keyval={keyval} keycode={keycode} state={state}");
         Ok(true)
     }
-    fn set_cursor_location(&mut self, x_: i32, y_: i32, w_: i32, h_: i32) -> Result<(), dbus::MethodErr> {
+    fn set_cursor_location(
+        &mut self,
+        x_: i32,
+        y_: i32,
+        w_: i32,
+        h_: i32,
+    ) -> Result<(), dbus::MethodErr> {
         println!("set_cursor_location: x={x_} y={y_} w={w_} h={h_}");
         Ok(())
     }
@@ -39,7 +50,12 @@ impl IBusEngine for FcpEngine {
         println!("property_hide: name={name}");
         Ok(())
     }
-    fn candidate_clicked(&mut self, index: u32, button: u32, state: u32) -> Result<(), dbus::MethodErr> {
+    fn candidate_clicked(
+        &mut self,
+        index: u32,
+        button: u32,
+        state: u32,
+    ) -> Result<(), dbus::MethodErr> {
         println!("candidate_clicked: index={index} button={button} state={state}");
         Ok(())
     }
@@ -87,15 +103,26 @@ impl IBusEngine for FcpEngine {
         println!("cursor_down");
         Ok(())
     }
-    fn set_surrounding_text(&mut self, text: arg::Variant<Box<dyn arg::RefArg + 'static>>, cursor_pos: u32, anchor_pos: u32) -> Result<(), dbus::MethodErr> {
+    fn set_surrounding_text(
+        &mut self,
+        text: arg::Variant<Box<dyn arg::RefArg + 'static>>,
+        cursor_pos: u32,
+        anchor_pos: u32,
+    ) -> Result<(), dbus::MethodErr> {
         println!("set_surrounding_text: cursor_pos={cursor_pos}");
         Ok(())
     }
-    fn panel_extension_received(&mut self, event: arg::Variant<Box<dyn arg::RefArg + 'static>>) -> Result<(), dbus::MethodErr> {
+    fn panel_extension_received(
+        &mut self,
+        event: arg::Variant<Box<dyn arg::RefArg + 'static>>,
+    ) -> Result<(), dbus::MethodErr> {
         println!("panel_extension_received");
         Ok(())
     }
-    fn panel_extension_register_keys(&mut self, data: arg::Variant<Box<dyn arg::RefArg + 'static>>) -> Result<(), dbus::MethodErr> {
+    fn panel_extension_register_keys(
+        &mut self,
+        data: arg::Variant<Box<dyn arg::RefArg + 'static>>,
+    ) -> Result<(), dbus::MethodErr> {
         println!("panel_extension_register_keys");
         Ok(())
     }
@@ -115,7 +142,8 @@ impl IBusEngine for FcpEngine {
 
 impl IBusFactory for FcpEngine {
     fn create_engine(&mut self, name: String) -> Result<dbus::Path<'static>, dbus::MethodErr> {
-        let path = dbus::Path::from_slice("/org/freedesktop/IBus/Factory").expect("Failed to create DBus path.");
+        let path = dbus::Path::from_slice("/org/freedesktop/IBus/Factory")
+            .expect("Failed to create DBus path.");
         Ok(path)
     }
 }
