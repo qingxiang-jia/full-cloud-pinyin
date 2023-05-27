@@ -24,3 +24,5 @@ fn main() {
     cr.insert("/", &[token], engine);
     cr.serve(&conn);
 }
+
+// TODO: the implementation of the factory interface should publish the engine when IBus calls.
