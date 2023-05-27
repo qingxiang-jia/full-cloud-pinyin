@@ -13,14 +13,14 @@ var eid = 0
 
 func Init(isExecByIBus bool, isExecFromTerm bool) {
 	if isExecByIBus {
-		execByIBus()
+		runByIBus()
 	}
 	if isExecFromTerm {
-		execFromTerm()
+		runFromConsole()
 	}
 }
 
-func execFromTerm() {
+func runFromConsole() {
 	bus := ibus.NewBus()
 
 	conn := bus.GetDbusConn()
@@ -38,7 +38,7 @@ func execFromTerm() {
 	}
 }
 
-func execByIBus() {
+func runByIBus() {
 	bus := ibus.NewBus()
 
 	conn := bus.GetDbusConn()
