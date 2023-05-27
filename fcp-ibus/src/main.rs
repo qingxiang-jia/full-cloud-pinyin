@@ -25,18 +25,18 @@ fn main() {
     println!("Number of IBus engines: {}", engines.len());
 
     // Register our input method.
-    let component_xml =
-        fs::read_to_string("/home/lee/Code/full-cloud-pinyin/fcp-ibus/src/component.xml")
-            .expect("Unable to read file");
-    let inner = Box::new(component_xml) as Box<dyn RefArg>;
-    let component = dbus::arg::Variant(inner);
-    match ibus.register_component(component) {
-        Ok(()) => println!("Component registration successful!"),
-        Err(e) => {
-            println!("Failed to register component.");
-            display_debus_error(&e);
-        },
-    }
+    // let component_xml =
+    //     fs::read_to_string("/home/lee/Code/full-cloud-pinyin/fcp-ibus/src/component.xml")
+    //         .expect("Unable to read file");
+    // let inner = Box::new(component_xml) as Box<dyn RefArg>;
+    // let component = dbus::arg::Variant(inner);
+    // match ibus.register_component(component) {
+    //     Ok(()) => println!("Component registration successful!"),
+    //     Err(e) => {
+    //         println!("Failed to register component.");
+    //         display_debus_error(&e);
+    //     },
+    // }
 
     // Generate IBus server so IBus can call us.
     let mut cr = Crossroads::new();
