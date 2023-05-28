@@ -47,7 +47,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fcp-ibus"
+name = "fcp-dbus"
 version = "0.1.0"
 dependencies = [
  "dbus",
