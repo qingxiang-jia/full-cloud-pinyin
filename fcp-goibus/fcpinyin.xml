@@ -19,7 +19,7 @@
       <author>
         Qingxiang Jia
       </author>
-      <icon>/usr/share/icons/octopi.png</icon>
+      <icon>/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg</icon>
       <layout>default</layout>
       <longname>Full Cloud Pinyin</longname>
       <description>Use Google's cloud pinyin as backend</description>
