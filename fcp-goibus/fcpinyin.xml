@@ -2,7 +2,7 @@
   <name>org.freedesktop.IBus.FcPinyin</name>
   <description>Full Cloud Pinyin</description>
   <exec>
-    /home/lee/Code/Projects/full-cloud-pinyin/full-cloud-pinyin -ibus
+    /home/lee/Code/full-cloud-pinyin/fcp-goibus/full-cloud-pinyin -ibus
   </exec>
   <version>0.1</version>
   <author>
