@@ -1,3 +1,5 @@
+![Peek 2023-05-28 09-53](https://github.com/qingxiang-jia/full-cloud-pinyin/assets/5571586/2cc6a04b-9d8b-4366-81cd-8c3663962bbb)
+
 ## Introduction
 
 Using pinyin on Linux has been improved a lot, especially with Fcitx (both 4 and 5). But I tried Google Input Tools and personally I feel it gives much better prediction. So I want to bring to Linux. Note, both IBus and Fcitx have cloud pinyin that kind of does this already. But it has a few issues that hinders usability:
