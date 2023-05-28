@@ -1,4 +1,4 @@
-![Peek 2023-05-28 09-53](https://github.com/qingxiang-jia/full-cloud-pinyin/assets/5571586/2cc6a04b-9d8b-4366-81cd-8c3663962bbb)
+![Peek 2023-05-28 10-31](https://github.com/qingxiang-jia/full-cloud-pinyin/assets/5571586/a366969e-40ba-4ec5-b2e7-ae25808e0fcd)
 
 ## Introduction
 
