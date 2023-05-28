@@ -1,8 +1,10 @@
 #![feature(fmt_helpers_for_derive)]
 
+use std::collections::HashMap;
 use std::fs;
 
 use crate::ibus::dbus_client::ibus_proxy::IBusProxy;
+use crate::ibus::dbus_client::manual::{Component, EngineDesc};
 use crate::ibus::dbus_client::panel_proxy::IBusPanelProxy;
 use dbus::arg::RefArg;
 use dbus_crossroads::{self, Crossroads, IfaceToken};
@@ -37,13 +39,40 @@ fn main() {
         },
     }
 
-    // Register our input method.
-    let component_xml =
-        fs::read_to_string("/home/lee/Code/full-cloud-pinyin/fcp-ibus/src/component.xml")
-            .expect("Unable to read file");
-    let inner = Box::new(component_xml) as Box<dyn RefArg>;
-    let component = dbus::arg::Variant(inner);
-    match ibus.register_component(component) {
+    let component = Component {
+        name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
+        description: "Full Cloud Pinyin".to_owned(),
+        version: "0.1".to_owned(),
+        license: "MIT".to_owned(),
+        author: "Qingxiang Jia".to_owned(),
+        homepage: "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(),
+        exec: "".to_owned(),
+        textdomain: "full-cloud-pinyin".to_owned(),
+        attachments: HashMap::new(),
+        engines: [EngineDesc {
+            attachments: HashMap::new(),
+            name: "full-cloud-pinyin".to_owned(),
+            longname: "Full Cloud Pinyin".to_owned(),
+            description: "Full Cloud Pinyin".to_owned(),
+            language: "en".to_owned(),
+            license: "MIT".to_owned(),
+            author: "Qingxiang Jia".to_owned(),
+            icon: "/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg".to_owned(),
+            layout: "us".to_owned(),
+            rank: 0,
+            hotkeys: "".to_owned(),
+            symbol: "".to_owned(),
+            setup: "".to_owned(),
+            layout_option: "".to_owned(),
+            layout_variant: "".to_owned(),
+            version: "0.1".to_owned(),
+            text_domain: "full-cloud-pinyin".to_owned(),
+        }]
+    };
+
+    let componnet_variant = Box::new(component) as Box<dyn RefArg>;
+
+    match ibus.register_component(componnet_variant) {
         Ok(()) => println!("Component registration successful!"),
         Err(e) => {
             println!("Failed to register component.");
