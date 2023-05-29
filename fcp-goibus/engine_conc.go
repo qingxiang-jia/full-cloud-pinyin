@@ -90,6 +90,7 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 		e.updatePreedit(&next.preedit, next.ltVisible)
 		e.updateLt(&next.candidates, next.ltVisible)
 		// IBus doesn't care matchedLen, ltVisible, englishMode, depth, so skip
+		e.now = next
 		e.mu.Unlock()
 		return
 	}
@@ -99,6 +100,7 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 		// IBus
 		e.updateLt(&next.candidates, next.ltVisible)
 		// IBus doesn't care matchedLen
+		e.now = next
 		e.mu.Unlock()
 		return
 	}
