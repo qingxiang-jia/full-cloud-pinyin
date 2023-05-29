@@ -97,6 +97,10 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 	// Has depth changed? If so, update candidates, matchedLen
 	if next.depth != e.now.depth {
 		// IBus
+		e.updateLt(&next.candidates, next.ltVisible)
+		// IBus doesn't care matchedLen
+		e.mu.Unlock()
+		return
 	}
 
 	// Has englishMode changed? If so, update everything
