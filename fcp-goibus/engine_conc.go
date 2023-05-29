@@ -24,12 +24,6 @@ type IBusState struct {
 	propList *ibus.PropList
 }
 
-type EngineState struct {
-	now            State
-	lt             *ibus.LookupTable
-	candidateDepth [8]int
-}
-
 type FcpConcEngine struct {
 	ibus.Engine
 	cp        *CloudPinyin
