@@ -21,22 +21,22 @@ type IBusState struct {
 	PropList   *ibus.PropList
 }
 
-type IBusEngineState struct {
+type EngineState struct {
 	Preedit            []rune
-	LookupTable        *ibus.LookupTable
+	Candidates         []string
+	MatchedLength      []int
 	LookupTableVisible bool
 	EnglishMode        bool
-	Candidates         []string
-	CandidateDepth     [8]int
-	MatchedLength      []int
 	CurrCandidateDepth int
+	LookupTable        *ibus.LookupTable
+	CandidateDepth     [8]int
 }
 
 type FcpConcEngine struct {
 	ibus.Engine
 	CloudPinyin     *CloudPinyin
 	IBusState       IBusState
-	IBusEngineState IBusEngineState
+	IBusEngineState EngineState
 }
 
 func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpConcEngine {
@@ -49,7 +49,7 @@ func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Propert
 			Property:   prop,
 			PropList:   ibus.NewPropList(prop),
 		},
-		IBusEngineState: IBusEngineState{
+		IBusEngineState: EngineState{
 			LookupTable:        ibus.NewLookupTable(),
 			LookupTableVisible: false,
 			EnglishMode:        false,
