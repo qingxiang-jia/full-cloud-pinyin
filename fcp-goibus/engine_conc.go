@@ -112,6 +112,7 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 		// IBus doesn't care matchedLen, ltVisible, englishMode, depth, so skip
 		e.now = next
 		e.mu.Unlock()
+		return
 	}
 
 	// Has preedit changed? If so, update IBus with changes on preedit, candidates, matchedLen
@@ -121,6 +122,7 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 		// IBus doesn't care matchedLen so skip
 		e.now = next
 		e.mu.Unlock()
+		return
 	}
 }
 
