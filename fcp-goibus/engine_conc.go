@@ -77,15 +77,18 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 			englishMode: !e.now.englishMode,
 			depth:       0,
 		}
-		e.applyStateAtomic(next)
+		e.applyStateAtomic(&next)
 	}
 
 	return true, nil
 }
 
-func (e *FcpConcEngine) applyStateAtomic(next State) {
+func (e *FcpConcEngine) applyStateAtomic(next *State) {
 	e.mu.Lock()
 	// Has ltVisible changed? If so, update everything
+	if next.ltVisible != e.now.ltVisible {
+
+	}
 
 	// Has depth changed? If so, update candidates, matchedLen
 
