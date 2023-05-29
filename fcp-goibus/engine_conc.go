@@ -106,6 +106,13 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 	}
 
 	// Has englishMode changed? If so, update everything
+	if next.englishMode != e.now.englishMode {
+		e.updatePreedit(&next.preedit, next.ltVisible)
+		e.updateLt(&next.candidates, next.ltVisible)
+		// IBus doesn't care matchedLen, ltVisible, englishMode, depth, so skip
+		e.now = next
+		e.mu.Unlock()
+	}
 
 	// Has preedit changed? If so, update IBus with changes on preedit, candidates, matchedLen
 
