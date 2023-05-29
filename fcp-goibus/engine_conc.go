@@ -6,47 +6,53 @@ import (
 )
 
 type State struct {
-	Preedit            []rune
-	Candidates         []string
-	MatchedLength      []int
-	LookupTableVisible bool
-	EnglishMode        bool
-	CandidateDepth     [8]int
+	preedit        []rune
+	candidates     []string
+	matchedLen     []int
+	ltVisible      bool
+	englishMode    bool
+	candidateDepth [8]int
+}
+
+type DBusState struct {
+	conn    *dbus.Conn
+	objPath *dbus.ObjectPath
 }
 
 type IBusState struct {
-	Connection *dbus.Conn
-	ObjectPath *dbus.ObjectPath
-	Property   *ibus.Property
-	PropList   *ibus.PropList
+	prop     *ibus.Property
+	propList *ibus.PropList
 }
 
 type EngineState struct {
-	NowState       State
-	LookupTable    *ibus.LookupTable
-	CandidateDepth [8]int
+	now            State
+	lt             *ibus.LookupTable
+	candidateDepth [8]int
 }
 
 type FcpConcEngine struct {
 	ibus.Engine
-	CloudPinyin     *CloudPinyin
-	IBusState       IBusState
-	IBusEngineState EngineState
+	cp          *CloudPinyin
+	dbusState   DBusState
+	ibusState   IBusState
+	engineState EngineState
 }
 
 func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpConcEngine {
 	return &FcpConcEngine{
-		Engine:      ibus.BaseEngine(conn, *path),
-		CloudPinyin: NewCloudPinyin(),
-		IBusState: IBusState{
-			Connection: conn,
-			ObjectPath: path,
-			Property:   prop,
-			PropList:   ibus.NewPropList(prop),
+		Engine: ibus.BaseEngine(conn, *path),
+		cp:     NewCloudPinyin(),
+		dbusState: DBusState{
+			conn:    conn,
+			objPath: path,
 		},
-		IBusEngineState: EngineState{
-			LookupTable:    ibus.NewLookupTable(),
-			CandidateDepth: [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
+		ibusState: IBusState{
+			prop:     prop,
+			propList: ibus.NewPropList(prop),
+		},
+		engineState: EngineState{
+			lt:             ibus.NewLookupTable(),
+			candidateDepth: [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
 		},
 	}
 }
