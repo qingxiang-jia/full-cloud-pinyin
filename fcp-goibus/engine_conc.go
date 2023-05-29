@@ -6,12 +6,12 @@ import (
 )
 
 type State struct {
-	preedit        []rune
-	candidates     []string
-	matchedLen     []int
-	ltVisible      bool
-	englishMode    bool
-	candidateDepth [8]int
+	preedit     []rune
+	candidates  []string
+	matchedLen  []int
+	ltVisible   bool
+	englishMode bool
+	depth       [8]int
 }
 
 type DBusState struct {
@@ -52,12 +52,12 @@ func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Propert
 			propList: ibus.NewPropList(prop),
 		},
 		now: State{
-			preedit:        []rune{},
-			candidates:     []string{},
-			matchedLen:     []int{},
-			ltVisible:      false,
-			englishMode:    false,
-			candidateDepth: [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
+			preedit:     []rune{},
+			candidates:  []string{},
+			matchedLen:  []int{},
+			ltVisible:   false,
+			englishMode: false,
+			depth:       [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
 		},
 		lt: ibus.NewLookupTable(),
 	}
