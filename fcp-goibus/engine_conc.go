@@ -33,7 +33,7 @@ type FcpConcEngine struct {
 	cp        *CloudPinyin
 	dbusState DBusState
 	ibusState IBusState
-	now       State
+	now       *State
 	level     [8]int
 	lt        *ibus.LookupTable
 }
@@ -50,7 +50,7 @@ func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Propert
 			prop:     prop,
 			propList: ibus.NewPropList(prop),
 		},
-		now: State{
+		now: &State{
 			preedit:     []rune{},
 			candidates:  []string{},
 			matchedLen:  []int{},
