@@ -87,14 +87,17 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 	e.mu.Lock()
 	// Has ltVisible changed? If so, update everything
 	if next.ltVisible != e.now.ltVisible {
-		e.updatePreedit(&next.preedit)
-		e.updateLt(&next.candidates)
+		e.updatePreedit(&next.preedit, next.ltVisible)
+		e.updateLt(&next.candidates, next.ltVisible)
 		// IBus doesn't care matchedLen, ltVisible, englishMode, depth, so skip
 		e.mu.Unlock()
 		return
 	}
 
 	// Has depth changed? If so, update candidates, matchedLen
+	if next.depth != e.now.depth {
+		// IBus
+	}
 
 	// Has englishMode changed? If so, update everything
 
@@ -102,15 +105,16 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 
 }
 
-func (e *FcpConcEngine) updatePreedit(preedit *[]rune) {
-	e.UpdatePreeditText(ibus.NewText(string(*preedit)), uint32(1), true)
+func (e *FcpConcEngine) updatePreedit(preedit *[]rune, visible bool) {
+	e.UpdatePreeditText(ibus.NewText(string(*preedit)), uint32(1), visible)
 }
 
-func (e *FcpConcEngine) updateLt(new *[]string) {
+func (e *FcpConcEngine) updateLt(new *[]string, visible bool) {
 	e.clearLt()
 	for _, candidate := range *new {
 		e.lt.AppendCandidate(candidate)
 	}
+	e.UpdateLookupTable(e.lt, visible)
 }
 
 func (e *FcpConcEngine) clearLt() {
