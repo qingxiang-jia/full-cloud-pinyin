@@ -115,7 +115,13 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 	}
 
 	// Has preedit changed? If so, update IBus with changes on preedit, candidates, matchedLen
-
+	if string(next.preedit) != string(e.now.preedit) {
+		e.updatePreedit(&next.preedit, next.ltVisible)
+		e.updateLt(&next.candidates, next.ltVisible)
+		// IBus doesn't care matchedLen so skip
+		e.now = next
+		e.mu.Unlock()
+	}
 }
 
 func (e *FcpConcEngine) updatePreedit(preedit *[]rune, visible bool) {
