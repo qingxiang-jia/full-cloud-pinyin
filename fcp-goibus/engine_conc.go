@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/godbus/dbus/v5"
 	"github.com/haunt98/goibus/ibus"
 )
@@ -11,7 +13,7 @@ type State struct {
 	matchedLen  []int
 	ltVisible   bool
 	englishMode bool
-	depth       [8]int
+	depth       int
 }
 
 type DBusState struct {
@@ -30,6 +32,7 @@ type FcpConcEngine struct {
 	dbusState DBusState
 	ibusState IBusState
 	now       State
+	level     [8]int
 	lt        *ibus.LookupTable
 }
 
@@ -51,10 +54,23 @@ func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Propert
 			matchedLen:  []int{},
 			ltVisible:   false,
 			englishMode: false,
-			depth:       [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
+			depth:       0,
 		},
-		lt: ibus.NewLookupTable(),
+		level: [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
+		lt:    ibus.NewLookupTable(),
 	}
+}
+
+func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
+	key := rune(keyVal)
+	fmt.Println(key, string(key))
+
+	// Decides if we need to switch to or out of English mode
+	if state == IBusButtonUp && (key == IBusShiftL || key == IBusShiftR) {
+
+	}
+
+	return true, nil
 }
 
 // Merge a state created by call to HandlePinyinInput with IBusEngineState atomically
