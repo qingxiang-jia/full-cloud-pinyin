@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/godbus/dbus/v5"
 	"github.com/haunt98/goibus/ibus"
@@ -28,6 +29,7 @@ type IBusState struct {
 
 type FcpConcEngine struct {
 	ibus.Engine
+	mu        sync.Mutex
 	cp        *CloudPinyin
 	dbusState DBusState
 	ibusState IBusState
@@ -67,12 +69,21 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 	// Decides if we need to switch to or out of English mode
 	if state == IBusButtonUp && (key == IBusShiftL || key == IBusShiftR) {
-
+		next := State{
+			preedit:     []rune{},
+			candidates:  []string{},
+			matchedLen:  []int{},
+			ltVisible:   false,
+			englishMode: !e.now.englishMode,
+			depth:       0,
+		}
+		e.applyStateAtomic(next)
 	}
 
 	return true, nil
 }
 
-// Merge a state created by call to HandlePinyinInput with IBusEngineState atomically
-func (e *FcpConcEngine) mergeStateAtomic(now State) {
+func (e *FcpConcEngine) applyStateAtomic(next State) {
+	e.mu.Lock()
+	e.mu.Unlock()
 }
