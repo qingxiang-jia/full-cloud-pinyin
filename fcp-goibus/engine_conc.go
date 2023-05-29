@@ -32,10 +32,11 @@ type EngineState struct {
 
 type FcpConcEngine struct {
 	ibus.Engine
-	cp          *CloudPinyin
-	dbusState   DBusState
-	ibusState   IBusState
-	engineState EngineState
+	cp        *CloudPinyin
+	dbusState DBusState
+	ibusState IBusState
+	now       State
+	lt        *ibus.LookupTable
 }
 
 func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpConcEngine {
@@ -50,10 +51,15 @@ func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Propert
 			prop:     prop,
 			propList: ibus.NewPropList(prop),
 		},
-		engineState: EngineState{
-			lt:             ibus.NewLookupTable(),
+		now: State{
+			preedit:        []rune{},
+			candidates:     []string{},
+			matchedLen:     []int{},
+			ltVisible:      false,
+			englishMode:    false,
 			candidateDepth: [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
 		},
+		lt: ibus.NewLookupTable(),
 	}
 }
 
