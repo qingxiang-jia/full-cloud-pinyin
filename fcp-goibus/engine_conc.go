@@ -85,5 +85,12 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 func (e *FcpConcEngine) applyStateAtomic(next State) {
 	e.mu.Lock()
+	// Has ltVisible changed? If so, update everything
+
+	// Has depth changed? If so, update candidates, matchedLen
+
+	// Has englishMode changed? If so, update everything
+
+	// Has preedit changed? If so, update IBus with changes on preedit, candidates, matchedLen
 	e.mu.Unlock()
 }
