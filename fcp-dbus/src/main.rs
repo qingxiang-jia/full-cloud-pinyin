@@ -70,9 +70,11 @@ fn main() {
         }]
     };
 
-    let componnet_variant = Box::new(component) as Box<dyn RefArg>;
+    let tuple = (component.name, component.description, component.version, component.license, component.author, component.homepage, component.exec, component.textdomain, component.attachments);
 
-    match ibus.register_component(componnet_variant) {
+    let componnet_variant = Box::new(tuple) as Box<dyn RefArg>;
+
+    match ibus.register_component(dbus::arg::Variant(componnet_variant)) {
         Ok(()) => println!("Component registration successful!"),
         Err(e) => {
             println!("Failed to register component.");
