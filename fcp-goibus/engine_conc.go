@@ -78,6 +78,71 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 			depth:       0,
 		}
 		e.applyStateAtomic(&next)
+		return true, nil
+	}
+
+	// Pinyin typing mode
+	if state == IBusButtonDown && !e.now.englishMode {
+		// a-z
+		if IBusA <= key && key <= IBusZ {
+			go func() {
+				next := *(e.now)
+				next.preedit = append(next.preedit, key)
+				cand, matchedLen, err := e.cp.GetCandidates(string(next.preedit), e.level[0])
+
+				if err != nil {
+					return
+				}
+
+				next.candidates = cand
+				next.matchedLen = matchedLen
+				next.ltVisible = true
+				next.englishMode = false
+				next.depth = 0
+
+				e.applyStateAtomic(&next)
+			}()
+			return true, nil // Yeah, we can't really tell IBus false or non-nil error
+		}
+
+		// Non-typing actions
+		if e.now.ltVisible {
+			// Remove a character from preedit
+			if key == IBusBackspace {
+				go func() {
+					next := *(e.now)
+					next.preedit = next.preedit[:len(next.preedit)-1]
+					cand, matchedLen, err := e.cp.GetCandidates(string(next.preedit), e.level[0])
+
+					if err != nil {
+						return
+					}
+
+					next.candidates = cand
+					next.matchedLen = matchedLen
+					next.ltVisible = true
+					next.englishMode = false
+					next.depth = 0
+
+					e.applyStateAtomic(&next)
+				}()
+				return true, nil
+			}
+		}
+
+		// Terminate typing
+		if key == IBusEsc {
+			next := State{
+				preedit:     []rune{},
+				candidates:  []string{},
+				matchedLen:  []int{},
+				ltVisible:   false,
+				englishMode: e.now.englishMode,
+				depth:       0,
+			}
+			e.applyStateAtomic(&next)
+			return true, nil
+		}
 	}
 
 	return true, nil
