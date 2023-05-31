@@ -334,6 +334,7 @@ func (e *FcpConcEngine) applyStateAtomic(next *State) {
 		e.mu.Unlock()
 		return
 	}
+	e.mu.Unlock()
 }
 
 func (e *FcpConcEngine) updatePreedit(preedit *[]rune, visible bool) {
