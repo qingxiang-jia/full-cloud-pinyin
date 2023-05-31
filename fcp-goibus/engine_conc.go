@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/godbus/dbus/v5"
 	"github.com/haunt98/goibus/ibus"
@@ -9,6 +10,7 @@ import (
 
 type FcpConcEngine struct {
 	ibus.Engine
+	mu          sync.Mutex
 	cloud       *CloudPinyin
 	propList    *ibus.PropList
 	preedit     []rune
@@ -49,10 +51,19 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 		// a-z
 		if IBusA <= key && key <= IBusZ {
 			e.depth = 0
+			e.setPreeditAtomic(append(e.preedit, key))
+			preedit := e.preedit
 
-			hasHandled := e.handlePinyinInput(key, AddRune, CandCntA)
+			go func() {
+				candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
+				if err != nil {
+					e.setCandidatesAtomic(candidates, matchedLen)
+				} else {
+					fmt.Println(err)
+				}
+			}()
 
-			return hasHandled, nil
+			return true, nil
 		}
 
 		if e.ltVisible {
@@ -63,91 +74,155 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 				if len(e.preedit) == 0 {
 					e.hideLt()
 					return true, nil
+				} else {
+					e.setPreeditAtomic(e.preedit[:len(e.preedit)-1])
 				}
+				preedit := e.preedit
 
-				hasHandled := e.handlePinyinInput('_', RemoveRune, CandCntA)
-				return hasHandled, nil
+				go func() {
+					candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
+					if err != nil {
+						e.setCandidatesAtomic(candidates, matchedLen)
+					} else {
+						fmt.Println(err)
+					}
+				}()
+
+				return true, nil
 			}
 
 			// Terminate typing
 			if key == IBusEsc {
 				e.depth = 0
+				e.setPreeditAtomic(e.preedit[:0])
+				e.setCandidatesAtomic([]string{}, []int{})
 
-				e.preedit = e.preedit[:0]
-				e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+				e.mu.Lock()
 				e.hideLt()
+				e.mu.Unlock()
+
 				return true, nil
 			}
 
-			// Commit preedit as latin
+			// Commit preedit as alphabets
 			if key == IBusEnter {
 				e.depth = 0
 
-				e.CommitText(ibus.NewText(string(e.preedit)))
-				e.preedit = e.preedit[:0]
-				e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+				toCommit := e.preedit
+				e.commitTextAtomic(toCommit)
+
+				e.setCandidatesAtomic([]string{}, []int{})
+				e.setPreeditAtomic([]rune{})
+
+				e.mu.Lock()
 				e.hideLt()
+				e.mu.Unlock()
+
 				return true, nil
 			}
 
-			// Commit preedit as Chinese
+			// Commit a candidate
 			if key == IBusSpace {
 				e.depth = 0
 
-				e.commitCandidate(int(e.lt.CursorPos))
+				idx := int(e.lt.CursorPos)
+				e.commitCandidateAtomic(idx)
+				matchedLen := e.matchedLen[idx]
+				preedit := e.preedit
+
+				if len(e.preedit) > matchedLen {
+					e.setPreeditAtomic(preedit[matchedLen:])
+					preedit = e.preedit
+
+					go func() {
+						candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
+						if err != nil {
+							e.setCandidatesAtomic(candidates, matchedLen)
+						} else {
+							fmt.Println(err)
+						}
+					}()
+				}
+
 				return true, nil
 			}
 
 			// Commit candidate by keying in candidate index
 			if IBus0 <= key && key <= IBus9 {
+				e.mu.Lock()
 				idx := int(key) - 48 - 1
 				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
 				idx += base
-				if 0 <= idx && idx < len(e.lt.Candidates) {
-					e.depth = 0
+				candidatesSize := len(e.lt.Candidates)
+				e.mu.Unlock()
 
-					e.commitCandidate(idx)
+				if 0 <= idx && idx < candidatesSize {
+					e.depth = 0
+					e.commitCandidateAtomic(idx)
 				}
+
 				return true, nil
 			}
 
 			// Cursor up lookup table
-			if key == IBusUp {
+			if key == IBusUp || key == IBusLeft {
+				e.mu.Lock()
+
 				if e.moveCursorDown() {
 					e.UpdateLookupTable(e.lt, true)
 				}
+
+				e.mu.Unlock()
+
 				return true, nil
 			}
 
 			// Cursor down lookup table
-			if key == IBusDown {
+			if key == IBusDown || key == IBusRight {
+				e.mu.Lock()
+
 				if e.moveCursorUp() {
 					e.UpdateLookupTable(e.lt, true)
 				}
-				return true, nil
-			}
 
-			if key == IBusLeft || key == IBusRight {
-				// Currently I don't plan to support moving preedit cursor
+				e.mu.Unlock()
+
 				return true, nil
 			}
 
 			// + to go to next page
 			if key == IBusEqual {
+				e.mu.Lock()
+
 				e.movePageUp()
-				if e.atLastPage() {
-					// We may want to load more candidates
-					if e.depth < len(e.level) {
-						e.depth++
-					}
-					e.handlePinyinInput('_', UnchangedRune, e.level[e.depth])
+				loadMore := e.atLastPage()
+
+				e.mu.Unlock()
+
+				// We may want to load more candidates
+				if loadMore && e.depth < len(e.level) {
+					e.depth++
+					depth := e.level[e.depth]
+					preedit := e.preedit
+
+					go func() {
+						candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), depth)
+						if err != nil {
+							e.setCandidatesAtomic(candidates, matchedLen)
+						} else {
+							fmt.Println(err)
+						}
+					}()
 				}
+
 				return true, nil
 			}
 
 			// - to go to previous page
 			if key == IBusMinus {
+				e.mu.Lock()
 				e.movePageDown()
+				e.mu.Unlock()
 				return true, nil
 			}
 		}
@@ -156,40 +231,41 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 	return false, nil
 }
 
-func (e *FcpConcEngine) handlePinyinInput(key rune, op int, depth int) bool {
-	switch op {
-	case AddRune:
-		e.preedit = append(e.preedit, key)
-	case RemoveRune:
-		e.preedit = e.preedit[0 : len(e.preedit)-1]
-	case UnchangedRune:
-	default:
-		fmt.Println("Not a valid operation")
-		return false
-	}
-
-	cand, matchedLen, err := e.cloud.GetCandidates(string(e.preedit), depth)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
+func (e *FcpConcEngine) setCandidatesAtomic(candidates []string, matchedLen []int) {
+	e.mu.Lock()
 
 	e.clearLt()
-
-	for _, val := range cand {
-		e.lt.AppendCandidate(val)
+	for _, candidate := range candidates {
+		e.lt.AppendCandidate(candidate)
 	}
 	e.matchedLen = matchedLen
-
 	e.UpdateLookupTable(e.lt, true)
-	if op == AddRune || op == RemoveRune {
-		e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(len(e.preedit)), true)
-	}
-	e.showLt()
-	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
-	// so call it here to keep in sync
 
-	return true
+	e.mu.Unlock()
+}
+
+func (e *FcpConcEngine) setPreeditAtomic(preedit []rune) {
+	e.mu.Lock()
+
+	e.preedit = preedit
+	e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+
+	e.mu.Unlock()
+}
+
+func (e *FcpConcEngine) commitTextAtomic(text []rune) {
+	e.mu.Lock()
+	e.CommitText(ibus.NewText(string(text)))
+	e.mu.Unlock()
+}
+
+func (e *FcpConcEngine) commitCandidateAtomic(i int) {
+	e.mu.Lock()
+
+	text := e.lt.Candidates[i].Value().(ibus.Text)
+	e.CommitText(&text)
+
+	e.mu.Unlock()
 }
 
 // Not sure why the buil-in cursor moving functions don't work so I need to write my own.
@@ -246,28 +322,6 @@ func (e *FcpConcEngine) atLastPage() bool {
 		return true
 	} else {
 		return false
-	}
-}
-
-func (e *FcpConcEngine) commitCandidate(i int) {
-	if !e.ltVisible {
-		return
-	}
-	text := e.lt.Candidates[i].Value().(ibus.Text)
-	e.CommitText(&text)
-
-	if e.matchedLen != nil {
-		matchedLen := e.matchedLen[i]
-		e.preedit = e.preedit[matchedLen:len(e.preedit)]
-	} else {
-		e.preedit = e.preedit[:0]
-	}
-	e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
-	if len(e.preedit) == 0 {
-		e.hideLt()
-		e.clearLt()
-	} else {
-		e.handlePinyinInput('_', UnchangedRune, CandCntA)
 	}
 }
 
