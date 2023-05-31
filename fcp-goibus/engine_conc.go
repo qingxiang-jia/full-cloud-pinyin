@@ -2,64 +2,36 @@ package main
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/godbus/dbus/v5"
 	"github.com/haunt98/goibus/ibus"
 )
 
-type State struct {
-	preedit     []rune
-	candidates  []string
-	matchedLen  []int
-	ltVisible   bool
-	englishMode bool
-	depth       int
-}
-
-type DBusState struct {
-	conn    *dbus.Conn
-	objPath *dbus.ObjectPath
-}
-
-type IBusState struct {
-	prop     *ibus.Property
-	propList *ibus.PropList
-}
-
 type FcpConcEngine struct {
 	ibus.Engine
-	mu        sync.Mutex
-	cp        *CloudPinyin
-	dbusState DBusState
-	ibusState IBusState
-	now       *State
-	level     [8]int
-	lt        *ibus.LookupTable
+	CloudPinyin *CloudPinyin
+	PropList    *ibus.PropList
+	Preedit     []rune
+	lt          *ibus.LookupTable
+	ltVisible   bool
+	matchedLen  []int
+	enMode      bool
+	cpDepth     [8]int
+	cpCurDepth  int
 }
 
 func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpConcEngine {
 	return &FcpConcEngine{
-		Engine: ibus.BaseEngine(conn, *path),
-		cp:     NewCloudPinyin(),
-		dbusState: DBusState{
-			conn:    conn,
-			objPath: path,
-		},
-		ibusState: IBusState{
-			prop:     prop,
-			propList: ibus.NewPropList(prop),
-		},
-		now: &State{
-			preedit:     []rune{},
-			candidates:  []string{},
-			matchedLen:  []int{},
-			ltVisible:   false,
-			englishMode: false,
-			depth:       0,
-		},
-		level: [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
-		lt:    ibus.NewLookupTable(),
+		Engine:      ibus.BaseEngine(conn, *path),
+		CloudPinyin: NewCloudPinyin(),
+		PropList:    ibus.NewPropList(prop),
+		Preedit:     []rune{},
+		lt:          ibus.NewLookupTable(),
+		ltVisible:   false,
+		matchedLen:  []int{},
+		enMode:      false,
+		cpDepth:     [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
+		cpCurDepth:  0,
 	}
 }
 
@@ -67,224 +39,115 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 	key := rune(keyVal)
 	fmt.Println(key, string(key))
 
-	// Decides if we need to switch to or out of English mode
+	// Decides whether need to switch to/out of English mode
 	if state == IBusButtonUp && (key == IBusShiftL || key == IBusShiftR) {
-		next := State{
-			preedit:     []rune{},
-			candidates:  []string{},
-			matchedLen:  []int{},
-			ltVisible:   false,
-			englishMode: !e.now.englishMode,
-			depth:       0,
-		}
-		e.applyStateAtomic(&next)
-		return true, nil
+		e.cpCurDepth = 0
+		e.enMode = !e.enMode
 	}
 
-	// Pinyin typing mode
-	if state == IBusButtonDown && !e.now.englishMode {
+	if state == IBusButtonDown && !e.enMode {
 		// a-z
 		if IBusA <= key && key <= IBusZ {
-			go func() {
-				next := *(e.now)
-				next.preedit = append(next.preedit, key)
-				cand, matchedLen, err := e.cp.GetCandidates(string(next.preedit), e.level[0])
+			e.cpCurDepth = 0
 
-				if err != nil {
-					return
-				}
+			hasHandled := e.handlePinyinInput(key, AddRune, CandCntA)
 
-				next.candidates = cand
-				next.matchedLen = matchedLen
-				next.ltVisible = true
-				next.englishMode = false
-				next.depth = 0
-
-				e.applyStateAtomic(&next)
-			}()
-			return true, nil // Yeah, we can't really tell IBus false or non-nil error
+			return hasHandled, nil
 		}
 
-		// Non-typing actions
-		if e.now.ltVisible {
+		if e.ltVisible {
 			// Remove a character from preedit
 			if key == IBusBackspace {
-				go func() {
-					next := *(e.now)
-					next.preedit = next.preedit[:len(next.preedit)-1]
-					cand, matchedLen, err := e.cp.GetCandidates(string(next.preedit), e.level[0])
+				e.cpCurDepth = 0
 
-					if err != nil {
-						return
-					}
+				if len(e.Preedit) == 0 {
+					e.hideLt()
+					return true, nil
+				}
 
-					next.candidates = cand
-					next.matchedLen = matchedLen
-					next.ltVisible = true
-					next.englishMode = false
-					next.depth = 0
-
-					e.applyStateAtomic(&next)
-				}()
-				return true, nil
+				hasHandled := e.handlePinyinInput('_', RemoveRune, CandCntA)
+				return hasHandled, nil
 			}
 
 			// Terminate typing
 			if key == IBusEsc {
-				next := State{
-					preedit:     []rune{},
-					candidates:  []string{},
-					matchedLen:  []int{},
-					ltVisible:   false,
-					englishMode: e.now.englishMode,
-					depth:       0,
-				}
-				e.applyStateAtomic(&next)
+				e.cpCurDepth = 0
+
+				e.Preedit = e.Preedit[:0]
+				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.hideLt()
 				return true, nil
 			}
 
-			// Commit preedit as English alphabets
+			// Commit preedit as latin
 			if key == IBusEnter {
-				next := State{
-					preedit:     []rune{},
-					candidates:  []string{},
-					matchedLen:  []int{},
-					ltVisible:   false,
-					englishMode: e.now.englishMode,
-					depth:       0,
-				}
+				e.cpCurDepth = 0
 
-				e.mu.Lock()
-				text := string(e.now.preedit)
-				e.CommitText(ibus.NewText(text))
-				e.mu.Unlock()
-
-				e.applyStateAtomic(&next)
+				e.CommitText(ibus.NewText(string(e.Preedit)))
+				e.Preedit = e.Preedit[:0]
+				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.hideLt()
 				return true, nil
 			}
 
-			// Commit the first candidate in the lookup table
+			// Commit preedit as Chinese
 			if key == IBusSpace {
-				next := State{
-					preedit:     []rune{},
-					candidates:  []string{},
-					matchedLen:  []int{},
-					ltVisible:   false,
-					englishMode: e.now.englishMode,
-					depth:       0,
-				}
+				e.cpCurDepth = 0
 
-				e.mu.Lock()
-				candidate := e.lt.Candidates[int(e.lt.CursorPos)].Value().(ibus.Text)
-				e.CommitText(&candidate)
-				e.mu.Unlock()
-
-				e.applyStateAtomic(&next)
+				e.commitCandidate(int(e.lt.CursorPos))
 				return true, nil
 			}
 
-			// Commit the candidate indexed in the lookup table
+			// Commit candidate by keying in candidate index
 			if IBus0 <= key && key <= IBus9 {
 				idx := int(key) - 48 - 1
-
-				e.mu.Lock() // So others wait for access/modification to e.lt
-				next := *(e.now)
 				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
 				idx += base
 				if 0 <= idx && idx < len(e.lt.Candidates) {
-					candidate := e.lt.Candidates[idx].Value().(ibus.Text)
-					e.CommitText(&candidate)
+					e.cpCurDepth = 0
+
+					e.commitCandidate(idx)
 				}
-				e.mu.Unlock()
-
-				matched := next.matchedLen[idx]
-				next.preedit = next.preedit[0:matched]
-
-				if len(next.preedit) == 0 {
-					next.candidates = []string{}
-					next.matchedLen = []int{}
-					next.ltVisible = false
-					// englishMode unchanged
-					next.depth = 0
-
-					e.applyStateAtomic(&next)
-					return true, nil
-				}
-
-				// Partial match, still need to get new candidates
-				go func() {
-					cand, matchedLen, err := e.cp.GetCandidates(string(next.preedit), e.level[0])
-
-					if err != nil {
-						return
-					}
-
-					next.candidates = cand
-					next.matchedLen = matchedLen
-					next.ltVisible = true
-					next.englishMode = false
-					next.depth = 0
-
-					e.applyStateAtomic(&next)
-				}()
-			}
-
-			// Cursor up lookup table, not using State since from the State's point of view, nothing changes
-			if key == IBusUp || key == IBusRight {
-				e.mu.Lock()
-				if e.moveCursorDown() {
-					e.UpdateLookupTable(e.lt, true)
-				}
-				e.mu.Unlock()
 				return true, nil
 			}
 
-			// Cursor down lookup table, not using State since from the State's point of view, nothing changes
-			if key == IBusDown || key == IBusLeft {
-				e.mu.Lock()
+			// Cursor up lookup table
+			if key == IBusUp {
+				if e.moveCursorDown() {
+					e.UpdateLookupTable(e.lt, true)
+				}
+				return true, nil
+			}
+
+			// Cursor down lookup table
+			if key == IBusDown {
 				if e.moveCursorUp() {
 					e.UpdateLookupTable(e.lt, true)
 				}
-				e.mu.Unlock()
+				return true, nil
+			}
+
+			if key == IBusLeft || key == IBusRight {
+				// Currently I don't plan to support moving preedit cursor
 				return true, nil
 			}
 
 			// + to go to next page
 			if key == IBusEqual {
-				e.mu.Lock()
 				e.movePageUp()
-				onLastPage := e.onLastPage()
-				e.mu.Unlock()
-
-				if onLastPage {
-					next := *(e.now)
-					if next.depth < len(e.level) {
-						next.depth++
-
-						// Load more candidates
-						go func() {
-							cand, matchedLen, err := e.cp.GetCandidates(string(next.preedit), e.level[next.depth])
-
-							if err != nil {
-								return
-							}
-
-							// preedit, ltVisible, englishMode are unchanged
-							next.candidates = cand
-							next.matchedLen = matchedLen
-
-							e.applyStateAtomic(&next)
-						}()
+				if e.atLastPage() {
+					// We may want to load more candidates
+					if e.cpCurDepth < len(e.cpDepth) {
+						e.cpCurDepth++
 					}
+					e.handlePinyinInput('_', UnchangedRune, e.cpDepth[e.cpCurDepth])
 				}
 				return true, nil
 			}
 
 			// - to go to previous page
 			if key == IBusMinus {
-				e.mu.Lock()
 				e.movePageDown()
-				e.mu.Unlock()
 				return true, nil
 			}
 		}
@@ -293,68 +156,44 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 	return false, nil
 }
 
-func (e *FcpConcEngine) applyStateAtomic(next *State) {
-	e.mu.Lock()
-	// Has ltVisible changed? If so, update everything
-	if next.ltVisible != e.now.ltVisible {
-		e.updatePreedit(&next.preedit, next.ltVisible)
-		e.updateLt(&next.candidates, next.ltVisible)
-		// IBus doesn't care matchedLen, ltVisible, englishMode, depth, so skip
-		e.now = next
-		e.mu.Unlock()
-		return
+func (e *FcpConcEngine) handlePinyinInput(key rune, op int, depth int) bool {
+	switch op {
+	case AddRune:
+		e.Preedit = append(e.Preedit, key)
+	case RemoveRune:
+		e.Preedit = e.Preedit[0 : len(e.Preedit)-1]
+	case UnchangedRune:
+	default:
+		fmt.Println("Not a valid operation")
+		return false
 	}
 
-	// Has depth changed? If so, update candidates, matchedLen
-	if next.depth != e.now.depth {
-		// IBus
-		e.updateLt(&next.candidates, next.ltVisible)
-		// IBus doesn't care matchedLen
-		e.now = next
-		e.mu.Unlock()
-		return
+	cand, matchedLen, err := e.CloudPinyin.GetCandidates(string(e.Preedit), depth)
+	if err != nil {
+		fmt.Println(err)
+		return false
 	}
 
-	// Has englishMode changed? If so, update everything
-	if next.englishMode != e.now.englishMode {
-		e.updatePreedit(&next.preedit, next.ltVisible)
-		e.updateLt(&next.candidates, next.ltVisible)
-		// IBus doesn't care matchedLen, ltVisible, englishMode, depth, so skip
-		e.now = next
-		e.mu.Unlock()
-		return
-	}
-
-	// Has preedit changed? If so, update IBus with changes on preedit, candidates, matchedLen
-	if string(next.preedit) != string(e.now.preedit) {
-		e.updatePreedit(&next.preedit, next.ltVisible)
-		e.updateLt(&next.candidates, next.ltVisible)
-		// IBus doesn't care matchedLen so skip
-		e.now = next
-		e.mu.Unlock()
-		return
-	}
-	e.mu.Unlock()
-}
-
-func (e *FcpConcEngine) updatePreedit(preedit *[]rune, visible bool) {
-	e.UpdatePreeditText(ibus.NewText(string(*preedit)), uint32(1), visible)
-}
-
-func (e *FcpConcEngine) updateLt(new *[]string, visible bool) {
 	e.clearLt()
-	for _, candidate := range *new {
-		e.lt.AppendCandidate(candidate)
-	}
-	e.UpdateLookupTable(e.lt, visible)
-}
 
-func (e *FcpConcEngine) clearLt() {
-	e.lt.Candidates = e.lt.Candidates[:0]
-	e.lt.Labels = e.lt.Labels[:0]
+	for _, val := range cand {
+		e.lt.AppendCandidate(val)
+	}
+	e.matchedLen = matchedLen
+
+	e.UpdateLookupTable(e.lt, true)
+	if op == AddRune || op == RemoveRune {
+		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(len(e.Preedit)), true)
+	}
+	e.showLt()
+	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
+	// so call it here to keep in sync
+
+	return true
 }
 
 // Not sure why the buil-in cursor moving functions don't work so I need to write my own.
+// Same for the next three.
 func (e *FcpConcEngine) moveCursorUp() bool {
 	if int(e.lt.CursorPos) == len(e.lt.Candidates) {
 		return false
@@ -363,7 +202,6 @@ func (e *FcpConcEngine) moveCursorUp() bool {
 	return true
 }
 
-// Not sure why the buil-in cursor moving functions don't work so I need to write my own.
 func (e *FcpConcEngine) moveCursorDown() bool {
 	if e.lt.CursorPos == 0 {
 		return false
@@ -399,7 +237,7 @@ func (e *FcpConcEngine) movePageDown() {
 	e.UpdateLookupTable(e.lt, true)
 }
 
-func (e *FcpConcEngine) onLastPage() bool {
+func (e *FcpConcEngine) atLastPage() bool {
 	sz := int(e.lt.PageSize)
 	total := len(e.lt.Candidates)
 	maxIdx := (total/sz+1)*sz - 1
@@ -409,4 +247,52 @@ func (e *FcpConcEngine) onLastPage() bool {
 	} else {
 		return false
 	}
+}
+
+func (e *FcpConcEngine) commitCandidate(i int) {
+	if !e.ltVisible {
+		return
+	}
+	text := e.lt.Candidates[i].Value().(ibus.Text)
+	e.CommitText(&text)
+
+	if e.matchedLen != nil {
+		matchedLen := e.matchedLen[i]
+		e.Preedit = e.Preedit[matchedLen:len(e.Preedit)]
+	} else {
+		e.Preedit = e.Preedit[:0]
+	}
+	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+	if len(e.Preedit) == 0 {
+		e.hideLt()
+		e.clearLt()
+	} else {
+		e.handlePinyinInput('_', UnchangedRune, CandCntA)
+	}
+}
+
+func (e *FcpConcEngine) hideLt() {
+	e.HideLookupTable()
+	e.ltVisible = false
+}
+
+func (e *FcpConcEngine) showLt() {
+	e.ShowLookupTable()
+	e.ltVisible = true
+}
+
+func (e *FcpConcEngine) clearLt() {
+	e.lt.Candidates = e.lt.Candidates[:0]
+	e.lt.Labels = e.lt.Labels[:0]
+}
+
+// Called when the user clicks a text area
+func (e *FcpConcEngine) FocusIn() *dbus.Error {
+	e.RegisterProperties(e.PropList)
+	return nil
+}
+
+// Called when any of the UI props are called
+func (e *FcpConcEngine) PropertyActivate(prop_name string, prop_state uint32) *dbus.Error {
+	return nil
 }
