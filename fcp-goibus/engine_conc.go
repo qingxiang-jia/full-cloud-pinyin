@@ -9,29 +9,29 @@ import (
 
 type FcpConcEngine struct {
 	ibus.Engine
-	CloudPinyin *CloudPinyin
-	PropList    *ibus.PropList
-	Preedit     []rune
+	cloud       *CloudPinyin
+	propList    *ibus.PropList
+	preedit     []rune
 	lt          *ibus.LookupTable
 	ltVisible   bool
 	matchedLen  []int
-	enMode      bool
-	cpDepth     [8]int
-	cpCurDepth  int
+	englishMode bool
+	level       [8]int
+	depth       int
 }
 
 func NewFcpConcEngine(conn *dbus.Conn, path *dbus.ObjectPath, prop *ibus.Property) *FcpConcEngine {
 	return &FcpConcEngine{
 		Engine:      ibus.BaseEngine(conn, *path),
-		CloudPinyin: NewCloudPinyin(),
-		PropList:    ibus.NewPropList(prop),
-		Preedit:     []rune{},
+		cloud:       NewCloudPinyin(),
+		propList:    ibus.NewPropList(prop),
+		preedit:     []rune{},
 		lt:          ibus.NewLookupTable(),
 		ltVisible:   false,
 		matchedLen:  []int{},
-		enMode:      false,
-		cpDepth:     [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
-		cpCurDepth:  0,
+		englishMode: false,
+		level:       [8]int{CandCntA, CandCntB, CandCntC, CandCntD, CandCntE, CandCntF, CandCntG, CandCntH},
+		depth:       0,
 	}
 }
 
@@ -41,14 +41,14 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 	// Decides whether need to switch to/out of English mode
 	if state == IBusButtonUp && (key == IBusShiftL || key == IBusShiftR) {
-		e.cpCurDepth = 0
-		e.enMode = !e.enMode
+		e.depth = 0
+		e.englishMode = !e.englishMode
 	}
 
-	if state == IBusButtonDown && !e.enMode {
+	if state == IBusButtonDown && !e.englishMode {
 		// a-z
 		if IBusA <= key && key <= IBusZ {
-			e.cpCurDepth = 0
+			e.depth = 0
 
 			hasHandled := e.handlePinyinInput(key, AddRune, CandCntA)
 
@@ -58,9 +58,9 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 		if e.ltVisible {
 			// Remove a character from preedit
 			if key == IBusBackspace {
-				e.cpCurDepth = 0
+				e.depth = 0
 
-				if len(e.Preedit) == 0 {
+				if len(e.preedit) == 0 {
 					e.hideLt()
 					return true, nil
 				}
@@ -71,28 +71,28 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 			// Terminate typing
 			if key == IBusEsc {
-				e.cpCurDepth = 0
+				e.depth = 0
 
-				e.Preedit = e.Preedit[:0]
-				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.preedit = e.preedit[:0]
+				e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
 				e.hideLt()
 				return true, nil
 			}
 
 			// Commit preedit as latin
 			if key == IBusEnter {
-				e.cpCurDepth = 0
+				e.depth = 0
 
-				e.CommitText(ibus.NewText(string(e.Preedit)))
-				e.Preedit = e.Preedit[:0]
-				e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
+				e.CommitText(ibus.NewText(string(e.preedit)))
+				e.preedit = e.preedit[:0]
+				e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
 				e.hideLt()
 				return true, nil
 			}
 
 			// Commit preedit as Chinese
 			if key == IBusSpace {
-				e.cpCurDepth = 0
+				e.depth = 0
 
 				e.commitCandidate(int(e.lt.CursorPos))
 				return true, nil
@@ -104,7 +104,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 				base := int(e.lt.CursorPos / e.lt.PageSize * e.lt.PageSize)
 				idx += base
 				if 0 <= idx && idx < len(e.lt.Candidates) {
-					e.cpCurDepth = 0
+					e.depth = 0
 
 					e.commitCandidate(idx)
 				}
@@ -137,10 +137,10 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 				e.movePageUp()
 				if e.atLastPage() {
 					// We may want to load more candidates
-					if e.cpCurDepth < len(e.cpDepth) {
-						e.cpCurDepth++
+					if e.depth < len(e.level) {
+						e.depth++
 					}
-					e.handlePinyinInput('_', UnchangedRune, e.cpDepth[e.cpCurDepth])
+					e.handlePinyinInput('_', UnchangedRune, e.level[e.depth])
 				}
 				return true, nil
 			}
@@ -159,16 +159,16 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 func (e *FcpConcEngine) handlePinyinInput(key rune, op int, depth int) bool {
 	switch op {
 	case AddRune:
-		e.Preedit = append(e.Preedit, key)
+		e.preedit = append(e.preedit, key)
 	case RemoveRune:
-		e.Preedit = e.Preedit[0 : len(e.Preedit)-1]
+		e.preedit = e.preedit[0 : len(e.preedit)-1]
 	case UnchangedRune:
 	default:
 		fmt.Println("Not a valid operation")
 		return false
 	}
 
-	cand, matchedLen, err := e.CloudPinyin.GetCandidates(string(e.Preedit), depth)
+	cand, matchedLen, err := e.cloud.GetCandidates(string(e.preedit), depth)
 	if err != nil {
 		fmt.Println(err)
 		return false
@@ -183,7 +183,7 @@ func (e *FcpConcEngine) handlePinyinInput(key rune, op int, depth int) bool {
 
 	e.UpdateLookupTable(e.lt, true)
 	if op == AddRune || op == RemoveRune {
-		e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(len(e.Preedit)), true)
+		e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(len(e.preedit)), true)
 	}
 	e.showLt()
 	// UpdateLookupTable and/or UpdatePreeditText seem to implicitly make lt visible
@@ -258,12 +258,12 @@ func (e *FcpConcEngine) commitCandidate(i int) {
 
 	if e.matchedLen != nil {
 		matchedLen := e.matchedLen[i]
-		e.Preedit = e.Preedit[matchedLen:len(e.Preedit)]
+		e.preedit = e.preedit[matchedLen:len(e.preedit)]
 	} else {
-		e.Preedit = e.Preedit[:0]
+		e.preedit = e.preedit[:0]
 	}
-	e.UpdatePreeditText(ibus.NewText(string(e.Preedit)), uint32(1), true)
-	if len(e.Preedit) == 0 {
+	e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+	if len(e.preedit) == 0 {
 		e.hideLt()
 		e.clearLt()
 	} else {
@@ -288,7 +288,7 @@ func (e *FcpConcEngine) clearLt() {
 
 // Called when the user clicks a text area
 func (e *FcpConcEngine) FocusIn() *dbus.Error {
-	e.RegisterProperties(e.PropList)
+	e.RegisterProperties(e.propList)
 	return nil
 }
 
