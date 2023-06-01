@@ -165,8 +165,27 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 				if 0 <= idx && idx < candidatesSize {
 					e.depth = 0
 					e.commitCandidateAtomic(idx)
-					e.setCandidatesAtomic([]string{}, []int{})
-					e.setPreeditAtomic([]rune{})
+
+					matchedLen := e.matchedLen[idx]
+					preedit := e.preedit
+
+					if len(e.preedit) > matchedLen {
+						e.setPreeditAtomic(preedit[matchedLen:])
+						preedit = e.preedit
+
+						go func() {
+							candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
+							if err == nil {
+								e.setCandidatesAtomic(candidates, matchedLen)
+							} else {
+								fmt.Println(err)
+							}
+						}()
+					} else {
+						// Full match
+						e.setCandidatesAtomic([]string{}, []int{})
+						e.setPreeditAtomic([]rune{})
+					}
 				}
 
 				return true, nil
