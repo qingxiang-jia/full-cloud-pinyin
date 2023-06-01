@@ -144,6 +144,10 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 							fmt.Println(err)
 						}
 					}()
+				} else {
+					// Full match
+					e.setCandidatesAtomic([]string{}, []int{})
+					e.setPreeditAtomic([]rune{})
 				}
 
 				return true, nil
