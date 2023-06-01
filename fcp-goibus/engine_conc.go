@@ -69,10 +69,13 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 		if e.ltVisible {
 			// Remove a character from preedit
 			if key == IBusBackspace {
+				println("BACKSPACE")
 				e.depth = 0
 
 				if len(e.preedit) == 0 {
+					e.mu.Lock()
 					e.hideLt()
+					e.mu.Unlock()
 					return true, nil
 				} else {
 					e.setPreeditAtomic(e.preedit[:len(e.preedit)-1])
@@ -170,6 +173,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 				if e.moveCursorDown() {
 					e.UpdateLookupTable(e.lt, true)
+					e.ltVisible = true
 				}
 
 				e.mu.Unlock()
@@ -183,6 +187,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 				if e.moveCursorUp() {
 					e.UpdateLookupTable(e.lt, true)
+					e.ltVisible = true
 				}
 
 				e.mu.Unlock()
@@ -240,6 +245,7 @@ func (e *FcpConcEngine) setCandidatesAtomic(candidates []string, matchedLen []in
 	}
 	e.matchedLen = matchedLen
 	e.UpdateLookupTable(e.lt, true)
+	e.ltVisible = true
 
 	e.mu.Unlock()
 }
@@ -249,6 +255,7 @@ func (e *FcpConcEngine) setPreeditAtomic(preedit []rune) {
 
 	e.preedit = preedit
 	e.UpdatePreeditText(ibus.NewText(string(e.preedit)), uint32(1), true)
+	e.ltVisible = true
 
 	e.mu.Unlock()
 }
@@ -298,6 +305,7 @@ func (e *FcpConcEngine) movePageUp() {
 	if nextPos != int(e.lt.CursorPos) {
 		e.lt.CursorPos = uint32(nextPos)
 		e.UpdateLookupTable(e.lt, true)
+		e.ltVisible = true
 	}
 }
 
@@ -311,6 +319,7 @@ func (e *FcpConcEngine) movePageDown() {
 	pos -= sz
 	e.lt.CursorPos = pos
 	e.UpdateLookupTable(e.lt, true)
+	e.ltVisible = true
 }
 
 func (e *FcpConcEngine) atLastPage() bool {
