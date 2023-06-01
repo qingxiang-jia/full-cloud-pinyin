@@ -56,7 +56,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 			go func() {
 				candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
-				if err != nil {
+				if err == nil {
 					e.setCandidatesAtomic(candidates, matchedLen)
 				} else {
 					fmt.Println(err)
@@ -81,7 +81,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 				go func() {
 					candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
-					if err != nil {
+					if err == nil {
 						e.setCandidatesAtomic(candidates, matchedLen)
 					} else {
 						fmt.Println(err)
@@ -136,7 +136,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 					go func() {
 						candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
-						if err != nil {
+						if err == nil {
 							e.setCandidatesAtomic(candidates, matchedLen)
 						} else {
 							fmt.Println(err)
@@ -207,7 +207,7 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 					go func() {
 						candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), depth)
-						if err != nil {
+						if err == nil {
 							e.setCandidatesAtomic(candidates, matchedLen)
 						} else {
 							fmt.Println(err)
