@@ -69,7 +69,6 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 		if e.ltVisible {
 			// Remove a character from preedit
 			if key == IBusBackspace {
-				println("BACKSPACE")
 				e.depth = 0
 
 				if len(e.preedit) == 0 {
