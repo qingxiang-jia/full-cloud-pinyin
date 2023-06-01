@@ -165,6 +165,8 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 				if 0 <= idx && idx < candidatesSize {
 					e.depth = 0
 					e.commitCandidateAtomic(idx)
+					e.setCandidatesAtomic([]string{}, []int{})
+					e.setPreeditAtomic([]rune{})
 				}
 
 				return true, nil
