@@ -9,9 +9,12 @@ impl IBus {
         IBus {}
     }
 
-    pub async fn init(&self) {
+    pub fn init(&self) {
         let ibus_address = IBus::get_ibus_address().expect("Failed to get IBus address.");
         println!("IBus address: {}", ibus_address);
+    }
+
+    pub fn register_component(&self) {
     }
 
     // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs

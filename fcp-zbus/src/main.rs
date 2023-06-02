@@ -3,8 +3,7 @@
 use ibus::ibus::IBus;
 mod ibus;
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let ibus = IBus::new();
-    ibus.init().await;
+    ibus.init();
 }
