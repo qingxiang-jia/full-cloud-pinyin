@@ -129,23 +129,29 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 
 				idx := int(e.lt.CursorPos)
 				e.commitCandidateAtomic(idx)
-				matchedLen := e.matchedLen[idx]
-				preedit := e.preedit
 
-				if len(e.preedit) > matchedLen {
-					e.setPreeditAtomic(preedit[matchedLen:])
-					preedit = e.preedit
+				reset := true
+				if len(e.matchedLen) > 0 {
+					matchedLen := e.matchedLen[idx]
+					preedit := e.preedit
 
-					go func() {
-						candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
-						if err == nil {
-							e.setCandidatesAtomic(candidates, matchedLen)
-						} else {
-							fmt.Println(err)
-						}
-					}()
-				} else {
-					// Full match
+					if len(e.preedit) > matchedLen {
+						e.setPreeditAtomic(preedit[matchedLen:])
+						preedit = e.preedit
+						reset = false
+
+						go func() {
+							candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
+							if err == nil {
+								e.setCandidatesAtomic(candidates, matchedLen)
+							} else {
+								fmt.Println(err)
+							}
+						}()
+					}
+				}
+
+				if reset {
 					e.setCandidatesAtomic([]string{}, []int{})
 					e.setPreeditAtomic([]rune{})
 
@@ -170,23 +176,28 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 					e.depth = 0
 					e.commitCandidateAtomic(idx)
 
-					matchedLen := e.matchedLen[idx]
-					preedit := e.preedit
+					reset := true
+					if len(e.matchedLen) > 0 {
+						matchedLen := e.matchedLen[idx]
+						preedit := e.preedit
 
-					if len(e.preedit) > matchedLen {
-						e.setPreeditAtomic(preedit[matchedLen:])
-						preedit = e.preedit
+						if len(e.preedit) > matchedLen {
+							e.setPreeditAtomic(preedit[matchedLen:])
+							preedit = e.preedit
 
-						go func() {
-							candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
-							if err == nil {
-								e.setCandidatesAtomic(candidates, matchedLen)
-							} else {
-								fmt.Println(err)
-							}
-						}()
-					} else {
-						// Full match
+							reset = false
+							go func() {
+								candidates, matchedLen, err := e.cloud.GetCandidates(string(preedit), CandCntA)
+								if err == nil {
+									e.setCandidatesAtomic(candidates, matchedLen)
+								} else {
+									fmt.Println(err)
+								}
+							}()
+						}
+					}
+
+					if reset {
 						e.setCandidatesAtomic([]string{}, []int{})
 						e.setPreeditAtomic([]rune{})
 
