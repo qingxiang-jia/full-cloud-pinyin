@@ -1,12 +1,21 @@
 #![feature(fmt_helpers_for_derive)]
 
-use std::{path::{PathBuf, Path}, io::BufRead};
+use std::{
+    io::BufRead,
+    path::{Path, PathBuf},
+};
+
+use zbus::blocking::ConnectionBuilder;
 
 mod ibus;
 
 fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
     println!("address: {address}");
+
+    let conn = ConnectionBuilder::address(address.to_owned().as_str())
+        .expect("The address didn't work.")
+        .build();
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
