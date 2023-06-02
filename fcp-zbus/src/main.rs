@@ -7,6 +7,8 @@ use std::{
 
 use zbus::blocking::ConnectionBuilder;
 
+use crate::ibus::proxy_zbus::ibus::IBusProxyBlocking;
+
 mod ibus;
 
 fn main() {
@@ -15,7 +17,12 @@ fn main() {
 
     let conn = ConnectionBuilder::address(address.to_owned().as_str())
         .expect("The address didn't work.")
-        .build();
+        .build()
+        .expect("Failed to build connection to IBus.");
+
+    let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
+    
+    ibus.exit(false); // If this works, IBus will exit.
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
