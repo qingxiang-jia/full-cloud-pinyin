@@ -148,6 +148,10 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 					// Full match
 					e.setCandidatesAtomic([]string{}, []int{})
 					e.setPreeditAtomic([]rune{})
+
+					e.mu.Lock()
+					e.hideLt()
+					e.mu.Unlock()
 				}
 
 				return true, nil
@@ -185,6 +189,10 @@ func (e *FcpConcEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uin
 						// Full match
 						e.setCandidatesAtomic([]string{}, []int{})
 						e.setPreeditAtomic([]rune{})
+
+						e.mu.Lock()
+						e.hideLt()
+						e.mu.Unlock()
 					}
 				}
 
