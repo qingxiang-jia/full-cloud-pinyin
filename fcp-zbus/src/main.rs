@@ -3,7 +3,7 @@
 use zbus::zvariant::Type;
 use std::{
     io::BufRead,
-    path::{Path, PathBuf},
+    path::{Path, PathBuf}, collections::HashMap,
 };
 
 use zbus::{blocking::ConnectionBuilder, zvariant::{Value, Structure, StructureBuilder}};
@@ -24,9 +24,11 @@ pub struct Component {
 }
 
 pub fn test_signature() {
-    assert_eq!(<(u32, u32)>::signature(), "(uu)");
-    assert_eq!(<(u32, &str, u64)>::signature(), "(ust)");
-    assert_eq!(<(u32, String)>::signature(), "(us)")
+    // Signature of component
+    assert_eq!(<(String, HashMap<String, Value>, String, String, String, String, String, String, String, String, Vec<Value>, Vec<Value>)>::signature(), "(sa{sv}ssssssssavav)");
+    
+    // Signature of engine description *with last two strings removed* due to limited support from zvariant
+    assert_eq!(<(String, HashMap<String, Value>, String, String, String, String, String, String, String, String, u32, String, String, String, String, String)>::signature(), "(sa{sv}ssssssssusssss)");
 }
 
 /*
