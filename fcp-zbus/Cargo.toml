@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 zbus = "3.13.1"
+serde = "1.0.163"
 tokio = { version = "1", features = ["full"] }

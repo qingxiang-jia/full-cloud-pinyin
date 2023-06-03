@@ -1,6 +1,7 @@
 #![feature(fmt_helpers_for_derive)]
 
-use zbus::zvariant::Type;
+use zbus::{zvariant::Type, export::serde};
+use serde::{Deserialize, Serialize};
 use std::{
     io::BufRead,
     path::{Path, PathBuf}, collections::HashMap,
@@ -12,6 +13,7 @@ use crate::ibus::proxy_zbus::ibus::IBusProxyBlocking;
 
 mod ibus;
 
+#[derive(Deserialize, Serialize, Type, PartialEq, Debug)]
 pub struct Component {
     pub name: String,
     pub description: String,
