@@ -5,11 +5,62 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use zbus::blocking::ConnectionBuilder;
+use zbus::{blocking::ConnectionBuilder, zvariant::{Value, Structure, StructureBuilder}};
 
 use crate::ibus::proxy_zbus::ibus::IBusProxyBlocking;
 
 mod ibus;
+
+pub struct Component {
+    pub name: String,
+    pub description: String,
+    pub version: String,
+    pub license: String,
+    pub author: String,
+    pub homepage: String,
+    pub command_line: String,
+    pub textdomain: String,
+}
+
+/*
+    /*
+        ( <- struct
+            s <- name
+            a{sv} <- attachments: map<string, variant>
+            s <- component_name
+            s <- description
+            s <- version
+            s <- license
+            s <- author
+            s <- homepage
+            s <- command_line
+            s <- textdomain
+            av <- observed_paths
+            av <- engline_list ( struct
+                s <- name
+                a{sv} <- attachments: map<string, variant>
+                s <- engine_name
+                s <- long_name
+                s <- description
+                s <- language
+                s <- license
+                s <- author
+                s <- icon
+                s <- layout
+                u <- rank
+                s <- hotkeys
+                s <- symbol
+                s <- setup
+                s <- layout_variant
+                s <- layout_option
+                s <- version
+                s <- textdomain
+            )
+        )
+    */
+
+
+ */
 
 fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
@@ -22,7 +73,23 @@ fn main() {
 
     let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
     
-    ibus.exit(false); // If this works, IBus will exit.
+    let component = Component {
+        name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
+        description: "Full Cloud Pinyin".to_owned(),
+        version: "0.1".to_owned(),
+        license: "MIT".to_owned(),
+        author: "Qingxiang Jia".to_owned(),
+        homepage: "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(),
+        command_line: "".to_owned(),
+        textdomain: "full-cloud-pinyin".to_owned(),
+    };
+
+    let v = Value::from(("org.freedesktop.IBus.Fcpinyin".to_owned(), "Full Cloud Pinyin".to_owned(), "0.1".to_owned(), "MIT".to_owned(), "Qingxiang Jia".to_owned(), "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(), "".to_owned(), "full-cloud-pinyin".to_owned()));
+
+    match ibus.register_component(&v) {
+        Ok(_) => println!("Register componnet successfully!"),
+        Err(e) => println!("Failed to register component! {e}"),
+    }
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs

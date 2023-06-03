@@ -98,7 +98,13 @@ func genEngineComp() *ibus.Component {
 		"2.0",
 	)
 
+	d := dbus.MakeVariant(desc)
+	println("sig:", d.Signature().String(), "val:", d.Value())
+
 	comp.AddEngine(desc)
+
+	v := dbus.MakeVariant(comp)
+	println("sig:", v.Signature().String(), "val:", v.Value())
 
 	return comp
 }
