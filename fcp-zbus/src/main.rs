@@ -102,7 +102,7 @@ pub fn test_signature() {
             .add_field(18)
             .build();
         let sig = structure.signature();
-        println!("{}", sig.to_string())
+        assert_eq!(sig.to_string(), "(iiiiiiiiiiiiiiiiii)");
     }
 }
 
