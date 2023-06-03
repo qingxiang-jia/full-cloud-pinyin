@@ -71,6 +71,39 @@ pub fn test_signature() {
         )>::signature(),
         "(sa{sv}ssssssssusssss)"
     );
+
+    // Check the signature of a variant of (ii), turns out it's still (ii)
+    {
+        let v = Value::from((1, 1));
+        let sig = v.value_signature();
+        assert_eq!(sig.to_string(), "(ii)");
+    }
+
+    // Check if long tuple (bigger than 16 items) is supporeted: no, so use StructureBuilder
+    {
+        let sb = StructureBuilder::new();
+        let structure = sb.add_field(1)
+            .add_field(2)
+            .add_field(3)
+            .add_field(4)
+            .add_field(5)
+            .add_field(6)
+            .add_field(7)
+            .add_field(8)
+            .add_field(9)
+            .add_field(10)
+            .add_field(11)
+            .add_field(12)
+            .add_field(13)
+            .add_field(14)
+            .add_field(15)
+            .add_field(16)
+            .add_field(17)
+            .add_field(18)
+            .build();
+        let sig = structure.signature();
+        println!("{}", sig.to_string())
+    }
 }
 
 /*
