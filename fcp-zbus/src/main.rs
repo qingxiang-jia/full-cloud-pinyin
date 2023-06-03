@@ -103,6 +103,10 @@ pub fn test_signature() {
             .build();
         let sig = structure.signature();
         assert_eq!(sig.to_string(), "(iiiiiiiiiiiiiiiiii)");
+
+        // That Structure can also be converted to a Value aka DBus variant with the signature unchanged
+        let v = Value::from(structure);
+        assert_eq!(v.value_signature().to_string(), "(iiiiiiiiiiiiiiiiii)");
     }
 }
 
