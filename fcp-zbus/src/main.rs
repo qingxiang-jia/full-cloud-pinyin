@@ -1,13 +1,17 @@
 #![feature(fmt_helpers_for_derive)]
 
-use zbus::{zvariant::Type, export::serde};
 use serde::{Deserialize, Serialize};
 use std::{
+    collections::HashMap,
     io::BufRead,
-    path::{Path, PathBuf}, collections::HashMap,
+    path::{Path, PathBuf},
 };
+use zbus::{export::serde, zvariant::Type};
 
-use zbus::{blocking::ConnectionBuilder, zvariant::{Value, Structure, StructureBuilder}};
+use zbus::{
+    blocking::ConnectionBuilder,
+    zvariant::{Structure, StructureBuilder, Value},
+};
 
 use crate::ibus::proxy_zbus::ibus::IBusProxyBlocking;
 
@@ -27,10 +31,46 @@ pub struct Component {
 
 pub fn test_signature() {
     // Signature of component
-    assert_eq!(<(String, HashMap<String, Value>, String, String, String, String, String, String, String, String, Vec<Value>, Vec<Value>)>::signature(), "(sa{sv}ssssssssavav)");
-    
+    assert_eq!(
+        <(
+            String,
+            HashMap<String, Value>,
+            String,
+            String,
+            String,
+            String,
+            String,
+            String,
+            String,
+            String,
+            Vec<Value>,
+            Vec<Value>
+        )>::signature(),
+        "(sa{sv}ssssssssavav)"
+    );
+
     // Signature of engine description *with last two strings removed* due to limited support from zvariant
-    assert_eq!(<(String, HashMap<String, Value>, String, String, String, String, String, String, String, String, u32, String, String, String, String, String)>::signature(), "(sa{sv}ssssssssusssss)");
+    assert_eq!(
+        <(
+            String,
+            HashMap<String, Value>,
+            String,
+            String,
+            String,
+            String,
+            String,
+            String,
+            String,
+            String,
+            u32,
+            String,
+            String,
+            String,
+            String,
+            String
+        )>::signature(),
+        "(sa{sv}ssssssssusssss)"
+    );
 }
 
 /*
@@ -81,7 +121,7 @@ fn main() {
     let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
 
     test_signature();
-    
+
     // let component = Component {
     //     name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
     //     description: "Full Cloud Pinyin".to_owned(),
