@@ -23,44 +23,40 @@ pub struct Component {
 }
 
 /*
-    /*
-        ( <- struct
-            s <- name
-            a{sv} <- attachments: map<string, variant>
-            s <- component_name
-            s <- description
-            s <- version
-            s <- license
-            s <- author
-            s <- homepage
-            s <- command_line
-            s <- textdomain
-            av <- observed_paths
-            av <- engline_list ( struct
-                s <- name
-                a{sv} <- attachments: map<string, variant>
-                s <- engine_name
-                s <- long_name
-                s <- description
-                s <- language
-                s <- license
-                s <- author
-                s <- icon
-                s <- layout
-                u <- rank
-                s <- hotkeys
-                s <- symbol
-                s <- setup
-                s <- layout_variant
-                s <- layout_option
-                s <- version
-                s <- textdomain
-            )
-        )
-    */
-
-
- */
+( <- struct
+    s <- name
+    a{sv} <- attachments: map<string, variant>
+    s <- component_name
+    s <- description
+    s <- version
+    s <- license
+    s <- author
+    s <- homepage
+    s <- command_line
+    s <- textdomain
+    av <- observed_paths
+    av <- engline_list ( struct
+        s <- name
+        a{sv} <- attachments: map<string, variant>
+        s <- engine_name
+        s <- long_name
+        s <- description
+        s <- language
+        s <- license
+        s <- author
+        s <- icon
+        s <- layout
+        u <- rank
+        s <- hotkeys
+        s <- symbol
+        s <- setup
+        s <- layout_variant
+        s <- layout_option
+        s <- version
+        s <- textdomain
+    )
+)
+*/
 
 fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
