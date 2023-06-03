@@ -1,5 +1,6 @@
 #![feature(fmt_helpers_for_derive)]
 
+use zbus::zvariant::Type;
 use std::{
     io::BufRead,
     path::{Path, PathBuf},
@@ -20,6 +21,12 @@ pub struct Component {
     pub homepage: String,
     pub command_line: String,
     pub textdomain: String,
+}
+
+pub fn test_signature() {
+    assert_eq!(<(u32, u32)>::signature(), "(uu)");
+    assert_eq!(<(u32, &str, u64)>::signature(), "(ust)");
+    assert_eq!(<(u32, String)>::signature(), "(us)")
 }
 
 /*
@@ -68,24 +75,26 @@ fn main() {
         .expect("Failed to build connection to IBus.");
 
     let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
+
+    test_signature();
     
-    let component = Component {
-        name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
-        description: "Full Cloud Pinyin".to_owned(),
-        version: "0.1".to_owned(),
-        license: "MIT".to_owned(),
-        author: "Qingxiang Jia".to_owned(),
-        homepage: "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(),
-        command_line: "".to_owned(),
-        textdomain: "full-cloud-pinyin".to_owned(),
-    };
+    // let component = Component {
+    //     name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
+    //     description: "Full Cloud Pinyin".to_owned(),
+    //     version: "0.1".to_owned(),
+    //     license: "MIT".to_owned(),
+    //     author: "Qingxiang Jia".to_owned(),
+    //     homepage: "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(),
+    //     command_line: "".to_owned(),
+    //     textdomain: "full-cloud-pinyin".to_owned(),
+    // };
 
-    let v = Value::from(("org.freedesktop.IBus.Fcpinyin".to_owned(), "Full Cloud Pinyin".to_owned(), "0.1".to_owned(), "MIT".to_owned(), "Qingxiang Jia".to_owned(), "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(), "".to_owned(), "full-cloud-pinyin".to_owned()));
+    // let v = Value::from(("org.freedesktop.IBus.Fcpinyin".to_owned(), "Full Cloud Pinyin".to_owned(), "0.1".to_owned(), "MIT".to_owned(), "Qingxiang Jia".to_owned(), "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(), "".to_owned(), "full-cloud-pinyin".to_owned()));
 
-    match ibus.register_component(&v) {
-        Ok(_) => println!("Register componnet successfully!"),
-        Err(e) => println!("Failed to register component! {e}"),
-    }
+    // match ibus.register_component(&v) {
+    //     Ok(_) => println!("Register componnet successfully!"),
+    //     Err(e) => println!("Failed to register component! {e}"),
+    // }
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
