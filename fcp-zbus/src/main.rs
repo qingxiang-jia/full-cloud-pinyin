@@ -150,7 +150,7 @@ pub fn test_signature() {
 pub fn gen_engine_desc() -> Structure<'static> {
     let sb: StructureBuilder = StructureBuilder::new();
     let attachments: HashMap<String, Value> = HashMap::new();
-    sb.add_field("org.freedesktop.IBus.Fcpinyin")
+    let s = sb.add_field("org.freedesktop.IBus.Fcpinyin")
         .add_field(attachments)
         .add_field("full-cloud-pinyin")
         .add_field("Full Cloud Pinyin")
@@ -160,7 +160,7 @@ pub fn gen_engine_desc() -> Structure<'static> {
         .add_field("Qingxiang Jia")
         .add_field("/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg")
         .add_field("")
-        .add_field(0)
+        .add_field(0 as u32)
         .add_field("")
         .add_field("云")
         .add_field("")
@@ -168,7 +168,9 @@ pub fn gen_engine_desc() -> Structure<'static> {
         .add_field("")
         .add_field("0.1")
         .add_field("full-cloud-pinyin")
-        .build()
+        .build();
+    println!("engine desc sig: {}", s.signature().to_string());
+    return s;
 }
 
 pub fn gen_component() -> Structure<'static> {
@@ -178,7 +180,7 @@ pub fn gen_component() -> Structure<'static> {
     let mut engine_list: Vec<Value> = Vec::new();
     let engine_desc = gen_engine_desc();
     engine_list.push(Value::from(engine_desc));
-    sb.add_field("org.freedesktop.IBus.Fcpinyin")
+    let s = sb.add_field("org.freedesktop.IBus.Fcpinyin")
         .add_field(attachments)
         .add_field("FCP Component")
         .add_field("Full Cloud Pinyin")
@@ -190,7 +192,9 @@ pub fn gen_component() -> Structure<'static> {
         .add_field("full-cloud-pinyin")
         .add_field(observed_paths)
         .add_field(engine_list)
-        .build()
+        .build();
+    println!("component sig: {}", s.signature().to_string());
+    return s;
 }
 
 fn main() {
