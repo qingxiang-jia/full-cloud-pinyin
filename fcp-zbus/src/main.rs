@@ -82,7 +82,8 @@ pub fn test_signature() {
     // Check if long tuple (bigger than 16 items) is supporeted: no, so use StructureBuilder
     {
         let sb = StructureBuilder::new();
-        let structure = sb.add_field(1)
+        let structure = sb
+            .add_field(1)
             .add_field(2)
             .add_field(3)
             .add_field(4)
@@ -146,6 +147,52 @@ pub fn test_signature() {
 )
 */
 
+pub fn gen_engine_desc() -> Structure<'static> {
+    let sb: StructureBuilder = StructureBuilder::new();
+    let attachments: HashMap<String, Value> = HashMap::new();
+    sb.add_field("org.freedesktop.IBus.Fcpinyin")
+        .add_field(attachments)
+        .add_field("full-cloud-pinyin")
+        .add_field("Full Cloud Pinyin")
+        .add_field("The Full Cloud Pinyin input method")
+        .add_field("zh_cn")
+        .add_field("MIT")
+        .add_field("Qingxiang Jia")
+        .add_field("/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg")
+        .add_field("")
+        .add_field(0)
+        .add_field("")
+        .add_field("云")
+        .add_field("")
+        .add_field("")
+        .add_field("")
+        .add_field("0.1")
+        .add_field("full-cloud-pinyin")
+        .build()
+}
+
+pub fn gen_component() -> Structure<'static> {
+    let sb: StructureBuilder = StructureBuilder::new();
+    let attachments: HashMap<String, Value> = HashMap::new();
+    let observed_paths: Vec<Value> = Vec::new();
+    let mut engine_list: Vec<Value> = Vec::new();
+    let engine_desc = gen_engine_desc();
+    engine_list.push(Value::from(engine_desc));
+    sb.add_field("org.freedesktop.IBus.Fcpinyin")
+        .add_field(attachments)
+        .add_field("FCP Component")
+        .add_field("Full Cloud Pinyin")
+        .add_field("0.1")
+        .add_field("MIT")
+        .add_field("Qingxiang Jia")
+        .add_field("https://github.com/qingxiang-jia/full-cloud-pinyin/")
+        .add_field("")
+        .add_field("full-cloud-pinyin")
+        .add_field(observed_paths)
+        .add_field(engine_list)
+        .build()
+}
+
 fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
     println!("address: {address}");
@@ -157,25 +204,14 @@ fn main() {
 
     let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
 
+    let component = gen_component();
+
+    match ibus.register_component(&Value::from(component)) {
+        Ok(_) => println!("Register componnet successfully!"),
+        Err(e) => println!("Failed to register component! {e}"),
+    }
+
     test_signature();
-
-    // let component = Component {
-    //     name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
-    //     description: "Full Cloud Pinyin".to_owned(),
-    //     version: "0.1".to_owned(),
-    //     license: "MIT".to_owned(),
-    //     author: "Qingxiang Jia".to_owned(),
-    //     homepage: "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(),
-    //     command_line: "".to_owned(),
-    //     textdomain: "full-cloud-pinyin".to_owned(),
-    // };
-
-    // let v = Value::from(("org.freedesktop.IBus.Fcpinyin".to_owned(), "Full Cloud Pinyin".to_owned(), "0.1".to_owned(), "MIT".to_owned(), "Qingxiang Jia".to_owned(), "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(), "".to_owned(), "full-cloud-pinyin".to_owned()));
-
-    // match ibus.register_component(&v) {
-    //     Ok(_) => println!("Register componnet successfully!"),
-    //     Err(e) => println!("Failed to register component! {e}"),
-    // }
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
