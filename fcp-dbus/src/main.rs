@@ -1,6 +1,6 @@
 #![feature(fmt_helpers_for_derive)]
 
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::fs;
 
 use crate::ibus::dbus_client::ibus_proxy::IBusProxy;
@@ -83,6 +83,31 @@ fn main() {
     }
     
     cr.serve(&conn);
+}
+
+fn get_engine_desc_tuple() -> Box<dyn RefArg> {
+    let attachments: HashMap<String, Box<dyn RefArg>> = HashMap::new();
+    let mut v: VecDeque<Box<dyn RefArg>> =  VecDeque::new();
+    v.push_back(Box::new("org.freedesktop.IBus.Fcpinyin".to_owned()));
+    v.push_back(Box::new(attachments));
+    v.push_back(Box::new("full-cloud-pinyin".to_owned()));
+    v.push_back(Box::new("Full Cloud Pinyin".to_owned()));
+    v.push_back(Box::new("The Full Cloud Pinyin input method".to_owned()));
+    v.push_back(Box::new("zh_cn".to_owned()));
+    v.push_back(Box::new("MIT".to_owned()));
+    v.push_back(Box::new("Qingxiang Jia".to_owned()));
+    v.push_back(Box::new("/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg".to_owned()));
+    v.push_back(Box::new("".to_owned()));
+    v.push_back(Box::new(0 as u32));
+    v.push_back(Box::new("".to_owned()));
+    v.push_back(Box::new("云".to_owned()));
+    v.push_back(Box::new("".to_owned()));
+    v.push_back(Box::new("".to_owned()));
+    v.push_back(Box::new("".to_owned()));
+    v.push_back(Box::new("0.1".to_owned()));
+    v.push_back(Box::new("full-cloud-pinyin".to_owned()));
+    
+    return Box::new(v as Box<dyn RefArg>);
 }
 
 fn display_debus_error(e: &dbus::Error) {
