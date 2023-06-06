@@ -25,6 +25,16 @@ fn main() {
     let engines = ibus.engines().expect("Failed to get engines.");
     println!("Number of IBus engines: {}", engines.len());
 
+    let component = gen_ibus_component();
+
+    match ibus.register_component(component) {
+        Ok(()) => println!("Component registration successful!"),
+        Err(e) => {
+            println!("Failed to register component.");
+            display_debus_error(&e);
+        },
+    }
+
     // Generate IBus server so IBus can call us.
     let mut cr = Crossroads::new();
     let engine = FcpEngine {};
@@ -34,16 +44,6 @@ fn main() {
         Ok(_) => println!("Request name successful!"),
         Err(e) => {
             println!("Failed to request name.");
-            display_debus_error(&e);
-        },
-    }
-
-    let component = gen_ibus_component();
-
-    match ibus.register_component(component) {
-        Ok(()) => println!("Component registration successful!"),
-        Err(e) => {
-            println!("Failed to register component.");
             display_debus_error(&e);
         },
     }
