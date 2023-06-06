@@ -55,7 +55,7 @@ fn gen_engine_desc() -> dbus::arg::Variant<Box<dyn RefArg>> {
     let attachments: HashMap<String, Variant<Box<dyn RefArg>>> = HashMap::new();
     
     let mut v: VecDeque<Box<dyn RefArg>> =  VecDeque::new();
-    v.push_back(Box::new("EngineDesc".to_owned()));
+    v.push_back(Box::new("IBusEngineDesc".to_owned()));
     v.push_back(Box::new(attachments));
     v.push_back(Box::new("full-cloud-pinyin".to_owned()));
     v.push_back(Box::new("Full Cloud Pinyin".to_owned()));
