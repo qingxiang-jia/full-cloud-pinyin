@@ -4,7 +4,6 @@ use std::collections::{HashMap, VecDeque};
 use std::fs;
 
 use crate::ibus::dbus_client::ibus_proxy::IBusProxy;
-use crate::ibus::dbus_client::manual::{Component, EngineDesc};
 use crate::ibus::dbus_client::panel_proxy::IBusPanelProxy;
 use dbus::arg::{RefArg, Variant};
 use dbus_crossroads::{self, Crossroads, IfaceToken};
@@ -39,42 +38,9 @@ fn main() {
         },
     }
 
-    let component = Component {
-        name: "org.freedesktop.IBus.Fcpinyin".to_owned(),
-        description: "Full Cloud Pinyin".to_owned(),
-        version: "0.1".to_owned(),
-        license: "MIT".to_owned(),
-        author: "Qingxiang Jia".to_owned(),
-        homepage: "https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned(),
-        exec: "".to_owned(),
-        textdomain: "full-cloud-pinyin".to_owned(),
-        attachments: HashMap::new(),
-        engines: [EngineDesc {
-            attachments: HashMap::new(),
-            name: "full-cloud-pinyin".to_owned(),
-            longname: "Full Cloud Pinyin".to_owned(),
-            description: "Full Cloud Pinyin".to_owned(),
-            language: "en".to_owned(),
-            license: "MIT".to_owned(),
-            author: "Qingxiang Jia".to_owned(),
-            icon: "/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg".to_owned(),
-            layout: "us".to_owned(),
-            rank: 0,
-            hotkeys: "".to_owned(),
-            symbol: "".to_owned(),
-            setup: "".to_owned(),
-            layout_option: "".to_owned(),
-            layout_variant: "".to_owned(),
-            version: "0.1".to_owned(),
-            text_domain: "full-cloud-pinyin".to_owned(),
-        }]
-    };
+    let component = gen_ibus_component();
 
-    let tuple = (component.name, component.description, component.version, component.license, component.author, component.homepage, component.exec, component.textdomain, component.attachments);
-
-    let componnet_variant = Box::new(tuple) as Box<dyn RefArg>;
-
-    match ibus.register_component(dbus::arg::Variant(componnet_variant)) {
+    match ibus.register_component(component) {
         Ok(()) => println!("Component registration successful!"),
         Err(e) => {
             println!("Failed to register component.");
@@ -107,6 +73,30 @@ fn gen_engine_desc() -> dbus::arg::Variant<Box<dyn RefArg>> {
     v.push_back(Box::new("".to_owned()));
     v.push_back(Box::new("0.1".to_owned()));
     v.push_back(Box::new("full-cloud-pinyin".to_owned()));
+
+    return dbus::arg::Variant(Box::new(v));
+}
+
+fn gen_ibus_component() -> dbus::arg::Variant<Box<dyn RefArg>> {
+    let attachments: HashMap<String, Variant<Box<dyn RefArg>>> = HashMap::new();
+    let observed_paths: Vec<Variant<Box<dyn RefArg>>> = Vec::new();
+    let mut engine_list: Vec<Variant<Box<dyn RefArg>>> = Vec::new();
+    let engine_desc = gen_engine_desc();
+    engine_list.push(engine_desc);
+
+    let mut v: VecDeque<Box<dyn RefArg>> = VecDeque::new();
+    v.push_back(Box::new("IBusComponent".to_owned()));
+    v.push_back(Box::new(attachments));
+    v.push_back(Box::new("FCP Component".to_owned()));
+    v.push_back(Box::new("Full Cloud Pinyin".to_owned()));
+    v.push_back(Box::new("0.1".to_owned()));
+    v.push_back(Box::new("MIT".to_owned()));
+    v.push_back(Box::new("Qingxiang Jia".to_owned()));
+    v.push_back(Box::new("https://github.com/qingxiang-jia/full-cloud-pinyin/".to_owned()));
+    v.push_back(Box::new("".to_owned()));
+    v.push_back(Box::new("full-cloud-pinyin".to_owned()));
+    v.push_back(Box::new(observed_paths));
+    v.push_back(Box::new(engine_list));
 
     return dbus::arg::Variant(Box::new(v));
 }
