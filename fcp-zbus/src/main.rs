@@ -173,7 +173,7 @@ pub fn gen_engine_desc() -> Structure<'static> {
     return s;
 }
 
-pub fn gen_component() -> Structure<'static> {
+pub fn gen_ibus_component() -> Structure<'static> {
     let sb: StructureBuilder = StructureBuilder::new();
     let attachments: HashMap<String, Value> = HashMap::new();
     let observed_paths: Vec<Value> = Vec::new();
@@ -208,7 +208,7 @@ fn main() {
 
     let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
 
-    let component = gen_component();
+    let component = gen_ibus_component();
 
     match ibus.register_component(&Value::from(component)) {
         Ok(_) => println!("Register componnet successfully!"),
