@@ -85,7 +85,7 @@ fn main() {
     cr.serve(&conn);
 }
 
-fn get_engine_desc() -> dbus::arg::Variant<Box<dyn RefArg>> {
+fn gen_engine_desc() -> dbus::arg::Variant<Box<dyn RefArg>> {
     let attachments: HashMap<String, Variant<Box<dyn RefArg>>> = HashMap::new();
     
     let mut v: VecDeque<Box<dyn RefArg>> =  VecDeque::new();
