@@ -150,7 +150,7 @@ pub fn test_signature() {
 pub fn gen_engine_desc() -> Structure<'static> {
     let sb: StructureBuilder = StructureBuilder::new();
     let attachments: HashMap<String, Value> = HashMap::new();
-    let s = sb.add_field("org.freedesktop.IBus.Fcpinyin")
+    let s = sb.add_field("IBusEngineDesc")
         .add_field(attachments)
         .add_field("full-cloud-pinyin")
         .add_field("Full Cloud Pinyin")
@@ -180,7 +180,7 @@ pub fn gen_component() -> Structure<'static> {
     let mut engine_list: Vec<Value> = Vec::new();
     let engine_desc = gen_engine_desc();
     engine_list.push(Value::from(engine_desc));
-    let s = sb.add_field("org.freedesktop.IBus.Fcpinyin")
+    let s = sb.add_field("IBusComponent")
         .add_field(attachments)
         .add_field("FCP Component")
         .add_field("Full Cloud Pinyin")
