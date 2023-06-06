@@ -36,6 +36,8 @@ fn main() {
     let engine = FcpEngine {};
     let token: IfaceToken<FcpEngine> = register_org_freedesktop_ibus_engine(&mut cr);
     cr.insert("/", &[token], engine);
+
+    /* Don't request name if running in terminal mode
     match conn.request_name("org.freedesktop.IBus.FcPinyin", false, true, false) {
         Ok(_) => println!("Request name successful!"),
         Err(e) => {
@@ -43,15 +45,16 @@ fn main() {
             display_debus_error(&e);
         },
     }
-    
-    match cr.serve(&conn) {
-        Ok(_) => println!("Serve successfully"),
-        Err(e) => println!("Failed to serve: {}", e)
-    }
+     */
 
     match ibus.set_global_engine_("full-cloud-pinyin") {
         Ok(_) => println!("Set globle engine successfully"),
         Err(e) => println!("Failed to set global engine: {}", e)
+    }
+    
+    match cr.serve(&conn) {
+        Ok(_) => println!("Serve successfully"),
+        Err(e) => println!("Failed to serve: {}", e)
     }
 }
 
