@@ -6,7 +6,7 @@ use std::fs;
 use crate::ibus::dbus_client::ibus_proxy::IBusProxy;
 use crate::ibus::dbus_client::manual::{Component, EngineDesc};
 use crate::ibus::dbus_client::panel_proxy::IBusPanelProxy;
-use dbus::arg::RefArg;
+use dbus::arg::{RefArg, Variant};
 use dbus_crossroads::{self, Crossroads, IfaceToken};
 use ibus::fcp_engine;
 use ibus::{
@@ -85,10 +85,11 @@ fn main() {
     cr.serve(&conn);
 }
 
-fn get_engine_desc_tuple() -> Box<dyn RefArg> {
-    let attachments: HashMap<String, Box<dyn RefArg>> = HashMap::new();
+fn get_engine_desc() -> dbus::arg::Variant<Box<dyn RefArg>> {
+    let attachments: HashMap<String, Variant<Box<dyn RefArg>>> = HashMap::new();
+    
     let mut v: VecDeque<Box<dyn RefArg>> =  VecDeque::new();
-    v.push_back(Box::new("org.freedesktop.IBus.Fcpinyin".to_owned()));
+    v.push_back(Box::new("EngineDesc".to_owned()));
     v.push_back(Box::new(attachments));
     v.push_back(Box::new("full-cloud-pinyin".to_owned()));
     v.push_back(Box::new("Full Cloud Pinyin".to_owned()));
@@ -106,8 +107,8 @@ fn get_engine_desc_tuple() -> Box<dyn RefArg> {
     v.push_back(Box::new("".to_owned()));
     v.push_back(Box::new("0.1".to_owned()));
     v.push_back(Box::new("full-cloud-pinyin".to_owned()));
-    
-    return Box::new(v as Box<dyn RefArg>);
+
+    return dbus::arg::Variant(Box::new(v));
 }
 
 fn display_debus_error(e: &dbus::Error) {
