@@ -44,7 +44,15 @@ fn main() {
         },
     }
     
-    cr.serve(&conn);
+    match cr.serve(&conn) {
+        Ok(_) => println!("Serve successfully"),
+        Err(e) => println!("Failed to serve: {}", e)
+    }
+
+    match ibus.set_global_engine_("full-cloud-pinyin") {
+        Ok(_) => println!("Set globle engine successfully"),
+        Err(e) => println!("Failed to set global engine: {}", e)
+    }
 }
 
 fn gen_engine_desc() -> dbus::arg::Variant<Box<dyn RefArg>> {
