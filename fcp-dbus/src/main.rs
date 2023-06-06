@@ -21,10 +21,6 @@ fn main() {
     let conn = new_ibus_connection();
     let ibus = new_ibus_client(&conn);
 
-    // Verifying the IBus client works.
-    let engines = ibus.engines().expect("Failed to get engines.");
-    println!("Number of IBus engines: {}", engines.len());
-
     let component = gen_ibus_component();
 
     match ibus.register_component(component) {
