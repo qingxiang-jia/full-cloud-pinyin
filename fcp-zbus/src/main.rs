@@ -156,16 +156,16 @@ pub fn gen_engine_desc() -> Structure<'static> {
     let s = sb
         .add_field("IBusEngineDesc")
         .add_field(attachments)
-        .add_field("org.freedesktop.IBus.FcPinyin")
+        .add_field("full-cloud-pinyin")
         .add_field("Full Cloud Pinyin")
         .add_field("The Full Cloud Pinyin input method")
-        .add_field("zh_cn")
+        .add_field("en")
         .add_field("MIT")
         .add_field("Qingxiang Jia")
         .add_field("/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg")
-        .add_field("")
+        .add_field("en")
         .add_field(0 as u32)
-        .add_field("")
+        .add_field("/usr/bin/gittupref")
         .add_field("云")
         .add_field("")
         .add_field("")
@@ -187,7 +187,7 @@ pub fn gen_ibus_component() -> Structure<'static> {
     let s = sb
         .add_field("IBusComponent")
         .add_field(attachments)
-        .add_field("FCP Component")
+        .add_field("org.freedesktop.IBus.FcPinyin")
         .add_field("Full Cloud Pinyin")
         .add_field("0.1")
         .add_field("MIT")
@@ -229,6 +229,8 @@ async fn main() {
         Ok(_) => println!("Register componnet successfully!"),
         Err(e) => println!("Failed to register component! {e}"),
     }
+
+    ibus.set_global_engine("full-cloud-pinyin").await.expect("Failed to call set_global_engine.");
 
     loop {
         // do something else, wait forever or timeout here:
