@@ -1,5 +1,9 @@
 #![feature(fmt_helpers_for_derive)]
+#![feature(prelude_import)]
+#[prelude_import]
+extern crate std;
 
+use crate::generated::IBusProxy;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
@@ -9,13 +13,11 @@ use std::{
 use zbus::{export::serde, zvariant::Type};
 
 use zbus::{
-    blocking::ConnectionBuilder,
+    ConnectionBuilder,
     zvariant::{Structure, StructureBuilder, Value},
 };
 
-use crate::ibus::proxy_zbus::ibus::IBusProxyBlocking;
-
-mod ibus;
+mod generated;
 
 #[derive(Deserialize, Serialize, Type, PartialEq, Debug)]
 pub struct Component {
@@ -197,20 +199,22 @@ pub fn gen_ibus_component() -> Structure<'static> {
     return s;
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
     println!("address: {address}");
 
     let conn = ConnectionBuilder::address(address.to_owned().as_str())
         .expect("The address didn't work.")
         .build()
+        .await
         .expect("Failed to build connection to IBus.");
 
-    let ibus = IBusProxyBlocking::new(&conn).expect("Failed to create IBus proxy.");
-
+    let ibus = IBusProxy::new(&conn).await.expect("Failed to create IBusProxy.");
+    
     let component = gen_ibus_component();
 
-    match ibus.register_component(&Value::from(component)) {
+    match ibus.register_component(&Value::from(component)).await {
         Ok(_) => println!("Register componnet successfully!"),
         Err(e) => println!("Failed to register component! {e}"),
     }
