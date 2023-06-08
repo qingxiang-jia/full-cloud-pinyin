@@ -245,6 +245,14 @@ async fn main() {
         Err(e) => println!("Failed to register component! {e}"),
     }
 
+    /* Only request name if executed by IBus */
+    // match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
+    //     Ok(_) => println!("Request name is successful."),
+    //     Err(e) => {
+    //         println!("Request name failed because {0}", e);
+    //     }
+    // }
+
     ibus.set_global_engine("full-cloud-pinyin")
         .await
         .expect("Failed to call set_global_engine.");
@@ -254,14 +262,6 @@ async fn main() {
         // handling D-Bus messages is done in the background
         std::future::pending::<()>().await;
     }
-
-    /* Only request name if executed by IBus */
-    // match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
-    //     Ok(_) => println!("Request name is successful."),
-    //     Err(e) => {
-    //         println!("Request name failed because {0}", e);
-    //     }
-    // }
 
     // test_signature();
 }
