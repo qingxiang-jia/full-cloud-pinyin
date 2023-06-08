@@ -3,7 +3,10 @@
 #[prelude_import]
 extern crate std;
 
-use crate::{engine::Fcp, generated::IBusProxy};
+use crate::{
+    engine::{FcpEngine, FcpFactory, FcpService},
+    generated::IBusProxy,
+};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
@@ -219,9 +222,21 @@ async fn main() {
 
     let component = gen_ibus_component();
 
-    let server = Fcp {};
+    let factory = FcpFactory {};
     conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", server)
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", factory)
+        .await
+        .expect("Failed to set up server object.");
+
+    let engine = FcpEngine {};
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
+        .await
+        .expect("Failed to set up server object.");
+
+    let service = FcpService {};
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", service)
         .await
         .expect("Failed to set up server object.");
 
@@ -230,7 +245,9 @@ async fn main() {
         Err(e) => println!("Failed to register component! {e}"),
     }
 
-    ibus.set_global_engine("full-cloud-pinyin").await.expect("Failed to call set_global_engine.");
+    ibus.set_global_engine("full-cloud-pinyin")
+        .await
+        .expect("Failed to call set_global_engine.");
 
     loop {
         // do something else, wait forever or timeout here:
