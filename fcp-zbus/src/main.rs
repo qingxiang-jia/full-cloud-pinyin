@@ -196,7 +196,7 @@ pub fn gen_ibus_component() -> Structure<'static> {
         .add_field("MIT")
         .add_field("Qingxiang Jia")
         .add_field("https://github.com/qingxiang-jia/full-cloud-pinyin/")
-        .add_field("")
+        .add_field("/home/lee/Code/Projects/full-cloud-pinyin/")
         .add_field("full-cloud-pinyin")
         .add_field(observed_paths)
         .add_field(engine_list)
