@@ -18,6 +18,7 @@ use zbus::{
 };
 
 mod generated;
+mod engine;
 
 #[derive(Deserialize, Serialize, Type, PartialEq, Debug)]
 pub struct Component {
@@ -154,7 +155,7 @@ pub fn gen_engine_desc() -> Structure<'static> {
     let attachments: HashMap<String, Value> = HashMap::new();
     let s = sb.add_field("IBusEngineDesc")
         .add_field(attachments)
-        .add_field("full-cloud-pinyin")
+        .add_field("org.freedesktop.IBus.FcPinyin")
         .add_field("Full Cloud Pinyin")
         .add_field("The Full Cloud Pinyin input method")
         .add_field("zh_cn")
