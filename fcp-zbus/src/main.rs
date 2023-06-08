@@ -220,6 +220,13 @@ async fn main() {
         Err(e) => println!("Failed to register component! {e}"),
     }
 
+    match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
+        Ok(_) => println!("Request name is successful."),
+        Err(e) => {
+            println!("Request name failed because {0}", e);
+        }
+    }
+
     test_signature();
 }
 
