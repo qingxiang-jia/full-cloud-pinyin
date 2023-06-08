@@ -3,7 +3,7 @@
 #[prelude_import]
 extern crate std;
 
-use crate::generated::IBusProxy;
+use crate::{engine::Fcp, generated::IBusProxy};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
@@ -13,23 +13,23 @@ use std::{
 use zbus::{export::serde, zvariant::Type};
 
 use zbus::{
-    ConnectionBuilder,
     zvariant::{Structure, StructureBuilder, Value},
+    ConnectionBuilder,
 };
 
-mod generated;
 mod engine;
+mod generated;
 
 #[derive(Deserialize, Serialize, Type, PartialEq, Debug)]
 pub struct Component {
-    pub name: String,
-    pub description: String,
-    pub version: String,
-    pub license: String,
-    pub author: String,
-    pub homepage: String,
+    pub name:         String,
+    pub description:  String,
+    pub version:      String,
+    pub license:      String,
+    pub author:       String,
+    pub homepage:     String,
     pub command_line: String,
-    pub textdomain: String,
+    pub textdomain:   String,
 }
 
 pub fn test_signature() {
@@ -153,7 +153,8 @@ pub fn test_signature() {
 pub fn gen_engine_desc() -> Structure<'static> {
     let sb: StructureBuilder = StructureBuilder::new();
     let attachments: HashMap<String, Value> = HashMap::new();
-    let s = sb.add_field("IBusEngineDesc")
+    let s = sb
+        .add_field("IBusEngineDesc")
         .add_field(attachments)
         .add_field("org.freedesktop.IBus.FcPinyin")
         .add_field("Full Cloud Pinyin")
@@ -183,7 +184,8 @@ pub fn gen_ibus_component() -> Structure<'static> {
     let mut engine_list: Vec<Value> = Vec::new();
     let engine_desc = gen_engine_desc();
     engine_list.push(Value::from(engine_desc));
-    let s = sb.add_field("IBusComponent")
+    let s = sb
+        .add_field("IBusComponent")
         .add_field(attachments)
         .add_field("FCP Component")
         .add_field("Full Cloud Pinyin")
@@ -211,23 +213,38 @@ async fn main() {
         .await
         .expect("Failed to build connection to IBus.");
 
-    let ibus = IBusProxy::new(&conn).await.expect("Failed to create IBusProxy.");
-    
+    let ibus = IBusProxy::new(&conn)
+        .await
+        .expect("Failed to create IBusProxy.");
+
     let component = gen_ibus_component();
+
+    let server = Fcp {};
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", server)
+        .await
+        .expect("Failed to set up server object.");
 
     match ibus.register_component(&Value::from(component)).await {
         Ok(_) => println!("Register componnet successfully!"),
         Err(e) => println!("Failed to register component! {e}"),
     }
 
-    match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
-        Ok(_) => println!("Request name is successful."),
-        Err(e) => {
-            println!("Request name failed because {0}", e);
-        }
+    loop {
+        // do something else, wait forever or timeout here:
+        // handling D-Bus messages is done in the background
+        std::future::pending::<()>().await;
     }
 
-    test_signature();
+    /* Only request name if executed by IBus */
+    // match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
+    //     Ok(_) => println!("Request name is successful."),
+    //     Err(e) => {
+    //         println!("Request name failed because {0}", e);
+    //     }
+    // }
+
+    // test_signature();
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs

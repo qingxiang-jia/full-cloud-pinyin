@@ -1,9 +1,11 @@
+use zbus::dbus_interface;
 use zvariant::ObjectPath;
 
 pub struct Fcp {
 
 }
 
+#[dbus_interface(name = "org.freedesktop.IBus.FcPinyin")]
 impl Fcp {
     pub fn create_engine(&self, name: &str) -> ObjectPath {
         ObjectPath::from_str_unchecked("/org/freedesktop/IBus/Engine/FcPinyin")
