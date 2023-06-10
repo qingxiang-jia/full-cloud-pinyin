@@ -220,9 +220,9 @@ async fn main() {
         .expect("Failed to set name.")
         .serve_at("/org/freedesktop/IBus/Factory", factory)
         .expect("Faild to set up server object.")
-        .serve_at("/org/freedesktop/IBus/Engine/FcPinyin/1", engine)
+        .serve_at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
         .expect("Faild to set up server object.")
-        .serve_at("/org/freedesktop/IBus/Engine/FcPinyin/1", service)
+        .serve_at("/org/freedesktop/IBus/Service", service)
         .expect("Failed to set up server object.")
         .build()
         .await
