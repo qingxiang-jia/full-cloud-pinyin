@@ -12,6 +12,7 @@ use crate::{
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod engine;
+#[allow(dead_code)]
 mod generated;
 mod ibus_helper;
 
