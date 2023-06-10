@@ -8,26 +8,12 @@ use crate::{
     generated::IBusProxy,
     ibus_helper::{gen_ibus_component, get_ibus_address},
 };
-use serde::{Deserialize, Serialize};
-use zbus::{export::serde, zvariant::Type};
 
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod engine;
 mod generated;
 mod ibus_helper;
-
-#[derive(Deserialize, Serialize, Type, PartialEq, Debug)]
-pub struct Component {
-    pub name:         String,
-    pub description:  String,
-    pub version:      String,
-    pub license:      String,
-    pub author:       String,
-    pub homepage:     String,
-    pub command_line: String,
-    pub textdomain:   String,
-}
 
 #[tokio::main]
 async fn main() {
