@@ -59,7 +59,7 @@ impl<'c> PanelProxyBlocking<'c> {
     pub fn builder(
         conn: &::zbus::blocking::Connection,
     ) -> ::zbus::blocking::ProxyBuilder<'c, Self> {
-        let mut builder = ::zbus::blocking::ProxyBuilder::new(conn);
+        let builder = ::zbus::blocking::ProxyBuilder::new(conn);
 
         if false {
             let uncached = Vec::new();
@@ -1253,7 +1253,7 @@ impl<'c> PanelProxy<'c> {
 
     #[doc = r" Returns a customizable builder for this proxy."]
     pub fn builder(conn: &::zbus::Connection) -> ::zbus::ProxyBuilder<'c, Self> {
-        let mut builder = ::zbus::ProxyBuilder::new(conn);
+        let builder = ::zbus::ProxyBuilder::new(conn);
 
         if false {
             let uncached = Vec::new();
@@ -2248,7 +2248,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for CommitTextArgs<'s> {
 
     fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
         message
-            .body::<(zbus::zvariant::Value<'_>)>()
+            .body::<zbus::zvariant::Value<'_>>()
             .map_err(::std::convert::Into::into)
             .map(|args| CommitTextArgs {
                 phantom: ::std::marker::PhantomData,
@@ -3186,7 +3186,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PanelExtensionArgs<'s>
 
     fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
         message
-            .body::<(zbus::zvariant::Value<'_>)>()
+            .body::<zbus::zvariant::Value<'_>>()
             .map_err(::std::convert::Into::into)
             .map(|args| PanelExtensionArgs {
                 phantom: ::std::marker::PhantomData,
@@ -3638,7 +3638,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyHideArgs<'s> {
 
     fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
         message
-            .body::<(&str)>()
+            .body::<&str>()
             .map_err(::std::convert::Into::into)
             .map(|args| PropertyHideArgs {
                 phantom:   ::std::marker::PhantomData,
@@ -3859,7 +3859,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyShowArgs<'s> {
 
     fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
         message
-            .body::<(&str)>()
+            .body::<&str>()
             .map_err(::std::convert::Into::into)
             .map(|args| PropertyShowArgs {
                 phantom:   ::std::marker::PhantomData,
@@ -4612,7 +4612,7 @@ impl<'c> IBusProxyBlocking<'c> {
     pub fn builder(
         conn: &::zbus::blocking::Connection,
     ) -> ::zbus::blocking::ProxyBuilder<'c, Self> {
-        let mut builder = ::zbus::blocking::ProxyBuilder::new(conn);
+        let builder = ::zbus::blocking::ProxyBuilder::new(conn);
 
         if true {
             let uncached = Vec::new();
@@ -5139,7 +5139,7 @@ impl<'c> IBusProxy<'c> {
 
     #[doc = r" Returns a customizable builder for this proxy."]
     pub fn builder(conn: &::zbus::Connection) -> ::zbus::ProxyBuilder<'c, Self> {
-        let mut builder = ::zbus::ProxyBuilder::new(conn);
+        let builder = ::zbus::ProxyBuilder::new(conn);
 
         if true {
             let uncached = Vec::new();
@@ -5748,7 +5748,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for GlobalEngineChangedArg
 
     fn try_from(message: &'s ::zbus::Message) -> ::zbus::Result<Self> {
         message
-            .body::<(&str)>()
+            .body::<&str>()
             .map_err(::std::convert::Into::into)
             .map(|args| GlobalEngineChangedArgs {
                 phantom:     ::std::marker::PhantomData,
