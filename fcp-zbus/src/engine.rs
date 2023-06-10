@@ -25,7 +25,7 @@ impl FcpFactory {
 impl FcpEngine {
     pub fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         println!("process_key_event called by IBus.");
-        return true
+        return false;
     }
 }
 
