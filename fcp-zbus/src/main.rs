@@ -239,24 +239,6 @@ async fn main() {
         Err(e) => println!("Failed to register component! {e}"),
     }
 
-    
-    // conn.object_server()
-    //     .at("/org/freedesktop/IBus/Engine/FcPinyin", factory)
-    //     .await
-    //     .expect("Failed to set up server object.");
-
-    
-    // conn.object_server()
-    //     .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
-    //     .await
-    //     .expect("Failed to set up server object.");
-
-    
-    // conn.object_server()
-    //     .at("/org/freedesktop/IBus/Engine/FcPinyin", service)
-    //     .await
-    //     .expect("Failed to set up server object.");
-
     match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
         Ok(_) => println!("Request name is successful."),
         Err(e) => {
