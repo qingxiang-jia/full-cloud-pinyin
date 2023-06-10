@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     io::BufRead,
-    path::{Path, PathBuf},
+    path::{Path, PathBuf, StripPrefixError},
 };
 use zbus::{export::serde, zvariant::Type};
 
@@ -210,8 +210,20 @@ async fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
     println!("address: {address}");
 
+    let factory = FcpFactory {};
+    let engine = FcpEngine {};
+    let service = FcpService {};
+
     let conn = ConnectionBuilder::address(address.to_owned().as_str())
         .expect("The address didn't work.")
+        .name("org.freedesktop.IBus.FcPinyin")
+        .expect("Failed to set name.")
+        .serve_at("/org/freedesktop/IBus/Factory", factory)
+        .expect("Faild to set up server object.")
+        .serve_at("/org/freedesktop/IBus/Engine/FcPinyin/1", engine)
+        .expect("Faild to set up server object.")
+        .serve_at("/org/freedesktop/IBus/Engine/FcPinyin/1", service)
+        .expect("Failed to set up server object.")
         .build()
         .await
         .expect("Failed to build connection to IBus.");
@@ -222,36 +234,35 @@ async fn main() {
 
     let component = gen_ibus_component();
 
-    let factory = FcpFactory {};
-    conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", factory)
-        .await
-        .expect("Failed to set up server object.");
-
-    let engine = FcpEngine {};
-    conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
-        .await
-        .expect("Failed to set up server object.");
-
-    let service = FcpService {};
-    conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", service)
-        .await
-        .expect("Failed to set up server object.");
-
     match ibus.register_component(&Value::from(component)).await {
         Ok(_) => println!("Register componnet successfully!"),
         Err(e) => println!("Failed to register component! {e}"),
     }
 
-    /* Only request name if executed by IBus */
-    // match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
-    //     Ok(_) => println!("Request name is successful."),
-    //     Err(e) => {
-    //         println!("Request name failed because {0}", e);
-    //     }
-    // }
+    
+    // conn.object_server()
+    //     .at("/org/freedesktop/IBus/Engine/FcPinyin", factory)
+    //     .await
+    //     .expect("Failed to set up server object.");
+
+    
+    // conn.object_server()
+    //     .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
+    //     .await
+    //     .expect("Failed to set up server object.");
+
+    
+    // conn.object_server()
+    //     .at("/org/freedesktop/IBus/Engine/FcPinyin", service)
+    //     .await
+    //     .expect("Failed to set up server object.");
+
+    match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
+        Ok(_) => println!("Request name is successful."),
+        Err(e) => {
+            println!("Request name failed because {0}", e);
+        }
+    }
 
     ibus.set_global_engine("full-cloud-pinyin")
         .await
