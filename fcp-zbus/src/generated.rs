@@ -45,7 +45,7 @@ impl<'c> ::core::clone::Clone for PanelProxyBlocking<'c> {
 #[automatically_derived]
 impl<'c> ::core::fmt::Debug for PanelProxyBlocking<'c> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelProxyBlocking", &&self.0)
+        f.debug_struct("PanelProxyBlocking").finish()
     }
 }
 
@@ -561,10 +561,11 @@ impl<'c> ::zbus::export::serde::ser::Serialize for PanelProxyBlocking<'c> {
 pub struct CandidateClickedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 
 #[automatically_derived]
-
-impl<'a> ::core::fmt::Debug for CandidateClickedIterator<'a> {
+impl<'a> core::fmt::Debug for CandidateClickedIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CandidateClickedIterator", &&self.0)
+        f.debug_struct("CandidateClickedIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -614,7 +615,9 @@ pub struct CommitTextIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for CommitTextIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CommitTextIterator", &&self.0)
+        f.debug_struct("CommitTextIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -665,7 +668,9 @@ pub struct CursorDownIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 
 impl<'a> ::core::fmt::Debug for CursorDownIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorDownIterator", &&self.0)
+        f.debug_struct("CursorDownIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -715,7 +720,9 @@ pub struct CursorUpIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for CursorUpIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorUpIterator", &&self.0)
+        f.debug_struct("CursorUpIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -765,7 +772,9 @@ pub struct PageDownIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PageDownIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageDownIterator", &&self.0)
+        f.debug_struct("PageDownIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -815,7 +824,9 @@ pub struct PageUpIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PageUpIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageUpIterator", &&self.0)
+        f.debug_struct("PageUpIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -865,7 +876,9 @@ pub struct PanelExtensionIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PanelExtensionIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelExtensionIterator", &&self.0)
+        f.debug_struct("PanelExtensionIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -915,7 +928,9 @@ pub struct PropertyActivateIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PropertyActivateIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyActivateIterator", &&self.0)
+        f.debug_struct("PropertyActivateIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -965,7 +980,9 @@ pub struct PropertyHideIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PropertyHideIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyHideIterator", &&self.0)
+        f.debug_struct("PropertyHideIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1015,7 +1032,9 @@ pub struct PropertyShowIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PropertyShowIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyShowIterator", &&self.0)
+        f.debug_struct("PropertyShowIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1065,11 +1084,9 @@ pub struct UpdateAuxiliaryTextReceivedIterator<'a>(::zbus::blocking::SignalItera
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for UpdateAuxiliaryTextReceivedIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdateAuxiliaryTextReceivedIterator",
-            &&self.0,
-        )
+        f.debug_struct("UpdateAuxiliaryTextReceivedIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1119,11 +1136,9 @@ pub struct UpdateLookupTableReceivedIterator<'a>(::zbus::blocking::SignalIterato
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for UpdateLookupTableReceivedIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdateLookupTableReceivedIterator",
-            &&self.0,
-        )
+        f.debug_struct("UpdateLookupTableReceivedIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1173,11 +1188,9 @@ pub struct UpdatePreeditTextReceivedIterator<'a>(::zbus::blocking::SignalIterato
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for UpdatePreeditTextReceivedIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdatePreeditTextReceivedIterator",
-            &&self.0,
-        )
+        f.debug_struct("UpdatePreeditTextReceivedIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1241,7 +1254,7 @@ impl<'c> ::core::clone::Clone for PanelProxy<'c> {
 #[automatically_derived]
 impl<'c> ::core::fmt::Debug for PanelProxy<'c> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelProxy", &&self.0)
+        f.debug_struct("PanelProxy").field("0", &&self.0).finish()
     }
 }
 
@@ -1804,7 +1817,9 @@ pub struct CandidateClickedStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for CandidateClickedStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CandidateClickedStream", &&self.0)
+        f.debug_struct("CandidateClickedStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1914,7 +1929,9 @@ pub struct CandidateClicked(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for CandidateClicked {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CandidateClicked", &&self.0)
+        f.debug_struct("CandidateClicked")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -1988,10 +2005,10 @@ impl CandidateClicked {
 
 #[doc = "`CandidateClicked` signal arguments."]
 pub struct CandidateClickedArgs<'s> {
-    phantom:    std::marker::PhantomData<&'s ()>,
-    pub index:  u32,
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub index: u32,
     pub button: u32,
-    pub state:  u32,
+    pub state: u32,
 }
 
 impl<'s> CandidateClickedArgs<'s> {
@@ -2027,9 +2044,9 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for CandidateClickedArgs<'
             .map_err(::std::convert::Into::into)
             .map(|args| CandidateClickedArgs {
                 phantom: ::std::marker::PhantomData,
-                index:   args.0,
-                button:  args.1,
-                state:   args.2,
+                index: args.0,
+                button: args.1,
+                state: args.2,
             })
     }
 }
@@ -2040,7 +2057,9 @@ pub struct CommitTextStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for CommitTextStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CommitTextStream", &&self.0)
+        f.debug_struct("CommitTextStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -2150,7 +2169,7 @@ pub struct CommitText(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for CommitText {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CommitText", &&self.0)
+        f.debug_struct("CommitText").field("0", &&self.0).finish()
     }
 }
 
@@ -2225,7 +2244,7 @@ impl CommitText {
 
 #[doc = "`CommitText` signal arguments."]
 pub struct CommitTextArgs<'s> {
-    phantom:  std::marker::PhantomData<&'s ()>,
+    phantom: std::marker::PhantomData<&'s ()>,
     pub text: zbus::zvariant::Value<'s>,
 }
 
@@ -2252,7 +2271,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for CommitTextArgs<'s> {
             .map_err(::std::convert::Into::into)
             .map(|args| CommitTextArgs {
                 phantom: ::std::marker::PhantomData,
-                text:    args,
+                text: args,
             })
     }
 }
@@ -2263,7 +2282,9 @@ pub struct CursorDownStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for CursorDownStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorDownStream", &&self.0)
+        f.debug_struct("CursorDownStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -2373,7 +2394,7 @@ pub struct CursorDown(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for CursorDown {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorDown", &&self.0)
+        f.debug_struct("CursorDown").field("0", &&self.0).finish()
     }
 }
 
@@ -2443,7 +2464,9 @@ pub struct CursorUpStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for CursorUpStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorUpStream", &&self.0)
+        f.debug_struct("CursorUpStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -2553,7 +2576,7 @@ pub struct CursorUp(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for CursorUp {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "CursorUp", &&self.0)
+        f.debug_struct("CursorUp").field("0", &&self.0).finish()
     }
 }
 
@@ -2622,7 +2645,9 @@ pub struct PageDownStream<'a>(::zbus::SignalStream<'a>);
 
 impl<'a> ::core::fmt::Debug for PageDownStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageDownStream", &&self.0)
+        f.debug_struct("PageDownStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -2732,7 +2757,7 @@ pub struct PageDown(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for PageDown {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageDown", &&self.0)
+        f.debug_struct("PageDown").field("0", &&self.0).finish()
     }
 }
 
@@ -2800,7 +2825,7 @@ pub struct PageUpStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PageUpStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageUpStream", &&self.0)
+        f.debug_struct("PageUpStream").field("0", &&self.0).finish()
     }
 }
 
@@ -2910,7 +2935,7 @@ pub struct PageUp(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for PageUp {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PageUp", &&self.0)
+        f.debug_struct("PageUp").field("0", &&self.0).finish()
     }
 }
 
@@ -2978,7 +3003,9 @@ pub struct PanelExtensionStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PanelExtensionStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelExtensionStream", &&self.0)
+        f.debug_struct("PanelExtensionStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3088,7 +3115,9 @@ pub struct PanelExtension(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for PanelExtension {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PanelExtension", &&self.0)
+        f.debug_struct("PanelExtension")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3163,7 +3192,7 @@ impl PanelExtension {
 #[doc = "`PanelExtension` signal arguments."]
 
 pub struct PanelExtensionArgs<'s> {
-    phantom:   std::marker::PhantomData<&'s ()>,
+    phantom: std::marker::PhantomData<&'s ()>,
     pub event: zbus::zvariant::Value<'s>,
 }
 
@@ -3190,7 +3219,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PanelExtensionArgs<'s>
             .map_err(::std::convert::Into::into)
             .map(|args| PanelExtensionArgs {
                 phantom: ::std::marker::PhantomData,
-                event:   args,
+                event: args,
             })
     }
 }
@@ -3202,7 +3231,9 @@ pub struct PropertyActivateStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PropertyActivateStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyActivateStream", &&self.0)
+        f.debug_struct("PropertyActivateStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3312,7 +3343,9 @@ pub struct PropertyActivate(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for PropertyActivate {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyActivate", &&self.0)
+        f.debug_struct("PropertyActivate")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3386,8 +3419,8 @@ impl PropertyActivate {
 #[doc = "`PropertyActivate` signal arguments."]
 
 pub struct PropertyActivateArgs<'s> {
-    phantom:        std::marker::PhantomData<&'s ()>,
-    pub prop_name:  &'s str,
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub prop_name: &'s str,
     pub prop_state: i32,
 }
 
@@ -3418,8 +3451,8 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyActivateArgs<'
             .body::<(&str, i32)>()
             .map_err(::std::convert::Into::into)
             .map(|args| PropertyActivateArgs {
-                phantom:    ::std::marker::PhantomData,
-                prop_name:  args.0,
+                phantom: ::std::marker::PhantomData,
+                prop_name: args.0,
                 prop_state: args.1,
             })
     }
@@ -3431,7 +3464,9 @@ pub struct PropertyHideStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PropertyHideStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyHideStream", &&self.0)
+        f.debug_struct("PropertyHideStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3541,7 +3576,7 @@ pub struct PropertyHide(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for PropertyHide {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyHide", &&self.0)
+        f.debug_struct("PropertyHide").field("0", &&self.0).finish()
     }
 }
 
@@ -3615,7 +3650,7 @@ impl PropertyHide {
 #[doc = "`PropertyHide` signal arguments."]
 
 pub struct PropertyHideArgs<'s> {
-    phantom:       std::marker::PhantomData<&'s ()>,
+    phantom: std::marker::PhantomData<&'s ()>,
     pub prop_name: &'s str,
 }
 
@@ -3641,7 +3676,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyHideArgs<'s> {
             .body::<&str>()
             .map_err(::std::convert::Into::into)
             .map(|args| PropertyHideArgs {
-                phantom:   ::std::marker::PhantomData,
+                phantom: ::std::marker::PhantomData,
                 prop_name: args,
             })
     }
@@ -3653,7 +3688,9 @@ pub struct PropertyShowStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for PropertyShowStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyShowStream", &&self.0)
+        f.debug_struct("PropertyShowStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3763,7 +3800,7 @@ pub struct PropertyShow(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for PropertyShow {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "PropertyShow", &&self.0)
+        f.debug_struct("PropertyShow").field("0", &&self.0).finish()
     }
 }
 
@@ -3836,7 +3873,7 @@ impl PropertyShow {
 
 #[doc = "`PropertyShow` signal arguments."]
 pub struct PropertyShowArgs<'s> {
-    phantom:       std::marker::PhantomData<&'s ()>,
+    phantom: std::marker::PhantomData<&'s ()>,
     pub prop_name: &'s str,
 }
 
@@ -3862,7 +3899,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for PropertyShowArgs<'s> {
             .body::<&str>()
             .map_err(::std::convert::Into::into)
             .map(|args| PropertyShowArgs {
-                phantom:   ::std::marker::PhantomData,
+                phantom: ::std::marker::PhantomData,
                 prop_name: args,
             })
     }
@@ -3874,11 +3911,9 @@ pub struct UpdateAuxiliaryTextReceivedStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for UpdateAuxiliaryTextReceivedStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdateAuxiliaryTextReceivedStream",
-            &&self.0,
-        )
+        f.debug_struct("UpdateAuxiliaryTextReceivedStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -3988,11 +4023,9 @@ pub struct UpdateAuxiliaryTextReceived(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for UpdateAuxiliaryTextReceived {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdateAuxiliaryTextReceived",
-            &&self.0,
-        )
+        f.debug_struct("UpdateAuxiliaryTextReceived")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -4067,8 +4100,8 @@ impl UpdateAuxiliaryTextReceived {
 
 #[doc = "`UpdateAuxiliaryTextReceived` signal arguments."]
 pub struct UpdateAuxiliaryTextReceivedArgs<'s> {
-    phantom:     std::marker::PhantomData<&'s ()>,
-    pub text:    zbus::zvariant::Value<'s>,
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub text: zbus::zvariant::Value<'s>,
     pub visible: bool,
 }
 
@@ -4100,7 +4133,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for UpdateAuxiliaryTextRec
             .map_err(::std::convert::Into::into)
             .map(|args| UpdateAuxiliaryTextReceivedArgs {
                 phantom: ::std::marker::PhantomData,
-                text:    args.0,
+                text: args.0,
                 visible: args.1,
             })
     }
@@ -4112,11 +4145,9 @@ pub struct UpdateLookupTableReceivedStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for UpdateLookupTableReceivedStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdateLookupTableReceivedStream",
-            &&self.0,
-        )
+        f.debug_struct("UpdateLookupTableReceivedStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -4226,7 +4257,9 @@ pub struct UpdateLookupTableReceived(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for UpdateLookupTableReceived {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "UpdateLookupTableReceived", &&self.0)
+        f.debug_struct("UpdateLookupTableReceived")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -4300,8 +4333,8 @@ impl UpdateLookupTableReceived {
 
 #[doc = "`UpdateLookupTableReceived` signal arguments."]
 pub struct UpdateLookupTableReceivedArgs<'s> {
-    phantom:     std::marker::PhantomData<&'s ()>,
-    pub table:   zbus::zvariant::Value<'s>,
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub table: zbus::zvariant::Value<'s>,
     pub visible: bool,
 }
 
@@ -4333,7 +4366,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for UpdateLookupTableRecei
             .map_err(::std::convert::Into::into)
             .map(|args| UpdateLookupTableReceivedArgs {
                 phantom: ::std::marker::PhantomData,
-                table:   args.0,
+                table: args.0,
                 visible: args.1,
             })
     }
@@ -4345,11 +4378,9 @@ pub struct UpdatePreeditTextReceivedStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for UpdatePreeditTextReceivedStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "UpdatePreeditTextReceivedStream",
-            &&self.0,
-        )
+        f.debug_struct("UpdatePreeditTextReceivedStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -4459,7 +4490,9 @@ pub struct UpdatePreeditTextReceived(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for UpdatePreeditTextReceived {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "UpdatePreeditTextReceived", &&self.0)
+        f.debug_struct("UpdatePreeditTextReceived")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -4532,10 +4565,10 @@ impl UpdatePreeditTextReceived {
 
 #[doc = "`UpdatePreeditTextReceived` signal arguments."]
 pub struct UpdatePreeditTextReceivedArgs<'s> {
-    phantom:        std::marker::PhantomData<&'s ()>,
-    pub text:       zbus::zvariant::Value<'s>,
+    phantom: std::marker::PhantomData<&'s ()>,
+    pub text: zbus::zvariant::Value<'s>,
     pub cursor_pos: u32,
-    pub visible:    bool,
+    pub visible: bool,
 }
 
 impl<'s> UpdatePreeditTextReceivedArgs<'s> {
@@ -4570,10 +4603,10 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for UpdatePreeditTextRecei
             .body::<(zbus::zvariant::Value<'_>, u32, bool)>()
             .map_err(::std::convert::Into::into)
             .map(|args| UpdatePreeditTextReceivedArgs {
-                phantom:    ::std::marker::PhantomData,
-                text:       args.0,
+                phantom: ::std::marker::PhantomData,
+                text: args.0,
                 cursor_pos: args.1,
-                visible:    args.2,
+                visible: args.2,
             })
     }
 }
@@ -4598,7 +4631,9 @@ impl<'c> ::core::clone::Clone for IBusProxyBlocking<'c> {
 #[automatically_derived]
 impl<'c> ::core::fmt::Debug for IBusProxyBlocking<'c> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "IBusProxyBlocking", &&self.0)
+        f.debug_struct("IBusProxyBlocking")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -5009,11 +5044,9 @@ pub struct GlobalEngineChangedIterator<'a>(::zbus::blocking::SignalIterator<'a>)
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for GlobalEngineChangedIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(
-            f,
-            "GlobalEngineChangedIterator",
-            &&self.0,
-        )
+        f.debug_struct("GlobalEngineChangedIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -5063,7 +5096,9 @@ pub struct RegistryChangedIterator<'a>(::zbus::blocking::SignalIterator<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for RegistryChangedIterator<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "RegistryChangedIterator", &&self.0)
+        f.debug_struct("RegistryChangedIterator")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -5127,7 +5162,7 @@ impl<'c> ::core::clone::Clone for IBusProxy<'c> {
 #[automatically_derived]
 impl<'c> ::core::fmt::Debug for IBusProxy<'c> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "IBusProxy", &&self.0)
+        f.debug_struct("IBusProxy").field("0", &&self.0).finish()
     }
 }
 
@@ -5542,7 +5577,9 @@ pub struct GlobalEngineChangedStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for GlobalEngineChangedStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "GlobalEngineChangedStream", &&self.0)
+        f.debug_struct("GlobalEngineChangedStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -5652,7 +5689,9 @@ pub struct GlobalEngineChanged(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for GlobalEngineChanged {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "GlobalEngineChanged", &&self.0)
+        f.debug_struct("GlobalEngineChanged")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -5725,7 +5764,7 @@ impl GlobalEngineChanged {
 
 #[doc = "`GlobalEngineChanged` signal arguments."]
 pub struct GlobalEngineChangedArgs<'s> {
-    phantom:         std::marker::PhantomData<&'s ()>,
+    phantom: std::marker::PhantomData<&'s ()>,
     pub engine_name: &'s str,
 }
 
@@ -5751,7 +5790,7 @@ impl<'s> ::std::convert::TryFrom<&'s ::zbus::Message> for GlobalEngineChangedArg
             .body::<&str>()
             .map_err(::std::convert::Into::into)
             .map(|args| GlobalEngineChangedArgs {
-                phantom:     ::std::marker::PhantomData,
+                phantom: ::std::marker::PhantomData,
                 engine_name: args,
             })
     }
@@ -5763,7 +5802,9 @@ pub struct RegistryChangedStream<'a>(::zbus::SignalStream<'a>);
 #[automatically_derived]
 impl<'a> ::core::fmt::Debug for RegistryChangedStream<'a> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "RegistryChangedStream", &&self.0)
+        f.debug_struct("RegistryChangedStream")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
@@ -5873,7 +5914,9 @@ pub struct RegistryChanged(::std::sync::Arc<::zbus::Message>);
 #[automatically_derived]
 impl ::core::fmt::Debug for RegistryChanged {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        ::core::fmt::Formatter::debug_tuple_field1_finish(f, "RegistryChanged", &&self.0)
+        f.debug_struct("RegistryChanged")
+            .field("0", &&self.0)
+            .finish()
     }
 }
 
