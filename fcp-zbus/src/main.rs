@@ -19,7 +19,6 @@ mod ibus_helper;
 #[tokio::main]
 async fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
-    println!("address: {address}");
 
     let factory = FcpFactory {};
     let engine = FcpEngine {};
