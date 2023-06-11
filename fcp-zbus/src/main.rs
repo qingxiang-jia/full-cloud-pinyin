@@ -26,17 +26,24 @@ async fn main() {
 
     let conn = ConnectionBuilder::address(address.to_owned().as_str())
         .expect("The address didn't work.")
-        .name("org.freedesktop.IBus.FcPinyin")
-        .expect("Failed to set name.")
-        .serve_at("/org/freedesktop/IBus/Factory", factory)
-        .expect("Faild to set up server object.")
-        .serve_at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
-        .expect("Faild to set up server object.")
-        .serve_at("/org/freedesktop/IBus/Service", service)
-        .expect("Failed to set up server object.")
         .build()
         .await
         .expect("Failed to build connection to IBus.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Factory", factory)
+        .await
+        .expect("Faild to set up server object.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
+        .await
+        .expect("Faild to set up server object.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Service", service)
+        .await
+        .expect("Faild to set up server object.");
 
     let ibus = IBusProxy::new(&conn)
         .await
