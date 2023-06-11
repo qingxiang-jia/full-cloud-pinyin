@@ -1,11 +1,8 @@
-#![feature(fmt_helpers_for_derive)]
-#![feature(prelude_import)]
-#[prelude_import]
 extern crate std;
 
 use crate::{
     engine::{FcpEngine, FcpFactory, FcpService},
-    generated::IBusProxy,
+    generated::IBusProxy, generated::PanelProxy,
     ibus_helper::{gen_ibus_component, get_ibus_address},
 };
 
@@ -20,34 +17,34 @@ mod ibus_helper;
 async fn main() {
     let address = get_ibus_address().expect("Failed to get IBus address.");
 
-    let factory = FcpFactory {};
-    let engine = FcpEngine {};
-    let service = FcpService {};
-
     let conn = ConnectionBuilder::address(address.to_owned().as_str())
         .expect("The address didn't work.")
         .build()
         .await
         .expect("Failed to build connection to IBus.");
 
-    conn.object_server()
-        .at("/org/freedesktop/IBus/Factory", factory)
-        .await
-        .expect("Faild to set up server object.");
-
-    conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
-        .await
-        .expect("Faild to set up server object.");
-
-    conn.object_server()
-        .at("/org/freedesktop/IBus/Service", service)
-        .await
-        .expect("Faild to set up server object.");
-
     let ibus = IBusProxy::new(&conn)
         .await
         .expect("Failed to create IBusProxy.");
+
+    let panel = PanelProxy::new(&conn)
+        .await
+        .expect("Failed to create PanelProxy.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Factory", FcpFactory {})
+        .await
+        .expect("Faild to set up server object.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", FcpEngine { ibus: ibus.clone(), panel })
+        .await
+        .expect("Faild to set up server object.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Service", FcpService {})
+        .await
+        .expect("Faild to set up server object.");
 
     let component = gen_ibus_component();
 

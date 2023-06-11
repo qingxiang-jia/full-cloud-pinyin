@@ -1,12 +1,15 @@
 use zbus::dbus_interface;
 use zvariant::ObjectPath;
 
+use crate::generated::{IBusProxy, PanelProxy};
+
 pub struct FcpFactory {
 
 }
 
-pub struct FcpEngine {
-
+pub struct FcpEngine<'a> {
+    pub ibus: IBusProxy<'a>,
+    pub panel: PanelProxy<'a>
 }
 
 pub struct FcpService {
@@ -22,7 +25,7 @@ impl FcpFactory {
 }
 
 #[dbus_interface(name = "org.freedesktop.IBus.Engine")]
-impl FcpEngine {
+impl FcpEngine<'static> {
     pub fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         println!("process_key_event called by IBus.");
         return false;
