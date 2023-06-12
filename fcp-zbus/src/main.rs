@@ -1,8 +1,8 @@
 extern crate std;
 
 use crate::{
-    engine::{FcpEngine, FcpFactory, FcpService},
-    generated::IBusProxy, generated::PanelProxy,
+    engine::{FcpFactory, FcpService},
+    generated::IBusProxy,
     ibus_helper::{gen_ibus_component, get_ibus_address},
 };
 
