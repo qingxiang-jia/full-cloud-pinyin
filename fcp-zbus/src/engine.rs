@@ -1,20 +1,10 @@
-use zbus::dbus_interface;
+use reqwest;
+use zbus::{dbus_interface, Connection};
 use zvariant::ObjectPath;
 
 use crate::generated::{IBusProxy, PanelProxy};
 
-pub struct FcpFactory {
-
-}
-
-pub struct FcpEngine<'a> {
-    pub ibus: IBusProxy<'a>,
-    pub panel: PanelProxy<'a>
-}
-
-pub struct FcpService {
-
-}
+pub struct FcpFactory {}
 
 #[dbus_interface(name = "org.freedesktop.IBus.Factory")]
 impl FcpFactory {
@@ -22,6 +12,21 @@ impl FcpFactory {
         println!("create_engine called by IBus.");
         ObjectPath::from_str_unchecked("/org/freedesktop/IBus/Engine/FcPinyin")
     }
+}
+
+pub struct FcpService {}
+
+#[dbus_interface(name = "org.freedesktop.IBus.Service")]
+impl FcpService {
+    pub fn destroy(&self) {
+        println!("destroy called by IBus.");
+    }
+}
+
+pub struct FcpEngine<'a> {
+    ibus: IBusProxy<'a>,
+    panel: PanelProxy<'a>,
+    http: reqwest::Client,
 }
 
 #[dbus_interface(name = "org.freedesktop.IBus.Engine")]
@@ -32,9 +37,18 @@ impl FcpEngine<'static> {
     }
 }
 
-#[dbus_interface(name = "org.freedesktop.IBus.Service")]
-impl FcpService {
-    pub fn destroy(&self) {
-        println!("destroy called by IBus.");
+pub async fn new_fcp_engine(conn: Connection) -> FcpEngine<'static> {
+    let ibus = IBusProxy::new(&conn)
+        .await
+        .expect("Failed to create IBusProxy.");
+
+    let panel = PanelProxy::new(&conn)
+        .await
+        .expect("Failed to create PanelProxy.");
+
+    FcpEngine {
+        ibus,
+        panel,
+        http: reqwest::Client::new(),
     }
 }

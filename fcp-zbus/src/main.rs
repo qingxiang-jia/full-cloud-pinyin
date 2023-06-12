@@ -27,9 +27,7 @@ async fn main() {
         .await
         .expect("Failed to create IBusProxy.");
 
-    let panel = PanelProxy::new(&conn)
-        .await
-        .expect("Failed to create PanelProxy.");
+    let engine = engine::new_fcp_engine(conn.clone()).await;
 
     conn.object_server()
         .at("/org/freedesktop/IBus/Factory", FcpFactory {})
@@ -37,7 +35,7 @@ async fn main() {
         .expect("Faild to set up server object.");
 
     conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", FcpEngine { ibus: ibus.clone(), panel })
+        .at("/org/freedesktop/IBus/Engine/FcPinyin", engine)
         .await
         .expect("Faild to set up server object.");
 
