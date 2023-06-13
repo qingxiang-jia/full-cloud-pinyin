@@ -4,6 +4,11 @@ use zvariant::ObjectPath;
 
 use crate::generated::{IBusProxy, PanelProxy};
 
+// We have three interfaces to implement in order to get a working engine, but only the
+// org.freedesktop.IBus.Engine matters in practice.
+
+// Implementation of org.freedesktop.IBus.Factory interface
+
 pub struct FcpFactory {}
 
 #[dbus_interface(name = "org.freedesktop.IBus.Factory")]
@@ -14,6 +19,8 @@ impl FcpFactory {
     }
 }
 
+// Implementation of org.freedesktop.IBus.Service interface
+
 pub struct FcpService {}
 
 #[dbus_interface(name = "org.freedesktop.IBus.Service")]
@@ -22,6 +29,8 @@ impl FcpService {
         println!("destroy called by IBus.");
     }
 }
+
+// Implementation of org.freedesktop.IBus.Engine interface
 
 pub struct FcpEngine<'a> {
     ibus: IBusProxy<'a>,
