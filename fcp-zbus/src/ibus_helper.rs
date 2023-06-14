@@ -43,6 +43,9 @@ IBusComponent is a DBus variant. Its actual definition is the following:
     )
 )
  */
+
+pub struct IBusComponent {}
+
 pub fn gen_ibus_component() -> Structure<'static> {
     let sb: StructureBuilder = StructureBuilder::new();
     let attachments: HashMap<String, Value> = HashMap::new();
@@ -66,6 +69,53 @@ pub fn gen_ibus_component() -> Structure<'static> {
         .build();
     println!("component sig: {}", s.signature().to_string());
     return s;
+}
+
+pub struct IBusEngineDesc {
+    engine_name: String,
+    long_name: String,
+    description: String,
+    language: String,
+    license: String,
+    author: String,
+    icon: String,
+    layout: String,
+    rank: u32,
+    hotkeys: String,
+    symbol: String,
+    setup: String,
+    layout_variant: String,
+    layout_option: String,
+    version: String,
+    textdomain: String,
+}
+
+impl IBusEngineDesc {
+    fn into_struct(&self) -> Structure {
+        let sb: StructureBuilder = StructureBuilder::new();
+        let attachments: HashMap<String, Value> = HashMap::new();
+        let s = sb
+            .add_field("IBusEngineDesc")
+            .add_field(attachments)
+            .add_field(self.engine_name.clone())
+            .add_field(self.long_name.clone())
+            .add_field(self.description.clone())
+            .add_field(self.language.clone())
+            .add_field(self.license.clone())
+            .add_field(self.author.clone())
+            .add_field(self.icon.clone())
+            .add_field(self.layout.clone())
+            .add_field(self.rank as u32)
+            .add_field(self.hotkeys.clone())
+            .add_field(self.symbol.clone())
+            .add_field(self.setup.clone())
+            .add_field(self.layout_variant.clone())
+            .add_field(self.layout_option.clone())
+            .add_field(self.version.clone())
+            .add_field(self.textdomain.clone())
+            .build();
+        return s;
+    }
 }
 
 fn gen_engine_desc() -> Structure<'static> {
