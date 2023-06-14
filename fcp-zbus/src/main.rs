@@ -6,13 +6,14 @@ use crate::{
     ibus_helper::get_ibus_address,
 };
 
-use ibus_helper::{IBusComponent, IBusEngineDesc};
+use ibus_variants::{IBusEngineDesc, IBusComponent};
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod engine;
 #[allow(dead_code)]
 mod generated;
 mod ibus_helper;
+mod ibus_variants;
 
 #[tokio::main]
 async fn main() {
