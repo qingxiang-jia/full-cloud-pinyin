@@ -33,7 +33,10 @@ async fn main() {
         .expect("Faild to set up server object.");
 
     conn.object_server()
-        .at("/org/freedesktop/IBus/Engine/FcPinyin", engine::new_fcp_engine(conn.clone()).await)
+        .at(
+            "/org/freedesktop/IBus/Engine/FcPinyin",
+            engine::new_fcp_engine(&conn).await,
+        )
         .await
         .expect("Faild to set up server object.");
 

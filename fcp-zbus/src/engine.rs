@@ -324,7 +324,7 @@ impl FcpEngine<'static> {
     }
 }
 
-pub async fn new_fcp_engine(conn: Connection) -> FcpEngine<'static> {
+pub async fn new_fcp_engine(conn: &Connection) -> FcpEngine<'static> {
     let ibus = IBusProxy::new(&conn)
         .await
         .expect("Failed to create IBusProxy.");
