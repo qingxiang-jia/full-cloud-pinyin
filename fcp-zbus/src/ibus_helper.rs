@@ -44,8 +44,6 @@ IBusComponent is a DBus variant. Its actual definition is the following:
 )
  */
 
-pub struct IBusComponent {}
-
 pub fn gen_ibus_component() -> Structure<'static> {
     let sb: StructureBuilder = StructureBuilder::new();
     let attachments: HashMap<String, Value> = HashMap::new();
@@ -69,6 +67,43 @@ pub fn gen_ibus_component() -> Structure<'static> {
         .build();
     println!("component sig: {}", s.signature().to_string());
     return s;
+}
+
+pub struct IBusComponent {
+    component_name: String,
+    description: String,
+    version: String,
+    license: String,
+    author: String,
+    homepage: String,
+    exec: String,
+    textdomain: String,
+}
+
+impl IBusComponent {
+    fn into_struct<'a>(&'a self, engine_desc: &'a IBusEngineDesc) -> Structure {
+        let sb: StructureBuilder = StructureBuilder::new();
+        let attachments: HashMap<String, Value> = HashMap::new();
+        let observed_paths: Vec<Value> = Vec::new();
+        let mut engine_list: Vec<Value> = Vec::new();
+        let engine_desc_s = engine_desc.into_struct();
+        engine_list.push(Value::from(engine_desc_s));
+        let s = sb
+            .add_field("IBusComponent")
+            .add_field(attachments)
+            .add_field(self.component_name.clone())
+            .add_field(self.description.clone())
+            .add_field(self.version.clone())
+            .add_field(self.license.clone())
+            .add_field(self.author.clone())
+            .add_field(self.homepage.clone())
+            .add_field(self.exec.clone())
+            .add_field(self.textdomain.clone())
+            .add_field(observed_paths)
+            .add_field(engine_list)
+            .build();
+        return s;
+    }
 }
 
 pub struct IBusEngineDesc {
