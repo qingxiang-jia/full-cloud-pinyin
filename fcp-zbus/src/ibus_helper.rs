@@ -44,44 +44,19 @@ IBusComponent is a DBus variant. Its actual definition is the following:
 )
  */
 
-pub fn gen_ibus_component() -> Structure<'static> {
-    let sb: StructureBuilder = StructureBuilder::new();
-    let attachments: HashMap<String, Value> = HashMap::new();
-    let observed_paths: Vec<Value> = Vec::new();
-    let mut engine_list: Vec<Value> = Vec::new();
-    let engine_desc = gen_engine_desc();
-    engine_list.push(Value::from(engine_desc));
-    let s = sb
-        .add_field("IBusComponent")
-        .add_field(attachments)
-        .add_field("org.freedesktop.IBus.FcPinyin")
-        .add_field("Full Cloud Pinyin")
-        .add_field("0.1")
-        .add_field("MIT")
-        .add_field("Qingxiang Jia")
-        .add_field("https://github.com/qingxiang-jia/full-cloud-pinyin/")
-        .add_field("/home/lee/Code/Projects/full-cloud-pinyin/")
-        .add_field("full-cloud-pinyin")
-        .add_field(observed_paths)
-        .add_field(engine_list)
-        .build();
-    println!("component sig: {}", s.signature().to_string());
-    return s;
-}
-
 pub struct IBusComponent {
-    component_name: String,
-    description: String,
-    version: String,
-    license: String,
-    author: String,
-    homepage: String,
-    exec: String,
-    textdomain: String,
+    pub component_name: String,
+    pub description: String,
+    pub version: String,
+    pub license: String,
+    pub author: String,
+    pub homepage: String,
+    pub exec: String,
+    pub textdomain: String,
 }
 
 impl IBusComponent {
-    fn into_struct<'a>(&'a self, engine_desc: &'a IBusEngineDesc) -> Structure {
+    pub fn into_struct<'a>(&'a self, engine_desc: &'a IBusEngineDesc) -> Structure {
         let sb: StructureBuilder = StructureBuilder::new();
         let attachments: HashMap<String, Value> = HashMap::new();
         let observed_paths: Vec<Value> = Vec::new();
@@ -107,26 +82,26 @@ impl IBusComponent {
 }
 
 pub struct IBusEngineDesc {
-    engine_name: String,
-    long_name: String,
-    description: String,
-    language: String,
-    license: String,
-    author: String,
-    icon: String,
-    layout: String,
-    rank: u32,
-    hotkeys: String,
-    symbol: String,
-    setup: String,
-    layout_variant: String,
-    layout_option: String,
-    version: String,
-    textdomain: String,
+    pub engine_name: String,
+    pub long_name: String,
+    pub description: String,
+    pub language: String,
+    pub license: String,
+    pub author: String,
+    pub icon: String,
+    pub layout: String,
+    pub rank: u32,
+    pub hotkeys: String,
+    pub symbol: String,
+    pub setup: String,
+    pub layout_variant: String,
+    pub layout_option: String,
+    pub version: String,
+    pub textdomain: String,
 }
 
 impl IBusEngineDesc {
-    fn into_struct(&self) -> Structure {
+    pub fn into_struct(&self) -> Structure {
         let sb: StructureBuilder = StructureBuilder::new();
         let attachments: HashMap<String, Value> = HashMap::new();
         let s = sb
@@ -151,33 +126,6 @@ impl IBusEngineDesc {
             .build();
         return s;
     }
-}
-
-fn gen_engine_desc() -> Structure<'static> {
-    let sb: StructureBuilder = StructureBuilder::new();
-    let attachments: HashMap<String, Value> = HashMap::new();
-    let s = sb
-        .add_field("IBusEngineDesc")
-        .add_field(attachments)
-        .add_field("full-cloud-pinyin")
-        .add_field("Full Cloud Pinyin")
-        .add_field("The Full Cloud Pinyin input method")
-        .add_field("en")
-        .add_field("MIT")
-        .add_field("Qingxiang Jia")
-        .add_field("/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg")
-        .add_field("en")
-        .add_field(0 as u32)
-        .add_field("/usr/bin/gittupref")
-        .add_field("云")
-        .add_field("")
-        .add_field("")
-        .add_field("")
-        .add_field("0.1")
-        .add_field("full-cloud-pinyin")
-        .build();
-    println!("engine desc sig: {}", s.signature().to_string());
-    return s;
 }
 
 // Taken from: https://github.com/ArturKovacs/ibus-rs/blob/main/src/lib.rs
