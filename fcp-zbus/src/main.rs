@@ -47,7 +47,7 @@ async fn main() {
         textdomain: "".to_owned(),
     };
 
-    let component_to_reg = (&ibus_component).into_struct(&ibus_engine_desc);
+    let component_to_reg = (ibus_component).into_struct(ibus_engine_desc);
 
     let address = get_ibus_address().expect("Failed to get IBus address.");
 

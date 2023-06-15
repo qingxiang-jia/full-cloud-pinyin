@@ -52,7 +52,7 @@ pub struct IBusComponent {
 }
 
 impl IBusComponent {
-    pub fn into_struct<'a>(&'a self, engine_desc: &'a IBusEngineDesc) -> Structure {
+    pub fn into_struct<'a>(self, engine_desc: IBusEngineDesc) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
         let attachments: HashMap<String, Value> = HashMap::new();
         let observed_paths: Vec<Value> = Vec::new();
@@ -62,14 +62,14 @@ impl IBusComponent {
         let s = sb
             .add_field("IBusComponent")
             .add_field(attachments)
-            .add_field(self.component_name.clone())
-            .add_field(self.description.clone())
-            .add_field(self.version.clone())
-            .add_field(self.license.clone())
-            .add_field(self.author.clone())
-            .add_field(self.homepage.clone())
-            .add_field(self.exec.clone())
-            .add_field(self.textdomain.clone())
+            .add_field(self.component_name)
+            .add_field(self.description)
+            .add_field(self.version)
+            .add_field(self.license)
+            .add_field(self.author)
+            .add_field(self.homepage)
+            .add_field(self.exec)
+            .add_field(self.textdomain)
             .add_field(observed_paths)
             .add_field(engine_list)
             .build();
@@ -97,28 +97,28 @@ pub struct IBusEngineDesc {
 }
 
 impl IBusEngineDesc {
-    pub fn into_struct(&self) -> Structure {
+    pub fn into_struct<'a>(self) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
         let attachments: HashMap<String, Value> = HashMap::new();
         let s = sb
             .add_field("IBusEngineDesc")
             .add_field(attachments)
-            .add_field(self.engine_name.clone())
-            .add_field(self.long_name.clone())
-            .add_field(self.description.clone())
-            .add_field(self.language.clone())
-            .add_field(self.license.clone())
-            .add_field(self.author.clone())
-            .add_field(self.icon.clone())
-            .add_field(self.layout.clone())
+            .add_field(self.engine_name)
+            .add_field(self.long_name)
+            .add_field(self.description)
+            .add_field(self.language)
+            .add_field(self.license)
+            .add_field(self.author)
+            .add_field(self.icon)
+            .add_field(self.layout)
             .add_field(self.rank as u32)
-            .add_field(self.hotkeys.clone())
-            .add_field(self.symbol.clone())
-            .add_field(self.setup.clone())
-            .add_field(self.layout_variant.clone())
-            .add_field(self.layout_option.clone())
-            .add_field(self.version.clone())
-            .add_field(self.textdomain.clone())
+            .add_field(self.hotkeys)
+            .add_field(self.symbol)
+            .add_field(self.setup)
+            .add_field(self.layout_variant)
+            .add_field(self.layout_option)
+            .add_field(self.version)
+            .add_field(self.textdomain)
             .build();
         return s;
     }
