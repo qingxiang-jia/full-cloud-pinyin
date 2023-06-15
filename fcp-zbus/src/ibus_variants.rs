@@ -40,7 +40,7 @@ use std::collections::HashMap;
 
 use zvariant::{Structure, StructureBuilder, Value};
 
- pub struct IBusComponent {
+pub struct IBusComponent {
     pub component_name: String,
     pub description: String,
     pub version: String,
@@ -120,6 +120,94 @@ impl IBusEngineDesc {
             .add_field(self.version.clone())
             .add_field(self.textdomain.clone())
             .build();
+        return s;
+    }
+}
+
+pub struct IBusLookupTable {
+    page_size: u32,
+    cursor_pos: u32,
+    cursor_visible: u32,
+    round: bool,
+    orientation: i32,
+    candidates: Vec<String>,
+    labels: Vec<String>,
+}
+
+impl IBusLookupTable {
+    pub fn into_struct<'a>(self) -> Structure<'a> {
+        let sb: StructureBuilder = StructureBuilder::new();
+        
+        let attachments: HashMap<String, Value> = HashMap::new();
+        
+        let mut cand_texts: Vec<IBusText> = Vec::new();
+        for cand in self.candidates {
+            cand_texts.push(IBusText { text: cand });
+        }
+        let mut cands_v: Vec<Value> = Vec::new();
+        for cand in cand_texts {
+            cands_v.push(Value::from(cand.into_struct()));
+        }
+        
+        let mut labels_v: Vec<Value> = Vec::new();
+        labels_v.push(Value::from(1));
+        labels_v.push(Value::from(2));
+        labels_v.push(Value::from(3));
+        labels_v.push(Value::from(4));
+        labels_v.push(Value::from(5));
+        
+        let s = sb.add_field("IBusLookupTable")
+            .add_field(attachments)
+            .add_field(self.page_size)
+            .add_field(self.cursor_pos)
+            .add_field(self.cursor_visible)
+            .add_field(self.round)
+            .add_field(self.orientation)
+            .add_field(cands_v)
+            .add_field(labels_v)
+            .build();
+        return s;
+    }
+}
+
+pub struct IBusText {
+    text: String,
+}
+
+impl IBusText {
+    pub fn into_struct<'a>(self) -> Structure<'a> {
+        let sb: StructureBuilder = StructureBuilder::new();
+        let attachments: HashMap<String, Value> = HashMap::new();
+        let attribute_list: Vec<Value> = Vec::new();
+        let s = sb
+            .add_field("IBusText")
+            .add_field(attachments)
+            .add_field(self.text)
+            .add_field(attribute_list)
+            .build();
+        return s;
+    }
+}
+
+// Currently not used because we can just use a Vec<Value> to represent attribute_list in IBusText.
+pub struct IBusAttribute {
+    attribute_type: u32,
+    value: u32,
+    start_index: u32,
+    end_index: u32,
+}
+
+impl IBusAttribute {
+    pub fn into_struct<'a>(self) -> Structure<'a> {
+        let sb = StructureBuilder::new();
+        let s = sb
+            .add_field("IBusAttribute")
+            .add_field(self.attribute_type as u32)
+            .add_field(self.value as u32)
+            .add_field(self.start_index as u32)
+            .add_field(self.end_index as u32)
+            .build();
+
         return s;
     }
 }
