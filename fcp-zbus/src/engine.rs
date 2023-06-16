@@ -97,16 +97,16 @@ enum KeyVal {
 }
 
 #[derive(Debug, Clone)]
-struct Candidate {
+pub struct Candidate {
     pub word: String,
     pub annotation: String,
     pub matched_len: Option<i32>,
 }
 
 #[derive(Debug)]
-struct Candidates {
+pub struct Candidates {
     depth: QueryDepth,
-    candidates: Vec<Candidate>,
+    pub candidates: Vec<Candidate>,
 }
 
 struct State {

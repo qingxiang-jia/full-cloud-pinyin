@@ -40,6 +40,8 @@ use std::collections::HashMap;
 
 use zvariant::{Structure, StructureBuilder, Value};
 
+use crate::engine::Candidates;
+
 pub struct IBusComponent {
     pub component_name: String,
     pub description: String,
@@ -135,6 +137,15 @@ pub struct IBusLookupTable {
 }
 
 impl IBusLookupTable {
+    pub fn new(cands: &Candidates) -> IBusLookupTable {
+        let mut candidates: Vec<String> = Vec::new();
+        for cand in &(cands.candidates) {
+            candidates.push(cand.word.clone());
+        }
+
+        IBusLookupTable { page_size: 5, cursor_pos: 0, cursor_visible: 0, round: false, orientation: 2, candidates, labels: Vec::new() }
+    }
+
     pub fn into_struct<'a>(self) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
         
