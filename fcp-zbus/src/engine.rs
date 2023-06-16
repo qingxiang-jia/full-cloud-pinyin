@@ -187,7 +187,7 @@ impl FcpEngine<'static> {
             if *in_session_mtx != true {
                 return false;
             }
-            
+
             // Ignore if it's outside the lookup table.
 
             // If is full match, commit and reset.
@@ -322,6 +322,12 @@ impl FcpEngine<'static> {
 
         return false;
     }
+}
+
+fn concate_str_with_ascii_u32(s: &String, c: u32) -> String {
+    let mut new = s.clone();
+    new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
+    return new;
 }
 
 pub async fn new_fcp_engine(conn: &Connection) -> FcpEngine<'static> {
