@@ -1,12 +1,9 @@
 extern crate std;
 
-use crate::{
-    engine::{FactoryListener, ServiceListener},
-    generated::IBusProxy,
-    ibus_helper::get_ibus_address,
-};
+use crate::{generated::IBusProxy, ibus_helper::get_ibus_address};
 
-use ibus_variants::{IBusEngineDesc, IBusComponent};
+use ibus_variants::{IBusComponent, IBusEngineDesc};
+use listeners::{FactoryListener, ServiceListener};
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod engine;
@@ -14,6 +11,7 @@ mod engine;
 mod generated;
 mod ibus_helper;
 mod ibus_variants;
+mod listeners;
 
 #[tokio::main]
 async fn main() {
@@ -69,7 +67,7 @@ async fn main() {
     conn.object_server()
         .at(
             "/org/freedesktop/IBus/Engine/FcPinyin",
-            engine::new_input_listener(&conn).await,
+            listeners::new_input_listener(&conn).await,
         )
         .await
         .expect("Faild to set up server object.");

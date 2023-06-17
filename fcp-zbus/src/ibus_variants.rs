@@ -143,14 +143,22 @@ impl IBusLookupTable {
             candidates.push(cand.word.clone());
         }
 
-        IBusLookupTable { page_size: 5, cursor_pos: 0, cursor_visible: 0, round: false, orientation: 2, candidates, labels: Vec::new() }
+        IBusLookupTable {
+            page_size: 5,
+            cursor_pos: 0,
+            cursor_visible: 0,
+            round: false,
+            orientation: 2,
+            candidates,
+            labels: Vec::new(),
+        }
     }
 
     pub fn into_struct<'a>(self) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
-        
+
         let attachments: HashMap<String, Value> = HashMap::new();
-        
+
         let mut cand_texts: Vec<IBusText> = Vec::new();
         for cand in self.candidates {
             cand_texts.push(IBusText { text: cand });
@@ -159,15 +167,16 @@ impl IBusLookupTable {
         for cand in cand_texts {
             cands_v.push(Value::from(cand.into_struct()));
         }
-        
+
         let mut labels_v: Vec<Value> = Vec::new();
         labels_v.push(Value::from(1));
         labels_v.push(Value::from(2));
         labels_v.push(Value::from(3));
         labels_v.push(Value::from(4));
         labels_v.push(Value::from(5));
-        
-        let s = sb.add_field("IBusLookupTable")
+
+        let s = sb
+            .add_field("IBusLookupTable")
             .add_field(attachments)
             .add_field(self.page_size)
             .add_field(self.cursor_pos)

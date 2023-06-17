@@ -1,40 +1,12 @@
-
 use regex::Regex;
 use reqwest;
 use tokio::sync::{Mutex, MutexGuard};
-use zbus::{dbus_interface, Connection};
-use zvariant::{ObjectPath, Value};
+use zvariant::Value;
 
 use crate::{
     generated::{IBusProxy, PanelProxy},
     ibus_variants::IBusText,
 };
-
-// We have three interfaces to implement in order to get a working engine, but only the
-// org.freedesktop.IBus.Engine matters in practice.
-
-// Implementation of org.freedesktop.IBus.Factory interface
-
-pub struct FactoryListener {}
-
-#[dbus_interface(name = "org.freedesktop.IBus.Factory")]
-impl FactoryListener {
-    pub fn create_engine(&self, name: &str) -> ObjectPath {
-        println!("create_engine called by IBus.");
-        ObjectPath::from_str_unchecked("/org/freedesktop/IBus/Engine/FcPinyin")
-    }
-}
-
-// Implementation of org.freedesktop.IBus.Service interface
-
-pub struct ServiceListener {}
-
-#[dbus_interface(name = "org.freedesktop.IBus.Service")]
-impl ServiceListener {
-    pub fn destroy(&self) {
-        println!("destroy called by IBus.");
-    }
-}
 
 // Implementation of org.freedesktop.IBus.Engine interface
 
@@ -134,38 +106,27 @@ impl State {
     }
 
     pub async fn last_query_mtx(&self) -> MutexGuard<String> {
-        self.last_query
-            .lock()
-            .await
+        self.last_query.lock().await
     }
 
     pub async fn clone_last_query(&self) -> String {
-        self.last_query
-            .lock()
-            .await
-            .clone() // Unlock immediately
+        self.last_query.lock().await.clone() // Unlock immediately
     }
 
     pub async fn query_depth_mtx(&self) -> MutexGuard<QueryDepth> {
-        self.query_depth
-            .lock()
-            .await
+        self.query_depth.lock().await
     }
 
     pub async fn in_session_mtx(&self) -> MutexGuard<bool> {
-        self.in_session
-            .lock()
-            .await
+        self.in_session.lock().await
     }
 
     pub async fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
-        self.session_candidates
-            .lock()
-            .await
+        self.session_candidates.lock().await
     }
 }
 
-pub struct InputListener<'a> {
+pub struct FcpEngine<'a> {
     ibus: IBusProxy<'a>,
     panel: PanelProxy<'a>,
     http: reqwest::Client,
@@ -173,15 +134,18 @@ pub struct InputListener<'a> {
     state: State,
 }
 
-#[dbus_interface(name = "org.freedesktop.IBus.Engine")]
-impl InputListener<'static> {
-    pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
-        if state != 0 {
-            // If it's not "pressed" state, do nothing.
-            return false;
+impl<'a> FcpEngine<'a> {
+    pub fn new(ibus: IBusProxy<'a>, panel: PanelProxy<'a>) -> FcpEngine<'a> {
+        FcpEngine {
+            ibus,
+            panel,
+            http: reqwest::Client::new(),
+            re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
+            state: State::new(),
         }
-        println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
+    }
 
+    pub async fn on_key_press(&self, keyval: u32) -> bool {
         let mut in_session_mtx = self.state.in_session_mtx().await;
 
         // Select a candidate by entering 0-9.
@@ -315,7 +279,8 @@ impl InputListener<'static> {
             *in_session_mtx = true;
 
             // Compute new preedit.
-            let new_preedit = concate_str_with_ascii_u32(&self.state.clone_last_query().await, keyval);
+            let new_preedit =
+                concate_str_with_ascii_u32(&self.state.clone_last_query().await, keyval);
 
             let mut shared_preedit = self.state.last_query_mtx().await;
             shared_preedit.clear();
@@ -325,7 +290,12 @@ impl InputListener<'static> {
             // Update UI.
             self.panel
                 .update_preedit_text(
-                    &Value::from(IBusText { text: new_preedit.clone() }.into_struct()),
+                    &Value::from(
+                        IBusText {
+                            text: new_preedit.clone(),
+                        }
+                        .into_struct(),
+                    ),
                     0,
                     true,
                 )
@@ -333,7 +303,6 @@ impl InputListener<'static> {
                 .expect("Failed to update preedit.");
 
             // Query for candidates.
-            
 
             return true;
         }
@@ -346,22 +315,4 @@ fn concate_str_with_ascii_u32(s: &String, c: u32) -> String {
     let mut new = s.clone();
     new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
     return new;
-}
-
-pub async fn new_input_listener(conn: &Connection) -> InputListener<'static> {
-    let ibus = IBusProxy::new(&conn)
-        .await
-        .expect("Failed to create IBusProxy.");
-
-    let panel = PanelProxy::new(&conn)
-        .await
-        .expect("Failed to create PanelProxy.");
-
-    InputListener {
-        ibus,
-        panel,
-        http: reqwest::Client::new(),
-        re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
-        state: State::new(),
-    }
 }
