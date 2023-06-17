@@ -107,7 +107,7 @@ impl State {
         self.last_query.lock().await.clone()
     }
 
-    pub async fn set_last_query_automic(&self, query: &str) {
+    pub async fn set_last_query_atomic(&self, query: &str) {
         let mut shared = self.last_query.lock().await;
         shared.replace_range(.., query);
     }
@@ -300,7 +300,7 @@ impl<'a> FcpEngine<'a> {
 
             // Compute new preedit.
             let new_preedit = Self::concate(&self.state.last_query().await, keyval);
-            self.state.set_last_query_automic(&new_preedit).await;
+            self.state.set_last_query_atomic(&new_preedit).await;
 
             // Update UI.
             self.panel
