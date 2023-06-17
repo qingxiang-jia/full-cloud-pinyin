@@ -232,14 +232,7 @@ impl<'a> FcpEngine<'a> {
             }
 
             // Update UI.
-            self.panel
-                .update_preedit_text(
-                    &Value::from(IBusText::new(&new_preedit).into_struct()),
-                    0,
-                    new_preedit.len() != 0,
-                )
-                .await
-                .expect("Failed to update preedit.");
+            self.update_preedit(&new_preedit).await;
 
             // Query for candidates.
             let lookup_table = if new_preedit.len() == 0 {
@@ -300,14 +293,7 @@ impl<'a> FcpEngine<'a> {
             self.state.set_last_query_atomic(&new_preedit).await;
 
             // Update UI.
-            self.panel
-                .update_preedit_text(
-                    &Value::from(IBusText::new(&new_preedit).into_struct()),
-                    0,
-                    true,
-                )
-                .await
-                .expect("Failed to update preedit.");
+            self.update_preedit(&new_preedit).await;
 
             // Query for candidates.
             let candidates = self.query_candidates(&new_preedit).await;
@@ -327,6 +313,17 @@ impl<'a> FcpEngine<'a> {
             .update_lookup_table(&Value::new(new.into_struct()), visible)
             .await
             .expect("Failed to update lookup table.");
+    }
+
+    async fn update_preedit(&self, new: &str) {
+        self.panel
+            .update_preedit_text(
+                &Value::from(IBusText::new(new).into_struct()),
+                0,
+                new.len() != 0,
+            )
+            .await
+            .expect("Failed to update preedit.");
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
