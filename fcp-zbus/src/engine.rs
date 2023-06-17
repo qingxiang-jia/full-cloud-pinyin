@@ -314,7 +314,7 @@ impl<'a> FcpEngine<'a> {
         return new;
     }
 
-    async fn get_candidates_from_network(&self, preedit: &str, depth: i32) -> String {
+    async fn get_candidates_from_net(&self, preedit: &str, depth: i32) -> String {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
 
         let resp = self
