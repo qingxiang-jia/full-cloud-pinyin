@@ -1,5 +1,5 @@
 use regex::Regex;
-use reqwest;
+use reqwest::{self, header::USER_AGENT};
 use tokio::sync::{Mutex, MutexGuard};
 use zvariant::Value;
 
@@ -312,6 +312,25 @@ impl<'a> FcpEngine<'a> {
         let mut new = s.clone();
         new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
         return new;
+    }
+
+    async fn get_candidates_from_network(&self, preedit: &str, depth: i32) -> String {
+        let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
+
+        let resp = self
+            .http
+            .get(url)
+            .header(
+                USER_AGENT,
+                "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
+            )
+            .send()
+            .await
+            .expect("Network problems when making the request.");
+
+        resp.text()
+            .await
+            .expect("Network problem when getting the text from the response.")
     }
 
     async fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
