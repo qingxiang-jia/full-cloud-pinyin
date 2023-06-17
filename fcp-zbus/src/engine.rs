@@ -308,6 +308,15 @@ impl<'a> FcpEngine<'a> {
         return false;
     }
 
+    async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
+        let depth = self.decide_query_depth(preedit).await;
+        let json = self
+            .get_candidates_from_net(preedit, depth as i32)
+            .await;
+        let candidates = self.json_to_candidates(json);
+        candidates
+    }
+
     async fn get_candidates_from_net(&self, preedit: &str, depth: i32) -> String {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
 
