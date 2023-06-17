@@ -284,7 +284,6 @@ impl<'a> FcpEngine<'a> {
 
             let mut shared_preedit = self.state.last_query_mtx().await;
             shared_preedit.replace_range(.., &new_preedit);
-            drop(shared_preedit); // Release the lock as soon as we can.
 
             // Update UI.
             self.panel
