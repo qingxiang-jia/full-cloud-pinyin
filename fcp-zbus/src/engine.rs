@@ -241,23 +241,17 @@ impl<'a> FcpEngine<'a> {
             }
 
             // Query for candidates.
-            if new_preedit.len() == 0 {
-                // Update UI.
-                let empty_table = IBusLookupTable::new(&Vec::new());
-                self.panel
-                    .update_lookup_table(&Value::new(empty_table.into_struct()), false)
-                    .await
-                    .expect("Failed to update lookup table.");
+            let lookup_table = if new_preedit.len() == 0 {
+                IBusLookupTable::new(&Vec::new())
             } else {
-                let candidates = self.query_candidates(&new_preedit).await;
+                IBusLookupTable::new(&self.query_candidates(&new_preedit).await)
+            };
 
-                // Update UI.
-                let lookup_table = IBusLookupTable::new(&candidates);
-                self.panel
+            // Update UI.
+            self.panel
                     .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
                     .await
                     .expect("Failed to update lookup table.");
-            }
 
             return true;
         }
