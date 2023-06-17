@@ -248,6 +248,8 @@ impl<'a> FcpEngine<'a> {
                 return false;
             }
 
+            self.page_back().await;
+
             return true;
         }
 
