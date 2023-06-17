@@ -313,4 +313,25 @@ impl<'a> FcpEngine<'a> {
         new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
         return new;
     }
+
+    async fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
+        let mut last_query = self.state.last_query_mtx().await;
+        let mut depth = self.state.query_depth_mtx().await;
+        if last_query.eq(preedit) {
+            match *depth {
+                QueryDepth::D1 => *depth = QueryDepth::D2,
+                QueryDepth::D2 => *depth = QueryDepth::D3,
+                QueryDepth::D3 => *depth = QueryDepth::D4,
+                QueryDepth::D4 => *depth = QueryDepth::D5,
+                QueryDepth::D5 => *depth = QueryDepth::D6,
+                QueryDepth::D6 => *depth = QueryDepth::D7,
+                QueryDepth::D7 => *depth = QueryDepth::D8,
+                QueryDepth::D8 => *depth = QueryDepth::D8,
+            }
+        } else {
+            *last_query = preedit.to_owned();
+            *depth = QueryDepth::D1;
+        }
+        depth.clone()
+    }
 }
