@@ -99,24 +99,21 @@ impl State {
         }
     }
 
-    pub async fn last_query_mtx(&self) -> MutexGuard<String> {
-        self.last_query.lock().await
+    pub async fn last_query(&self) -> String {
+        self.last_query.lock().await.clone()
     }
 
-    pub async fn clone_last_query(&self) -> String {
-        self.last_query.lock().await.clone() // Unlock immediately
+    pub async fn set_last_query_automic(&self, query: &str) {
+        let mut shared = self.last_query.lock().await;
+        shared.replace_range(.., query);
     }
 
-    pub async fn query_depth_mtx(&self) -> MutexGuard<QueryDepth> {
-        self.query_depth.lock().await
-    }
-
-    pub async fn in_session_mtx(&self) -> MutexGuard<bool> {
-        self.in_session.lock().await
-    }
-
-    pub async fn session_candidates_mtx(&self) -> MutexGuard<Vec<Candidate>> {
-        self.session_candidates.lock().await
+    pub async fn set_session_candidates(&self, new: &Vec<Candidate>) {
+        let mut shared = self.session_candidates.lock().await;
+        shared.clear();
+        for cand in new {
+            shared.push(cand.clone());
+        }
     }
 }
 
@@ -140,7 +137,7 @@ impl<'a> FcpEngine<'a> {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        let mut in_session_mtx = self.state.in_session_mtx().await;
+        let mut in_session_mtx = self.state.in_session.lock().await;
 
         // Select a candidate by entering 0-9.
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
@@ -222,7 +219,7 @@ impl<'a> FcpEngine<'a> {
             }
 
             // Compute new preedit.
-            let mut new_preedit = self.state.clone_last_query().await;
+            let mut new_preedit = self.state.last_query().await;
             new_preedit.pop();
 
             // Handle the case where there's no character left and we get out of a session.
@@ -244,14 +241,16 @@ impl<'a> FcpEngine<'a> {
             let lookup_table = if new_preedit.len() == 0 {
                 IBusLookupTable::new(&Vec::new())
             } else {
-                IBusLookupTable::new(&self.query_candidates(&new_preedit).await)
+                let candidates = self.query_candidates(&new_preedit).await;
+                self.state.set_session_candidates(&candidates).await;
+                IBusLookupTable::new(&candidates)
             };
 
             // Update UI.
             self.panel
-                    .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
-                    .await
-                    .expect("Failed to update lookup table.");
+                .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
+                .await
+                .expect("Failed to update lookup table.");
 
             return true;
         }
@@ -293,12 +292,11 @@ impl<'a> FcpEngine<'a> {
         // Create a new query for candidates.
         if KeyVal::A as u32 <= keyval && keyval <= KeyVal::Z as u32 {
             *in_session_mtx = true;
+            drop(in_session_mtx); // Release as soon as we can.
 
             // Compute new preedit.
-            let new_preedit = Self::concate(&self.state.clone_last_query().await, keyval);
-
-            let mut shared_preedit = self.state.last_query_mtx().await;
-            shared_preedit.replace_range(.., &new_preedit);
+            let new_preedit = Self::concate(&self.state.last_query().await, keyval);
+            self.state.set_last_query_automic(&new_preedit).await;
 
             // Update UI.
             self.panel
@@ -408,8 +406,8 @@ impl<'a> FcpEngine<'a> {
     }
 
     async fn decide_n_update_depth(&self, preedit: &str) -> QueryDepth {
-        let mut last_query = self.state.last_query_mtx().await;
-        let mut depth = self.state.query_depth_mtx().await;
+        let mut last_query = self.state.last_query.lock().await;
+        let mut depth = self.state.query_depth.lock().await;
         if last_query.eq(preedit) {
             match *depth {
                 QueryDepth::D1 => *depth = QueryDepth::D2,
