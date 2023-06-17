@@ -311,7 +311,7 @@ impl<'a> FcpEngine<'a> {
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
-        let depth = self.decide_query_depth(preedit).await;
+        let depth = self.decide_n_update_depth(preedit).await;
         let json = self.get_candidates_from_net(preedit, depth as i32).await;
         let candidates = self.json_to_candidates(json);
         candidates
@@ -391,7 +391,7 @@ impl<'a> FcpEngine<'a> {
         aggregate
     }
 
-    async fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
+    async fn decide_n_update_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.state.last_query_mtx().await;
         let mut depth = self.state.query_depth_mtx().await;
         if last_query.eq(preedit) {
