@@ -85,7 +85,7 @@ struct State {
     session_candidates: Mutex<Vec<Candidate>>,
     table_size: u8,
     page: u8,
-    cursor: u8
+    cursor: u8,
 }
 
 unsafe impl Sync for State {} // State is safe to share between threads
@@ -251,10 +251,7 @@ impl<'a> FcpEngine<'a> {
             };
 
             // Update UI.
-            self.panel
-                .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
-                .await
-                .expect("Failed to update lookup table.");
+            self.update_lookup_table(lookup_table, true).await;
 
             return true;
         }
@@ -317,15 +314,19 @@ impl<'a> FcpEngine<'a> {
 
             // Update UI
             let lookup_table = IBusLookupTable::new(&candidates);
-            self.panel
-                .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
-                .await
-                .expect("Failed to update lookup table.");
+            self.update_lookup_table(lookup_table, true).await;
 
             return true;
         }
 
         return false;
+    }
+
+    async fn update_lookup_table(&self, new: IBusLookupTable, visible: bool) {
+        self.panel
+            .update_lookup_table(&Value::new(new.into_struct()), visible)
+            .await
+            .expect("Failed to update lookup table.");
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
