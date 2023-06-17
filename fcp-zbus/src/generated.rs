@@ -26,7 +26,7 @@ use std::prelude::rust_2021::*;
 impl<'a> ::zbus::ProxyDefault for PanelProxyBlocking<'a> {
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
     const DESTINATION: &'static str = "org.freedesktop.IBus.Panel";
-    const PATH: &'static str = "/org/freedesktop/Panel";
+    const PATH: &'static str = "/org/freedesktop/Ibus/Panel";
 }
 
 pub struct PanelProxyBlocking<'c>(::zbus::blocking::Proxy<'c>);
@@ -1235,7 +1235,7 @@ impl ::std::iter::Iterator for UpdatePreeditTextReceivedIterator<'_> {
 impl<'a> ::zbus::ProxyDefault for PanelProxy<'a> {
     const INTERFACE: &'static str = "org.freedesktop.IBus.Panel";
     const DESTINATION: &'static str = "org.freedesktop.IBus.Panel";
-    const PATH: &'static str = "/org/freedesktop/Panel";
+    const PATH: &'static str = "/org/freedesktop/IBus/Panel";
 }
 
 pub struct PanelProxy<'c>(::zbus::Proxy<'c>);
