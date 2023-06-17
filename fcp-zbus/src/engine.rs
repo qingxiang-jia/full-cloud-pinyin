@@ -260,6 +260,8 @@ impl<'a> FcpEngine<'a> {
                 return false;
             }
 
+            self.next_cand().await;
+
             return true;
         }
 
@@ -270,6 +272,8 @@ impl<'a> FcpEngine<'a> {
                 return false;
             }
 
+            self.prev_cand().await;
+            
             return true;
         }
 
@@ -408,6 +412,21 @@ impl<'a> FcpEngine<'a> {
             .page_up_lookup_table()
             .await
             .expect("Failed to page up the lookup table.");
+    }
+
+    async fn next_cand(&self) {
+        self.panel
+            .cursor_down_lookup_table()
+            .await
+            .expect("Failed to cursor down the lookup table.");
+        // TODO: if it triggers page change, we need to update state.page and potentially query for new candidates.
+    }
+
+    async fn prev_cand(&self) {
+        self.panel
+            .cursor_up_lookup_table()
+            .await
+            .expect("Failed to cursor up the lookup table.");
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
