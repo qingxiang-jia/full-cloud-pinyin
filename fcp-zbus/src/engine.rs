@@ -84,8 +84,8 @@ struct State {
     in_session: Mutex<bool>,
     session_candidates: Mutex<Vec<Candidate>>,
     table_size: u8,
-    page: u8,
-    cursor: u8,
+    page: Mutex<u8>,
+    cursor: Mutex<u8>,
 }
 
 unsafe impl Sync for State {} // State is safe to share between threads
@@ -98,8 +98,8 @@ impl State {
             in_session: Mutex::new(false),
             session_candidates: Mutex::new(Vec::new()),
             table_size: 5,
-            page: 0,
-            cursor: 0,
+            page: Mutex::new(0),
+            cursor: Mutex::new(0),
         }
     }
 
@@ -118,6 +118,24 @@ impl State {
         for cand in new {
             shared.push(cand.clone());
         }
+    }
+
+    pub async fn page(&self) -> u8 {
+        self.page.lock().await.clone()
+    }
+
+    pub async fn set_page_atomic(&self, new: u8) {
+        let mut shared = self.page.lock().await;
+        *shared = new;
+    }
+
+    pub async fn cursor(&self) -> u8 {
+        self.cursor.lock().await.clone()
+    }
+
+    pub async fn set_cursor_atomic(&self, new: u8) {
+        let mut shared = self.cursor.lock().await;
+        *shared = new;
     }
 }
 
