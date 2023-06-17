@@ -79,7 +79,7 @@ pub struct Candidate {
 }
 
 struct State {
-    last_query: Mutex<String>,
+    preedit: Mutex<String>,
     depth: Mutex<QueryDepth>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Vec<Candidate>>,
@@ -93,7 +93,7 @@ unsafe impl Sync for State {} // State is safe to share between threads
 impl State {
     pub fn new() -> Self {
         State {
-            last_query: Mutex::new("".to_owned()),
+            preedit: Mutex::new("".to_owned()),
             depth: Mutex::new(QueryDepth::D1),
             in_session: Mutex::new(false),
             session_candidates: Mutex::new(Vec::new()),
@@ -103,12 +103,12 @@ impl State {
         }
     }
 
-    pub async fn last_query(&self) -> String {
-        self.last_query.lock().await.clone()
+    pub async fn preedit(&self) -> String {
+        self.preedit.lock().await.clone()
     }
 
-    pub async fn set_last_query_atomic(&self, query: &str) {
-        let mut shared = self.last_query.lock().await;
+    pub async fn set_preedt_atomic(&self, query: &str) {
+        let mut shared = self.preedit.lock().await;
         shared.replace_range(.., query);
     }
 
@@ -243,7 +243,7 @@ impl<'a> FcpEngine<'a> {
             }
 
             // Compute new preedit.
-            let mut new_preedit = self.state.last_query().await;
+            let mut new_preedit = self.state.preedit().await;
             new_preedit.pop();
 
             // Handle the case where there's no character left and we get out of a session.
@@ -311,8 +311,8 @@ impl<'a> FcpEngine<'a> {
             drop(in_session_mtx); // Release as soon as we can.
 
             // Compute new preedit.
-            let new_preedit = Self::concate(&self.state.last_query().await, keyval);
-            self.state.set_last_query_atomic(&new_preedit).await;
+            let new_preedit = Self::concate(&self.state.preedit().await, keyval);
+            self.state.set_preedt_atomic(&new_preedit).await;
 
             // Update UI.
             self.update_preedit(&new_preedit).await;
@@ -430,7 +430,7 @@ impl<'a> FcpEngine<'a> {
     }
 
     async fn decide_n_update_depth(&self, preedit: &str) -> QueryDepth {
-        let mut last_query = self.state.last_query.lock().await;
+        let mut last_query = self.state.preedit.lock().await;
         let mut depth = self.state.depth.lock().await;
         if last_query.eq(preedit) {
             match *depth {
