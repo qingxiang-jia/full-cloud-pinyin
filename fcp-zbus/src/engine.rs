@@ -1,6 +1,6 @@
 use regex::Regex;
 use reqwest::{self, header::USER_AGENT};
-use tokio::sync::{Mutex, MutexGuard};
+use tokio::sync::Mutex;
 use zvariant::Value;
 
 use crate::{
