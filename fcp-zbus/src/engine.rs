@@ -15,10 +15,10 @@ use crate::{
 
 // Implementation of org.freedesktop.IBus.Factory interface
 
-pub struct FcpFactory {}
+pub struct FactoryListener {}
 
 #[dbus_interface(name = "org.freedesktop.IBus.Factory")]
-impl FcpFactory {
+impl FactoryListener {
     pub fn create_engine(&self, name: &str) -> ObjectPath {
         println!("create_engine called by IBus.");
         ObjectPath::from_str_unchecked("/org/freedesktop/IBus/Engine/FcPinyin")
@@ -27,10 +27,10 @@ impl FcpFactory {
 
 // Implementation of org.freedesktop.IBus.Service interface
 
-pub struct FcpService {}
+pub struct ServiceListener {}
 
 #[dbus_interface(name = "org.freedesktop.IBus.Service")]
-impl FcpService {
+impl ServiceListener {
     pub fn destroy(&self) {
         println!("destroy called by IBus.");
     }
@@ -165,7 +165,7 @@ impl State {
     }
 }
 
-pub struct FcpEngine<'a> {
+pub struct InputListener<'a> {
     ibus: IBusProxy<'a>,
     panel: PanelProxy<'a>,
     http: reqwest::Client,
@@ -174,7 +174,7 @@ pub struct FcpEngine<'a> {
 }
 
 #[dbus_interface(name = "org.freedesktop.IBus.Engine")]
-impl FcpEngine<'static> {
+impl InputListener<'static> {
     pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         if state != 0 {
             // If it's not "pressed" state, do nothing.
@@ -348,7 +348,7 @@ fn concate_str_with_ascii_u32(s: &String, c: u32) -> String {
     return new;
 }
 
-pub async fn new_fcp_engine(conn: &Connection) -> FcpEngine<'static> {
+pub async fn new_input_listener(conn: &Connection) -> InputListener<'static> {
     let ibus = IBusProxy::new(&conn)
         .await
         .expect("Failed to create IBusProxy.");
@@ -357,7 +357,7 @@ pub async fn new_fcp_engine(conn: &Connection) -> FcpEngine<'static> {
         .await
         .expect("Failed to create PanelProxy.");
 
-    FcpEngine {
+    InputListener {
         ibus,
         panel,
         http: reqwest::Client::new(),

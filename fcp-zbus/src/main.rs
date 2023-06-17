@@ -1,7 +1,7 @@
 extern crate std;
 
 use crate::{
-    engine::{FcpFactory, FcpService},
+    engine::{FactoryListener, ServiceListener},
     generated::IBusProxy,
     ibus_helper::get_ibus_address,
 };
@@ -62,20 +62,20 @@ async fn main() {
         .expect("Failed to create IBusProxy.");
 
     conn.object_server()
-        .at("/org/freedesktop/IBus/Factory", FcpFactory {})
+        .at("/org/freedesktop/IBus/Factory", FactoryListener {})
         .await
         .expect("Faild to set up server object.");
 
     conn.object_server()
         .at(
             "/org/freedesktop/IBus/Engine/FcPinyin",
-            engine::new_fcp_engine(&conn).await,
+            engine::new_input_listener(&conn).await,
         )
         .await
         .expect("Faild to set up server object.");
 
     conn.object_server()
-        .at("/org/freedesktop/IBus/Service", FcpService {})
+        .at("/org/freedesktop/IBus/Service", ServiceListener {})
         .await
         .expect("Faild to set up server object.");
 
