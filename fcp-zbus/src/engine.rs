@@ -138,6 +138,22 @@ impl State {
         let mut shared = self.cursor.lock().await;
         *shared = new;
     }
+
+    pub async fn reset(&self) {
+        let mut preedit = self.preedit.lock().await;
+        let mut depth = self.depth.lock().await;
+        let mut in_session = self.in_session.lock().await;
+        let mut candidates = self.candidates.lock().await;
+        let mut page = self.page.lock().await;
+        let mut cursor = self.cursor.lock().await;
+
+        *preedit = "".to_owned();
+        *depth = QueryDepth::D1;
+        *in_session = false;
+        candidates.clear();
+        *page = 0;
+        *cursor = 0;
+    }
 }
 
 pub struct FcpEngine<'a> {
@@ -295,13 +311,13 @@ impl<'a> FcpEngine<'a> {
                 return false;
             }
 
-            // Clear preedit.
-
             // Update states.
-
-            // Set flag.
+            drop(in_session_mtx);
+            self.state.reset().await;
 
             // Update UI.
+            self.update_preedit("").await;
+            self.update_lookup_table(IBusLookupTable::new(&Vec::new()), false).await;
 
             return true;
         }
