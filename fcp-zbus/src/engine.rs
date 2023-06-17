@@ -84,9 +84,9 @@ struct State {
     depth: Mutex<QueryDepth>,
     in_session: Mutex<bool>,
     candidates: Mutex<Vec<Candidate>>,
-    table_size: u8,
-    page: Mutex<u8>,
-    cursor: Mutex<u8>,
+    table_size: usize,
+    page: Mutex<usize>,
+    cursor: Mutex<usize>,
 }
 
 unsafe impl Sync for State {} // State is safe to share between threads
@@ -113,6 +113,10 @@ impl State {
         shared.replace_range(.., query);
     }
 
+    pub async fn candidate_cnt(&self) -> usize {
+        self.candidates.lock().await.len()
+    }
+
     pub async fn set_candidates_atomic(&self, new: &Vec<Candidate>) {
         let mut shared = self.candidates.lock().await;
         shared.clear();
@@ -121,20 +125,20 @@ impl State {
         }
     }
 
-    pub async fn page(&self) -> u8 {
+    pub async fn page(&self) -> usize {
         self.page.lock().await.clone()
     }
 
-    pub async fn set_page_atomic(&self, new: u8) {
+    pub async fn set_page_atomic(&self, new: usize) {
         let mut shared = self.page.lock().await;
         *shared = new;
     }
 
-    pub async fn cursor(&self) -> u8 {
+    pub async fn cursor(&self) -> usize {
         self.cursor.lock().await.clone()
     }
 
-    pub async fn set_cursor_atomic(&self, new: u8) {
+    pub async fn set_cursor_atomic(&self, new: usize) {
         let mut shared = self.cursor.lock().await;
         *shared = new;
     }
@@ -210,19 +214,34 @@ impl<'a> FcpEngine<'a> {
             return true;
         }
 
-        // Page up the lookup table.
+        // Page further into the lookup table.
         if KeyVal::Equal as u32 == keyval {
             // If not in session, skip.
             if *in_session_mtx != true {
                 return false;
             }
 
-            // If lookup table cannot page up, load more candidates.
+            let (should_load_more, last_page_full) = self.page_into().await;
+
+            // If lookup table cannot go further down, load more candidates.
+            if should_load_more {
+                // Query for candidates.
+                let candidates = self.query_candidates(&self.state.preedit().await).await;
+
+                // Update UI
+                let lookup_table = IBusLookupTable::new(&candidates);
+                self.update_lookup_table(lookup_table, true).await;
+
+                // If the last page was full, the user doesn't know candidates have been updated, so page into a new set of candidates.
+                if last_page_full {
+                    _ = self.page_into().await;
+                }
+            }
 
             return true;
         }
 
-        // Page down the lookup table.
+        // Page back out the lookup table.
         if KeyVal::Equal as u32 == keyval {
             // If not in session, skip.
             if *in_session_mtx != true {
@@ -296,7 +315,7 @@ impl<'a> FcpEngine<'a> {
             // Update preedit.
 
             // Update states.
-            
+
             // Update UI.
 
             // Update UI.
@@ -317,7 +336,8 @@ impl<'a> FcpEngine<'a> {
 
             // Update UI.
             self.update_preedit("").await;
-            self.update_lookup_table(IBusLookupTable::new(&Vec::new()), false).await;
+            self.update_lookup_table(IBusLookupTable::new(&Vec::new()), false)
+                .await;
 
             return true;
         }
@@ -363,6 +383,29 @@ impl<'a> FcpEngine<'a> {
             )
             .await
             .expect("Failed to update preedit.");
+    }
+
+    async fn page_into(&self) -> (bool, bool) {
+        if self.state.candidate_cnt().await <= self.state.page().await * self.state.table_size {
+            if self.state.candidate_cnt().await == self.state.page().await * self.state.table_size {
+                return (false, false);
+            }
+            return (false, true);
+            // (should_load_more, is_last_page_full)
+        }
+
+        self.panel
+            .page_down_lookup_table()
+            .await
+            .expect("Failed to page down the lookup table.");
+        return (true, true);
+    }
+
+    async fn page_back(&self) {
+        self.panel
+            .page_up_lookup_table()
+            .await
+            .expect("Failed to page up the lookup table.");
     }
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
