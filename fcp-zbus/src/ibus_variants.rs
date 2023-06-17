@@ -182,7 +182,7 @@ impl IBusLookupTable {
 }
 
 pub struct IBusText {
-    text: String,
+    pub text: String,
 }
 
 impl IBusText {

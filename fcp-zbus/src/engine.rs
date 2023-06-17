@@ -1,11 +1,14 @@
-use std::sync::{Mutex, MutexGuard};
 
 use regex::Regex;
 use reqwest;
+use tokio::sync::{Mutex, MutexGuard};
 use zbus::{dbus_interface, Connection};
-use zvariant::ObjectPath;
+use zvariant::{ObjectPath, Value};
 
-use crate::generated::{IBusProxy, PanelProxy};
+use crate::{
+    generated::{IBusProxy, PanelProxy},
+    ibus_variants::IBusText,
+};
 
 // We have three interfaces to implement in order to get a working engine, but only the
 // org.freedesktop.IBus.Engine matters in practice.
@@ -130,35 +133,35 @@ impl State {
         }
     }
 
-    pub fn last_query_mtx(&self) -> MutexGuard<String> {
+    pub async fn last_query_mtx(&self) -> MutexGuard<String> {
         self.last_query
             .lock()
-            .expect("Failed to lock last_query in last_query_mtx().")
+            .await
     }
 
-    pub fn clone_last_query(&self) -> String {
+    pub async fn clone_last_query(&self) -> String {
         self.last_query
             .lock()
-            .expect("Failed to lock last_query in clone_last_query().")
+            .await
             .clone() // Unlock immediately
     }
 
-    pub fn query_depth_mtx(&self) -> MutexGuard<QueryDepth> {
+    pub async fn query_depth_mtx(&self) -> MutexGuard<QueryDepth> {
         self.query_depth
             .lock()
-            .expect("Failed to lock query_depth in query_depth_mtx().")
+            .await
     }
 
-    pub fn in_session_mtx(&self) -> MutexGuard<bool> {
+    pub async fn in_session_mtx(&self) -> MutexGuard<bool> {
         self.in_session
             .lock()
-            .expect("Failed to lock in_session in in_session_mtx().")
+            .await
     }
 
-    pub fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
+    pub async fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
         self.session_candidates
             .lock()
-            .expect("Failed to lock session_candidate in session_candidates().")
+            .await
     }
 }
 
@@ -179,7 +182,7 @@ impl FcpEngine<'static> {
         }
         println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
 
-        let mut in_session_mtx = self.state.in_session_mtx();
+        let mut in_session_mtx = self.state.in_session_mtx().await;
 
         // Select a candidate by entering 0-9.
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
@@ -312,10 +315,25 @@ impl FcpEngine<'static> {
             *in_session_mtx = true;
 
             // Compute new preedit.
+            let new_preedit = concate_str_with_ascii_u32(&self.state.clone_last_query().await, keyval);
+
+            let mut shared_preedit = self.state.last_query_mtx().await;
+            shared_preedit.clear();
+            shared_preedit.push_str(&new_preedit);
+            drop(shared_preedit); // Release the lock as soon as we can.
 
             // Update UI.
+            self.panel
+                .update_preedit_text(
+                    &Value::from(IBusText { text: new_preedit.clone() }.into_struct()),
+                    0,
+                    true,
+                )
+                .await
+                .expect("Failed to update preedit.");
 
             // Query for candidates.
+            
 
             return true;
         }
