@@ -82,7 +82,7 @@ struct State {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
     in_session: Mutex<bool>,
-    session_candidates: Mutex<Option<Vec<Candidate>>>,
+    session_candidates: Mutex<Vec<Candidate>>,
     table_size: u8,
 }
 
@@ -94,7 +94,7 @@ impl State {
             last_query: Mutex::new("".to_owned()),
             query_depth: Mutex::new(QueryDepth::D1),
             in_session: Mutex::new(false),
-            session_candidates: Mutex::new(None),
+            session_candidates: Mutex::new(Vec::new()),
             table_size: 5,
         }
     }
@@ -115,7 +115,7 @@ impl State {
         self.in_session.lock().await
     }
 
-    pub async fn session_candidates_mtx(&self) -> MutexGuard<Option<Vec<Candidate>>> {
+    pub async fn session_candidates_mtx(&self) -> MutexGuard<Vec<Candidate>> {
         self.session_candidates.lock().await
     }
 }
