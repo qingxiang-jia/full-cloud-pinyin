@@ -221,15 +221,43 @@ impl<'a> FcpEngine<'a> {
                 return false;
             }
 
-            // Update preedit.
+            // Compute new preedit.
+            let mut new_preedit = self.state.clone_last_query().await;
+            new_preedit.pop();
 
             // Update UI.
+            self.panel
+                .update_preedit_text(
+                    &Value::from(IBusText::new(&new_preedit).into_struct()),
+                    0,
+                    new_preedit.len() != 0,
+                )
+                .await
+                .expect("Failed to update preedit.");
 
             // Handle the case where there's no character left and we get out of a session.
+            if new_preedit.len() == 0 {
+                *in_session_mtx = false;
+            }
 
             // Query for candidates.
+            if new_preedit.len() == 0 {
+                // Update UI.
+                let empty_table = IBusLookupTable::new(&Vec::new());
+                self.panel
+                    .update_lookup_table(&Value::new(empty_table.into_struct()), false)
+                    .await
+                    .expect("Failed to update lookup table.");
+            } else {
+                let candidates = self.query_candidates(&new_preedit).await;
 
-            // Update UI.
+                // Update UI.
+                let lookup_table = IBusLookupTable::new(&candidates);
+                self.panel
+                    .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
+                    .await
+                    .expect("Failed to update lookup table.");
+            }
 
             return true;
         }
