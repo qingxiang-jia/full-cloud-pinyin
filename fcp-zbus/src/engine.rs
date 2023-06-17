@@ -84,6 +84,8 @@ struct State {
     in_session: Mutex<bool>,
     session_candidates: Mutex<Vec<Candidate>>,
     table_size: u8,
+    page: u8,
+    cursor: u8
 }
 
 unsafe impl Sync for State {} // State is safe to share between threads
@@ -96,6 +98,8 @@ impl State {
             in_session: Mutex::new(false),
             session_candidates: Mutex::new(Vec::new()),
             table_size: 5,
+            page: 0,
+            cursor: 0,
         }
     }
 
