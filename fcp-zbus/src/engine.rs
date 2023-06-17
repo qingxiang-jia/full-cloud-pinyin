@@ -333,6 +333,61 @@ impl<'a> FcpEngine<'a> {
             .expect("Network problem when getting the text from the response.")
     }
 
+    fn json_to_candidates(&self, s: String) -> Vec<Candidate> {
+        let mut linear_data: Vec<String> = Vec::new();
+
+        for caps in self.re.captures_iter(&s) {
+            for cap in caps.iter() {
+                if cap.is_some() {
+                    linear_data.push(cap.unwrap().as_str().to_owned());
+                }
+            }
+        }
+
+        let mut colon_pos: Vec<usize> = Vec::new();
+
+        if linear_data[0] != "SUCCESS" {
+            println!("Rust: Google returned irregular data:\n{}", s.as_str());
+            return Vec::new();
+        }
+
+        for i in 0..linear_data.len() {
+            if linear_data[i] == ":" {
+                colon_pos.push(i);
+            }
+        }
+
+        let has_matched_len = colon_pos.len() == 4;
+
+        let candidates = &linear_data[2..colon_pos[0] - 1];
+        let annotations = &linear_data[colon_pos[0] + 1..colon_pos[1] - 1];
+
+        let matched_len: Option<&[String]>;
+        if has_matched_len {
+            matched_len = Some(&linear_data[colon_pos[3] + 1..]);
+        } else {
+            matched_len = None;
+        }
+
+        let mut aggregate: Vec<Candidate> = Vec::new();
+        for i in 0..candidates.len() {
+            aggregate.push(Candidate {
+                word: candidates[i].to_owned(),
+                annotation: annotations[i].to_owned(),
+                matched_len: match matched_len {
+                    Some(len) => Some(
+                        len[i]
+                            .parse::<i32>()
+                            .expect("Matched length faield to be parsed to i32."),
+                    ),
+                    _ => None,
+                },
+            })
+        }
+
+        aggregate
+    }
+
     async fn decide_query_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.state.last_query_mtx().await;
         let mut depth = self.state.query_depth_mtx().await;
