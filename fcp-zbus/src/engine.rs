@@ -82,7 +82,7 @@ struct State {
     preedit: Mutex<String>,
     depth: Mutex<QueryDepth>,
     in_session: Mutex<bool>,
-    session_candidates: Mutex<Vec<Candidate>>,
+    candidates: Mutex<Vec<Candidate>>,
     table_size: u8,
     page: Mutex<u8>,
     cursor: Mutex<u8>,
@@ -96,7 +96,7 @@ impl State {
             preedit: Mutex::new("".to_owned()),
             depth: Mutex::new(QueryDepth::D1),
             in_session: Mutex::new(false),
-            session_candidates: Mutex::new(Vec::new()),
+            candidates: Mutex::new(Vec::new()),
             table_size: 5,
             page: Mutex::new(0),
             cursor: Mutex::new(0),
@@ -112,8 +112,8 @@ impl State {
         shared.replace_range(.., query);
     }
 
-    pub async fn set_session_candidates_atomic(&self, new: &Vec<Candidate>) {
-        let mut shared = self.session_candidates.lock().await;
+    pub async fn set_candidates_atomic(&self, new: &Vec<Candidate>) {
+        let mut shared = self.candidates.lock().await;
         shared.clear();
         for cand in new {
             shared.push(cand.clone());
@@ -259,7 +259,7 @@ impl<'a> FcpEngine<'a> {
                 IBusLookupTable::new(&Vec::new())
             } else {
                 let candidates = self.query_candidates(&new_preedit).await;
-                self.state.set_session_candidates_atomic(&candidates).await;
+                self.state.set_candidates_atomic(&candidates).await;
                 IBusLookupTable::new(&candidates)
             };
 
