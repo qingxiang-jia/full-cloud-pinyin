@@ -78,12 +78,6 @@ pub struct Candidate {
     matched_len: Option<i32>,
 }
 
-#[derive(Debug)]
-pub struct Candidates {
-    depth: QueryDepth,
-    pub candidates: Vec<Candidate>,
-}
-
 struct State {
     last_query: Mutex<String>,
     query_depth: Mutex<QueryDepth>,
