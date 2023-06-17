@@ -186,6 +186,8 @@ impl<'a> FcpEngine<'a> {
 
             // Commit candidate.
 
+            // Update states.
+
             // Should we clear preedit and candidates?
 
             return true;
@@ -276,9 +278,9 @@ impl<'a> FcpEngine<'a> {
 
             // Update preedit.
 
+            // Update states.
+            
             // Update UI.
-
-            // Query candidates.
 
             // Update UI.
 
@@ -293,6 +295,8 @@ impl<'a> FcpEngine<'a> {
             }
 
             // Clear preedit.
+
+            // Update states.
 
             // Set flag.
 
