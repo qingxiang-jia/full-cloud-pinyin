@@ -225,6 +225,11 @@ impl<'a> FcpEngine<'a> {
             let mut new_preedit = self.state.clone_last_query().await;
             new_preedit.pop();
 
+            // Handle the case where there's no character left and we get out of a session.
+            if new_preedit.len() == 0 {
+                *in_session_mtx = false;
+            }
+
             // Update UI.
             self.panel
                 .update_preedit_text(
@@ -234,11 +239,6 @@ impl<'a> FcpEngine<'a> {
                 )
                 .await
                 .expect("Failed to update preedit.");
-
-            // Handle the case where there's no character left and we get out of a session.
-            if new_preedit.len() == 0 {
-                *in_session_mtx = false;
-            }
 
             // Query for candidates.
             let lookup_table = if new_preedit.len() == 0 {
