@@ -279,8 +279,7 @@ impl<'a> FcpEngine<'a> {
             *in_session_mtx = true;
 
             // Compute new preedit.
-            let new_preedit =
-                Self::concate(&self.state.clone_last_query().await, keyval);
+            let new_preedit = Self::concate(&self.state.clone_last_query().await, keyval);
 
             let mut shared_preedit = self.state.last_query_mtx().await;
             shared_preedit.replace_range(.., &new_preedit);
@@ -310,9 +309,7 @@ impl<'a> FcpEngine<'a> {
 
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
         let depth = self.decide_query_depth(preedit).await;
-        let json = self
-            .get_candidates_from_net(preedit, depth as i32)
-            .await;
+        let json = self.get_candidates_from_net(preedit, depth as i32).await;
         let candidates = self.json_to_candidates(json);
         candidates
     }
