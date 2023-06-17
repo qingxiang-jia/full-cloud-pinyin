@@ -22,6 +22,7 @@ enum QueryDepth {
     D8 = 1281,
 }
 
+#[allow(dead_code)]
 enum KeyVal {
     A = 97,
     B = 98,
