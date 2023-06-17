@@ -185,7 +185,7 @@ impl<'a> FcpEngine<'a> {
             return true;
         }
 
-        // Page down the loolup table.
+        // Page down the lookup table.
         if KeyVal::Equal as u32 == keyval {
             // If not in session, skip.
             if *in_session_mtx != true {
