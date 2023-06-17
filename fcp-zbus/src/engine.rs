@@ -287,12 +287,7 @@ impl<'a> FcpEngine<'a> {
             // Update UI.
             self.panel
                 .update_preedit_text(
-                    &Value::from(
-                        IBusText {
-                            text: new_preedit.clone(),
-                        }
-                        .into_struct(),
-                    ),
+                    &Value::from(IBusText::new(&new_preedit).into_struct()),
                     0,
                     true,
                 )

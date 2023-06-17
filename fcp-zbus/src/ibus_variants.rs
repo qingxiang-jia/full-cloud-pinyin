@@ -195,6 +195,12 @@ pub struct IBusText {
 }
 
 impl IBusText {
+    pub fn new(content: &str) -> IBusText {
+        IBusText {
+            text: content.clone().to_owned(),
+        }
+    }
+
     pub fn into_struct<'a>(self) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
         let attachments: HashMap<String, Value> = HashMap::new();
