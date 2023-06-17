@@ -308,12 +308,6 @@ impl<'a> FcpEngine<'a> {
         return false;
     }
 
-    fn concate(s: &String, c: u32) -> String {
-        let mut new = s.clone();
-        new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
-        return new;
-    }
-
     async fn get_candidates_from_net(&self, preedit: &str, depth: i32) -> String {
         let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
 
@@ -407,5 +401,11 @@ impl<'a> FcpEngine<'a> {
             *depth = QueryDepth::D1;
         }
         depth.clone()
+    }
+
+    fn concate(s: &String, c: u32) -> String {
+        let mut new = s.clone();
+        new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
+        return new;
     }
 }
