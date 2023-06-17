@@ -283,8 +283,7 @@ impl<'a> FcpEngine<'a> {
                 Self::concate(&self.state.clone_last_query().await, keyval);
 
             let mut shared_preedit = self.state.last_query_mtx().await;
-            shared_preedit.clear();
-            shared_preedit.push_str(&new_preedit);
+            shared_preedit.replace_range(.., &new_preedit);
             drop(shared_preedit); // Release the lock as soon as we can.
 
             // Update UI.
