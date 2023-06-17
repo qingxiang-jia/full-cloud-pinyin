@@ -112,7 +112,7 @@ impl State {
         shared.replace_range(.., query);
     }
 
-    pub async fn set_session_candidates(&self, new: &Vec<Candidate>) {
+    pub async fn set_session_candidates_atomic(&self, new: &Vec<Candidate>) {
         let mut shared = self.session_candidates.lock().await;
         shared.clear();
         for cand in new {
@@ -246,7 +246,7 @@ impl<'a> FcpEngine<'a> {
                 IBusLookupTable::new(&Vec::new())
             } else {
                 let candidates = self.query_candidates(&new_preedit).await;
-                self.state.set_session_candidates(&candidates).await;
+                self.state.set_session_candidates_atomic(&candidates).await;
                 IBusLookupTable::new(&candidates)
             };
 
