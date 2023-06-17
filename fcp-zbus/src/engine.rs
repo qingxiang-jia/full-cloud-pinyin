@@ -5,7 +5,7 @@ use zvariant::Value;
 
 use crate::{
     generated::{IBusProxy, PanelProxy},
-    ibus_variants::IBusText,
+    ibus_variants::{IBusLookupTable, IBusText},
 };
 
 // Implementation of org.freedesktop.IBus.Engine interface
@@ -300,6 +300,14 @@ impl<'a> FcpEngine<'a> {
                 .expect("Failed to update preedit.");
 
             // Query for candidates.
+            let candidates = self.query_candidates(&new_preedit).await;
+
+            // Update UI
+            let lookup_table = IBusLookupTable::new(&candidates);
+            self.panel
+                .update_lookup_table(&Value::new(lookup_table.into_struct()), true)
+                .await
+                .expect("Failed to update lookup table.");
 
             return true;
         }

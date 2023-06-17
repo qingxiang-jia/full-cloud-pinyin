@@ -40,7 +40,7 @@ use std::collections::HashMap;
 
 use zvariant::{Structure, StructureBuilder, Value};
 
-use crate::engine::Candidates;
+use crate::engine::Candidate;
 
 pub struct IBusComponent {
     pub component_name: String,
@@ -137,9 +137,9 @@ pub struct IBusLookupTable {
 }
 
 impl IBusLookupTable {
-    pub fn new(cands: &Candidates) -> IBusLookupTable {
+    pub fn new(cands: &Vec<Candidate>) -> IBusLookupTable {
         let mut candidates: Vec<String> = Vec::new();
-        for cand in &(cands.candidates) {
+        for cand in cands {
             candidates.push(cand.word.clone());
         }
 
