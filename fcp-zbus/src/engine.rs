@@ -280,7 +280,7 @@ impl<'a> FcpEngine<'a> {
 
             // Compute new preedit.
             let new_preedit =
-                Self::concate_str_with_ascii_u32(&self.state.clone_last_query().await, keyval);
+                Self::concate(&self.state.clone_last_query().await, keyval);
 
             let mut shared_preedit = self.state.last_query_mtx().await;
             shared_preedit.clear();
@@ -310,7 +310,7 @@ impl<'a> FcpEngine<'a> {
         return false;
     }
 
-    fn concate_str_with_ascii_u32(s: &String, c: u32) -> String {
+    fn concate(s: &String, c: u32) -> String {
         let mut new = s.clone();
         new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
         return new;
