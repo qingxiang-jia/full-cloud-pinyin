@@ -80,7 +80,7 @@ pub struct Candidate {
 
 struct State {
     last_query: Mutex<String>,
-    query_depth: Mutex<QueryDepth>,
+    depth: Mutex<QueryDepth>,
     in_session: Mutex<bool>,
     session_candidates: Mutex<Vec<Candidate>>,
     table_size: u8,
@@ -94,7 +94,7 @@ impl State {
     pub fn new() -> Self {
         State {
             last_query: Mutex::new("".to_owned()),
-            query_depth: Mutex::new(QueryDepth::D1),
+            depth: Mutex::new(QueryDepth::D1),
             in_session: Mutex::new(false),
             session_candidates: Mutex::new(Vec::new()),
             table_size: 5,
@@ -411,7 +411,7 @@ impl<'a> FcpEngine<'a> {
 
     async fn decide_n_update_depth(&self, preedit: &str) -> QueryDepth {
         let mut last_query = self.state.last_query.lock().await;
-        let mut depth = self.state.query_depth.lock().await;
+        let mut depth = self.state.depth.lock().await;
         if last_query.eq(preedit) {
             match *depth {
                 QueryDepth::D1 => *depth = QueryDepth::D2,
