@@ -4678,23 +4678,9 @@ impl<'c> IBusProxyBlocking<'c> {
         ::std::result::Result::Ok(reply)
     }
 
-    #[doc = " CurrentInputContext method"]
-    pub fn current_input_context(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
-        let reply = self.0.call("CurrentInputContext", &())?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
     #[doc = " Exit method"]
     pub fn exit(&self, restart: bool) -> zbus::Result<()> {
         let reply = self.0.call("Exit", &(restart,))?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetAddress method"]
-    pub fn get_address(&self) -> zbus::Result<String> {
-        let reply = self.0.call("GetAddress", &())?;
 
         ::std::result::Result::Ok(reply)
     }
@@ -4705,48 +4691,6 @@ impl<'c> IBusProxyBlocking<'c> {
         names: &[&str],
     ) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
         let reply = self.0.call("GetEnginesByNames", &(names,))?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetGlobalEngine method"]
-    pub fn get_global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue> {
-        let reply = self.0.call("GetGlobalEngine", &())?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetUseGlobalEngine method"]
-    pub fn get_use_global_engine(&self) -> zbus::Result<bool> {
-        let reply = self.0.call("GetUseGlobalEngine", &())?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetUseSysLayout method"]
-    pub fn get_use_sys_layout(&self) -> zbus::Result<bool> {
-        let reply = self.0.call("GetUseSysLayout", &())?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " IsGlobalEngineEnabled method"]
-    pub fn is_global_engine_enabled(&self) -> zbus::Result<bool> {
-        let reply = self.0.call("IsGlobalEngineEnabled", &())?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " ListActiveEngines method"]
-    pub fn list_active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
-        let reply = self.0.call("ListActiveEngines", &())?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " ListEngines method"]
-    pub fn list_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
-        let reply = self.0.call("ListEngines", &())?;
 
         ::std::result::Result::Ok(reply)
     }
@@ -4855,36 +4799,6 @@ impl<'c> IBusProxyBlocking<'c> {
     ) -> ::zbus::blocking::PropertyIterator<'c, <zbus::Result<String> as ::zbus::ResultAdapter>::Ok>
     {
         self.0.receive_property_changed("Address")
-    }
-
-    #[doc = " CurrentInputContext property"]
-    #[allow(clippy::needless_question_mark)]
-    pub fn current_input_context_prop(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
-        ::std::result::Result::Ok(self.0.get_property("CurrentInputContext")?)
-    }
-
-    #[doc = " Get the cached value of the `CurrentInputContext` property, or `None` if the property is not cached."]
-    pub fn cached_current_input_context(
-        &self,
-    ) -> ::std::result::Result<
-        ::std::option::Option<
-            <zbus::Result<zbus::zvariant::OwnedObjectPath> as ::zbus::ResultAdapter>::Ok,
-        >,
-        <zbus::Result<zbus::zvariant::OwnedObjectPath> as ::zbus::ResultAdapter>::Err,
-    > {
-        self.0
-            .cached_property("CurrentInputContext")
-            .map_err(::std::convert::Into::into)
-    }
-
-    #[doc = "Create a stream for the `CurrentInputContext` property changes. This is a convenient wrapper around [`zbus::blocking::Proxy::receive_property_changed`]."]
-    pub fn receive_current_input_context_changed(
-        &self,
-    ) -> ::zbus::blocking::PropertyIterator<
-        'c,
-        <zbus::Result<zbus::zvariant::OwnedObjectPath> as ::zbus::ResultAdapter>::Ok,
-    > {
-        self.0.receive_property_changed("CurrentInputContext")
     }
 
     #[doc = " EmbedPreeditText property"]
@@ -5205,23 +5119,9 @@ impl<'c> IBusProxy<'c> {
         ::std::result::Result::Ok(reply)
     }
 
-    #[doc = " CurrentInputContext method"]
-    pub async fn current_input_context(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
-        let reply = self.0.call("CurrentInputContext", &()).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
     #[doc = " Exit method"]
     pub async fn exit(&self, restart: bool) -> zbus::Result<()> {
         let reply = self.0.call("Exit", &(restart,)).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetAddress method"]
-    pub async fn get_address(&self) -> zbus::Result<String> {
-        let reply = self.0.call("GetAddress", &()).await?;
 
         ::std::result::Result::Ok(reply)
     }
@@ -5232,48 +5132,6 @@ impl<'c> IBusProxy<'c> {
         names: &[&str],
     ) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
         let reply = self.0.call("GetEnginesByNames", &(names,)).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetGlobalEngine method"]
-    pub async fn get_global_engine(&self) -> zbus::Result<zbus::zvariant::OwnedValue> {
-        let reply = self.0.call("GetGlobalEngine", &()).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetUseGlobalEngine method"]
-    pub async fn get_use_global_engine(&self) -> zbus::Result<bool> {
-        let reply = self.0.call("GetUseGlobalEngine", &()).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " GetUseSysLayout method"]
-    pub async fn get_use_sys_layout(&self) -> zbus::Result<bool> {
-        let reply = self.0.call("GetUseSysLayout", &()).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " IsGlobalEngineEnabled method"]
-    pub async fn is_global_engine_enabled(&self) -> zbus::Result<bool> {
-        let reply = self.0.call("IsGlobalEngineEnabled", &()).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " ListActiveEngines method"]
-    pub async fn list_active_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
-        let reply = self.0.call("ListActiveEngines", &()).await?;
-
-        ::std::result::Result::Ok(reply)
-    }
-
-    #[doc = " ListEngines method"]
-    pub async fn list_engines(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedValue>> {
-        let reply = self.0.call("ListEngines", &()).await?;
 
         ::std::result::Result::Ok(reply)
     }
@@ -5387,38 +5245,6 @@ impl<'c> IBusProxy<'c> {
         &self,
     ) -> ::zbus::PropertyStream<'c, <zbus::Result<String> as ::zbus::ResultAdapter>::Ok> {
         self.0.receive_property_changed("Address").await
-    }
-
-    #[doc = " CurrentInputContext property"]
-    #[allow(clippy::needless_question_mark)]
-    pub async fn current_input_context_prop(
-        &self,
-    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath> {
-        ::std::result::Result::Ok(self.0.get_property("CurrentInputContext").await?)
-    }
-
-    #[doc = " Get the cached value of the `CurrentInputContext` property, or `None` if the property is not cached."]
-    pub fn cached_current_input_context(
-        &self,
-    ) -> ::std::result::Result<
-        ::std::option::Option<
-            <zbus::Result<zbus::zvariant::OwnedObjectPath> as ::zbus::ResultAdapter>::Ok,
-        >,
-        <zbus::Result<zbus::zvariant::OwnedObjectPath> as ::zbus::ResultAdapter>::Err,
-    > {
-        self.0
-            .cached_property("CurrentInputContext")
-            .map_err(::std::convert::Into::into)
-    }
-
-    #[doc = "Create a stream for the `CurrentInputContext` property changes. This is a convenient wrapper around [`zbus::Proxy::receive_property_changed`]."]
-    pub async fn receive_current_input_context_changed(
-        &self,
-    ) -> ::zbus::PropertyStream<
-        'c,
-        <zbus::Result<zbus::zvariant::OwnedObjectPath> as ::zbus::ResultAdapter>::Ok,
-    > {
-        self.0.receive_property_changed("CurrentInputContext").await
     }
 
     #[doc = " EmbedPreeditText property"]
