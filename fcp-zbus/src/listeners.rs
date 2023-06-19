@@ -50,10 +50,6 @@ impl InputListener<'static> {
 }
 
 pub async fn new_input_listener(conn: &Connection) -> InputListener<'static> {
-    let ibus = IBusProxy::new(&conn)
-        .await
-        .expect("Failed to create IBusProxy.");
-
     let panel = PanelProxy::new(&conn)
         .await
         .expect("Failed to create PanelProxy.");
