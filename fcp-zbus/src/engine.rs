@@ -81,10 +81,11 @@ pub struct Candidate {
 
 struct State {
     preedit: Mutex<String>,
-    depth: Mutex<QueryDepth>,
-    in_session: Mutex<bool>,
+    depth: Mutex<usize>,
+    levels: Vec<usize>,
+    session: Mutex<bool>,
     candidates: Mutex<Vec<Candidate>>,
-    table_size: usize,
+    lt_size: usize,
     page: Mutex<usize>,
 }
 
@@ -94,10 +95,11 @@ impl State {
     pub fn new() -> Self {
         State {
             preedit: Mutex::new("".to_owned()),
-            depth: Mutex::new(QueryDepth::D1),
-            in_session: Mutex::new(false),
+            depth: Mutex::new(0),
+            levels: vec![11, 21, 41, 81, 161, 321, 641, 1281],
+            session: Mutex::new(false),
             candidates: Mutex::new(Vec::new()),
-            table_size: 5,
+            lt_size: 5,
             page: Mutex::new(0),
         }
     }
@@ -143,8 +145,7 @@ impl<'a> FcpEngine<'a> {
             .expect("Failed to update preedit.");
     }
 
-    async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
-        let depth = self.decide_n_update_depth(preedit).await;
+    async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
         let json = self.get_candidates_from_net(preedit, depth as i32).await;
         let candidates = self.json_to_candidates(json);
         candidates
@@ -222,27 +223,6 @@ impl<'a> FcpEngine<'a> {
         }
 
         aggregate
-    }
-
-    async fn decide_n_update_depth(&self, preedit: &str) -> QueryDepth {
-        let mut last_query = self.state.preedit.lock().await;
-        let mut depth = self.state.depth.lock().await;
-        if last_query.eq(preedit) {
-            match *depth {
-                QueryDepth::D1 => *depth = QueryDepth::D2,
-                QueryDepth::D2 => *depth = QueryDepth::D3,
-                QueryDepth::D3 => *depth = QueryDepth::D4,
-                QueryDepth::D4 => *depth = QueryDepth::D5,
-                QueryDepth::D5 => *depth = QueryDepth::D6,
-                QueryDepth::D6 => *depth = QueryDepth::D7,
-                QueryDepth::D7 => *depth = QueryDepth::D8,
-                QueryDepth::D8 => *depth = QueryDepth::D8,
-            }
-        } else {
-            *last_query = preedit.to_owned();
-            *depth = QueryDepth::D1;
-        }
-        depth.clone()
     }
 
     fn concate(s: &String, c: u32) -> String {
