@@ -161,7 +161,6 @@ impl State {
 }
 
 pub struct FcpEngine<'a> {
-    ibus: IBusProxy<'a>,
     panel: PanelProxy<'a>,
     http: reqwest::Client,
     re: Regex,
@@ -171,7 +170,6 @@ pub struct FcpEngine<'a> {
 impl<'a> FcpEngine<'a> {
     pub fn new(ibus: IBusProxy<'a>, panel: PanelProxy<'a>) -> FcpEngine<'a> {
         FcpEngine {
-            ibus,
             panel,
             http: reqwest::Client::new(),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
