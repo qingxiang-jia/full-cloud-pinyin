@@ -68,13 +68,11 @@ pub struct Candidate {
 }
 
 struct State {
-    preedit: Mutex<String>,
-    depth: Mutex<usize>,
-    levels: Vec<usize>,
-    session: Mutex<bool>,
-    candidates: Mutex<Vec<Candidate>>,
-    lt_size: usize,
-    page: Mutex<usize>,
+    preedit: String,
+    depth: usize,
+    session: bool,
+    candidates: Vec<Candidate>,
+    page: usize,
 }
 
 unsafe impl Sync for State {} // State is safe to share between threads
@@ -82,13 +80,11 @@ unsafe impl Sync for State {} // State is safe to share between threads
 impl State {
     pub fn new() -> Self {
         State {
-            preedit: Mutex::new("".to_owned()),
-            depth: Mutex::new(0),
-            levels: vec![11, 21, 41, 81, 161, 321, 641, 1281],
-            session: Mutex::new(false),
-            candidates: Mutex::new(Vec::new()),
-            lt_size: 5,
-            page: Mutex::new(0),
+            preedit: "".to_owned(),
+            depth: 0,
+            session: false,
+            candidates: Vec::new(),
+            page: 0,
         }
     }
 }
@@ -97,7 +93,9 @@ pub struct FcpEngine<'a> {
     panel: PanelProxy<'a>,
     http: reqwest::Client,
     re: Regex,
-    state: State,
+    lt_size: usize,
+    levels: Vec<usize>,
+    state: Mutex<State>,
 }
 
 impl<'a> FcpEngine<'a> {
@@ -106,7 +104,9 @@ impl<'a> FcpEngine<'a> {
             panel,
             http: reqwest::Client::new(),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
-            state: State::new(),
+            levels: vec![11, 21, 41, 81, 161, 321, 641, 1281],
+            lt_size: 5,
+            state: Mutex::new(State::new()),
         }
     }
 
