@@ -99,7 +99,7 @@ pub struct FcpEngine<'a> {
 }
 
 impl<'a> FcpEngine<'a> {
-    pub fn new(ibus: IBusProxy<'a>, panel: PanelProxy<'a>) -> FcpEngine<'a> {
+    pub fn new(panel: PanelProxy<'a>) -> FcpEngine<'a> {
         FcpEngine {
             panel,
             http: reqwest::Client::new(),
