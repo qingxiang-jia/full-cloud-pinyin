@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 use zvariant::Value;
 
 use crate::{
-    generated::{IBusProxy, PanelProxy},
+    generated::PanelProxy,
     ibus_variants::{IBusLookupTable, IBusText},
 };
 

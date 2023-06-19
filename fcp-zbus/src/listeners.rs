@@ -3,7 +3,7 @@ use zvariant::ObjectPath;
 
 use crate::{
     engine::FcpEngine,
-    generated::{IBusProxy, PanelProxy},
+    generated::PanelProxy,
 };
 
 // We have three interfaces to implement in order to get a working engine, but only the
