@@ -55,6 +55,6 @@ pub async fn new_input_listener(conn: &Connection) -> InputListener<'static> {
         .expect("Failed to create PanelProxy.");
 
     InputListener {
-        engine: FcpEngine::new(panel),
+        engine: FcpEngine::new(conn, panel),
     }
 }

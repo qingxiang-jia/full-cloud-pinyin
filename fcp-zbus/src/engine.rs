@@ -1,11 +1,12 @@
 use regex::Regex;
 use reqwest::{self, header::USER_AGENT};
 use tokio::sync::Mutex;
+use zbus::Connection;
 use zvariant::Value;
 
 use crate::{
     generated::PanelProxy,
-    ibus_variants::{IBusLookupTable, IBusText},
+    ibus_variants::{IBusLookupTable, IBusText}, ibus_proxy,
 };
 
 // Implementation of org.freedesktop.IBus.Engine interface
@@ -90,6 +91,7 @@ impl State {
 }
 
 pub struct FcpEngine<'a> {
+    conn: Connection,
     panel: PanelProxy<'a>,
     http: reqwest::Client,
     re: Regex,
@@ -99,8 +101,9 @@ pub struct FcpEngine<'a> {
 }
 
 impl<'a> FcpEngine<'a> {
-    pub fn new(panel: PanelProxy<'a>) -> FcpEngine<'a> {
+    pub fn new(conn: &Connection, panel: PanelProxy<'a>) -> FcpEngine<'a> {
         FcpEngine {
+            conn: conn.clone(),
             panel,
             http: reqwest::Client::new(),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
@@ -111,7 +114,7 @@ impl<'a> FcpEngine<'a> {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-
+        ibus_proxy::commit_text(&self.conn, &Value::from("asadasdasdsadasdsad")).await;
         return false;
     }
 

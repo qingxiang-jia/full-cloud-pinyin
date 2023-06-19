@@ -12,6 +12,7 @@ mod generated;
 mod ibus_helper;
 mod ibus_variants;
 mod listeners;
+mod ibus_proxy;
 
 #[tokio::main]
 async fn main() {
