@@ -10,18 +10,6 @@ use crate::{
 
 // Implementation of org.freedesktop.IBus.Engine interface
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-enum QueryDepth {
-    D1 = 11,
-    D2 = 21,
-    D3 = 41,
-    D4 = 81,
-    D5 = 161,
-    D6 = 321,
-    D7 = 641,
-    D8 = 1281,
-}
-
 #[allow(dead_code)]
 enum KeyVal {
     A = 97,
