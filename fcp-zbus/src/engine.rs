@@ -86,7 +86,6 @@ struct State {
     candidates: Mutex<Vec<Candidate>>,
     table_size: usize,
     page: Mutex<usize>,
-    cursor: Mutex<usize>,
 }
 
 unsafe impl Sync for State {} // State is safe to share between threads
@@ -100,63 +99,7 @@ impl State {
             candidates: Mutex::new(Vec::new()),
             table_size: 5,
             page: Mutex::new(0),
-            cursor: Mutex::new(0),
         }
-    }
-
-    pub async fn preedit(&self) -> String {
-        self.preedit.lock().await.clone()
-    }
-
-    pub async fn set_preedt_atomic(&self, query: &str) {
-        let mut shared = self.preedit.lock().await;
-        shared.replace_range(.., query);
-    }
-
-    pub async fn candidate_cnt(&self) -> usize {
-        self.candidates.lock().await.len()
-    }
-
-    pub async fn set_candidates_atomic(&self, new: &Vec<Candidate>) {
-        let mut shared = self.candidates.lock().await;
-        shared.clear();
-        for cand in new {
-            shared.push(cand.clone());
-        }
-    }
-
-    pub async fn page(&self) -> usize {
-        self.page.lock().await.clone()
-    }
-
-    pub async fn set_page_atomic(&self, new: usize) {
-        let mut shared = self.page.lock().await;
-        *shared = new;
-    }
-
-    pub async fn cursor(&self) -> usize {
-        self.cursor.lock().await.clone()
-    }
-
-    pub async fn set_cursor_atomic(&self, new: usize) {
-        let mut shared = self.cursor.lock().await;
-        *shared = new;
-    }
-
-    pub async fn reset(&self) {
-        let mut preedit = self.preedit.lock().await;
-        let mut depth = self.depth.lock().await;
-        let mut in_session = self.in_session.lock().await;
-        let mut candidates = self.candidates.lock().await;
-        let mut page = self.page.lock().await;
-        let mut cursor = self.cursor.lock().await;
-
-        *preedit = "".to_owned();
-        *depth = QueryDepth::D1;
-        *in_session = false;
-        candidates.clear();
-        *page = 0;
-        *cursor = 0;
     }
 }
 
