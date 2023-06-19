@@ -200,44 +200,6 @@ impl<'a> FcpEngine<'a> {
             .expect("Failed to update preedit.");
     }
 
-    async fn page_into(&self) -> (bool, bool) {
-        if self.state.candidate_cnt().await <= self.state.page().await * self.state.table_size {
-            if self.state.candidate_cnt().await == self.state.page().await * self.state.table_size {
-                return (false, false);
-            }
-            return (false, true);
-            // (should_load_more, is_last_page_full)
-        }
-
-        self.panel
-            .page_down_lookup_table()
-            .await
-            .expect("Failed to page down the lookup table.");
-        return (true, true);
-    }
-
-    async fn page_back(&self) {
-        self.panel
-            .page_up_lookup_table()
-            .await
-            .expect("Failed to page up the lookup table.");
-    }
-
-    async fn next_cand(&self) {
-        self.panel
-            .cursor_down_lookup_table()
-            .await
-            .expect("Failed to cursor down the lookup table.");
-        // TODO: if it triggers page change, we need to update state.page and potentially query for new candidates.
-    }
-
-    async fn prev_cand(&self) {
-        self.panel
-            .cursor_up_lookup_table()
-            .await
-            .expect("Failed to cursor up the lookup table.");
-    }
-
     async fn query_candidates(&self, preedit: &str) -> Vec<Candidate> {
         let depth = self.decide_n_update_depth(preedit).await;
         let json = self.get_candidates_from_net(preedit, depth as i32).await;
