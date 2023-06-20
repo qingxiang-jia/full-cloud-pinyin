@@ -49,6 +49,7 @@ impl InputListener {
     }
 }
 
+// I really want this to be an associated function of InputListener but the dbus_interface marcro doesn't allow.
 pub fn new(conn: &Connection) -> InputListener {
     InputListener {
         engine: FcpEngine::new(conn),
