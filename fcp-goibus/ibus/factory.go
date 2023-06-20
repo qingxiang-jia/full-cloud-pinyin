@@ -1,6 +1,8 @@
 package ibus
 
 import (
+	"log"
+
 	"github.com/godbus/dbus/v5"
 )
 
@@ -12,6 +14,8 @@ type Factory struct {
 }
 
 func NewFactory(conn *dbus.Conn, EngineCreator func(conn *dbus.Conn, engineName string) dbus.ObjectPath) *Factory {
+	log.Printf("NewFactory: path=%s interface=%s\n", "/org/freedesktop/IBus/Factory", IBUS_IFACE_ENGINE_FACTORY)
+
 	f := &Factory{conn, EngineCreator}
 	conn.Export(f, "/org/freedesktop/IBus/Factory", IBUS_IFACE_ENGINE_FACTORY)
 	return f
@@ -33,12 +37,16 @@ func NewFactory(conn *dbus.Conn, EngineCreator func(conn *dbus.Conn, engineName 
 // # If failed, it will return "" or None.
 // @method(in_signature="s", out_signature="o")
 func (factory *Factory) CreateEngine(engineName string) (dbus.ObjectPath, *dbus.Error) {
+	log.Printf("Factory::CreateEngine: engineName=%s\n", engineName)
+
 	return factory.EngineCreator(factory.conn, engineName), nil
 }
 
 // # Destroy the engine
 // @method()
 func (factory *Factory) Destroy() *dbus.Error {
+	log.Printf("Factory::Destroy\n")
+
 	factory.conn.Export(nil, "/org/freedesktop/IBus/Factory", IBUS_IFACE_ENGINE_FACTORY)
 	return nil
 }

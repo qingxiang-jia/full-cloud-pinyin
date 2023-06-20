@@ -1,6 +1,8 @@
 package ibus
 
 import (
+	"log"
+
 	"github.com/godbus/dbus/v5"
 )
 
@@ -12,16 +14,24 @@ type Engine struct {
 }
 
 func BaseEngine(conn *dbus.Conn, objectPath dbus.ObjectPath) Engine {
+	log.Printf("Create BaseEngine: objectPath=%s\n", objectPath)
 	return Engine{conn, objectPath}
 }
 
 func PublishEngine(conn *dbus.Conn, objectPath dbus.ObjectPath, userEngine interface{}) {
 	conn.Export(userEngine, objectPath, IBUS_IFACE_ENGINE)
+	log.Printf("Publish user engine: path=%s, interface=%s\n", objectPath, IBUS_IFACE_ENGINE)
+
 	conn.Export(userEngine, objectPath, IBUS_IFACE_SERVICE)
+	log.Printf("Publish user engine: path=%s, interface=%s\n", objectPath, IBUS_IFACE_SERVICE)
+
 	conn.Export(userEngine, objectPath, BUS_PROPERTIES_NAME)
+	log.Printf("Publish user engine: path=%s, interface=%s\n", objectPath, BUS_PROPERTIES_NAME)
 }
 
 func (e *Engine) emitSignal(name string, values ...interface{}) {
+	log.Printf("Engine::emitSignal: name=%s path=%s interface=%s\n", name, e.objectPath, IBUS_IFACE_ENGINE)
+
 	methodName := IBUS_IFACE_ENGINE + "." + name
 	e.conn.Emit(e.objectPath, methodName, values...)
 }
@@ -118,6 +128,8 @@ func (e *Engine) PropertyHide(prop_name string) *dbus.Error {
 
 // @method()
 func (e *Engine) Destroy() *dbus.Error {
+	log.Printf("Engine::Destroy\n")
+
 	e.conn.Export(nil, e.objectPath, IBUS_IFACE_ENGINE)
 	e.conn.Export(nil, e.objectPath, IBUS_IFACE_SERVICE)
 	e.conn.Export(nil, e.objectPath, BUS_PROPERTIES_NAME)
