@@ -49,7 +49,7 @@ impl InputListener {
     }
 }
 
-pub async fn new_input_listener(conn: &Connection) -> InputListener {
+pub fn new_input_listener(conn: &Connection) -> InputListener {
     InputListener {
         engine: FcpEngine::new(conn),
     }
