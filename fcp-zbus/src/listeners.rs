@@ -1,9 +1,8 @@
-use zbus::{dbus_interface, Connection};
+use zbus::dbus_interface;
 use zvariant::ObjectPath;
 
 use crate::{
     engine::FcpEngine,
-    generated::PanelProxy,
 };
 
 // We have three interfaces to implement in order to get a working engine, but only the
