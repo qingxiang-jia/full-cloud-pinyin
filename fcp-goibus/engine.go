@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/godbus/dbus/v5"
-	"github.com/haunt98/goibus/ibus"
+	"github.com/qingxiang-jia/full-cloud-pinyin/ibus"
 )
 
 type FcpEngine struct {

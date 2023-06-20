@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/qingxiang-jia/full-cloud-pinyin/ibus"
+
 	"github.com/godbus/dbus/v5"
-	"github.com/haunt98/goibus/ibus"
 )
 
 type FcpConcEngine struct {
