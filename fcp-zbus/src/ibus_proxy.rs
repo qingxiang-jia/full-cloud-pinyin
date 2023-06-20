@@ -1,21 +1,56 @@
 use zbus::Connection;
 use zvariant::Value;
 
+use crate::ibus_variants::{IBusLookupTable, IBusText};
+
 static ENGINE_PATH: &str = "/org/freedesktop/IBus/Engine/FcPinyin";
 static ENGINE_IFACE: &str = "org.freedesktop.IBus.Engine";
 
-pub async fn commit_text(conn: &Connection, text: &Value<'_>) {
+pub struct IBusProxy {
+    conn: Connection,
+}
+
+impl IBusProxy {
+    pub fn new(conn_ref: &Connection) -> IBusProxy {
+        IBusProxy {
+            conn: conn_ref.clone(),
+        }
+    }
+
+    pub async fn commit_text(&self, text: &str) {
+        commit_text(&self.conn, &Value::from(IBusText::new(text).into_struct())).await;
+    }
+
+    pub async fn update_preedit_text(&self, text: &str, cursor_pos: u32, visible: bool) {
+        update_preedit_text(
+            &self.conn,
+            &Value::from(IBusText::new(text).into_struct()),
+            cursor_pos,
+            visible,
+        )
+        .await;
+    }
+
+    pub async fn update_lookup_table(&self, lt: IBusLookupTable, visible: bool) {
+        update_lookup_table(&self.conn, &Value::from(lt.into_struct()), visible).await;
+    }
+
+    pub async fn show_lookup_table(&self) {
+        show_lookup_table(&self.conn).await;
+    }
+
+    pub async fn hide_lookup_table(&self) {
+        hide_lookup_table(&self.conn).await;
+    }
+}
+
+async fn commit_text(conn: &Connection, text: &Value<'_>) {
     conn.emit_signal(None::<&str>, ENGINE_PATH, ENGINE_IFACE, "CommitText", text)
         .await
         .expect("Failed to emit CommitText signal.");
 }
 
-pub async fn update_preedit_text(
-    conn: &Connection,
-    text: &Value<'_>,
-    cursor_pos: u32,
-    visible: bool,
-) {
+async fn update_preedit_text(conn: &Connection, text: &Value<'_>, cursor_pos: u32, visible: bool) {
     conn.emit_signal(
         None::<&str>,
         ENGINE_PATH,
@@ -27,7 +62,7 @@ pub async fn update_preedit_text(
     .expect("Failed to emit UpdatePreeditText signal.");
 }
 
-pub async fn update_lookup_table(conn: &Connection, lt: &Value<'_>, visible: bool) {
+async fn update_lookup_table(conn: &Connection, lt: &Value<'_>, visible: bool) {
     conn.emit_signal(
         None::<&str>,
         ENGINE_PATH,
@@ -39,7 +74,7 @@ pub async fn update_lookup_table(conn: &Connection, lt: &Value<'_>, visible: boo
     .expect("Failed to emit UpdateLookupTable signal.");
 }
 
-pub async fn show_lookup_table(conn: &Connection) {
+async fn show_lookup_table(conn: &Connection) {
     conn.emit_signal(
         None::<&str>,
         ENGINE_PATH,
@@ -51,7 +86,7 @@ pub async fn show_lookup_table(conn: &Connection) {
     .expect("Failed to emit ShowLookupTable signal.");
 }
 
-pub async fn hide_lookup_table(conn: &Connection) {
+async fn hide_lookup_table(conn: &Connection) {
     conn.emit_signal(
         None::<&str>,
         ENGINE_PATH,

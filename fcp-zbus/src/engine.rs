@@ -6,7 +6,8 @@ use zvariant::Value;
 
 use crate::{
     generated::PanelProxy,
-    ibus_variants::{IBusLookupTable, IBusText}, ibus_proxy,
+    ibus_proxy::{self, IBusProxy},
+    ibus_variants::{IBusLookupTable, IBusText},
 };
 
 // Implementation of org.freedesktop.IBus.Engine interface
@@ -91,7 +92,7 @@ impl State {
 }
 
 pub struct FcpEngine {
-    conn: Connection,
+    ibus: IBusProxy,
     http: reqwest::Client,
     re: Regex,
     lt_size: usize,
@@ -102,7 +103,7 @@ pub struct FcpEngine {
 impl FcpEngine {
     pub fn new(conn: &Connection) -> FcpEngine {
         FcpEngine {
-            conn: conn.clone(),
+            ibus: IBusProxy::new(&conn),
             http: reqwest::Client::new(),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             levels: vec![11, 21, 41, 81, 161, 321, 641, 1281],
@@ -112,7 +113,7 @@ impl FcpEngine {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        ibus_proxy::commit_text(&self.conn, &Value::from(IBusText::new("asadasdasdsadasdsad").into_struct())).await;
+        self.ibus.commit_text("asadasdasdsadasdsad").await;
         return true;
     }
 
