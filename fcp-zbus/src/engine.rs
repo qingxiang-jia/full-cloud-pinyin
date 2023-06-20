@@ -114,7 +114,7 @@ impl<'a> FcpEngine<'a> {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        ibus_proxy::commit_text(&self.conn, &Value::from("asadasdasdsadasdsad")).await;
+        ibus_proxy::commit_text(&self.conn, &Value::from(IBusText::new("asadasdasdsadasdsad").into_struct())).await;
         return true;
     }
 
