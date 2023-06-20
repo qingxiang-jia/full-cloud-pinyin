@@ -90,9 +90,8 @@ impl State {
     }
 }
 
-pub struct FcpEngine<'a> {
+pub struct FcpEngine {
     conn: Connection,
-    panel: PanelProxy<'a>,
     http: reqwest::Client,
     re: Regex,
     lt_size: usize,
@@ -100,11 +99,10 @@ pub struct FcpEngine<'a> {
     state: Mutex<State>,
 }
 
-impl<'a> FcpEngine<'a> {
-    pub fn new(conn: &Connection, panel: PanelProxy<'a>) -> FcpEngine<'a> {
+impl FcpEngine {
+    pub fn new(conn: &Connection) -> FcpEngine {
         FcpEngine {
             conn: conn.clone(),
-            panel,
             http: reqwest::Client::new(),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             levels: vec![11, 21, 41, 81, 161, 321, 641, 1281],
@@ -116,24 +114,6 @@ impl<'a> FcpEngine<'a> {
     pub async fn on_key_press(&self, keyval: u32) -> bool {
         ibus_proxy::commit_text(&self.conn, &Value::from(IBusText::new("asadasdasdsadasdsad").into_struct())).await;
         return true;
-    }
-
-    async fn update_lookup_table(&self, new: IBusLookupTable, visible: bool) {
-        self.panel
-            .update_lookup_table(&Value::new(new.into_struct()), visible)
-            .await
-            .expect("Failed to update lookup table.");
-    }
-
-    async fn update_preedit(&self, new: &str) {
-        self.panel
-            .update_preedit_text(
-                &Value::from(IBusText::new(new).into_struct()),
-                0,
-                new.len() != 0,
-            )
-            .await
-            .expect("Failed to update preedit.");
     }
 
     async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {

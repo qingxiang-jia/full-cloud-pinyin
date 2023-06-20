@@ -32,12 +32,12 @@ impl ServiceListener {
     }
 }
 
-pub struct InputListener<'a> {
-    engine: FcpEngine<'a>,
+pub struct InputListener {
+    engine: FcpEngine,
 }
 
 #[dbus_interface(name = "org.freedesktop.IBus.Engine")]
-impl InputListener<'static> {
+impl InputListener {
     pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         if state != 0 {
             // If it's not "pressed" state, do nothing.
@@ -49,12 +49,8 @@ impl InputListener<'static> {
     }
 }
 
-pub async fn new_input_listener(conn: &Connection) -> InputListener<'static> {
-    let panel = PanelProxy::new(&conn)
-        .await
-        .expect("Failed to create PanelProxy.");
-
+pub async fn new_input_listener(conn: &Connection) -> InputListener {
     InputListener {
-        engine: FcpEngine::new(conn, panel),
+        engine: FcpEngine::new(conn),
     }
 }
