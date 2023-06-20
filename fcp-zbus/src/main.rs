@@ -68,7 +68,7 @@ async fn main() {
     conn.object_server()
         .at(
             "/org/freedesktop/IBus/Engine/FcPinyin",
-            listeners::new_input_listener(&conn),
+            listeners::new(&conn),
         )
         .await
         .expect("Faild to set up server object.");
