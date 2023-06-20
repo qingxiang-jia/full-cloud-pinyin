@@ -2,9 +2,9 @@ use zbus::Connection;
 
 pub async fn commit_text(conn: &Connection, text: &zbus::zvariant::Value<'_>) {
     conn.emit_signal(
-        Some("org.freedesktop.IBus.Panel"),
-        "/org/freedesktop/IBus/Panel",
-        "org.freedesktop.IBus.Panel",
+        None::<&str>,
+        "/org/freedesktop/IBus/Engine/FcPinyin",
+        "org.freedesktop.IBus.Engine",
         "CommitText",
         text,
     )

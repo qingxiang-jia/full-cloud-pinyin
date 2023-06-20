@@ -115,7 +115,7 @@ impl<'a> FcpEngine<'a> {
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
         ibus_proxy::commit_text(&self.conn, &Value::from("asadasdasdsadasdsad")).await;
-        return false;
+        return true;
     }
 
     async fn update_lookup_table(&self, new: IBusLookupTable, visible: bool) {
