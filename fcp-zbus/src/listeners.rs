@@ -33,7 +33,7 @@ impl ServiceListener {
 }
 
 pub struct InputListener {
-    engine: FcpEngine,
+    pub engine: FcpEngine,
 }
 
 #[dbus_interface(name = "org.freedesktop.IBus.Engine")]
@@ -46,12 +46,5 @@ impl InputListener {
         println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
 
         return self.engine.on_key_press(keyval).await;
-    }
-}
-
-// I really want this to be an associated function of InputListener but the dbus_interface marcro doesn't allow.
-pub fn new(conn: &Connection) -> InputListener {
-    InputListener {
-        engine: FcpEngine::new(conn),
     }
 }
