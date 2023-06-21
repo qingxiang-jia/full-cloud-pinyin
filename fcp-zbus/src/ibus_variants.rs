@@ -137,7 +137,7 @@ pub struct IBusLookupTable {
 }
 
 impl IBusLookupTable {
-    pub fn from_candidates(cands: &Vec<Candidate>) -> IBusLookupTable {
+    pub fn from_candidates(cands: &[Candidate]) -> IBusLookupTable {
         let mut candidates: Vec<String> = Vec::new();
         for cand in cands {
             candidates.push(cand.word.clone());
