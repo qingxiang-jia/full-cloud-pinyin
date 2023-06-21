@@ -113,10 +113,39 @@ impl FcpEngine {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        let cands = self.query_candidates("shibushio", 11).await;
-        let lt = IBusLookupTable::from_candidates(&cands);
-        self.ibus.update_lookup_table(lt, true).await;
-        return true;
+        if KeyVal::A as u32 <= keyval && keyval <= KeyVal::Z as u32 {
+            return self.handle_typing().await;
+        }
+        if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
+            return self.handle_select().await;
+        }
+        if KeyVal::Space as u32 == keyval
+            || KeyVal::Enter as u32 == keyval
+            || KeyVal::Minus as u32 == keyval
+            || KeyVal::Equal as u32 == keyval
+            || KeyVal::Up as u32 == keyval
+            || KeyVal::Down as u32 == keyval
+            || KeyVal::Left as u32 == keyval
+            || KeyVal::Right as u32 == keyval
+            || KeyVal::Backspace as u32 == keyval
+            || KeyVal::Escape as u32 == keyval
+        {
+            return self.handle_control().await;
+        }
+
+        return false;
+    }
+
+    async fn handle_typing(&self) -> bool {
+        unimplemented!();
+    }
+
+    async fn handle_control(&self) -> bool {
+        unimplemented!();
+    }
+
+    async fn handle_select(&self) -> bool {
+        unimplemented!();
     }
 
     async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
