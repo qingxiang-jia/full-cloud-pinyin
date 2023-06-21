@@ -168,12 +168,7 @@ impl IBusLookupTable {
             cands_v.push(Value::from(cand.into_struct()));
         }
 
-        let mut labels_v: Vec<Value> = Vec::new();
-        labels_v.push(Value::from(1));
-        labels_v.push(Value::from(2));
-        labels_v.push(Value::from(3));
-        labels_v.push(Value::from(4));
-        labels_v.push(Value::from(5));
+        let labels_v: Vec<Value> = Vec::new();
 
         let s = sb
             .add_field("IBusLookupTable")

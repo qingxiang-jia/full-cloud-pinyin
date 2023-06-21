@@ -113,7 +113,9 @@ impl FcpEngine {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        self.ibus.commit_text("asadasdasdsadasdsad").await;
+        let cands = self.query_candidates("shibushio", 11).await;
+        let lt = IBusLookupTable::from_candidates(&cands);
+        self.ibus.update_lookup_table(lt, true).await;
         return true;
     }
 
