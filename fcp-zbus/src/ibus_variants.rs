@@ -169,6 +169,7 @@ impl IBusLookupTable {
         }
 
         let labels_v: Vec<Value> = Vec::new();
+        // According to the goibus implementation, Labels are also IBusText.
 
         let s = sb
             .add_field("IBusLookupTable")
