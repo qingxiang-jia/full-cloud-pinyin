@@ -114,7 +114,7 @@ impl FcpEngine {
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
         if KeyVal::A as u32 <= keyval && keyval <= KeyVal::Z as u32 {
-            return self.handle_typing().await;
+            return self.handle_typing(keyval).await;
         }
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
             return self.handle_select().await;
@@ -136,8 +136,19 @@ impl FcpEngine {
         return false;
     }
 
-    async fn handle_typing(&self) -> bool {
-        unimplemented!();
+    async fn handle_typing(&self, keyval: u32) -> bool {
+        let mut state = self.state.lock().await;
+        state.session = true;
+        let preedit = FcpEngine::concate(&state.preedit, keyval);
+        state.preedit = preedit.clone();
+        let depth = state.depth;
+        drop(state);
+        
+        let cands = self.query_candidates(&preedit, depth).await;
+        let lt = IBusLookupTable::from_candidates(&cands);
+        self.ibus.update_lookup_table(lt, true).await;
+
+        true
     }
 
     async fn handle_control(&self) -> bool {
