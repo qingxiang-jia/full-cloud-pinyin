@@ -132,7 +132,7 @@ impl FcpEngine {
         {
             return self.handle_control().await;
         }
-
+ 
         return false;
     }
 
@@ -157,6 +157,22 @@ impl FcpEngine {
 
     async fn handle_select(&self) -> bool {
         unimplemented!();
+    }
+
+    // start: includsive, end: exclusive
+    async fn send_to_ibus(&self, start: usize, mut end: usize) -> bool {
+        let candidates = self.state.lock().await.candidates.clone();
+        if start > candidates.len() - 1 {
+            // TODO: in the future, this is where higher depth query happens.
+            return false;
+        }
+        if end > candidates.len() {
+            end = candidates.len();
+        }
+        let lt = IBusLookupTable::from_candidates(&candidates[start..end]);
+        self.ibus.update_lookup_table(lt, true).await;
+
+        return true;
     }
 
     async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
