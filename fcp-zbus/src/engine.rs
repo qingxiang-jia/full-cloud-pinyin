@@ -159,7 +159,7 @@ impl FcpEngine {
         unimplemented!();
     }
 
-    // start: includsive, end: exclusive
+    // start: inclusive, end: exclusive
     async fn send_to_ibus(&self, start: usize, mut end: usize) -> bool {
         let candidates = self.state.lock().await.candidates.clone();
         if start > candidates.len() - 1 {
