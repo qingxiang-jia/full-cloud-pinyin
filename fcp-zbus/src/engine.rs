@@ -162,8 +162,8 @@ impl FcpEngine {
         unimplemented!();
     }
 
-    // start: inclusive, end: exclusive
     // Candidates and page are updated as needed. Query for candidates made as needed.
+    // start: inclusive, end: exclusive
     async fn send_to_ibus(&self, start: usize, mut end: usize, intent: Intent) {
         let state = self.state.lock().await;
         let preedit = state.preedit.clone();
