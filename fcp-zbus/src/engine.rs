@@ -62,6 +62,12 @@ enum KeyVal {
     _9 = 57,
 }
 
+#[derive(PartialEq)]
+enum Intent {
+    PageDown,
+    Typing,
+}
+
 #[derive(Debug, Clone)]
 pub struct Candidate {
     pub word: String,
@@ -132,7 +138,7 @@ impl FcpEngine {
         {
             return self.handle_control().await;
         }
- 
+
         return false;
     }
 
@@ -143,7 +149,7 @@ impl FcpEngine {
         state.preedit = preedit.clone();
         let depth = state.depth;
         drop(state);
-        
+
         let cands = self.query_candidates(&preedit, depth).await;
         let lt = IBusLookupTable::from_candidates(&cands);
         self.ibus.update_lookup_table(lt, true).await;
@@ -160,19 +166,56 @@ impl FcpEngine {
     }
 
     // start: inclusive, end: exclusive
-    async fn send_to_ibus(&self, start: usize, mut end: usize) -> bool {
-        let candidates = self.state.lock().await.candidates.clone();
-        if start > candidates.len() - 1 {
-            // TODO: in the future, this is where higher depth query happens.
-            return false;
-        }
-        if end > candidates.len() {
-            end = candidates.len();
-        }
-        let lt = IBusLookupTable::from_candidates(&candidates[start..end]);
-        self.ibus.update_lookup_table(lt, true).await;
+    // Candidates and page are updated as needed. Query for candidates made as needed.
+    async fn send_to_ibus(&self, start: usize, mut end: usize, intent: Intent) {
+        let state = self.state.lock().await;
+        let preedit = state.preedit.clone();
+        let depth = state.depth;
+        drop(state);
 
-        return true;
+        if intent == Intent::Typing {
+            let max_cand = self.levels[depth];
+            let cands = self.query_candidates(&preedit, max_cand).await;
+
+            if end > cands.len() {
+                end = cands.len();
+            }
+
+            let mut state = self.state.lock().await;
+            state.candidates = cands.clone();
+            state.page = 0;
+            drop(state);
+
+            let lt = IBusLookupTable::from_candidates(&cands[0..end]);
+            self.ibus.update_lookup_table(lt, true).await;
+            return;
+        }
+
+        if intent == Intent::PageDown {
+            let state = self.state.lock().await;
+
+            if start >= state.candidates.len() || end > state.candidates.len() {
+                // Need to query for new candidates
+                let mut depth = state.depth + 1;
+                if depth >= self.levels.len() {
+                    depth = self.levels.len() - 1;
+                }
+                let max_cands = self.levels[depth];
+                drop(state);
+
+                let cands = self.query_candidates(&preedit, max_cands).await;
+                self.state.lock().await.candidates = cands;
+            }
+
+            let mut state = self.state.lock().await;
+            state.page += 1;
+
+            let cands_slice = &state.candidates[start..end];
+            let cands = cands_slice.to_vec();
+
+            let lt = IBusLookupTable::from_candidates(&cands);
+            self.ibus.update_lookup_table(lt, true).await;
+        }
     }
 
     async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
