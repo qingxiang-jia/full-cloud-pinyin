@@ -211,7 +211,7 @@ impl FcpEngine {
         }
 
         match key {
-            KeyVal::Space => todo!(),
+            KeyVal::Space => return self.handle_select(1).await,
             KeyVal::Enter => todo!(),
             KeyVal::Minus => todo!(),
             KeyVal::Equal => todo!(),
