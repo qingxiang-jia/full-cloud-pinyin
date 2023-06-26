@@ -113,6 +113,7 @@ impl KeyVal {
 #[derive(PartialEq)]
 enum Intent {
     PageDown,
+    PageUp,
     Typing,
 }
 
@@ -232,7 +233,21 @@ impl FcpEngine {
 
                 return true;
             }
-            KeyVal::Minus => todo!(),
+            KeyVal::Minus => {
+                let mut page = self.state.lock().await.page;
+
+                if page == 0 {
+                    return false;                    
+                }
+
+                page -= 1; // Updated in send_to_ibus
+                let start = page * self.lt_size;
+                let end = start + self.lt_size;
+
+                self.send_to_ibus(start, end, Intent::PageUp).await;
+
+                return true;
+            },
             KeyVal::Equal => todo!(),
             KeyVal::Up => todo!(),
             KeyVal::Down => todo!(),
@@ -312,6 +327,17 @@ impl FcpEngine {
 
             let mut state = self.state.lock().await;
             state.page += 1;
+
+            let cands_slice = &state.candidates[start..end];
+            let cands = cands_slice.to_vec();
+
+            let lt = IBusLookupTable::from_candidates(&cands);
+            self.ibus.update_lookup_table(lt, true).await;
+        }
+
+        if intent == Intent::PageUp {
+            let mut state = self.state.lock().await;
+            state.page -= 1;
 
             let cands_slice = &state.candidates[start..end];
             let cands = cands_slice.to_vec();
