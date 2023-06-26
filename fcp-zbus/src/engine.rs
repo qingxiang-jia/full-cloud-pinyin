@@ -206,6 +206,10 @@ impl FcpEngine {
     }
 
     async fn handle_control(&self, key: KeyVal) -> bool {
+        if !self.state.lock().await.session {
+            return false;
+        }
+        
         match key {
             KeyVal::Space => todo!(),
             KeyVal::Enter => todo!(),
