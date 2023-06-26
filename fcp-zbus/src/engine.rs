@@ -3,10 +3,7 @@ use reqwest::{self, header::USER_AGENT};
 use tokio::sync::Mutex;
 use zbus::Connection;
 
-use crate::{
-    ibus_proxy::IBusProxy,
-    ibus_variants::IBusLookupTable,
-};
+use crate::{ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable};
 
 // Implementation of org.freedesktop.IBus.Engine interface
 
@@ -212,7 +209,29 @@ impl FcpEngine {
 
         match key {
             KeyVal::Space => return self.handle_select(1).await,
-            KeyVal::Enter => todo!(),
+            KeyVal::Enter => {
+                let mut state = self.state.lock().await;
+                
+                // Reset state
+                state.candidates.clear();
+                state.depth = 0;
+                state.page = 0;
+                state.preedit = "".to_owned();
+                state.session = false;
+
+                let preedit = state.preedit.clone();
+
+                drop(state);
+
+                // Commit preddit as alphabets
+                self.ibus.commit_text(&preedit).await;
+
+                // Reset lookup table
+                let lt = IBusLookupTable::from_nothing();
+                self.ibus.update_lookup_table(lt, false).await;
+
+                return true;
+            }
             KeyVal::Minus => todo!(),
             KeyVal::Equal => todo!(),
             KeyVal::Up => todo!(),
