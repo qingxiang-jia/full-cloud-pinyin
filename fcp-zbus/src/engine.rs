@@ -212,7 +212,7 @@ impl FcpEngine {
             KeyVal::Space => return self.handle_select(1).await,
             KeyVal::Enter => {
                 let mut state = self.state.lock().await;
-                
+
                 // Reset state
                 state.candidates.clear();
                 state.depth = 0;
@@ -237,7 +237,7 @@ impl FcpEngine {
                 let mut page = self.state.lock().await.page;
 
                 if page == 0 {
-                    return false;                    
+                    return false;
                 }
 
                 page -= 1; // Updated in send_to_ibus
@@ -247,7 +247,7 @@ impl FcpEngine {
                 self.send_to_ibus(start, end, Intent::PageUp).await;
 
                 return true;
-            },
+            }
             KeyVal::Equal => {
                 let mut page = self.state.lock().await.page;
 
@@ -258,10 +258,10 @@ impl FcpEngine {
                 self.send_to_ibus(start, end, Intent::PageDown).await;
 
                 return true;
-            },
-            KeyVal::Up => return false, // For now, ingore
-            KeyVal::Down => return false, // For now, ignore
-            KeyVal::Left => return false, // For now, ignore
+            }
+            KeyVal::Up => return false,    // For now, ingore
+            KeyVal::Down => return false,  // For now, ignore
+            KeyVal::Left => return false,  // For now, ignore
             KeyVal::Right => return false, // For now, ignore
             KeyVal::Backspace => todo!(),
             KeyVal::Escape => todo!(),
