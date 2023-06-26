@@ -123,7 +123,7 @@ impl FcpEngine {
             return self.handle_typing(keyval).await;
         }
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
-            return self.handle_select().await;
+            return self.handle_select(keyval).await;
         }
         if KeyVal::Space as u32 == keyval
             || KeyVal::Enter as u32 == keyval
@@ -158,8 +158,25 @@ impl FcpEngine {
         unimplemented!();
     }
 
-    async fn handle_select(&self) -> bool {
-        unimplemented!();
+    async fn handle_select(&self, keyval: u32) -> bool {
+        let cand_label = (keyval - 48) as usize;
+        if 1 <= cand_label && cand_label <= self.lt_size {
+            let cand_idx = cand_label - 1;
+            let cand = self.state.lock().await.candidates[cand_idx].clone();
+            self.ibus.commit_text(&cand.word).await;
+
+            // Reset state
+            let mut state = self.state.lock().await;
+            state.candidates.clear();
+            state.depth = 0;
+            state.page = 0;
+            state.preedit = "".to_owned();
+            state.session = false;
+            return true;
+            // TODO: if matched length is less than the length of preedit, the remaining preedit should be used to make another query.
+        } else {
+            return false;
+        }
     }
 
     // Candidates and page are updated as needed. Query for candidates made as needed.

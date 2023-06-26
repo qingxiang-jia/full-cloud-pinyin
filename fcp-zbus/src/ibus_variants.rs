@@ -191,7 +191,7 @@ pub struct IBusText {
 }
 
 impl IBusText {
-    pub fn new(content: &str) -> IBusText {
+    pub fn from_str_ref(content: &str) -> IBusText {
         IBusText {
             text: content.clone().to_owned(),
         }

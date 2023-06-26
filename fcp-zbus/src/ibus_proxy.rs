@@ -18,13 +18,13 @@ impl IBusProxy {
     }
 
     pub async fn commit_text(&self, text: &str) {
-        commit_text(&self.conn, &Value::from(IBusText::new(text).into_struct())).await;
+        commit_text(&self.conn, &Value::from(IBusText::from_str_ref(text).into_struct())).await;
     }
 
     pub async fn update_preedit_text(&self, text: &str, cursor_pos: u32, visible: bool) {
         update_preedit_text(
             &self.conn,
-            &Value::from(IBusText::new(text).into_struct()),
+            &Value::from(IBusText::from_str_ref(text).into_struct()),
             cursor_pos,
             visible,
         )
