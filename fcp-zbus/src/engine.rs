@@ -147,12 +147,9 @@ impl FcpEngine {
         state.session = true;
         let preedit = FcpEngine::concate(&state.preedit, keyval);
         state.preedit = preedit.clone();
-        let depth = state.depth;
         drop(state);
 
-        let cands = self.query_candidates(&preedit, depth).await;
-        let lt = IBusLookupTable::from_candidates(&cands);
-        self.ibus.update_lookup_table(lt, true).await;
+        self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
 
         true
     }
