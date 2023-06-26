@@ -174,7 +174,7 @@ impl FcpEngine {
             return self.handle_typing(keyval).await;
         }
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
-            return self.handle_select(keyval).await;
+            return self.handle_select((keyval - 48) as usize).await;
         }
         if KeyVal::Space as u32 == keyval
             || KeyVal::Enter as u32 == keyval
@@ -209,7 +209,7 @@ impl FcpEngine {
         if !self.state.lock().await.session {
             return false;
         }
-        
+
         match key {
             KeyVal::Space => todo!(),
             KeyVal::Enter => todo!(),
@@ -225,8 +225,7 @@ impl FcpEngine {
         }
     }
 
-    async fn handle_select(&self, keyval: u32) -> bool {
-        let cand_label = (keyval - 48) as usize;
+    async fn handle_select(&self, cand_label: usize) -> bool {
         if 1 <= cand_label && cand_label <= self.lt_size {
             let cand_idx = cand_label - 1;
             let cand = self.state.lock().await.candidates[cand_idx].clone();
