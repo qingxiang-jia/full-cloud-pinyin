@@ -154,6 +154,18 @@ impl IBusLookupTable {
         }
     }
 
+    pub fn from_nothing() -> IBusLookupTable {
+        IBusLookupTable {
+            page_size: 5,
+            cursor_pos: 0,
+            cursor_visible: 0,
+            round: false,
+            orientation: 2,
+            candidates: Vec::new(),
+            labels: Vec::new(),
+        }
+    }
+
     pub fn into_struct<'a>(self) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
 

@@ -231,6 +231,10 @@ impl FcpEngine {
             let cand = self.state.lock().await.candidates[cand_idx].clone();
             self.ibus.commit_text(&cand.word).await;
 
+            // Reset lookup table
+            let lt = IBusLookupTable::from_nothing();
+            self.ibus.update_lookup_table(lt, false).await;
+
             // Reset state
             let mut state = self.state.lock().await;
             state.candidates.clear();
