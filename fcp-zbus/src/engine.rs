@@ -2,12 +2,10 @@ use regex::Regex;
 use reqwest::{self, header::USER_AGENT};
 use tokio::sync::Mutex;
 use zbus::Connection;
-use zvariant::Value;
 
 use crate::{
-    generated::PanelProxy,
-    ibus_proxy::{self, IBusProxy},
-    ibus_variants::{IBusLookupTable, IBusText},
+    ibus_proxy::IBusProxy,
+    ibus_variants::IBusLookupTable,
 };
 
 // Implementation of org.freedesktop.IBus.Engine interface
@@ -60,6 +58,59 @@ enum KeyVal {
     _7 = 55,
     _8 = 56,
     _9 = 57,
+}
+
+impl KeyVal {
+    fn from_u32(num: u32) -> KeyVal {
+        match num {
+            97 => KeyVal::A,
+            98 => KeyVal::B,
+            99 => KeyVal::C,
+            100 => KeyVal::D,
+            101 => KeyVal::E,
+            102 => KeyVal::F,
+            103 => KeyVal::G,
+            104 => KeyVal::H,
+            105 => KeyVal::I,
+            106 => KeyVal::J,
+            107 => KeyVal::K,
+            108 => KeyVal::L,
+            109 => KeyVal::M,
+            110 => KeyVal::N,
+            111 => KeyVal::O,
+            112 => KeyVal::P,
+            113 => KeyVal::Q,
+            114 => KeyVal::R,
+            115 => KeyVal::S,
+            116 => KeyVal::T,
+            117 => KeyVal::U,
+            118 => KeyVal::V,
+            119 => KeyVal::W,
+            120 => KeyVal::X,
+            121 => KeyVal::Y,
+            122 => KeyVal::Z,
+            32 => KeyVal::Space,
+            65293 => KeyVal::Enter,
+            45 => KeyVal::Minus,
+            65362 => KeyVal::Up,
+            65364 => KeyVal::Down,
+            65361 => KeyVal::Left,
+            65363 => KeyVal::Right,
+            65288 => KeyVal::Backspace,
+            65307 => KeyVal::Escape,
+            48 => KeyVal::_0,
+            49 => KeyVal::_1,
+            50 => KeyVal::_2,
+            51 => KeyVal::_3,
+            52 => KeyVal::_4,
+            53 => KeyVal::_5,
+            54 => KeyVal::_6,
+            55 => KeyVal::_7,
+            56 => KeyVal::_8,
+            57 => KeyVal::_9,
+            _ => panic!("Invalid u32 value cannot be converted to a KeyVal."),
+        }
+    }
 }
 
 #[derive(PartialEq)]
@@ -136,7 +187,7 @@ impl FcpEngine {
             || KeyVal::Backspace as u32 == keyval
             || KeyVal::Escape as u32 == keyval
         {
-            return self.handle_control().await;
+            return self.handle_control(KeyVal::from_u32(keyval)).await;
         }
 
         return false;
@@ -154,8 +205,20 @@ impl FcpEngine {
         true
     }
 
-    async fn handle_control(&self) -> bool {
-        unimplemented!();
+    async fn handle_control(&self, key: KeyVal) -> bool {
+        match key {
+            KeyVal::Space => todo!(),
+            KeyVal::Enter => todo!(),
+            KeyVal::Minus => todo!(),
+            KeyVal::Equal => todo!(),
+            KeyVal::Up => todo!(),
+            KeyVal::Down => todo!(),
+            KeyVal::Left => todo!(),
+            KeyVal::Right => todo!(),
+            KeyVal::Backspace => todo!(),
+            KeyVal::Escape => todo!(),
+            _ => panic!("Invalid control key."),
+        }
     }
 
     async fn handle_select(&self, keyval: u32) -> bool {
