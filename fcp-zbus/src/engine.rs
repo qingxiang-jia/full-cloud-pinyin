@@ -248,7 +248,17 @@ impl FcpEngine {
 
                 return true;
             },
-            KeyVal::Equal => todo!(),
+            KeyVal::Equal => {
+                let mut page = self.state.lock().await.page;
+
+                page += 1; // Updated in send_to_ibus
+                let start = page * self.lt_size;
+                let end = start + self.lt_size;
+
+                self.send_to_ibus(start, end, Intent::PageDown).await;
+
+                return true;
+            },
             KeyVal::Up => todo!(),
             KeyVal::Down => todo!(),
             KeyVal::Left => todo!(),
