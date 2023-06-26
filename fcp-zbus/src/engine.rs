@@ -259,10 +259,10 @@ impl FcpEngine {
 
                 return true;
             },
-            KeyVal::Up => todo!(),
-            KeyVal::Down => todo!(),
-            KeyVal::Left => todo!(),
-            KeyVal::Right => todo!(),
+            KeyVal::Up => return false, // For now, ingore
+            KeyVal::Down => return false, // For now, ignore
+            KeyVal::Left => return false, // For now, ignore
+            KeyVal::Right => return false, // For now, ignore
             KeyVal::Backspace => todo!(),
             KeyVal::Escape => todo!(),
             _ => panic!("Invalid control key."),
