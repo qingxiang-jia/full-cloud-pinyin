@@ -231,7 +231,7 @@ impl FcpEngine {
                 let lt = IBusLookupTable::from_nothing();
                 self.ibus.update_lookup_table(lt, false).await;
 
-                return true;
+                true
             }
             KeyVal::Minus => {
                 let mut page = self.state.lock().await.page;
@@ -246,7 +246,7 @@ impl FcpEngine {
 
                 self.send_to_ibus(start, end, Intent::PageUp).await;
 
-                return true;
+                true
             }
             KeyVal::Equal => {
                 let mut page = self.state.lock().await.page;
@@ -257,13 +257,21 @@ impl FcpEngine {
 
                 self.send_to_ibus(start, end, Intent::PageDown).await;
 
-                return true;
+                true
             }
             KeyVal::Up => return false,    // For now, ingore
             KeyVal::Down => return false,  // For now, ignore
             KeyVal::Left => return false,  // For now, ignore
             KeyVal::Right => return false, // For now, ignore
-            KeyVal::Backspace => todo!(),
+            KeyVal::Backspace => {
+                let mut state = self.state.lock().await;
+                state.preedit.pop();
+                drop(state);
+
+                self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
+
+                true
+            }
             KeyVal::Escape => todo!(),
             _ => panic!("Invalid control key."),
         }
