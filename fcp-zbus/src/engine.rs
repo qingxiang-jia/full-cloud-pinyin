@@ -264,9 +264,18 @@ impl FcpEngine {
             KeyVal::Left => return false,  // For now, ignore
             KeyVal::Right => return false, // For now, ignore
             KeyVal::Backspace => {
-                let mut state = self.state.lock().await;
-                state.preedit.pop();
-                drop(state);
+                let popped = self.state.lock().await.preedit.pop();
+                if popped.is_none() {
+                    let mut state = self.state.lock().await;
+
+                    // Reset state
+                    state.candidates.clear();
+                    state.depth = 0;
+                    state.page = 0;
+                    state.session = false;
+
+                    return false;
+                }
 
                 self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
 
