@@ -274,6 +274,10 @@ impl FcpEngine {
                     state.page = 0;
                     state.session = false;
 
+                    // Reset lookup table
+                    let lt = IBusLookupTable::from_nothing();
+                    self.ibus.update_lookup_table(lt, false).await;
+
                     return false;
                 }
 
@@ -291,8 +295,12 @@ impl FcpEngine {
                 state.preedit = "".to_owned();
                 state.session = false;
 
+                // Reset lookup table
+                let lt = IBusLookupTable::from_nothing();
+                self.ibus.update_lookup_table(lt, false).await;
+
                 true
-            },
+            }
             _ => panic!("Invalid control key."),
         }
     }
