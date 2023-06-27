@@ -281,7 +281,18 @@ impl FcpEngine {
 
                 true
             }
-            KeyVal::Escape => todo!(),
+            KeyVal::Escape => {
+                let mut state = self.state.lock().await;
+
+                // Reset state
+                state.candidates.clear();
+                state.depth = 0;
+                state.page = 0;
+                state.preedit = "".to_owned();
+                state.session = false;
+
+                true
+            },
             _ => panic!("Invalid control key."),
         }
     }
