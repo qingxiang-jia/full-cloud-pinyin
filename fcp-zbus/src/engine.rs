@@ -89,6 +89,7 @@ impl KeyVal {
             32 => KeyVal::Space,
             65293 => KeyVal::Enter,
             45 => KeyVal::Minus,
+            61 => KeyVal::Equal,
             65362 => KeyVal::Up,
             65364 => KeyVal::Down,
             65361 => KeyVal::Left,
