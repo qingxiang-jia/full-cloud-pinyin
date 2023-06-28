@@ -353,7 +353,6 @@ impl FcpEngine {
 
             let lt = IBusLookupTable::from_candidates(&cands[0..end]);
             self.ibus.update_lookup_table(lt, true).await;
-            return;
         }
 
         if intent == Intent::PageDown {
@@ -379,6 +378,7 @@ impl FcpEngine {
             let cands = cands_slice.to_vec();
 
             let lt = IBusLookupTable::from_candidates(&cands);
+            println!("PageDown: {:#?}", &cands);
             self.ibus.update_lookup_table(lt, true).await;
         }
 
