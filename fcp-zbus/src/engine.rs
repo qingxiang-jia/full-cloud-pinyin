@@ -369,8 +369,10 @@ impl FcpEngine {
 
                 let cands = self.query_candidates(&preedit, max_cands).await;
                 self.state.lock().await.candidates = cands;
+            } else {
+                drop(state);
             }
-
+            
             let mut state = self.state.lock().await;
             state.page += 1;
 
@@ -378,7 +380,6 @@ impl FcpEngine {
             let cands = cands_slice.to_vec();
 
             let lt = IBusLookupTable::from_candidates(&cands);
-            println!("PageDown: {:#?}", &cands);
             self.ibus.update_lookup_table(lt, true).await;
         }
 
