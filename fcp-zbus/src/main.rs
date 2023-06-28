@@ -1,5 +1,7 @@
 extern crate std;
 
+use std::env;
+
 use crate::{generated::IBusProxy, ibus_helper::get_ibus_address};
 
 use engine::FcpEngine;
@@ -17,6 +19,67 @@ mod listeners;
 
 #[tokio::main]
 async fn main() {
+    let mut run_by_ibus = false;
+
+    let args: Vec<String> = env::args().collect();
+    for arg in &args {
+        if arg == "ibus" {
+            run_by_ibus = true;
+            break;
+        }
+    }
+
+    if run_by_ibus {
+        start_from_ibus().await;
+    } else {
+        start_from_console().await;
+    }
+}
+
+async fn start_from_ibus() {
+    let address = get_ibus_address().expect("Failed to get IBus address.");
+
+    let conn = ConnectionBuilder::address(address.to_owned().as_str())
+        .expect("The address didn't work.")
+        .build()
+        .await
+        .expect("Failed to build connection to IBus.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Factory", FactoryListener {})
+        .await
+        .expect("Faild to set up server object.");
+
+    conn.object_server()
+        .at(
+            "/org/freedesktop/IBus/Engine/FcPinyin",
+            InputListener {
+                engine: FcpEngine::new(&conn),
+            },
+        )
+        .await
+        .expect("Faild to set up server object.");
+
+    conn.object_server()
+        .at("/org/freedesktop/IBus/Service", ServiceListener {})
+        .await
+        .expect("Faild to set up server object.");
+
+    match conn.request_name("org.freedesktop.IBus.FcPinyin").await {
+        Ok(_) => println!("Request name is successful."),
+        Err(e) => {
+            println!("Request name failed because {0}", e);
+        }
+    }
+
+    loop {
+        // do something else, wait forever or timeout here:
+        // handling D-Bus messages is done in the background
+        std::future::pending::<()>().await;
+    }
+}
+
+async fn start_from_console() {
     let ibus_engine_desc = IBusEngineDesc {
         engine_name: "full-cloud-pinyin".to_owned(),
         long_name: "Full Cloud Pinyin".to_owned(),

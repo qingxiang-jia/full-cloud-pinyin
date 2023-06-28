@@ -1,0 +1,35 @@
+<component>
+  <name>org.freedesktop.IBus.FcPinyin</name>
+  <description>Full Cloud Pinyin</description>
+  <exec>
+    /home/lee/Code/full-cloud-pinyin/fcp-zbus/target/release/fcp-zbus ibus
+  </exec>
+  <version>0.1</version>
+  <author>
+    Qingixang Jia
+  </author>
+  <license>MIT</license>
+  <homepage>https://github.com/qingxiang-jia/full-cloud-pinyin</homepage>
+  <textdomain>full-cloud-pinyin</textdomain>
+  <engines>
+    <engine>
+      <name>fcpinyin</name>
+      <language>zh_CN</language>
+      <license>MIT</license>
+      <author>
+        Qingxiang Jia
+      </author>
+      <icon>/usr/share/icons/breeze/emblems/24@3x/emblem-checked.svg</icon>
+      <layout>default</layout>
+      <longname>Full Cloud Pinyin</longname>
+      <description>Use Google's cloud pinyin as backend</description>
+      <rank>99</rank>
+      <symbol>云</symbol>
+      <icon_prop_key>InputMode</icon_prop_key>
+      <setup>
+        /usr/bin/gittupref
+      </setup>
+      <textdomain>full-cloud-pinyin</textdomain>
+    </engine>
+  </engines>
+</component>
