@@ -131,6 +131,7 @@ struct State {
     preedit: String,
     depth: usize,
     session: bool,
+    en_mode: bool,
     candidates: Vec<Candidate>,
     page: usize,
 }
@@ -143,6 +144,7 @@ impl State {
             preedit: "".to_owned(),
             depth: 0,
             session: false,
+            en_mode: false,
             candidates: Vec::new(),
             page: 0,
         }
@@ -171,12 +173,21 @@ impl FcpEngine {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
+        if self.state.lock().await.en_mode {
+            return false;
+        } else {
+            if KeyVal::Shift as u32 == keyval {
+                return self.handle_mode_switch().await;
+            }
+        }
+
         if KeyVal::A as u32 <= keyval && keyval <= KeyVal::Z as u32 {
             return self.handle_typing(keyval).await;
         }
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
             return self.handle_select((keyval - 48) as usize).await;
         }
+
         if KeyVal::Space as u32 == keyval
             || KeyVal::Enter as u32 == keyval
             || KeyVal::Minus as u32 == keyval
@@ -192,6 +203,26 @@ impl FcpEngine {
         }
 
         return false;
+    }
+
+    async fn handle_mode_switch(&self) -> bool {
+        let mut state = self.state.lock().await;
+
+        // Reset state
+        state.candidates.clear();
+        state.depth = 0;
+        state.page = 0;
+        state.preedit = "".to_owned();
+        state.session = false;
+        state.en_mode = true;
+
+        drop(state);
+
+        // Reset lookup table
+        let lt = IBusLookupTable::from_nothing();
+        self.ibus.update_lookup_table(lt, false).await;
+
+        true
     }
 
     async fn handle_typing(&self, keyval: u32) -> bool {
@@ -222,6 +253,7 @@ impl FcpEngine {
                 state.page = 0;
                 state.preedit = "".to_owned();
                 state.session = false;
+                state.en_mode = false;
 
                 let preedit = state.preedit.clone();
 
@@ -276,6 +308,7 @@ impl FcpEngine {
                     state.depth = 0;
                     state.page = 0;
                     state.session = false;
+                    state.en_mode = false;
 
                     // Reset lookup table
                     let lt = IBusLookupTable::from_nothing();
@@ -297,6 +330,7 @@ impl FcpEngine {
                 state.page = 0;
                 state.preedit = "".to_owned();
                 state.session = false;
+                state.en_mode = false;
 
                 // Reset lookup table
                 let lt = IBusLookupTable::from_nothing();
@@ -325,6 +359,7 @@ impl FcpEngine {
             state.page = 0;
             state.preedit = "".to_owned();
             state.session = false;
+            state.en_mode = false;
             return true;
             // TODO: if matched length is less than the length of preedit, the remaining preedit should be used to make another query.
         } else {
@@ -374,7 +409,7 @@ impl FcpEngine {
             } else {
                 drop(state);
             }
-            
+
             let mut state = self.state.lock().await;
             state.page += 1;
 
