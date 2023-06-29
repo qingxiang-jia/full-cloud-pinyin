@@ -214,7 +214,7 @@ impl FcpEngine {
         state.page = 0;
         state.preedit = "".to_owned();
         state.session = false;
-        state.en_mode = true;
+        state.en_mode = !state.en_mode;
 
         drop(state);
 
