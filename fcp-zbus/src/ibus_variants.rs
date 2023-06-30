@@ -233,7 +233,7 @@ impl IBusAttrList {
         let s = sb
             .add_field("IBusAttrList")
             .add_field(attachments)
-            .add_field(attribute_list)
+            .add_field(Value::from(attribute_list))
             .build();
         return s;
     }
