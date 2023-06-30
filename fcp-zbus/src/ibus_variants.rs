@@ -223,6 +223,22 @@ impl IBusText {
     }
 }
 
+pub struct IBusAttrList {}
+
+impl IBusAttrList {
+    pub fn into_struct<'a>(self) -> Structure<'a> {
+        let sb = StructureBuilder::new();
+        let attachments: HashMap<String, Value> = HashMap::new();
+        let attribute_list: Vec<Value> = Vec::new();
+        let s = sb
+            .add_field("IBusAttrList")
+            .add_field(attachments)
+            .add_field(attribute_list)
+            .build();
+        return s;
+    }
+}
+
 // Currently not used because we can just use a Vec<Value> to represent attribute_list in IBusText.
 pub struct IBusAttribute {
     attribute_type: u32,
