@@ -210,6 +210,7 @@ impl FcpEngine {
         state.preedit = preedit.clone();
         drop(state);
 
+        self.ibus.update_preedit_text(&preedit, 1, true).await;
         self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
 
         true
@@ -235,6 +236,9 @@ impl FcpEngine {
                 state.en_mode = true;
 
                 drop(state);
+
+                // Reset preedit
+                self.ibus.update_preedit_text("", 0, false).await;
 
                 // Reset lookup table
                 let lt = IBusLookupTable::from_nothing();
@@ -269,6 +273,9 @@ impl FcpEngine {
 
                 // Commit preddit as alphabets
                 self.ibus.commit_text(&preedit).await;
+
+                // Reset preedit
+                self.ibus.update_preedit_text("", 0, false).await;
 
                 // Reset lookup table
                 let lt = IBusLookupTable::from_nothing();
@@ -318,6 +325,9 @@ impl FcpEngine {
                     state.session = false;
                     state.en_mode = false;
 
+                    // Reset preedit
+                    self.ibus.update_preedit_text("", 0, false).await;
+
                     // Reset lookup table
                     let lt = IBusLookupTable::from_nothing();
                     self.ibus.update_lookup_table(lt, false).await;
@@ -339,6 +349,9 @@ impl FcpEngine {
                 state.preedit = "".to_owned();
                 state.session = false;
                 state.en_mode = false;
+
+                // Reset preedit
+                self.ibus.update_preedit_text("", 0, false).await;
 
                 // Reset lookup table
                 let lt = IBusLookupTable::from_nothing();
@@ -363,6 +376,9 @@ impl FcpEngine {
             // Reset lookup table
             let lt = IBusLookupTable::from_nothing();
             self.ibus.update_lookup_table(lt, false).await;
+
+            // Reset preedit
+            self.ibus.update_preedit_text("", 0, false).await;
 
             // Reset state
             let mut state = self.state.lock().await;
