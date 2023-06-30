@@ -212,12 +212,12 @@ impl IBusText {
     pub fn into_struct<'a>(self) -> Structure<'a> {
         let sb: StructureBuilder = StructureBuilder::new();
         let attachments: HashMap<String, Value> = HashMap::new();
-        let attribute_list: Vec<Value> = Vec::new();
+        let attribute_list = IBusAttrList {};
         let s = sb
             .add_field("IBusText")
             .add_field(attachments)
             .add_field(self.text)
-            .add_field(attribute_list)
+            .add_field(attribute_list.into_struct())
             .build();
         return s;
     }
