@@ -56,7 +56,7 @@ async fn update_preedit_text(conn: &Connection, text: &Value<'_>, cursor_pos: u3
         ENGINE_PATH,
         ENGINE_IFACE,
         "UpdatePreeditText",
-        &(text, cursor_pos, visible, 0),
+        &(text, cursor_pos, visible, 0 as u32),
     )
     .await
     .expect("Failed to emit UpdatePreeditText signal.");
