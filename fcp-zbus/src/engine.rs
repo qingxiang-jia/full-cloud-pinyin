@@ -173,14 +173,6 @@ impl FcpEngine {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        if self.state.lock().await.en_mode {
-            return false;
-        } else {
-            if KeyVal::Shift as u32 == keyval {
-                return self.handle_mode_switch().await;
-            }
-        }
-
         if KeyVal::A as u32 <= keyval && keyval <= KeyVal::Z as u32 {
             return self.handle_typing(keyval).await;
         }
@@ -190,6 +182,7 @@ impl FcpEngine {
 
         if KeyVal::Space as u32 == keyval
             || KeyVal::Enter as u32 == keyval
+            || KeyVal::Shift as u32 == keyval
             || KeyVal::Minus as u32 == keyval
             || KeyVal::Equal as u32 == keyval
             || KeyVal::Up as u32 == keyval
@@ -205,28 +198,13 @@ impl FcpEngine {
         return false;
     }
 
-    async fn handle_mode_switch(&self) -> bool {
-        let mut state = self.state.lock().await;
-
-        // Reset state
-        state.candidates.clear();
-        state.depth = 0;
-        state.page = 0;
-        state.preedit = "".to_owned();
-        state.session = false;
-        state.en_mode = !state.en_mode;
-
-        drop(state);
-
-        // Reset lookup table
-        let lt = IBusLookupTable::from_nothing();
-        self.ibus.update_lookup_table(lt, false).await;
-
-        true
-    }
-
     async fn handle_typing(&self, keyval: u32) -> bool {
         let mut state = self.state.lock().await;
+
+        if state.en_mode {
+            return false;
+        }
+
         state.session = true;
         let preedit = FcpEngine::concate(&state.preedit, keyval);
         state.preedit = preedit.clone();
@@ -238,9 +216,39 @@ impl FcpEngine {
     }
 
     async fn handle_control(&self, key: KeyVal) -> bool {
-        if !self.state.lock().await.session {
+        let mut state = self.state.lock().await;
+
+        // English mode handling
+        if state.en_mode {
+            if let KeyVal::Shift = key {
+                state.en_mode = false;
+                return true;
+            }
+        } else {
+            if let KeyVal::Shift = key {
+                // Reset state
+                state.candidates.clear();
+                state.depth = 0;
+                state.page = 0;
+                state.preedit = "".to_owned();
+                state.session = false;
+                state.en_mode = true;
+
+                drop(state);
+
+                // Reset lookup table
+                let lt = IBusLookupTable::from_nothing();
+                self.ibus.update_lookup_table(lt, false).await;
+
+                return true;
+            }
+        }
+
+        if !state.session {
             return false;
         }
+
+        drop(state);
 
         match key {
             KeyVal::Space => return self.handle_select(1).await,
@@ -343,6 +351,10 @@ impl FcpEngine {
     }
 
     async fn handle_select(&self, cand_label: usize) -> bool {
+        if self.state.lock().await.en_mode {
+            return false;
+        }
+
         if 1 <= cand_label && cand_label <= self.lt_size {
             let cand_idx = cand_label - 1;
             let cand = self.state.lock().await.candidates[cand_idx].clone();
