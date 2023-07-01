@@ -129,7 +129,7 @@ impl IBusEngineDesc {
 pub struct IBusLookupTable {
     page_size: u32,
     cursor_pos: u32,
-    cursor_visible: u32,
+    cursor_visible: bool,
     round: bool,
     orientation: i32,
     candidates: Vec<String>,
@@ -146,7 +146,7 @@ impl IBusLookupTable {
         IBusLookupTable {
             page_size: 5,
             cursor_pos: 0,
-            cursor_visible: 0,
+            cursor_visible: false,
             round: false,
             orientation: 2,
             candidates,
@@ -158,7 +158,7 @@ impl IBusLookupTable {
         IBusLookupTable {
             page_size: 5,
             cursor_pos: 0,
-            cursor_visible: 0,
+            cursor_visible: false,
             round: false,
             orientation: 2,
             candidates: Vec::new(),
