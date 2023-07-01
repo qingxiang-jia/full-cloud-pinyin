@@ -335,6 +335,10 @@ impl FcpEngine {
                     return false;
                 }
 
+                // Update preedit
+                let preedit = self.state.lock().await.preedit.clone();
+                self.ibus.update_preedit_text(&preedit, 0, true).await;
+
                 self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
 
                 true
