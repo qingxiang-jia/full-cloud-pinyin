@@ -217,7 +217,7 @@ impl IBusText {
             .add_field("IBusText")
             .add_field(attachments)
             .add_field(self.text)
-            .add_field(attribute_list.into_struct())
+            .add_field(Value::from(attribute_list.into_struct()))
             .build();
         return s;
     }
