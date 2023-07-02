@@ -59,56 +59,56 @@ enum KeyVal {
 }
 
 impl KeyVal {
-    fn from_u32(num: u32) -> KeyVal {
+    fn from_u32(num: u32) -> Option<KeyVal> {
         match num {
-            97 => KeyVal::A,
-            98 => KeyVal::B,
-            99 => KeyVal::C,
-            100 => KeyVal::D,
-            101 => KeyVal::E,
-            102 => KeyVal::F,
-            103 => KeyVal::G,
-            104 => KeyVal::H,
-            105 => KeyVal::I,
-            106 => KeyVal::J,
-            107 => KeyVal::K,
-            108 => KeyVal::L,
-            109 => KeyVal::M,
-            110 => KeyVal::N,
-            111 => KeyVal::O,
-            112 => KeyVal::P,
-            113 => KeyVal::Q,
-            114 => KeyVal::R,
-            115 => KeyVal::S,
-            116 => KeyVal::T,
-            117 => KeyVal::U,
-            118 => KeyVal::V,
-            119 => KeyVal::W,
-            120 => KeyVal::X,
-            121 => KeyVal::Y,
-            122 => KeyVal::Z,
-            32 => KeyVal::Space,
-            65293 => KeyVal::Enter,
-            65505 => KeyVal::Shift,
-            45 => KeyVal::Minus,
-            61 => KeyVal::Equal,
-            65362 => KeyVal::Up,
-            65364 => KeyVal::Down,
-            65361 => KeyVal::Left,
-            65363 => KeyVal::Right,
-            65288 => KeyVal::Backspace,
-            65307 => KeyVal::Escape,
-            48 => KeyVal::_0,
-            49 => KeyVal::_1,
-            50 => KeyVal::_2,
-            51 => KeyVal::_3,
-            52 => KeyVal::_4,
-            53 => KeyVal::_5,
-            54 => KeyVal::_6,
-            55 => KeyVal::_7,
-            56 => KeyVal::_8,
-            57 => KeyVal::_9,
-            _ => panic!("Invalid u32 value cannot be converted to a KeyVal."),
+            97 => Some(KeyVal::A),
+            98 => Some(KeyVal::B),
+            99 => Some(KeyVal::C),
+            100 => Some(KeyVal::D),
+            101 => Some(KeyVal::E),
+            102 => Some(KeyVal::F),
+            103 => Some(KeyVal::G),
+            104 => Some(KeyVal::H),
+            105 => Some(KeyVal::I),
+            106 => Some(KeyVal::J),
+            107 => Some(KeyVal::K),
+            108 => Some(KeyVal::L),
+            109 => Some(KeyVal::M),
+            110 => Some(KeyVal::N),
+            111 => Some(KeyVal::O),
+            112 => Some(KeyVal::P),
+            113 => Some(KeyVal::Q),
+            114 => Some(KeyVal::R),
+            115 => Some(KeyVal::S),
+            116 => Some(KeyVal::T),
+            117 => Some(KeyVal::U),
+            118 => Some(KeyVal::V),
+            119 => Some(KeyVal::W),
+            120 => Some(KeyVal::X),
+            121 => Some(KeyVal::Y),
+            122 => Some(KeyVal::Z),
+            32 => Some(KeyVal::Space),
+            65293 => Some(KeyVal::Enter),
+            65505 => Some(KeyVal::Shift),
+            45 => Some(KeyVal::Minus),
+            61 => Some(KeyVal::Equal),
+            65362 => Some(KeyVal::Up),
+            65364 => Some(KeyVal::Down),
+            65361 => Some(KeyVal::Left),
+            65363 => Some(KeyVal::Right),
+            65288 => Some(KeyVal::Backspace),
+            65307 => Some(KeyVal::Escape),
+            48 => Some(KeyVal::_0),
+            49 => Some(KeyVal::_1),
+            50 => Some(KeyVal::_2),
+            51 => Some(KeyVal::_3),
+            52 => Some(KeyVal::_4),
+            53 => Some(KeyVal::_5),
+            54 => Some(KeyVal::_6),
+            55 => Some(KeyVal::_7),
+            56 => Some(KeyVal::_8),
+            57 => Some(KeyVal::_9),
+            _ => None,
         }
     }
 }
@@ -179,7 +179,6 @@ impl FcpEngine {
         if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
             return self.handle_select((keyval - 48) as usize).await;
         }
-
         if KeyVal::Space as u32 == keyval
             || KeyVal::Enter as u32 == keyval
             || KeyVal::Shift as u32 == keyval
@@ -192,7 +191,7 @@ impl FcpEngine {
             || KeyVal::Backspace as u32 == keyval
             || KeyVal::Escape as u32 == keyval
         {
-            return self.handle_control(KeyVal::from_u32(keyval)).await;
+            return self.handle_control(KeyVal::from_u32(keyval).expect("Failed to convert to KeyVal from u32.")).await;
         }
 
         return false;
