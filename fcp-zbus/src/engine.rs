@@ -259,6 +259,8 @@ impl FcpEngine {
             KeyVal::Enter => {
                 let mut state = self.state.lock().await;
 
+                let preedit = state.preedit.clone();
+
                 // Reset state
                 state.candidates.clear();
                 state.depth = 0;
@@ -266,8 +268,6 @@ impl FcpEngine {
                 state.preedit = "".to_owned();
                 state.session = false;
                 state.en_mode = false;
-
-                let preedit = state.preedit.clone();
 
                 drop(state);
 
