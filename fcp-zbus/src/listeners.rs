@@ -38,11 +38,12 @@ pub struct InputListener {
 #[dbus_interface(name = "org.freedesktop.IBus.Engine")]
 impl InputListener {
     pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
-        if state != 0 {
+        println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
+        
+        if state != 0 { // Pressed = 0, Released = 1073741825
             // If it's not "pressed" state, do nothing.
             return false;
         }
-        println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
 
         return self.engine.on_key_press(keyval).await;
     }
