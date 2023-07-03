@@ -172,3 +172,74 @@ pub enum Key {
     _8,
     _9,
 }
+
+impl Key {
+    pub fn from_key_val(keyval: KeyVal, shift_pressed: bool) -> Key {
+        match keyval {
+            KeyVal::A => Key::A,
+            KeyVal::B => Key::B,
+            KeyVal::C => Key::C,
+            KeyVal::D => Key::D,
+            KeyVal::E => Key::E,
+            KeyVal::F => Key::F,
+            KeyVal::G => Key::G,
+            KeyVal::H => Key::H,
+            KeyVal::I => Key::I,
+            KeyVal::J => Key::J,
+            KeyVal::K => Key::K,
+            KeyVal::L => Key::L,
+            KeyVal::M => Key::M,
+            KeyVal::N => Key::N,
+            KeyVal::O => Key::O,
+            KeyVal::P => Key::P,
+            KeyVal::Q => Key::Q,
+            KeyVal::R => Key::R,
+            KeyVal::S => Key::S,
+            KeyVal::T => Key::T,
+            KeyVal::U => Key::U,
+            KeyVal::V => Key::V,
+            KeyVal::W => Key::W,
+            KeyVal::X => Key::X,
+            KeyVal::Y => Key::Y,
+            KeyVal::Z => Key::Z,
+            KeyVal::Comma => Key::Comma,
+            KeyVal::Period => Key::Period,
+            KeyVal::SemiColon => Key::SemiColon,
+            KeyVal::SingleQuote => {
+                if shift_pressed {
+                    Key::DoubleQuote
+                } else {
+                    Key::SingleQuote
+                }
+            },
+            KeyVal::ForwardSlash => {
+                if shift_pressed {
+                    Key::QuestionMark
+                } else {
+                    Key::ForwardSlash
+                }
+            },
+            KeyVal::Space => Key::Space,
+            KeyVal::Enter => Key::Enter,
+            KeyVal::Shift => Key::Shift,
+            KeyVal::Minus => Key::Minus,
+            KeyVal::Equal => Key::Equal,
+            KeyVal::Up => Key::Up,
+            KeyVal::Down => Key::Down,
+            KeyVal::Left => Key::Left,
+            KeyVal::Right => Key::Right,
+            KeyVal::Backspace => Key::Backspace,
+            KeyVal::Escape => Key::Escape,
+            KeyVal::_0 => Key::_0,
+            KeyVal::_1 => Key::_1,
+            KeyVal::_2 => Key::_2,
+            KeyVal::_3 => Key::_3,
+            KeyVal::_4 => Key::_4,
+            KeyVal::_5 => Key::_5,
+            KeyVal::_6 => Key::_6,
+            KeyVal::_7 => Key::_7,
+            KeyVal::_8 => Key::_8,
+            KeyVal::_9 => Key::_9,
+        }
+    }
+}
