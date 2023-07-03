@@ -115,7 +115,7 @@ impl KeyVal {
 }
 
 #[allow(dead_code)]
-pub enum key {
+pub enum Key {
     A,
     B,
     C,
