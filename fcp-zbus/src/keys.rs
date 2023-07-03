@@ -242,4 +242,17 @@ impl Key {
             KeyVal::_9 => Key::_9,
         }
     }
+
+    pub fn to_full_width_string(key: Key) -> Option<String> {
+        match key {
+            Key::Comma => Some("，".to_owned()),
+            Key::Period => Some("。".to_owned()),
+            Key::SemiColon => Some("；".to_owned()),
+            Key::Colon => Some("：".to_owned()),
+            Key::SingleQuote => Some("‘’".to_owned()),
+            Key::DoubleQuote => Some("“”".to_owned()),
+            Key::QuestionMark => Some("？".to_owned()),
+            _ => None,
+        }
+    }
 }
