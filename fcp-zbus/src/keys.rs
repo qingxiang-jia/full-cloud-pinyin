@@ -211,14 +211,14 @@ impl Key {
                 } else {
                     Key::SingleQuote
                 }
-            },
+            }
             KeyVal::ForwardSlash => {
                 if shift_pressed {
                     Key::QuestionMark
                 } else {
                     Key::ForwardSlash
                 }
-            },
+            }
             KeyVal::Space => Key::Space,
             KeyVal::Enter => Key::Enter,
             KeyVal::Shift => Key::Shift,
@@ -252,6 +252,38 @@ impl Key {
             Key::SingleQuote => Some("‘’".to_owned()),
             Key::DoubleQuote => Some("“”".to_owned()),
             Key::QuestionMark => Some("？".to_owned()),
+            _ => None,
+        }
+    }
+
+    pub fn to_char(key: Key) -> Option<char> {
+        match key {
+            Key::A => Some('a'),
+            Key::B => Some('b'),
+            Key::C => Some('c'),
+            Key::D => Some('d'),
+            Key::E => Some('e'),
+            Key::F => Some('f'),
+            Key::G => Some('g'),
+            Key::H => Some('h'),
+            Key::I => Some('i'),
+            Key::J => Some('j'),
+            Key::K => Some('k'),
+            Key::L => Some('l'),
+            Key::M => Some('m'),
+            Key::N => Some('n'),
+            Key::O => Some('o'),
+            Key::P => Some('p'),
+            Key::Q => Some('q'),
+            Key::R => Some('r'),
+            Key::S => Some('s'),
+            Key::T => Some('t'),
+            Key::U => Some('u'),
+            Key::V => Some('v'),
+            Key::W => Some('w'),
+            Key::X => Some('x'),
+            Key::Y => Some('y'),
+            Key::Z => Some('z'),
             _ => None,
         }
     }
