@@ -3,7 +3,11 @@ use reqwest::{self, header::USER_AGENT};
 use tokio::sync::Mutex;
 use zbus::Connection;
 
-use crate::{ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable, keys::{KeyVal, Key}};
+use crate::{
+    ibus_proxy::IBusProxy,
+    ibus_variants::IBusLookupTable,
+    keys::{Key, KeyVal},
+};
 
 // Implementation of org.freedesktop.IBus.Engine interface
 
@@ -67,7 +71,63 @@ impl FcpEngine {
     }
 
     pub async fn on_input(&self, key: Key) -> bool {
-        !unimplemented!()
+        match key {
+            Key::A
+            | Key::B
+            | Key::C
+            | Key::D
+            | Key::E
+            | Key::F
+            | Key::G
+            | Key::H
+            | Key::I
+            | Key::J
+            | Key::K
+            | Key::L
+            | Key::M
+            | Key::N
+            | Key::O
+            | Key::P
+            | Key::Q
+            | Key::R
+            | Key::S
+            | Key::T
+            | Key::U
+            | Key::V
+            | Key::W
+            | Key::X
+            | Key::Y
+            | Key::Z => self.user_types(key).await,
+            Key::_0
+            | Key::_1
+            | Key::_2
+            | Key::_3
+            | Key::_4
+            | Key::_5
+            | Key::_6
+            | Key::_7
+            | Key::_8
+            | Key::_9 => self.user_selects(key).await,
+            Key::Comma
+            | Key::Period
+            | Key::SemiColon
+            | Key::Colon
+            | Key::SingleQuote
+            | Key::DoubleQuote
+            | Key::QuestionMark => self.to_full_width(key).await,
+            Key::Space
+            | Key::Enter
+            | Key::Shift
+            | Key::Minus
+            | Key::Equal
+            | Key::Up
+            | Key::Down
+            | Key::Left
+            | Key::Right
+            | Key::Backspace
+            | Key::Escape => self.user_controls(key).await,
+            Key::ForwardSlash => false,
+        }
     }
 
     pub async fn user_types(&self, key: Key) -> bool {
@@ -75,6 +135,10 @@ impl FcpEngine {
     }
 
     pub async fn user_selects(&self, key: Key) -> bool {
+        !unimplemented!()
+    }
+
+    pub async fn to_full_width(&self, key: Key) -> bool {
         !unimplemented!()
     }
 
@@ -101,7 +165,11 @@ impl FcpEngine {
             || KeyVal::Backspace as u32 == keyval
             || KeyVal::Escape as u32 == keyval
         {
-            return self.handle_control(KeyVal::from_u32(keyval).expect("Failed to convert to KeyVal from u32.")).await;
+            return self
+                .handle_control(
+                    KeyVal::from_u32(keyval).expect("Failed to convert to KeyVal from u32."),
+                )
+                .await;
         }
 
         return false;
