@@ -138,7 +138,10 @@ impl FcpEngine {
         }
 
         state.session = true;
-        let preedit = FcpEngine::conc(&state.preedit, Key::to_char(key).expect("Key cannot be converted to String."));
+        let preedit = FcpEngine::conc(
+            &state.preedit,
+            Key::to_char(key).expect("Key cannot be converted to String."),
+        );
         state.preedit = preedit.clone();
         drop(state);
 
@@ -149,7 +152,36 @@ impl FcpEngine {
     }
 
     pub async fn user_selects(&self, key: Key) -> bool {
-        !unimplemented!()
+        if self.state.lock().await.en_mode {
+            return false;
+        }
+        let cand_label = Key::to_usize(key).expect("Key cannot be converted to a usize.");
+
+        if 1 <= cand_label && cand_label <= self.lt_size {
+            let cand_idx = cand_label - 1;
+            let cand = self.state.lock().await.candidates[cand_idx].clone();
+            self.ibus.commit_text(&cand.word).await;
+
+            // Reset lookup table
+            let lt = IBusLookupTable::from_nothing();
+            self.ibus.update_lookup_table(lt, false).await;
+
+            // Reset preedit
+            self.ibus.update_preedit_text("", 0, false).await;
+
+            // Reset state
+            let mut state = self.state.lock().await;
+            state.candidates.clear();
+            state.depth = 0;
+            state.page = 0;
+            state.preedit = "".to_owned();
+            state.session = false;
+            state.en_mode = false;
+            return true;
+            // TODO: if matched length is less than the length of preedit, the remaining preedit should be used to make another query.
+        } else {
+            return false;
+        }
     }
 
     pub async fn to_full_width(&self, key: Key) -> bool {

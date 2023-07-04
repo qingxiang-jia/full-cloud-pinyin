@@ -287,4 +287,20 @@ impl Key {
             _ => None,
         }
     }
+
+    pub fn to_usize(key: Key) -> Option<usize> {
+        match key {
+            Key::_0 => Some(0),
+            Key::_1 => Some(1),
+            Key::_2 => Some(2),
+            Key::_3 => Some(3),
+            Key::_4 => Some(4),
+            Key::_5 => Some(5),
+            Key::_6 => Some(6),
+            Key::_7 => Some(7),
+            Key::_8 => Some(8),
+            Key::_9 => Some(9),
+            _ => None,
+        }
+    }
 }
