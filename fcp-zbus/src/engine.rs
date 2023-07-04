@@ -185,7 +185,15 @@ impl FcpEngine {
     }
 
     pub async fn to_full_width(&self, key: Key) -> bool {
-        !unimplemented!()
+        if self.state.lock().await.en_mode {
+            return false;
+        }
+
+        let fw_puctuation = Key::to_full_width_string(key)
+            .expect("This key cannot be converted to fullwidth string.");
+
+        self.ibus.commit_text(&fw_puctuation).await;
+        return true;
     }
 
     pub async fn user_controls(&self, key: Key) -> bool {
