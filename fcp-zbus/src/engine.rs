@@ -3,7 +3,7 @@ use reqwest::{self, header::USER_AGENT};
 use tokio::sync::Mutex;
 use zbus::Connection;
 
-use crate::{ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable, keys::KeyVal};
+use crate::{ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable, keys::{KeyVal, Key}};
 
 // Implementation of org.freedesktop.IBus.Engine interface
 
@@ -64,6 +64,22 @@ impl FcpEngine {
             lt_size: 5,
             state: Mutex::new(State::new()),
         }
+    }
+
+    pub async fn on_input(&self, key: Key) -> bool {
+        !unimplemented!()
+    }
+
+    pub async fn user_types(&self, key: Key) -> bool {
+        !unimplemented!()
+    }
+
+    pub async fn user_selects(&self, key: Key) -> bool {
+        !unimplemented!()
+    }
+
+    pub async fn user_controls(&self, key: Key) -> bool {
+        !unimplemented!()
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
