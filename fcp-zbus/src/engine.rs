@@ -131,7 +131,21 @@ impl FcpEngine {
     }
 
     pub async fn user_types(&self, key: Key) -> bool {
-        !unimplemented!()
+        let mut state = self.state.lock().await;
+
+        if state.en_mode {
+            return false;
+        }
+
+        state.session = true;
+        let preedit = FcpEngine::conc(&state.preedit, Key::to_char(key).expect("Key cannot be converted to String."));
+        state.preedit = preedit.clone();
+        drop(state);
+
+        self.ibus.update_preedit_text(&preedit, 1, true).await;
+        self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
+
+        true
     }
 
     pub async fn user_selects(&self, key: Key) -> bool {
@@ -525,5 +539,11 @@ impl FcpEngine {
         let mut new = s.clone();
         new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
         return new;
+    }
+
+    fn conc(s: &str, c: char) -> String {
+        let mut new = s.clone().to_owned();
+        new.push(c);
+        new
     }
 }
