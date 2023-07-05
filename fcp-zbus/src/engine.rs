@@ -180,13 +180,17 @@ impl FcpEngine {
     }
 
     pub async fn to_full_width(&self, key: Key) -> bool {
+        println!("begin {:#?}", &key);
         if self.state.lock().await.en_mode {
+            println!("English mode!");
             return false;
         }
 
         let fw_puctuation = key
             .to_full_width_string()
             .expect("This key cannot be converted to fullwidth string.");
+
+        println!("Committing: {}", &fw_puctuation);
 
         self.ibus.commit_text(&fw_puctuation).await;
         return true;

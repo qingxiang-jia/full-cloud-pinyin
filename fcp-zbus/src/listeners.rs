@@ -1,10 +1,7 @@
 use zbus::dbus_interface;
 use zvariant::ObjectPath;
 
-use crate::{
-    engine::FcpEngine,
-    keys::Key,
-};
+use crate::{engine::FcpEngine, keys::Key};
 
 // We have three interfaces to implement in order to get a working engine, but only the
 // org.freedesktop.IBus.Engine matters in practice.
@@ -41,17 +38,16 @@ impl InputListener {
     pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
 
-        if state != 0 {
-            // When state not equal to 0, it's not a pressed action, could be releasing of
-            // the key which we don't care.
-            return false;
+        if state == 1073741824 {
+            return false; // We don't care about release state.
         }
 
-        let key = Key::from_u32(keyval);
-        if key.is_none() {
+        let maybe_key = Key::from_u32(keyval);
+        if maybe_key.is_none() {
             return false; // Not something we want to handle.
         }
+        let key = maybe_key.expect("maybe_key is None but shouldn't be.");
 
-        return self.engine.on_input(key.expect("key is None but shouldn't be.")).await;
+        return self.engine.on_input(key).await;
     }
 }
