@@ -3,7 +3,7 @@ use zvariant::ObjectPath;
 
 use crate::{
     engine::FcpEngine,
-    keys::{Key, KeyVal},
+    keys::Key,
 };
 
 // We have three interfaces to implement in order to get a working engine, but only the
@@ -41,18 +41,17 @@ impl InputListener {
     pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         println!("keyval: {keyval}, keycode: {keycode}, state: {state}");
 
-        // Pressed = 0, Released = 1073741825
-        let shift_pressed = if state == 0 { true } else { false };
+        if state != 0 {
+            // When state not equal to 0, it's not a pressed action, could be releasing of
+            // the key which we don't care.
+            return false;
+        }
 
-        let key_sym_val = KeyVal::from_u32(keyval);
-        if key_sym_val.is_none() {
+        let key = Key::from_u32(keyval);
+        if key.is_none() {
             return false; // Not something we want to handle.
         }
-        let key = Key::from_key_val(
-            key_sym_val.expect("key_sym_val can't be None but is None."),
-            shift_pressed,
-        );
 
-        return self.engine.on_input(key).await;
+        return self.engine.on_input(key.expect("key is None but shouldn't be.")).await;
     }
 }

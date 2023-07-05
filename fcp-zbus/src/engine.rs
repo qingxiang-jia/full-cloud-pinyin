@@ -3,11 +3,7 @@ use reqwest::{self, header::USER_AGENT};
 use tokio::sync::Mutex;
 use zbus::Connection;
 
-use crate::{
-    ibus_proxy::IBusProxy,
-    ibus_variants::IBusLookupTable,
-    keys::{Key, KeyVal},
-};
+use crate::{ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable, keys::Key};
 
 // Implementation of org.freedesktop.IBus.Engine interface
 
@@ -126,7 +122,6 @@ impl FcpEngine {
             | Key::Right
             | Key::Backspace
             | Key::Escape => self.user_controls(key).await,
-            Key::ForwardSlash => false,
         }
     }
 
@@ -140,7 +135,7 @@ impl FcpEngine {
         state.session = true;
         let preedit = FcpEngine::conc(
             &state.preedit,
-            Key::to_char(key).expect("Key cannot be converted to String."),
+            key.to_char().expect("Key cannot be converted to String."),
         );
         state.preedit = preedit.clone();
         drop(state);
@@ -155,7 +150,7 @@ impl FcpEngine {
         if self.state.lock().await.en_mode {
             return false;
         }
-        let cand_label = Key::to_usize(key).expect("Key cannot be converted to a usize.");
+        let cand_label = key.to_usize().expect("Key cannot be converted to a usize.");
 
         if 1 <= cand_label && cand_label <= self.lt_size {
             let cand_idx = cand_label - 1;
@@ -189,7 +184,8 @@ impl FcpEngine {
             return false;
         }
 
-        let fw_puctuation = Key::to_full_width_string(key)
+        let fw_puctuation = key
+            .to_full_width_string()
             .expect("This key cannot be converted to fullwidth string.");
 
         self.ibus.commit_text(&fw_puctuation).await;
@@ -348,27 +344,27 @@ impl FcpEngine {
     }
 
     pub async fn on_key_press(&self, keyval: u32) -> bool {
-        if KeyVal::A as u32 <= keyval && keyval <= KeyVal::Z as u32 {
+        if Key::A as u32 <= keyval && keyval <= Key::Z as u32 {
             return self.handle_typing(keyval).await;
         }
-        if KeyVal::_0 as u32 <= keyval && keyval <= KeyVal::_9 as u32 {
+        if Key::_0 as u32 <= keyval && keyval <= Key::_9 as u32 {
             return self.handle_select((keyval - 48) as usize).await;
         }
-        if KeyVal::Space as u32 == keyval
-            || KeyVal::Enter as u32 == keyval
-            || KeyVal::Shift as u32 == keyval
-            || KeyVal::Minus as u32 == keyval
-            || KeyVal::Equal as u32 == keyval
-            || KeyVal::Up as u32 == keyval
-            || KeyVal::Down as u32 == keyval
-            || KeyVal::Left as u32 == keyval
-            || KeyVal::Right as u32 == keyval
-            || KeyVal::Backspace as u32 == keyval
-            || KeyVal::Escape as u32 == keyval
+        if Key::Space as u32 == keyval
+            || Key::Enter as u32 == keyval
+            || Key::Shift as u32 == keyval
+            || Key::Minus as u32 == keyval
+            || Key::Equal as u32 == keyval
+            || Key::Up as u32 == keyval
+            || Key::Down as u32 == keyval
+            || Key::Left as u32 == keyval
+            || Key::Right as u32 == keyval
+            || Key::Backspace as u32 == keyval
+            || Key::Escape as u32 == keyval
         {
             return self
                 .handle_control(
-                    KeyVal::from_u32(keyval).expect("Failed to convert to KeyVal from u32."),
+                    Key::from_u32(keyval).expect("Failed to convert to KeyVal from u32."),
                 )
                 .await;
         }
@@ -394,17 +390,17 @@ impl FcpEngine {
         true
     }
 
-    async fn handle_control(&self, key: KeyVal) -> bool {
+    async fn handle_control(&self, key: Key) -> bool {
         let mut state = self.state.lock().await;
 
         // English mode handling
         if state.en_mode {
-            if let KeyVal::Shift = key {
+            if let Key::Shift = key {
                 state.en_mode = false;
                 return true;
             }
         } else {
-            if let KeyVal::Shift = key {
+            if let Key::Shift = key {
                 // Reset state
                 state.candidates.clear();
                 state.depth = 0;
@@ -433,8 +429,8 @@ impl FcpEngine {
         drop(state);
 
         match key {
-            KeyVal::Space => return self.handle_select(1).await,
-            KeyVal::Enter => {
+            Key::Space => return self.handle_select(1).await,
+            Key::Enter => {
                 let mut state = self.state.lock().await;
 
                 let preedit = state.preedit.clone();
@@ -461,7 +457,7 @@ impl FcpEngine {
 
                 true
             }
-            KeyVal::Minus => {
+            Key::Minus => {
                 let mut page = self.state.lock().await.page;
 
                 if page == 0 {
@@ -476,7 +472,7 @@ impl FcpEngine {
 
                 true
             }
-            KeyVal::Equal => {
+            Key::Equal => {
                 let mut page = self.state.lock().await.page;
 
                 page += 1; // Updated in send_to_ibus
@@ -487,11 +483,11 @@ impl FcpEngine {
 
                 true
             }
-            KeyVal::Up => return false,    // For now, ingore
-            KeyVal::Down => return false,  // For now, ignore
-            KeyVal::Left => return false,  // For now, ignore
-            KeyVal::Right => return false, // For now, ignore
-            KeyVal::Backspace => {
+            Key::Up => return false,    // For now, ingore
+            Key::Down => return false,  // For now, ignore
+            Key::Left => return false,  // For now, ignore
+            Key::Right => return false, // For now, ignore
+            Key::Backspace => {
                 let popped = self.state.lock().await.preedit.pop();
                 if popped.is_none() {
                     let mut state = self.state.lock().await;
@@ -521,7 +517,7 @@ impl FcpEngine {
 
                 true
             }
-            KeyVal::Escape => {
+            Key::Escape => {
                 let mut state = self.state.lock().await;
 
                 // Reset state

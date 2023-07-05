@@ -1,5 +1,5 @@
 #[allow(dead_code)]
-pub enum KeyVal {
+pub enum Key {
     A = 97,
     B = 98,
     C = 99,
@@ -28,9 +28,11 @@ pub enum KeyVal {
     Z = 122,
     Comma = 44,
     Period = 46,
+    Colon = 58,
     SemiColon = 59,
+    DoubleQuote = 34,
     SingleQuote = 39,
-    ForwardSlash = 47,
+    QuestionMark = 63,
     Space = 32,
     Enter = 65293,
     Shift = 65505,
@@ -54,210 +56,69 @@ pub enum KeyVal {
     _9 = 57,
 }
 
-impl KeyVal {
-    pub fn from_u32(num: u32) -> Option<KeyVal> {
-        match num {
-            97 => Some(KeyVal::A),
-            98 => Some(KeyVal::B),
-            99 => Some(KeyVal::C),
-            100 => Some(KeyVal::D),
-            101 => Some(KeyVal::E),
-            102 => Some(KeyVal::F),
-            103 => Some(KeyVal::G),
-            104 => Some(KeyVal::H),
-            105 => Some(KeyVal::I),
-            106 => Some(KeyVal::J),
-            107 => Some(KeyVal::K),
-            108 => Some(KeyVal::L),
-            109 => Some(KeyVal::M),
-            110 => Some(KeyVal::N),
-            111 => Some(KeyVal::O),
-            112 => Some(KeyVal::P),
-            113 => Some(KeyVal::Q),
-            114 => Some(KeyVal::R),
-            115 => Some(KeyVal::S),
-            116 => Some(KeyVal::T),
-            117 => Some(KeyVal::U),
-            118 => Some(KeyVal::V),
-            119 => Some(KeyVal::W),
-            120 => Some(KeyVal::X),
-            121 => Some(KeyVal::Y),
-            122 => Some(KeyVal::Z),
-            44 => Some(KeyVal::Comma),
-            46 => Some(KeyVal::Period),
-            59 => Some(KeyVal::SemiColon),
-            39 => Some(KeyVal::SingleQuote),
-            47 => Some(KeyVal::ForwardSlash),
-            32 => Some(KeyVal::Space),
-            65293 => Some(KeyVal::Enter),
-            65505 => Some(KeyVal::Shift),
-            45 => Some(KeyVal::Minus),
-            61 => Some(KeyVal::Equal),
-            65362 => Some(KeyVal::Up),
-            65364 => Some(KeyVal::Down),
-            65361 => Some(KeyVal::Left),
-            65363 => Some(KeyVal::Right),
-            65288 => Some(KeyVal::Backspace),
-            65307 => Some(KeyVal::Escape),
-            48 => Some(KeyVal::_0),
-            49 => Some(KeyVal::_1),
-            50 => Some(KeyVal::_2),
-            51 => Some(KeyVal::_3),
-            52 => Some(KeyVal::_4),
-            53 => Some(KeyVal::_5),
-            54 => Some(KeyVal::_6),
-            55 => Some(KeyVal::_7),
-            56 => Some(KeyVal::_8),
-            57 => Some(KeyVal::_9),
-            _ => None,
-        }
-    }
-}
-
-#[allow(dead_code)]
-pub enum Key {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
-    Comma,
-    Period,
-    SemiColon,
-    Colon,
-    SingleQuote,
-    DoubleQuote,
-    ForwardSlash,
-    QuestionMark,
-    Space,
-    Enter,
-    Shift,
-    Minus,
-    Equal,
-    Up,
-    Down,
-    Left,
-    Right,
-    Backspace,
-    Escape,
-    _0,
-    _1,
-    _2,
-    _3,
-    _4,
-    _5,
-    _6,
-    _7,
-    _8,
-    _9,
-}
-
 impl Key {
-    pub fn from_key_val(keyval: KeyVal, shift_pressed: bool) -> Key {
-        match keyval {
-            KeyVal::A => Key::A,
-            KeyVal::B => Key::B,
-            KeyVal::C => Key::C,
-            KeyVal::D => Key::D,
-            KeyVal::E => Key::E,
-            KeyVal::F => Key::F,
-            KeyVal::G => Key::G,
-            KeyVal::H => Key::H,
-            KeyVal::I => Key::I,
-            KeyVal::J => Key::J,
-            KeyVal::K => Key::K,
-            KeyVal::L => Key::L,
-            KeyVal::M => Key::M,
-            KeyVal::N => Key::N,
-            KeyVal::O => Key::O,
-            KeyVal::P => Key::P,
-            KeyVal::Q => Key::Q,
-            KeyVal::R => Key::R,
-            KeyVal::S => Key::S,
-            KeyVal::T => Key::T,
-            KeyVal::U => Key::U,
-            KeyVal::V => Key::V,
-            KeyVal::W => Key::W,
-            KeyVal::X => Key::X,
-            KeyVal::Y => Key::Y,
-            KeyVal::Z => Key::Z,
-            KeyVal::Comma => Key::Comma,
-            KeyVal::Period => Key::Period,
-            KeyVal::SemiColon => Key::SemiColon,
-            KeyVal::SingleQuote => {
-                if shift_pressed {
-                    Key::DoubleQuote
-                } else {
-                    Key::SingleQuote
-                }
-            }
-            KeyVal::ForwardSlash => {
-                if shift_pressed {
-                    Key::QuestionMark
-                } else {
-                    Key::ForwardSlash
-                }
-            }
-            KeyVal::Space => Key::Space,
-            KeyVal::Enter => Key::Enter,
-            KeyVal::Shift => Key::Shift,
-            KeyVal::Minus => Key::Minus,
-            KeyVal::Equal => Key::Equal,
-            KeyVal::Up => Key::Up,
-            KeyVal::Down => Key::Down,
-            KeyVal::Left => Key::Left,
-            KeyVal::Right => Key::Right,
-            KeyVal::Backspace => Key::Backspace,
-            KeyVal::Escape => Key::Escape,
-            KeyVal::_0 => Key::_0,
-            KeyVal::_1 => Key::_1,
-            KeyVal::_2 => Key::_2,
-            KeyVal::_3 => Key::_3,
-            KeyVal::_4 => Key::_4,
-            KeyVal::_5 => Key::_5,
-            KeyVal::_6 => Key::_6,
-            KeyVal::_7 => Key::_7,
-            KeyVal::_8 => Key::_8,
-            KeyVal::_9 => Key::_9,
-        }
-    }
-
-    pub fn to_full_width_string(key: Key) -> Option<String> {
-        match key {
-            Key::Comma => Some("，".to_owned()),
-            Key::Period => Some("。".to_owned()),
-            Key::SemiColon => Some("；".to_owned()),
-            Key::Colon => Some("：".to_owned()),
-            Key::SingleQuote => Some("‘’".to_owned()),
-            Key::DoubleQuote => Some("“”".to_owned()),
-            Key::QuestionMark => Some("？".to_owned()),
+    pub fn from_u32(num: u32) -> Option<Key> {
+        match num {
+            97 => Some(Key::A),
+            98 => Some(Key::B),
+            99 => Some(Key::C),
+            100 => Some(Key::D),
+            101 => Some(Key::E),
+            102 => Some(Key::F),
+            103 => Some(Key::G),
+            104 => Some(Key::H),
+            105 => Some(Key::I),
+            106 => Some(Key::J),
+            107 => Some(Key::K),
+            108 => Some(Key::L),
+            109 => Some(Key::M),
+            110 => Some(Key::N),
+            111 => Some(Key::O),
+            112 => Some(Key::P),
+            113 => Some(Key::Q),
+            114 => Some(Key::R),
+            115 => Some(Key::S),
+            116 => Some(Key::T),
+            117 => Some(Key::U),
+            118 => Some(Key::V),
+            119 => Some(Key::W),
+            120 => Some(Key::X),
+            121 => Some(Key::Y),
+            122 => Some(Key::Z),
+            44 => Some(Key::Comma),
+            46 => Some(Key::Period),
+            58 => Some(Key::Colon),
+            59 => Some(Key::SemiColon),
+            32 => Some(Key::Space),
+            34 => Some(Key::DoubleQuote),
+            39 => Some(Key::SingleQuote),
+            63 => Some(Key::QuestionMark),
+            65293 => Some(Key::Enter),
+            65505 => Some(Key::Shift),
+            45 => Some(Key::Minus),
+            61 => Some(Key::Equal),
+            65362 => Some(Key::Up),
+            65364 => Some(Key::Down),
+            65361 => Some(Key::Left),
+            65363 => Some(Key::Right),
+            65288 => Some(Key::Backspace),
+            65307 => Some(Key::Escape),
+            48 => Some(Key::_0),
+            49 => Some(Key::_1),
+            50 => Some(Key::_2),
+            51 => Some(Key::_3),
+            52 => Some(Key::_4),
+            53 => Some(Key::_5),
+            54 => Some(Key::_6),
+            55 => Some(Key::_7),
+            56 => Some(Key::_8),
+            57 => Some(Key::_9),
             _ => None,
         }
     }
 
-    pub fn to_char(key: Key) -> Option<char> {
-        match key {
+    pub fn to_char(self) -> Option<char> {
+        match self {
             Key::A => Some('a'),
             Key::B => Some('b'),
             Key::C => Some('c'),
@@ -288,8 +149,8 @@ impl Key {
         }
     }
 
-    pub fn to_usize(key: Key) -> Option<usize> {
-        match key {
+    pub fn to_usize(self) -> Option<usize> {
+        match self {
             Key::_0 => Some(0),
             Key::_1 => Some(1),
             Key::_2 => Some(2),
@@ -300,6 +161,19 @@ impl Key {
             Key::_7 => Some(7),
             Key::_8 => Some(8),
             Key::_9 => Some(9),
+            _ => None,
+        }
+    }
+
+    pub fn to_full_width_string(self) -> Option<String> {
+        match self {
+            Key::Comma => Some("，".to_owned()),
+            Key::Period => Some("。".to_owned()),
+            Key::SemiColon => Some("；".to_owned()),
+            Key::Colon => Some("：".to_owned()),
+            Key::SingleQuote => Some("‘’".to_owned()),
+            Key::DoubleQuote => Some("“”".to_owned()),
+            Key::QuestionMark => Some("？".to_owned()),
             _ => None,
         }
     }
