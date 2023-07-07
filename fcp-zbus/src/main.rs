@@ -6,7 +6,7 @@ use crate::{generated::IBusProxy, ibus_helper::get_ibus_address};
 
 use engine::FcpEngine;
 use ibus_variants::{IBusComponent, IBusEngineDesc};
-use listeners::{FactoryListener, InputListener, ServiceListener};
+use listeners::{FactoryListener, InputListener, ServiceListener, new_input_listener};
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod engine;
@@ -54,9 +54,7 @@ async fn start_from_ibus() {
     conn.object_server()
         .at(
             "/org/freedesktop/IBus/Engine/FcPinyin",
-            InputListener {
-                engine: FcpEngine::new(&conn),
-            },
+            new_input_listener(&conn),
         )
         .await
         .expect("Faild to set up server object.");
@@ -133,9 +131,7 @@ async fn start_from_console() {
     conn.object_server()
         .at(
             "/org/freedesktop/IBus/Engine/FcPinyin",
-            InputListener {
-                engine: FcpEngine::new(&conn),
-            },
+            new_input_listener(&conn),
         )
         .await
         .expect("Faild to set up server object.");
