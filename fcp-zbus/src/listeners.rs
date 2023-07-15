@@ -52,6 +52,10 @@ impl InputListener {
             let was_en_mode = self.is_en_mode();
             self.set_en_mode(!was_en_mode);
         }
+        if is_ctrl && !is_release {
+            // User control like ctrl+v that has nothing to do with us.
+            return false;
+        }
 
         if self.is_en_mode() || is_release {
             return false;
