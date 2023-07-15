@@ -4,9 +4,8 @@ use std::env;
 
 use crate::{generated::IBusProxy, ibus_helper::get_ibus_address};
 
-use engine::FcpEngine;
 use ibus_variants::{IBusComponent, IBusEngineDesc};
-use listeners::{FactoryListener, InputListener, ServiceListener, new_input_listener};
+use listeners::{new_input_listener, FactoryListener, ServiceListener};
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod engine;
@@ -15,8 +14,8 @@ mod generated;
 mod ibus_helper;
 mod ibus_proxy;
 mod ibus_variants;
-mod listeners;
 mod keys;
+mod listeners;
 
 #[tokio::main]
 async fn main() {
