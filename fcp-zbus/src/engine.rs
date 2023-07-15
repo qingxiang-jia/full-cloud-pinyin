@@ -25,7 +25,6 @@ struct State {
     preedit: String,
     depth: usize,
     session: bool,
-    en_mode: bool,
     candidates: Vec<Candidate>,
     page: usize,
 }
@@ -38,7 +37,6 @@ impl State {
             preedit: "".to_owned(),
             depth: 0,
             session: false,
-            en_mode: false,
             candidates: Vec::new(),
             page: 0,
         }
@@ -128,10 +126,6 @@ impl FcpEngine {
     pub async fn user_types(&self, key: Key) -> bool {
         let mut state = self.state.lock().await;
 
-        if state.en_mode {
-            return false;
-        }
-
         state.session = true;
         let preedit = FcpEngine::concate(
             &state.preedit,
@@ -147,9 +141,6 @@ impl FcpEngine {
     }
 
     pub async fn user_selects(&self, key: Key) -> bool {
-        if self.state.lock().await.en_mode {
-            return false;
-        }
         let cand_label = key.to_usize().expect("Key cannot be converted to a usize.");
 
         if 1 <= cand_label && cand_label <= self.lt_size {
@@ -171,7 +162,6 @@ impl FcpEngine {
             state.page = 0;
             state.preedit = "".to_owned();
             state.session = false;
-            state.en_mode = false;
             return true;
             // TODO: if matched length is less than the length of preedit, the remaining preedit should be used to make another query.
         } else {
@@ -181,10 +171,6 @@ impl FcpEngine {
 
     pub async fn to_full_width(&self, key: Key) -> bool {
         println!("begin {:#?}", &key);
-        if self.state.lock().await.en_mode {
-            println!("English mode!");
-            return false;
-        }
 
         let fw_puctuation = key
             .to_full_width_string()
@@ -199,33 +185,24 @@ impl FcpEngine {
     pub async fn user_controls(&self, key: Key) -> bool {
         let mut state = self.state.lock().await;
 
-        // English mode handling
-        if state.en_mode {
-            if let Key::Shift = key {
-                state.en_mode = false;
-                return true;
-            }
-        } else {
-            if let Key::Shift = key {
-                // Reset state
-                state.candidates.clear();
-                state.depth = 0;
-                state.page = 0;
-                state.preedit = "".to_owned();
-                state.session = false;
-                state.en_mode = true;
+        if let Key::Shift = key {
+            // Reset state
+            state.candidates.clear();
+            state.depth = 0;
+            state.page = 0;
+            state.preedit = "".to_owned();
+            state.session = false;
 
-                drop(state);
+            drop(state);
 
-                // Reset preedit
-                self.ibus.update_preedit_text("", 0, false).await;
+            // Reset preedit
+            self.ibus.update_preedit_text("", 0, false).await;
 
-                // Reset lookup table
-                let lt = IBusLookupTable::from_nothing();
-                self.ibus.update_lookup_table(lt, false).await;
+            // Reset lookup table
+            let lt = IBusLookupTable::from_nothing();
+            self.ibus.update_lookup_table(lt, false).await;
 
-                return true;
-            }
+            return true;
         }
 
         if !state.session {
@@ -247,7 +224,6 @@ impl FcpEngine {
                 state.page = 0;
                 state.preedit = "".to_owned();
                 state.session = false;
-                state.en_mode = false;
 
                 drop(state);
 
@@ -303,7 +279,6 @@ impl FcpEngine {
                     state.depth = 0;
                     state.page = 0;
                     state.session = false;
-                    state.en_mode = false;
 
                     // Reset preedit
                     self.ibus.update_preedit_text("", 0, false).await;
@@ -332,7 +307,6 @@ impl FcpEngine {
                 state.page = 0;
                 state.preedit = "".to_owned();
                 state.session = false;
-                state.en_mode = false;
 
                 // Reset preedit
                 self.ibus.update_preedit_text("", 0, false).await;
@@ -348,10 +322,6 @@ impl FcpEngine {
     }
 
     async fn handle_select(&self, cand_label: usize) -> bool {
-        if self.state.lock().await.en_mode {
-            return false;
-        }
-
         if 1 <= cand_label && cand_label <= self.lt_size {
             let cand_idx = cand_label - 1;
             let cand = self.state.lock().await.candidates[cand_idx].clone();
@@ -371,7 +341,6 @@ impl FcpEngine {
             state.page = 0;
             state.preedit = "".to_owned();
             state.session = false;
-            state.en_mode = false;
             return true;
             // TODO: if matched length is less than the length of preedit, the remaining preedit should be used to make another query.
         } else {
