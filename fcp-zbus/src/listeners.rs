@@ -52,8 +52,6 @@ impl InputListener {
         let type_while_shift_on = self.get_kth_bit(state, 0);
         let is_release = self.get_kth_bit(state, 30);
 
-        // println!("type_normally: {}, type_while_shift_on: {}, is_release: {}", type_normally, type_while_shift_on, is_release);
-
         let maybe_key = Key::from_u32(keyval);
         if maybe_key.is_none() {
             return false; // We don't handle anything outside of key.
@@ -87,7 +85,9 @@ impl InputListener {
                 self.set_shift_on(false);
             } else {
                 self.set_shift_on(false);
-                self.set_en_mode(true);
+                if key == Key::Shift {
+                    self.set_en_mode(true);
+                }
             }
         }
         
