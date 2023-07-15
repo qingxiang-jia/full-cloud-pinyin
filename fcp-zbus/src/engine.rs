@@ -67,7 +67,6 @@ impl FcpEngine {
     }
 
     pub async fn on_input(&self, key: Key) -> bool {
-        println!("key={:#?}", key);
         match key {
             Key::A
             | Key::B
