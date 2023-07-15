@@ -32,12 +32,9 @@ impl ServiceListener {
 }
 
 pub struct InputListener {
-    // For these two fields, no one will modify it concurrently, it's just the Rust
+    // No one will modify it concurrently, it's just the Rust
     // compiler isn't able to prove that.
-    shift_on: Arc<Mutex<bool>>,
-    shift_on_and_type: Arc<Mutex<bool>>,
     en_mode: Arc<Mutex<bool>>,
-
     pub engine: FcpEngine,
 }
 
@@ -48,9 +45,17 @@ impl InputListener {
         // println!("keyval: {keyval}, keycode: {keycode}, state: {bi}");
 
         // State flags
-        let type_normally = state == 0;
-        let type_while_shift_on = self.get_kth_bit(state, 0);
         let is_release = self.get_kth_bit(state, 30);
+        let is_ctrl = self.get_kth_bit(state, 2);
+
+        if is_ctrl && is_release {
+            let was_en_mode = self.is_en_mode();
+            self.set_en_mode(!was_en_mode);
+        }
+
+        if self.is_en_mode() || is_release {
+            return false;
+        }
 
         let maybe_key = Key::from_u32(keyval);
         if maybe_key.is_none() {
@@ -58,40 +63,7 @@ impl InputListener {
         }
         let key = maybe_key.expect("maybe_key is None but it shouldn't.");
 
-        if type_normally {
-            if let Key::Shift = key {
-                self.set_shift_on(true);
-            } else {
-                if self.is_en_mode() {
-                    return false;
-                } else {
-                    return self.engine.on_input(key).await;
-                }
-            }
-        }
-
-        if type_while_shift_on {
-            if self.is_en_mode() {
-                return false;
-            } else {
-                self.set_shift_on_and_type(true);
-                return self.engine.on_input(key).await;
-            }
-        }
-
-        if is_release {
-            if self.is_shift_on_and_type() {
-                self.set_shift_on_and_type(false);
-                self.set_shift_on(false);
-            } else {
-                self.set_shift_on(false);
-                if key == Key::Shift {
-                    self.set_en_mode(true);
-                }
-            }
-        }
-        
-        return false;
+        return self.engine.on_input(key).await;
     }
 
     fn is_en_mode(&self) -> bool {
@@ -106,33 +78,6 @@ impl InputListener {
         *en_mode = val;
     }
 
-    fn is_shift_on(&self) -> bool {
-        self.shift_on
-            .lock()
-            .expect("Failed to lock shift_on.")
-            .clone()
-    }
-
-    fn set_shift_on(&self, val: bool) {
-        let mut shift_on = self.shift_on.lock().expect("Failed to lock shift_on.");
-        *shift_on = val;
-    }
-
-    fn is_shift_on_and_type(&self) -> bool {
-        self.shift_on_and_type
-            .lock()
-            .expect("Failed to lock shift_on_then_input.")
-            .clone()
-    }
-
-    fn set_shift_on_and_type(&self, val: bool) {
-        let mut shift_on_then_input = self
-            .shift_on_and_type
-            .lock()
-            .expect("Failed to lock shift_on_then_input.");
-        *shift_on_then_input = val;
-    }
-
     fn get_kth_bit(&self, n: u32, k: u32) -> bool {
         (n & (1 << k)) >> k == 1
     }
@@ -140,8 +85,6 @@ impl InputListener {
 
 pub fn new_input_listener(conn: &Connection) -> InputListener {
     InputListener {
-        shift_on: Arc::new(Mutex::new(false)),
-        shift_on_and_type: Arc::new(Mutex::new(false)),
         en_mode: Arc::new(Mutex::new(false)),
         engine: FcpEngine::new(conn),
     }
