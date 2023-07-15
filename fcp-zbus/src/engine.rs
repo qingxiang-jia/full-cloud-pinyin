@@ -133,7 +133,7 @@ impl FcpEngine {
         }
 
         state.session = true;
-        let preedit = FcpEngine::conc(
+        let preedit = FcpEngine::concate(
             &state.preedit,
             key.to_char().expect("Key cannot be converted to String."),
         );
@@ -197,204 +197,6 @@ impl FcpEngine {
     }
 
     pub async fn user_controls(&self, key: Key) -> bool {
-        let mut state = self.state.lock().await;
-
-        // English mode handling
-        if state.en_mode {
-            if let Key::Shift = key {
-                state.en_mode = false;
-                return true;
-            }
-        } else {
-            if let Key::Shift = key {
-                // Reset state
-                state.candidates.clear();
-                state.depth = 0;
-                state.page = 0;
-                state.preedit = "".to_owned();
-                state.session = false;
-                state.en_mode = true;
-
-                drop(state);
-
-                // Reset preedit
-                self.ibus.update_preedit_text("", 0, false).await;
-
-                // Reset lookup table
-                let lt = IBusLookupTable::from_nothing();
-                self.ibus.update_lookup_table(lt, false).await;
-
-                return true;
-            }
-        }
-
-        if !state.session {
-            return false;
-        }
-
-        drop(state);
-
-        match key {
-            Key::Space => return self.handle_select(1).await,
-            Key::Enter => {
-                let mut state = self.state.lock().await;
-
-                let preedit = state.preedit.clone();
-
-                // Reset state
-                state.candidates.clear();
-                state.depth = 0;
-                state.page = 0;
-                state.preedit = "".to_owned();
-                state.session = false;
-                state.en_mode = false;
-
-                drop(state);
-
-                // Commit preddit as alphabets
-                self.ibus.commit_text(&preedit).await;
-
-                // Reset preedit
-                self.ibus.update_preedit_text("", 0, false).await;
-
-                // Reset lookup table
-                let lt = IBusLookupTable::from_nothing();
-                self.ibus.update_lookup_table(lt, false).await;
-
-                true
-            }
-            Key::Minus => {
-                let mut page = self.state.lock().await.page;
-
-                if page == 0 {
-                    return false;
-                }
-
-                page -= 1; // Updated in send_to_ibus
-                let start = page * self.lt_size;
-                let end = start + self.lt_size;
-
-                self.send_to_ibus(start, end, Intent::PageUp).await;
-
-                true
-            }
-            Key::Equal => {
-                let mut page = self.state.lock().await.page;
-
-                page += 1; // Updated in send_to_ibus
-                let start = page * self.lt_size;
-                let end = start + self.lt_size;
-
-                self.send_to_ibus(start, end, Intent::PageDown).await;
-
-                true
-            }
-            Key::Up => return false,    // For now, ingore
-            Key::Down => return false,  // For now, ignore
-            Key::Left => return false,  // For now, ignore
-            Key::Right => return false, // For now, ignore
-            Key::Backspace => {
-                let popped = self.state.lock().await.preedit.pop();
-                if popped.is_none() {
-                    let mut state = self.state.lock().await;
-
-                    // Reset state
-                    state.candidates.clear();
-                    state.depth = 0;
-                    state.page = 0;
-                    state.session = false;
-                    state.en_mode = false;
-
-                    // Reset preedit
-                    self.ibus.update_preedit_text("", 0, false).await;
-
-                    // Reset lookup table
-                    let lt = IBusLookupTable::from_nothing();
-                    self.ibus.update_lookup_table(lt, false).await;
-
-                    return false;
-                }
-
-                // Update preedit
-                let preedit = self.state.lock().await.preedit.clone();
-                self.ibus.update_preedit_text(&preedit, 0, true).await;
-
-                self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
-
-                true
-            }
-            Key::Escape => {
-                let mut state = self.state.lock().await;
-
-                // Reset state
-                state.candidates.clear();
-                state.depth = 0;
-                state.page = 0;
-                state.preedit = "".to_owned();
-                state.session = false;
-                state.en_mode = false;
-
-                // Reset preedit
-                self.ibus.update_preedit_text("", 0, false).await;
-
-                // Reset lookup table
-                let lt = IBusLookupTable::from_nothing();
-                self.ibus.update_lookup_table(lt, false).await;
-
-                true
-            }
-            _ => panic!("Invalid control key."),
-        }
-    }
-
-    pub async fn on_key_press(&self, keyval: u32) -> bool {
-        if Key::A as u32 <= keyval && keyval <= Key::Z as u32 {
-            return self.handle_typing(keyval).await;
-        }
-        if Key::_0 as u32 <= keyval && keyval <= Key::_9 as u32 {
-            return self.handle_select((keyval - 48) as usize).await;
-        }
-        if Key::Space as u32 == keyval
-            || Key::Enter as u32 == keyval
-            || Key::Shift as u32 == keyval
-            || Key::Minus as u32 == keyval
-            || Key::Equal as u32 == keyval
-            || Key::Up as u32 == keyval
-            || Key::Down as u32 == keyval
-            || Key::Left as u32 == keyval
-            || Key::Right as u32 == keyval
-            || Key::Backspace as u32 == keyval
-            || Key::Escape as u32 == keyval
-        {
-            return self
-                .handle_control(
-                    Key::from_u32(keyval).expect("Failed to convert to KeyVal from u32."),
-                )
-                .await;
-        }
-
-        return false;
-    }
-
-    async fn handle_typing(&self, keyval: u32) -> bool {
-        let mut state = self.state.lock().await;
-
-        if state.en_mode {
-            return false;
-        }
-
-        state.session = true;
-        let preedit = FcpEngine::concate(&state.preedit, keyval);
-        state.preedit = preedit.clone();
-        drop(state);
-
-        self.ibus.update_preedit_text(&preedit, 1, true).await;
-        self.send_to_ibus(0, self.lt_size, Intent::Typing).await;
-
-        true
-    }
-
-    async fn handle_control(&self, key: Key) -> bool {
         let mut state = self.state.lock().await;
 
         // English mode handling
@@ -722,13 +524,7 @@ impl FcpEngine {
         aggregate
     }
 
-    fn concate(s: &String, c: u32) -> String {
-        let mut new = s.clone();
-        new.push(char::from_u32(c).expect(&format!("Cannot convert u32 {c} to char.")));
-        return new;
-    }
-
-    fn conc(s: &str, c: char) -> String {
+    fn concate(s: &str, c: char) -> String {
         let mut new = s.clone().to_owned();
         new.push(c);
         new
