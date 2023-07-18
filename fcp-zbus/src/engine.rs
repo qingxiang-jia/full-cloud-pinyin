@@ -170,13 +170,9 @@ impl FcpEngine {
     }
 
     pub async fn to_full_width(&self, key: Key) -> bool {
-        println!("begin {:#?}", &key);
-
         let fw_puctuation = key
             .to_full_width_string()
             .expect("This key cannot be converted to fullwidth string.");
-
-        println!("Committing: {}", &fw_puctuation);
 
         self.ibus.commit_text(&fw_puctuation).await;
         return true;
