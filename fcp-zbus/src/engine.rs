@@ -208,7 +208,7 @@ impl FcpEngine {
         drop(state);
 
         match key {
-            Key::Space => return self.handle_select(1).await,
+            Key::Space => return self.user_selects(Key::_1).await,
             Key::Enter => {
                 let mut state = self.state.lock().await;
 
@@ -318,33 +318,6 @@ impl FcpEngine {
                 true
             }
             _ => panic!("Invalid control key."),
-        }
-    }
-
-    async fn handle_select(&self, cand_label: usize) -> bool {
-        if 1 <= cand_label && cand_label <= self.lt_size {
-            let cand_idx = cand_label - 1;
-            let cand = self.state.lock().await.candidates[cand_idx].clone();
-            self.ibus.commit_text(&cand.word).await;
-
-            // Reset lookup table
-            let lt = IBusLookupTable::from_nothing();
-            self.ibus.update_lookup_table(lt, false).await;
-
-            // Reset preedit
-            self.ibus.update_preedit_text("", 0, false).await;
-
-            // Reset state
-            let mut state = self.state.lock().await;
-            state.candidates.clear();
-            state.depth = 0;
-            state.page = 0;
-            state.preedit = "".to_owned();
-            state.session = false;
-            return true;
-            // TODO: if matched length is less than the length of preedit, the remaining preedit should be used to make another query.
-        } else {
-            return false;
         }
     }
 
