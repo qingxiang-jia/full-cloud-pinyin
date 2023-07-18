@@ -240,26 +240,30 @@ impl FcpEngine {
                 true
             }
             Key::Minus => {
-                let mut page = self.state.lock().await.page;
+                let mut state = self.state.lock().await;
 
-                if page == 0 {
+                if state.page == 0 {
                     return false;
                 }
 
-                page -= 1; // Updated in send_to_ibus
-                let start = page * self.lt_size;
+                state.page -= 1; // Updated in send_to_ibus
+                let start = state.page * self.lt_size;
                 let end = start + self.lt_size;
+
+                drop(state);
 
                 self.send_to_ibus(start, end, Intent::PageUp).await;
 
                 true
             }
             Key::Equal => {
-                let mut page = self.state.lock().await.page;
+                let mut state = self.state.lock().await;
 
-                page += 1; // Updated in send_to_ibus
-                let start = page * self.lt_size;
+                state.page += 1; // Updated in send_to_ibus
+                let start = state.page * self.lt_size;
                 let end = start + self.lt_size;
+
+                drop(state);
 
                 self.send_to_ibus(start, end, Intent::PageDown).await;
 
