@@ -347,15 +347,16 @@ impl FcpEngine {
         }
 
         if intent == Intent::PageDown {
-            let state = self.state.lock().await;
+            let mut state = self.state.lock().await;
 
             if start >= state.candidates.len() || end > state.candidates.len() {
                 // Need to query for new candidates
-                let mut depth = state.depth + 1;
-                if depth >= self.levels.len() {
-                    depth = self.levels.len() - 1;
+                state.depth += 1;
+                if state.depth >= self.levels.len() {
+                    state.depth = self.levels.len() - 1;
                 }
                 let max_cands = self.levels[depth];
+                println!("max_cands: {max_cands}");
                 drop(state);
 
                 let cands = self.query_candidates(&preedit, max_cands).await;
