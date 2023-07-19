@@ -23,7 +23,6 @@ pub struct Candidate {
 
 struct State {
     preedit: String,
-    depth: usize,
     session: bool,
     candidates: Vec<Candidate>,
     page: usize,
@@ -35,7 +34,6 @@ impl State {
     pub fn new() -> Self {
         State {
             preedit: "".to_owned(),
-            depth: 0,
             session: false,
             candidates: Vec::new(),
             page: 0,
@@ -144,7 +142,9 @@ impl FcpEngine {
         let cand_label = key.to_usize().expect("Key cannot be converted to a usize.");
 
         if 1 <= cand_label && cand_label <= self.lt_size {
-            let cand_idx = cand_label - 1;
+            let page = self.state.lock().await.page;
+            let mut cand_idx = cand_label - 1;
+            cand_idx = cand_idx + page * self.lt_size;
             let cand = self.state.lock().await.candidates[cand_idx].clone();
             self.ibus.commit_text(&cand.word).await;
 
@@ -158,7 +158,6 @@ impl FcpEngine {
             // Reset state
             let mut state = self.state.lock().await;
             state.candidates.clear();
-            state.depth = 0;
             state.page = 0;
             state.preedit = "".to_owned();
             state.session = false;
@@ -184,7 +183,6 @@ impl FcpEngine {
         if let Key::Shift = key {
             // Reset state
             state.candidates.clear();
-            state.depth = 0;
             state.page = 0;
             state.preedit = "".to_owned();
             state.session = false;
@@ -216,7 +214,6 @@ impl FcpEngine {
 
                 // Reset state
                 state.candidates.clear();
-                state.depth = 0;
                 state.page = 0;
                 state.preedit = "".to_owned();
                 state.session = false;
@@ -276,7 +273,6 @@ impl FcpEngine {
 
                     // Reset state
                     state.candidates.clear();
-                    state.depth = 0;
                     state.page = 0;
                     state.session = false;
 
@@ -303,7 +299,6 @@ impl FcpEngine {
 
                 // Reset state
                 state.candidates.clear();
-                state.depth = 0;
                 state.page = 0;
                 state.preedit = "".to_owned();
                 state.session = false;
@@ -326,11 +321,10 @@ impl FcpEngine {
     async fn send_to_ibus(&self, start: usize, mut end: usize, intent: Intent) {
         let state = self.state.lock().await;
         let preedit = state.preedit.clone();
-        let depth = state.depth;
         drop(state);
 
         if intent == Intent::Typing {
-            let max_cand = self.levels[depth];
+            let max_cand = self.levels[0];
             let cands = self.query_candidates(&preedit, max_cand).await;
 
             if end > cands.len() {
@@ -347,16 +341,17 @@ impl FcpEngine {
         }
 
         if intent == Intent::PageDown {
-            let mut state = self.state.lock().await;
+            let state = self.state.lock().await;
 
+            // Need to query for new candidates
             if start >= state.candidates.len() || end > state.candidates.len() {
-                // Need to query for new candidates
-                state.depth += 1;
-                if state.depth >= self.levels.len() {
-                    state.depth = self.levels.len() - 1;
+                // Decide query depth
+                let mut depth = 0;
+                while depth < self.levels.len() && state.page * self.lt_size > self.levels[depth] {
+                    depth += 1
                 }
+
                 let max_cands = self.levels[depth];
-                println!("max_cands: {max_cands}");
                 drop(state);
 
                 let cands = self.query_candidates(&preedit, max_cands).await;
