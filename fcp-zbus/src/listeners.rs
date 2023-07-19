@@ -51,6 +51,10 @@ impl InputListener {
         if is_ctrl && is_release {
             let was_en_mode = self.is_en_mode();
             self.set_en_mode(!was_en_mode);
+            if !was_en_mode {
+                // If *now* we are in English mode, reset the engine.
+                self.engine.reset().await;
+            }
         }
         if is_ctrl && !is_release {
             // User control like ctrl+v that has nothing to do with us.

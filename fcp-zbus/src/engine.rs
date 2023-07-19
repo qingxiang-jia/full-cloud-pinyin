@@ -109,7 +109,6 @@ impl FcpEngine {
             | Key::QuestionMark => self.to_full_width(key).await,
             Key::Space
             | Key::Enter
-            | Key::Shift
             | Key::Minus
             | Key::Equal
             | Key::Up
@@ -178,26 +177,7 @@ impl FcpEngine {
     }
 
     pub async fn user_controls(&self, key: Key) -> bool {
-        let mut state = self.state.lock().await;
-
-        if let Key::Shift = key {
-            // Reset state
-            state.candidates.clear();
-            state.page = 0;
-            state.preedit = "".to_owned();
-            state.session = false;
-
-            drop(state);
-
-            // Reset preedit
-            self.ibus.update_preedit_text("", 0, false).await;
-
-            // Reset lookup table
-            let lt = IBusLookupTable::from_nothing();
-            self.ibus.update_lookup_table(lt, false).await;
-
-            return true;
-        }
+        let state = self.state.lock().await;
 
         if !state.session {
             return false;
@@ -378,6 +358,25 @@ impl FcpEngine {
             let lt = IBusLookupTable::from_candidates(&cands);
             self.ibus.update_lookup_table(lt, true).await;
         }
+    }
+
+    pub async fn reset(&self) {
+        let mut state = self.state.lock().await;
+
+        // Reset state
+        state.candidates.clear();
+        state.page = 0;
+        state.preedit = "".to_owned();
+        state.session = false;
+
+        drop(state);
+
+        // Reset preedit
+        self.ibus.update_preedit_text("", 0, false).await;
+
+        // Reset lookup table
+        let lt = IBusLookupTable::from_nothing();
+        self.ibus.update_lookup_table(lt, false).await;
     }
 
     async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
