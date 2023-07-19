@@ -360,8 +360,7 @@ impl FcpEngine {
                 drop(state);
             }
 
-            let mut state = self.state.lock().await;
-            state.page += 1;
+            let state = self.state.lock().await;
 
             let cands_slice = &state.candidates[start..end];
             let cands = cands_slice.to_vec();
@@ -371,8 +370,7 @@ impl FcpEngine {
         }
 
         if intent == Intent::PageUp {
-            let mut state = self.state.lock().await;
-            state.page -= 1;
+            let state = self.state.lock().await;
 
             let cands_slice = &state.candidates[start..end];
             let cands = cands_slice.to_vec();
