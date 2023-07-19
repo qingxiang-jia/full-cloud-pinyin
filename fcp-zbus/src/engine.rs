@@ -347,7 +347,7 @@ impl FcpEngine {
             if start >= state.candidates.len() || end > state.candidates.len() {
                 // Decide query depth
                 let mut depth = 0;
-                while depth < self.levels.len() && state.page * self.lt_size > self.levels[depth] {
+                while depth < self.levels.len() && (state.page + 1) * self.lt_size > self.levels[depth] {
                     depth += 1
                 }
 
