@@ -1,6 +1,14 @@
 use std::sync::{Mutex, Arc};
 
+use crate::keys::Key;
+
 #[derive(Clone, Copy)]
+pub enum ModeSwitcherReturn {
+    Continue(Key, bool),
+    Done(bool)
+}
+
+#[derive(Clone, Copy, PartialEq)]
 enum Mode {
     English,
     Pinyin
@@ -11,8 +19,42 @@ pub struct ModeSwitcher {
 }
 
 impl ModeSwitcher {
-    pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> bool {
-        !unimplemented!()
+    pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> ModeSwitcherReturn {
+        // let bi = format!("{state:b}");
+        // println!("keyval: {keyval}, keycode: {keycode}, state: {bi}");
+
+        // State flags
+        let is_release = self.get_kth_bit(state, 30);
+        let is_ctrl = self.get_kth_bit(state, 2);
+        let mut should_reset = false;
+
+        if is_ctrl && is_release {
+            let prev_mode = self.mode();
+            if prev_mode == Mode::English {
+                self.set_mode(Mode::Pinyin);
+            } else {
+                self.set_mode(Mode::English);
+            }
+            if prev_mode == Mode::Pinyin {
+                // If *now* we are in English mode, reset the engine.
+                should_reset = true;
+            }
+        }
+        if is_ctrl && !is_release {
+            // User control like ctrl+v that has nothing to do with us.
+            return ModeSwitcherReturn::Done(false);
+        }
+
+        if self.mode() == Mode::English || is_release {
+            return ModeSwitcherReturn::Done(false);
+        }
+
+        let maybe_key = Key::from_u32(keyval);
+        if maybe_key.is_none() {
+            return ModeSwitcherReturn::Done(false); // We don't handle anything outside of key.
+        }
+        let key = maybe_key.expect("maybe_key is None but it shouldn't.");
+        return ModeSwitcherReturn::Continue(key, should_reset);
     }
 
     fn mode(&self) -> Mode {
@@ -22,5 +64,9 @@ impl ModeSwitcher {
     fn set_mode(&self, val: Mode) {
         let mut mode = self.mode.lock().expect("Failed to lock mode.");
         *mode = val;
+    }
+
+    fn get_kth_bit(&self, n: u32, k: u32) -> bool {
+        (n & (1 << k)) >> k == 1
     }
 }

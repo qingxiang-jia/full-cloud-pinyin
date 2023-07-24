@@ -1,5 +1,5 @@
 #[allow(dead_code)]
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Key {
     A = 97,
     B = 98,
