@@ -1,25 +1,62 @@
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
 
 use crate::keys::Key;
 
 #[derive(Clone, Copy)]
 pub enum ModeSwitcherReturn {
     Continue(Key, bool),
-    Done(bool)
+    Done(bool),
+}
+
+impl ModeSwitcherReturn {
+    pub fn is_continue(&self) -> bool {
+        match self {
+            ModeSwitcherReturn::Continue(_, _) => true,
+            ModeSwitcherReturn::Done(_) => false,
+        }
+    }
+
+    pub fn is_done(&self) -> bool {
+        match self {
+            ModeSwitcherReturn::Continue(_, _) => false,
+            ModeSwitcherReturn::Done(_) => true,
+        }
+    }
+
+    pub fn get_continue_data(&self) -> Option<(Key, bool)> {
+        match self {
+            ModeSwitcherReturn::Continue(key, should_reset) => {
+                Some((key.clone(), should_reset.clone()))
+            }
+            ModeSwitcherReturn::Done(_) => None,
+        }
+    }
+
+    pub fn get_done_data(&self) -> Option<bool> {
+        match self {
+            ModeSwitcherReturn::Continue(_, _) => None,
+            ModeSwitcherReturn::Done(has_handled) => Some(has_handled.clone()),
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq)]
 enum Mode {
     English,
-    Pinyin
+    Pinyin,
 }
 
 pub struct ModeSwitcher {
-    mode: Arc<Mutex<Mode>>
+    mode: Arc<Mutex<Mode>>,
 }
 
 impl ModeSwitcher {
-    pub async fn process_key_event(&self, keyval: u32, keycode: u32, state: u32) -> ModeSwitcherReturn {
+    pub async fn process_key_event(
+        &self,
+        keyval: u32,
+        keycode: u32,
+        state: u32,
+    ) -> ModeSwitcherReturn {
         // let bi = format!("{state:b}");
         // println!("keyval: {keyval}, keycode: {keycode}, state: {bi}");
 
