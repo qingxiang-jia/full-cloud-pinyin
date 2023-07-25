@@ -2,36 +2,6 @@ use std::sync::{Arc, Mutex};
 
 use crate::keys::Key;
 
-#[derive(Clone, Copy)]
-pub enum ModeSwitcherReturn {
-    Continue(Key, bool),
-    Done(bool),
-}
-
-impl ModeSwitcherReturn {
-    pub fn get_continue_data(&self) -> Option<(Key, bool)> {
-        match self {
-            ModeSwitcherReturn::Continue(key, should_reset) => {
-                Some((key.clone(), should_reset.clone()))
-            }
-            ModeSwitcherReturn::Done(_) => None,
-        }
-    }
-
-    pub fn get_done_data(&self) -> Option<bool> {
-        match self {
-            ModeSwitcherReturn::Continue(_, _) => None,
-            ModeSwitcherReturn::Done(has_handled) => Some(has_handled.clone()),
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq)]
-enum Mode {
-    English,
-    Pinyin,
-}
-
 pub struct ModeSwitcher {
     mode: Arc<Mutex<Mode>>,
 }
@@ -92,4 +62,35 @@ impl ModeSwitcher {
     fn get_kth_bit(&self, n: u32, k: u32) -> bool {
         (n & (1 << k)) >> k == 1
     }
+}
+
+
+#[derive(Clone, Copy)]
+pub enum ModeSwitcherReturn {
+    Continue(Key, bool),
+    Done(bool),
+}
+
+impl ModeSwitcherReturn {
+    pub fn get_continue_data(&self) -> Option<(Key, bool)> {
+        match self {
+            ModeSwitcherReturn::Continue(key, should_reset) => {
+                Some((key.clone(), should_reset.clone()))
+            }
+            ModeSwitcherReturn::Done(_) => None,
+        }
+    }
+
+    pub fn get_done_data(&self) -> Option<bool> {
+        match self {
+            ModeSwitcherReturn::Continue(_, _) => None,
+            ModeSwitcherReturn::Done(has_handled) => Some(has_handled.clone()),
+        }
+    }
+}
+
+#[derive(Clone, Copy, PartialEq)]
+enum Mode {
+    English,
+    Pinyin,
 }
