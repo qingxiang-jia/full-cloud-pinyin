@@ -10,12 +10,12 @@ impl Pipeline {
             .mode_switcher
             .process_key_event(keyval, keycode, state)
             .await;
-        if output.is_done() {
-            return output
-                .get_done_data()
-                .expect("ModeSwitcherReturn is Done but doesn't have data.");
+        
+        let has_handled = output.get_done_data();
+        if has_handled.is_some() {
+            return has_handled.expect("has_handled should have value but doesn't.");
         }
-
+        
         let (key, should_reset) = output
             .get_continue_data()
             .expect("ModeSwitcherReturn is Continue but doesn't have data.");

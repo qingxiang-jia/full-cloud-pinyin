@@ -9,20 +9,6 @@ pub enum ModeSwitcherReturn {
 }
 
 impl ModeSwitcherReturn {
-    pub fn is_continue(&self) -> bool {
-        match self {
-            ModeSwitcherReturn::Continue(_, _) => true,
-            ModeSwitcherReturn::Done(_) => false,
-        }
-    }
-
-    pub fn is_done(&self) -> bool {
-        match self {
-            ModeSwitcherReturn::Continue(_, _) => false,
-            ModeSwitcherReturn::Done(_) => true,
-        }
-    }
-
     pub fn get_continue_data(&self) -> Option<(Key, bool)> {
         match self {
             ModeSwitcherReturn::Continue(key, should_reset) => {
