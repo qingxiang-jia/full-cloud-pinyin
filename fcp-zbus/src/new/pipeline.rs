@@ -21,10 +21,6 @@ impl Pipeline {
             .get_continue_data()
             .expect("ModeSwitcherReturn is Continue but doesn't have data.");
         /* END mode switching */
-
-        /* BEGIN session switching */
-        /* END session switching */
-
         return false;
     }
 }
