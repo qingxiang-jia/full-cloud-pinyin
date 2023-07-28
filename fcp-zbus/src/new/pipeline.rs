@@ -1,4 +1,4 @@
-use super::mode_switcher::{self, ModeSwitcher, ModeSwitcherReturn};
+use super::mode_switcher::ModeSwitcher;
 
 pub struct Pipeline {
     mode_switcher: ModeSwitcher,
