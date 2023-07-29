@@ -48,6 +48,16 @@ impl CandidateService {
         for candidate in candidates {
             state.candidates.push(candidate.clone());
         }
+
+        // IBus
+        let page = state.page;
+        let start = 0 + self.lt_size * page; // inclusive
+        let end = start + self.lt_size; // exclusive
+        let to_show = IBusLookupTable::from_candidates(&state.candidates[start..end]);
+
+        drop(state);
+
+        self.ibus.update_lookup_table(to_show, true).await;
     }
 
     pub fn set_candidates() {}
