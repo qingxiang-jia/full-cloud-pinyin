@@ -98,7 +98,7 @@ impl CandidateService {
 
         self.ibus.commit_text(&text).await;
 
-        // TODO: call clear()
+        self.clear().await;
     }
 
     pub async fn clear(&self) {
