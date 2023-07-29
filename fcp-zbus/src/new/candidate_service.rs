@@ -2,10 +2,28 @@ use zbus::Connection;
 
 use crate::ibus_proxy::IBusProxy;
 
+use super::candidate::Candidate;
+
 pub struct CandidateService {
     lt_size: usize,
     levels: Vec<usize>,
     ibus: IBusProxy,
+}
+
+struct State {
+    session: bool,
+    candidates: Vec<Candidate>,
+    page: usize,
+}
+
+impl State {
+    pub fn new() -> Self {
+        State {
+            session: false,
+            candidates: Vec::new(),
+            page: 0,
+        }
+    }
 }
 
 impl CandidateService {
