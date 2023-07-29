@@ -38,10 +38,10 @@ impl CandidateService {
             ibus: IBusProxy::new(&conn),
         }
     }
-    
+
     pub async fn set_candidates(&self, candidates: &[Candidate]) {
         let mut state = self.state.lock().expect("Failed to lock state.");
-        
+
         state.candidates.clear();
         for candidate in candidates {
             state.candidates.push(candidate.clone());
@@ -59,7 +59,7 @@ impl CandidateService {
     }
 
     pub fn page_into(&self) {}
-    
+
     pub fn page_back(&self) {}
 
     pub fn select(&self) {}
