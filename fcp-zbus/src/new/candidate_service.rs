@@ -91,7 +91,17 @@ impl CandidateService {
         self.ibus.update_lookup_table(to_show, true).await;
     }
 
-    pub fn select(&self) {}
+    pub async fn select(&self, ith: usize) {
+        let state = self.state.lock().expect("Failed to lock state.");
+        let idx = ith - 1 + state.page * self.lt_size;
+        let text = state.candidates[idx].word.clone();
+
+        drop(state);
+
+        self.ibus.commit_text(&text).await;
+
+        // TODO: call clear()
+    }
 
     pub fn clear(&self) {}
 }
