@@ -5,7 +5,6 @@ use zbus::Connection;
 use super::{candidate::Candidate, ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable};
 
 struct State {
-    session: bool,
     candidates: Vec<Candidate>,
     page: usize,
 }
@@ -13,7 +12,6 @@ struct State {
 impl State {
     pub fn new() -> Self {
         State {
-            session: false,
             candidates: Vec::new(),
             page: 0,
         }
@@ -103,5 +101,7 @@ impl CandidateService {
         // TODO: call clear()
     }
 
-    pub fn clear(&self) {}
+    pub fn clear(&self) {
+
+    }
 }
