@@ -41,9 +41,14 @@ impl CandidateService {
         }
     }
 
-    pub fn page_up() {}
+    pub fn set_candidates(&self, candidates: &[Candidate]) {
+        let mut state = self.state.lock().expect("Failed to lock state.");
 
-    pub fn page_down() {}
+        state.candidates.clear();
+        for candidate in candidates {
+            state.candidates.push(candidate.clone());
+        }
+    }
 
     pub fn set_candidates() {}
 
