@@ -101,7 +101,13 @@ impl CandidateService {
         // TODO: call clear()
     }
 
-    pub fn clear(&self) {
+    pub async fn clear(&self) {
+        let mut state = self.state.lock().expect("Failed to lock state.");
+        state.candidates.clear();
+        state.page = 0;
 
+        drop(state);
+
+        self.ibus.update_lookup_table(IBusLookupTable::from_nothing(), false).await;
     }
 }
