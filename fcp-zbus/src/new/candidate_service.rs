@@ -58,9 +58,9 @@ impl CandidateService {
         self.ibus.update_lookup_table(to_show, true).await;
     }
 
-    pub fn page_down(&self) {}
+    pub fn page_into(&self) {}
     
-    pub fn page_up(&self) {}
+    pub fn page_back(&self) {}
 
     pub fn select(&self) {}
 
