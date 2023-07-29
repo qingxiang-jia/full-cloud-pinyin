@@ -75,7 +75,21 @@ impl CandidateService {
         return (true, None);
     }
 
-    pub fn page_back(&self) {}
+    pub async fn page_back(&self) {
+        let mut state = self.state.lock().expect("Failed to lock state.");
+
+        if state.page == 0 {
+            return;
+        }
+        state.page -= 1;
+        let start = 0 + state.page * self.lt_size;
+        let end = start + self.lt_size;
+        let to_show = IBusLookupTable::from_candidates(&state.candidates[start..end]);
+
+        drop(state);
+
+        self.ibus.update_lookup_table(to_show, true).await;
+    }
 
     pub fn select(&self) {}
 
