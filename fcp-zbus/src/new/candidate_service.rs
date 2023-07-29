@@ -39,7 +39,7 @@ impl CandidateService {
         }
     }
     
-    pub fn set_candidates(&self, candidates: &[Candidate]) {
+    pub async fn set_candidates(&self, candidates: &[Candidate]) {
         let mut state = self.state.lock().expect("Failed to lock state.");
         
         state.candidates.clear();
