@@ -2,9 +2,7 @@ use std::sync::Mutex;
 
 use zbus::Connection;
 
-use crate::ibus_proxy::IBusProxy;
-
-use super::candidate::Candidate;
+use super::{candidate::Candidate, ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable};
 
 struct State {
     session: bool,
@@ -40,10 +38,10 @@ impl CandidateService {
             ibus: IBusProxy::new(&conn),
         }
     }
-
+    
     pub fn set_candidates(&self, candidates: &[Candidate]) {
         let mut state = self.state.lock().expect("Failed to lock state.");
-
+        
         state.candidates.clear();
         for candidate in candidates {
             state.candidates.push(candidate.clone());
@@ -60,9 +58,11 @@ impl CandidateService {
         self.ibus.update_lookup_table(to_show, true).await;
     }
 
-    pub fn set_candidates() {}
+    pub fn page_down(&self) {}
+    
+    pub fn page_up(&self) {}
 
-    pub fn select() {}
+    pub fn select(&self) {}
 
-    pub fn clear() {}
+    pub fn clear(&self) {}
 }
