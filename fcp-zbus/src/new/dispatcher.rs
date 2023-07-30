@@ -6,7 +6,6 @@ use crate::keys::Key;
 
 use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient};
 
-
 struct State {
     preedit: Vec<char>,
 }
@@ -25,6 +24,7 @@ pub struct Dispatcher {
     state: Mutex<State>,
     cs: CandidateService,
     client: CloudPinyinClient,
+    level: Vec<usize>,
 }
 
 impl Dispatcher {
@@ -33,9 +33,10 @@ impl Dispatcher {
             state: Mutex::new(State::new()),
             cs: CandidateService::new(conn),
             client: CloudPinyinClient::new(),
+            level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
         }
     }
-    
+
     pub async fn on_input(&self, key: Key, should_reset: bool) -> bool {
         if should_reset {
             self.cs.clear().await;
@@ -102,7 +103,19 @@ impl Dispatcher {
     }
 
     pub async fn handle_pinyin(&self, key: Key) -> bool {
-        !unimplemented!()
+        let c = key.to_char().expect("A-Z cannot be converted to a char.");
+
+        let mut state = self.state.lock().expect("Failed to lock state.");
+        state.preedit.push(c);
+        let preedit: String = state.preedit.iter().cloned().collect();
+
+        drop(state);
+
+        let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
+
+        self.cs.set_candidates(&candidates).await;
+
+        true
     }
 
     pub async fn handle_select(&self, key: Key) -> bool {
