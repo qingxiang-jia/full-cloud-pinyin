@@ -98,8 +98,6 @@ impl Dispatcher {
             | Key::Backspace
             | Key::Escape => return self.handle_control(key).await,
         }
-
-        !unimplemented!()
     }
 
     pub async fn handle_pinyin(&self, key: Key) -> bool {
