@@ -9,6 +9,13 @@ pub struct CloudPinyinClient {
 }
 
 impl CloudPinyinClient {
+    pub fn new() -> CloudPinyinClient {
+        CloudPinyinClient {
+            http: reqwest::Client::new(),
+            re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
+        }
+    }
+    
     async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
         let json = self.get_candidates_from_net(preedit, depth as i32).await;
         let candidates = self.json_to_candidates(json);
