@@ -35,6 +35,10 @@ impl CandidateService {
         }
     }
 
+    pub fn in_session(&self) -> bool {
+        self.state.lock().expect("Failed to lock state.").candidates.len() != 0
+    }
+
     pub async fn set_candidates(&self, candidates: &[Candidate]) {
         let mut state = self.state.lock().expect("Failed to lock state.");
 
