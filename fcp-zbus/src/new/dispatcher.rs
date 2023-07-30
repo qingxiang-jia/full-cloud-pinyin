@@ -8,14 +8,12 @@ use super::candidate_service::CandidateService;
 
 
 struct State {
-    session: bool,
     preedit: Vec<char>,
 }
 
 impl State {
     pub fn new() -> State {
         State {
-            session: false,
             preedit: Vec::new(),
         }
     }
