@@ -42,22 +42,78 @@ impl Dispatcher {
             return false;
         }
 
+        match key {
+            Key::A
+            | Key::B
+            | Key::C
+            | Key::D
+            | Key::E
+            | Key::F
+            | Key::G
+            | Key::H
+            | Key::I
+            | Key::J
+            | Key::K
+            | Key::L
+            | Key::M
+            | Key::N
+            | Key::O
+            | Key::P
+            | Key::Q
+            | Key::R
+            | Key::S
+            | Key::T
+            | Key::U
+            | Key::V
+            | Key::W
+            | Key::X
+            | Key::Y
+            | Key::Z => return self.handle_pinyin(key).await,
+            Key::_0
+            | Key::_1
+            | Key::_2
+            | Key::_3
+            | Key::_4
+            | Key::_5
+            | Key::_6
+            | Key::_7
+            | Key::_8
+            | Key::_9 => return self.handle_select(key).await,
+            Key::Comma
+            | Key::Period
+            | Key::SemiColon
+            | Key::Colon
+            | Key::SingleQuote
+            | Key::DoubleQuote
+            | Key::QuestionMark => return self.handle_symbol(key).await,
+            Key::Space
+            | Key::Enter
+            | Key::Minus
+            | Key::Equal
+            | Key::Up
+            | Key::Down
+            | Key::Left
+            | Key::Right
+            | Key::Backspace
+            | Key::Escape => return self.handle_control(key).await,
+        }
+
         !unimplemented!()
     }
 
-    pub fn handle_pinyin(key: Key) -> bool {
+    pub async fn handle_pinyin(&self, key: Key) -> bool {
         !unimplemented!()
     }
 
-    pub fn handle_select(key: Key) -> bool {
+    pub async fn handle_select(&self, key: Key) -> bool {
         !unimplemented!()
     }
 
-    pub fn handle_symbol(key: Key) -> bool {
+    pub async fn handle_symbol(&self, key: Key) -> bool {
         !unimplemented!()
     }
 
-    pub fn handle_control(key: Key) -> bool {
+    pub async fn handle_control(&self, key: Key) -> bool {
         !unimplemented!()
     }
 }
