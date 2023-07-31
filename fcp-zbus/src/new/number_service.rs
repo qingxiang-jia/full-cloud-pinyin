@@ -9,8 +9,8 @@ pub struct NumberService {
 }
 
 impl NumberService {
-    pub fn new(conn: &Connection) -> SymbolService {
-        SymbolService {
+    pub fn new(conn: &Connection) -> NumberService {
+        NumberService {
             ibus: IBusProxy::new(conn),
         }
     }
