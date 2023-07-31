@@ -4,7 +4,7 @@ use zbus::Connection;
 
 use crate::keys::Key;
 
-use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, symbol_service::SymbolService};
+use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, symbol_service::SymbolService, number_service::NumberService};
 
 struct State {
     preedit: Vec<char>,
@@ -24,6 +24,7 @@ pub struct Dispatcher {
     state: Mutex<State>,
     cs: CandidateService,
     ss: SymbolService,
+    ns: NumberService,
     client: CloudPinyinClient,
     level: Vec<usize>,
 }
@@ -34,6 +35,7 @@ impl Dispatcher {
             state: Mutex::new(State::new()),
             cs: CandidateService::new(conn),
             ss: SymbolService::new(conn),
+            ns: NumberService::new(conn),
             client: CloudPinyinClient::new(),
             level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
         }
@@ -81,7 +83,13 @@ impl Dispatcher {
             | Key::_6
             | Key::_7
             | Key::_8
-            | Key::_9 => return self.handle_select(key).await,
+            | Key::_9 => {
+                if self.cs.in_session() {
+                    return self.handle_select(key).await;
+                } else {
+                    !unimplemented!()
+                }
+            }
             Key::Comma
             | Key::Period
             | Key::SemiColon
