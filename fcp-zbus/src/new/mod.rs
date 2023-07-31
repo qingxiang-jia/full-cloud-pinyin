@@ -5,5 +5,6 @@ mod cloud_pinyin_client;
 mod candidate_service;
 mod candidate;
 mod symbol_service;
+mod number_service;
 mod ibus_proxy;
 mod ibus_variants;
