@@ -5,13 +5,13 @@ use crate::keys::Key;
 use super::ibus_proxy::IBusProxy;
 
 pub struct SymbolService {
-    ibus: IBusProxy
+    pub(crate) ibus: IBusProxy
 }
 
 impl SymbolService {
     pub fn new(conn: &Connection) -> SymbolService {
         SymbolService {
-            ibus: IBusProxy::new(&conn),
+            ibus: IBusProxy::new(conn),
         }
     }
 
