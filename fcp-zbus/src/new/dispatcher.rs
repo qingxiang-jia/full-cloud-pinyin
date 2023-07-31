@@ -4,7 +4,7 @@ use zbus::Connection;
 
 use crate::keys::Key;
 
-use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient};
+use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, symbol_service::SymbolService};
 
 struct State {
     preedit: Vec<char>,
@@ -23,6 +23,7 @@ unsafe impl Sync for State {} // State is safe to share between threads
 pub struct Dispatcher {
     state: Mutex<State>,
     cs: CandidateService,
+    ss: SymbolService,
     client: CloudPinyinClient,
     level: Vec<usize>,
 }
@@ -32,6 +33,7 @@ impl Dispatcher {
         Dispatcher {
             state: Mutex::new(State::new()),
             cs: CandidateService::new(conn),
+            ss: SymbolService::new(conn),
             client: CloudPinyinClient::new(),
             level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
         }
@@ -86,7 +88,10 @@ impl Dispatcher {
             | Key::Colon
             | Key::SingleQuote
             | Key::DoubleQuote
-            | Key::QuestionMark => return self.handle_symbol(key).await,
+            | Key::QuestionMark => {
+                self.ss.handle_symbol(key).await;
+                return true;
+            },
             Key::Space
             | Key::Enter
             | Key::Minus
@@ -117,10 +122,6 @@ impl Dispatcher {
     }
 
     pub async fn handle_select(&self, key: Key) -> bool {
-        !unimplemented!()
-    }
-
-    pub async fn handle_symbol(&self, key: Key) -> bool {
         !unimplemented!()
     }
 
