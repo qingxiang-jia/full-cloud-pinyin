@@ -87,7 +87,8 @@ impl Dispatcher {
                 if self.cs.in_session() {
                     return self.handle_select(key).await;
                 } else {
-                    !unimplemented!()
+                    self.ns.handle_number(key).await;
+                    return true;
                 }
             }
             Key::Comma
