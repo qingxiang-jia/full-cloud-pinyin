@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use zbus::Connection;
 
 use crate::keys::Key;
+use super::ibus_proxy::IBusProxy;
 
 use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, symbol_service::SymbolService, number_service::NumberService};
 
@@ -26,6 +27,7 @@ pub struct Dispatcher {
     ss: SymbolService,
     ns: NumberService,
     client: CloudPinyinClient,
+    ibus: IBusProxy,
     level: Vec<usize>,
 }
 
@@ -37,6 +39,7 @@ impl Dispatcher {
             ss: SymbolService::new(conn),
             ns: NumberService::new(conn),
             client: CloudPinyinClient::new(),
+            ibus: IBusProxy::new(conn),
             level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
         }
     }
@@ -144,6 +147,69 @@ impl Dispatcher {
     }
 
     pub async fn handle_control(&self, key: Key) -> bool {
-        !unimplemented!()
+        if !self.cs.in_session() {
+            return false;
+        }
+
+        match key {
+            Key::Space => return self.handle_select(Key::_1).await,
+            Key::Enter => {
+                let mut state = self.state.lock().expect("Failed to lock state.");
+                let preedit: String = state.preedit.iter().cloned().collect();
+                state.preedit.clear();
+                
+                drop(state);
+
+                self.ibus.commit_text(&preedit).await;
+                self.cs.clear().await;
+
+                return true;
+            }
+            Key::Minus => {
+                self.cs.page_back().await;
+
+                return true;
+            }
+            Key::Equal => {
+                self.cs.page_into().await;
+
+                return true;
+            }
+            Key::Up => return false,    // For now, ingore
+            Key::Down => return false,  // For now, ignore
+            Key::Left => return false,  // For now, ignore
+            Key::Right => return false, // For now, ignore
+            Key::Backspace => {
+                let mut state = self.state.lock().expect("Failed to lock state.");
+                let popped = state.preedit.pop();
+
+                if popped.is_none() {
+                    drop(state);
+                    self.cs.clear().await;
+                    return true;
+                }
+
+                let preedit: String = state.preedit.iter().cloned().collect();
+
+                drop(state);
+
+                let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
+
+                self.cs.set_candidates(&candidates).await;
+
+                return true;
+            }
+            Key::Escape => {
+                let mut state = self.state.lock().expect("Failed to lock state.");
+                state.preedit.clear();
+
+                drop(state);
+
+                self.cs.clear().await;
+                
+                return true;
+            }
+            _ => panic!("Invalid control key."),
+        }
     }
 }
