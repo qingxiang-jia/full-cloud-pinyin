@@ -131,7 +131,16 @@ impl Dispatcher {
     }
 
     pub async fn handle_select(&self, key: Key) -> bool {
-        !unimplemented!()
+        let mut state = self.state.lock().expect("Failed to lock state.");
+        state.preedit.clear();
+
+        drop(state);
+        
+        let i = key.to_usize().expect("Failed to conver the key to usize.");
+        self.cs.select(i).await;
+        self.cs.clear().await;
+
+        return true;
     }
 
     pub async fn handle_control(&self, key: Key) -> bool {
