@@ -72,7 +72,7 @@ pub enum ModeSwitcherReturn {
 }
 
 impl ModeSwitcherReturn {
-    pub fn get_continue_data(&self) -> Option<(Key, bool)> {
+    pub fn get_data_if_continue(&self) -> Option<(Key, bool)> {
         match self {
             ModeSwitcherReturn::Continue(key, should_reset) => {
                 Some((key.clone(), should_reset.clone()))
@@ -81,7 +81,7 @@ impl ModeSwitcherReturn {
         }
     }
 
-    pub fn get_done_data(&self) -> Option<bool> {
+    pub fn get_data_if_early_return(&self) -> Option<bool> {
         match self {
             ModeSwitcherReturn::Continue(_, _) => None,
             ModeSwitcherReturn::Done(has_handled) => Some(has_handled.clone()),
