@@ -2,10 +2,13 @@ use std::sync::Mutex;
 
 use zbus::Connection;
 
-use crate::keys::Key;
 use super::ibus_proxy::IBusProxy;
+use crate::keys::Key;
 
-use super::{candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, symbol_service::SymbolService, number_service::NumberService};
+use super::{
+    candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient,
+    number_service::NumberService, symbol_service::SymbolService,
+};
 
 struct State {
     preedit: Vec<char>,
@@ -103,7 +106,7 @@ impl Dispatcher {
             | Key::QuestionMark => {
                 self.ss.handle_symbol(key).await;
                 return true;
-            },
+            }
             Key::Space
             | Key::Enter
             | Key::Minus
@@ -138,7 +141,7 @@ impl Dispatcher {
         state.preedit.clear();
 
         drop(state);
-        
+
         let i = key.to_usize().expect("Failed to conver the key to usize.");
         self.cs.select(i).await;
         self.cs.clear().await;
@@ -157,7 +160,7 @@ impl Dispatcher {
                 let mut state = self.state.lock().expect("Failed to lock state.");
                 let preedit: String = state.preedit.iter().cloned().collect();
                 state.preedit.clear();
-                
+
                 drop(state);
 
                 self.ibus.commit_text(&preedit).await;
@@ -206,7 +209,7 @@ impl Dispatcher {
                 drop(state);
 
                 self.cs.clear().await;
-                
+
                 return true;
             }
             _ => panic!("Invalid control key."),
