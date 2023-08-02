@@ -35,7 +35,7 @@ impl PreeditService {
 
         drop(state);
 
-        self.ibus.update_preedit_text(&preedit, 0, false).await;
+        self.ibus.update_preedit_text(&preedit, 0, true).await;
     }
 
     pub async fn pop(&self) -> Option<char> {
@@ -45,7 +45,7 @@ impl PreeditService {
 
         drop(state);
 
-        self.ibus.update_preedit_text(&preedit, 0, false).await;
+        self.ibus.update_preedit_text(&preedit, 0, true).await;
         
         popped
     }
