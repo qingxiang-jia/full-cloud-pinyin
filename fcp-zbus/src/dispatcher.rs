@@ -3,7 +3,7 @@ use tokio::sync::Mutex;
 use zbus::Connection;
 
 use super::ibus_proxy::IBusProxy;
-use crate::keys::Key;
+use crate::{keys::Key, preedit_service::PreeditService};
 
 use super::{
     candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient,
@@ -27,6 +27,7 @@ unsafe impl Sync for State {} // State is safe to share between threads
 pub struct Dispatcher {
     state: Mutex<State>,
     cs: CandidateService,
+    ps: PreeditService,
     ss: SymbolService,
     ns: NumberService,
     client: CloudPinyinClient,
@@ -39,6 +40,7 @@ impl Dispatcher {
         Dispatcher {
             state: Mutex::new(State::new()),
             cs: CandidateService::new(conn),
+            ps: PreeditService::new(conn),
             ss: SymbolService::new(conn),
             ns: NumberService::new(conn),
             client: CloudPinyinClient::new(),
