@@ -1,5 +1,5 @@
-use std::sync::Mutex;
 
+use tokio::sync::Mutex;
 use zbus::Connection;
 
 use super::ibus_proxy::IBusProxy;
@@ -90,7 +90,7 @@ impl Dispatcher {
             | Key::_7
             | Key::_8
             | Key::_9 => {
-                if self.cs.in_session() {
+                if self.cs.in_session().await {
                     return self.handle_select(key).await;
                 } else {
                     self.ns.handle_number(key).await;
@@ -123,7 +123,7 @@ impl Dispatcher {
     pub async fn handle_pinyin(&self, key: Key) -> bool {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
-        let mut state = self.state.lock().expect("Failed to lock state.");
+        let mut state = self.state.lock().await;
         state.preedit.push(c);
         let preedit: String = state.preedit.iter().cloned().collect();
 
@@ -137,7 +137,7 @@ impl Dispatcher {
     }
 
     pub async fn handle_select(&self, key: Key) -> bool {
-        let mut state = self.state.lock().expect("Failed to lock state.");
+        let mut state = self.state.lock().await;
         state.preedit.clear();
 
         drop(state);
@@ -150,14 +150,14 @@ impl Dispatcher {
     }
 
     pub async fn handle_control(&self, key: Key) -> bool {
-        if !self.cs.in_session() {
+        if !self.cs.in_session().await {
             return false;
         }
 
         match key {
             Key::Space => return self.handle_select(Key::_1).await,
             Key::Enter => {
-                let mut state = self.state.lock().expect("Failed to lock state.");
+                let mut state = self.state.lock().await;
                 let preedit: String = state.preedit.iter().cloned().collect();
                 state.preedit.clear();
 
@@ -183,7 +183,7 @@ impl Dispatcher {
             Key::Left => return false,  // For now, ignore
             Key::Right => return false, // For now, ignore
             Key::Backspace => {
-                let mut state = self.state.lock().expect("Failed to lock state.");
+                let mut state = self.state.lock().await;
                 let popped = state.preedit.pop();
 
                 if popped.is_none() {
@@ -203,7 +203,7 @@ impl Dispatcher {
                 return true;
             }
             Key::Escape => {
-                let mut state = self.state.lock().expect("Failed to lock state.");
+                let mut state = self.state.lock().await;
                 state.preedit.clear();
 
                 drop(state);

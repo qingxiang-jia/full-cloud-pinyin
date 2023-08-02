@@ -1,5 +1,5 @@
-use std::sync::Mutex;
 
+use tokio::sync::Mutex;
 use zbus::Connection;
 
 use super::{candidate::Candidate, ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable};
@@ -35,12 +35,12 @@ impl CandidateService {
         }
     }
 
-    pub fn in_session(&self) -> bool {
-        self.state.lock().expect("Failed to lock state.").candidates.len() != 0
+    pub async fn in_session(&self) -> bool {
+        self.state.lock().await.candidates.len() != 0
     }
 
     pub async fn set_candidates(&self, candidates: &[Candidate]) {
-        let mut state = self.state.lock().expect("Failed to lock state.");
+        let mut state = self.state.lock().await;
 
         state.candidates.clear();
         for candidate in candidates {
@@ -59,7 +59,7 @@ impl CandidateService {
     }
 
     pub async fn page_into(&self) -> (bool, Option<usize>) {
-        let mut state = self.state.lock().expect("Failed to lock state.");
+        let mut state = self.state.lock().await;
 
         state.page += 1;
         let start = 0 + state.page * self.lt_size;
@@ -76,7 +76,7 @@ impl CandidateService {
     }
 
     pub async fn page_back(&self) {
-        let mut state = self.state.lock().expect("Failed to lock state.");
+        let mut state = self.state.lock().await;
 
         if state.page == 0 {
             return;
@@ -92,7 +92,7 @@ impl CandidateService {
     }
 
     pub async fn select(&self, ith: usize) {
-        let state = self.state.lock().expect("Failed to lock state.");
+        let state = self.state.lock().await;
         let idx = ith - 1 + state.page * self.lt_size;
         let text = state.candidates[idx].word.clone();
 
@@ -104,7 +104,7 @@ impl CandidateService {
     }
 
     pub async fn clear(&self) {
-        let mut state = self.state.lock().expect("Failed to lock state.");
+        let mut state = self.state.lock().await;
         state.candidates.clear();
         state.page = 0;
 
