@@ -18,6 +18,7 @@ mod candidate;
 mod pipeline;
 mod cloud_pinyin_client;
 mod candidate_service;
+mod preedit_service;
 mod symbol_service;
 mod number_service;
 mod ibus_proxy;
