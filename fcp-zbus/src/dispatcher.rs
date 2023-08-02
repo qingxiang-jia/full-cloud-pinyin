@@ -1,5 +1,3 @@
-
-use tokio::sync::Mutex;
 use zbus::Connection;
 
 use super::ibus_proxy::IBusProxy;
@@ -10,22 +8,7 @@ use super::{
     number_service::NumberService, symbol_service::SymbolService,
 };
 
-struct State {
-    preedit: Vec<char>,
-}
-
-impl State {
-    pub fn new() -> State {
-        State {
-            preedit: Vec::new(),
-        }
-    }
-}
-
-unsafe impl Sync for State {} // State is safe to share between threads
-
 pub struct Dispatcher {
-    state: Mutex<State>,
     cs: CandidateService,
     ps: PreeditService,
     ss: SymbolService,
@@ -38,7 +21,6 @@ pub struct Dispatcher {
 impl Dispatcher {
     pub fn new(conn: &Connection) -> Dispatcher {
         Dispatcher {
-            state: Mutex::new(State::new()),
             cs: CandidateService::new(conn),
             ps: PreeditService::new(conn),
             ss: SymbolService::new(conn),
