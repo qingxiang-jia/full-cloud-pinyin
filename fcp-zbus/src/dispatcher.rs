@@ -148,7 +148,25 @@ impl Dispatcher {
                 return true;
             }
             Key::Equal => {
-                self.cs.page_into().await;
+                let (enough, min_needed) = self.cs.page_into().await;
+                if !enough {
+                    let min = min_needed
+                        .expect("Not enough to fill lookup table but min_needed is None.");
+
+                    let mut to_load = 0;
+                    for qty in &self.level {
+                        if qty >= &min {
+                            to_load = *qty;
+                            break;
+                        }
+                    }
+
+                    let candidates = self
+                        .client
+                        .query_candidates(&self.ps.to_string().await, to_load)
+                        .await;
+                    self.cs.set_candidates(&candidates).await;
+                }
 
                 return true;
             }

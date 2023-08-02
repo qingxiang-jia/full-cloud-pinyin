@@ -52,6 +52,7 @@ impl CandidateService {
         let start = 0 + self.lt_size * page; // inclusive
         let end = start + self.lt_size; // exclusive
         let to_show = IBusLookupTable::from_candidates(&state.candidates[start..end]);
+        //TODO: thread 'tokio-runtime-worker' panicked at 'range end index 15 out of range for slice of length 11', src/candidate_service.rs:54:57
 
         drop(state);
 
