@@ -1,6 +1,7 @@
 use zbus::{dbus_interface, Connection};
 use zvariant::ObjectPath;
-use crate::new::pipeline::Pipeline;
+
+use crate::pipeline::Pipeline;
 
 // We have three interfaces to implement in order to get a working engine, but only the
 // org.freedesktop.IBus.Engine matters in practice.

@@ -1,6 +1,6 @@
 use zbus::Connection;
 
-use super::{dispatcher::Dispatcher, mode_switcher::ModeSwitcher};
+use crate::{dispatcher::Dispatcher, mode_switcher::ModeSwitcher};
 
 pub struct Pipeline {
     mode_switcher: ModeSwitcher,

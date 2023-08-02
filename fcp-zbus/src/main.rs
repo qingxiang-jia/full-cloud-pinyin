@@ -4,15 +4,24 @@ use std::env;
 
 use crate::{generated::IBusProxy, ibus_helper::get_ibus_address};
 
+use ibus_variants::{IBusEngineDesc, IBusComponent};
 use listeners::{new_input_listener, FactoryListener, ServiceListener};
-use new::ibus_variants::{IBusComponent, IBusEngineDesc};
 use zbus::{zvariant::Value, ConnectionBuilder};
 
 mod generated;
 mod ibus_helper;
 mod keys;
 mod listeners;
-mod new;
+mod mode_switcher;
+mod dispatcher;
+mod candidate;
+mod pipeline;
+mod cloud_pinyin_client;
+mod candidate_service;
+mod symbol_service;
+mod number_service;
+mod ibus_proxy;
+mod ibus_variants;
 
 #[tokio::main]
 async fn main() {
