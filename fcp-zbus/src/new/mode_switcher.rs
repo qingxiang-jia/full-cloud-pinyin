@@ -7,6 +7,12 @@ pub struct ModeSwitcher {
 }
 
 impl ModeSwitcher {
+    pub fn new() -> ModeSwitcher {
+        ModeSwitcher {
+            mode: Arc::new(Mutex::new(Mode::Pinyin)),
+        }
+    }
+
     pub async fn process_key_event(
         &self,
         keyval: u32,
@@ -63,7 +69,6 @@ impl ModeSwitcher {
         (n & (1 << k)) >> k == 1
     }
 }
-
 
 #[derive(Clone, Copy)]
 pub enum ModeSwitcherReturn {
