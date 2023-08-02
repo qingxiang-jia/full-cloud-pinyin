@@ -31,11 +31,23 @@ impl PreeditService {
     pub async fn push(&self, c: char) {
         let mut state = self.state.lock().await;
         state.preedit.push(c);
+        let preedit: String = state.preedit.iter().cloned().collect();
+
+        drop(state);
+
+        self.ibus.update_preedit_text(&preedit, 0, false).await;
     }
 
     pub async fn pop(&self) -> Option<char> {
         let mut state = self.state.lock().await;
-        state.preedit.pop()
+        let popped = state.preedit.pop();
+        let preedit: String = state.preedit.iter().cloned().collect();
+
+        drop(state);
+
+        self.ibus.update_preedit_text(&preedit, 0, false).await;
+        
+        popped
     }
 
     pub async fn to_string(&self) -> String {
