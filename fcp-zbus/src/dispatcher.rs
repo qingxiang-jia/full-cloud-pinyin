@@ -125,11 +125,8 @@ impl Dispatcher {
     pub async fn handle_pinyin(&self, key: Key) -> bool {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
-        let mut state = self.state.lock().await;
-        state.preedit.push(c);
-        let preedit: String = state.preedit.iter().cloned().collect();
-
-        drop(state);
+        self.ps.push(c).await;
+        let preedit = self.ps.to_string().await;
 
         let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
 
@@ -139,10 +136,7 @@ impl Dispatcher {
     }
 
     pub async fn handle_select(&self, key: Key) -> bool {
-        let mut state = self.state.lock().await;
-        state.preedit.clear();
-
-        drop(state);
+        self.ps.clear().await;
 
         let i = key.to_usize().expect("Failed to conver the key to usize.");
         self.cs.select(i).await;
@@ -159,14 +153,10 @@ impl Dispatcher {
         match key {
             Key::Space => return self.handle_select(Key::_1).await,
             Key::Enter => {
-                let mut state = self.state.lock().await;
-                let preedit: String = state.preedit.iter().cloned().collect();
-                state.preedit.clear();
-
-                drop(state);
-
-                self.ibus.commit_text(&preedit).await;
+                let preedit = self.ps.to_string().await;
+                self.ps.clear().await;
                 self.cs.clear().await;
+                self.ibus.commit_text(&preedit).await;
 
                 return true;
             }
@@ -185,18 +175,14 @@ impl Dispatcher {
             Key::Left => return false,  // For now, ignore
             Key::Right => return false, // For now, ignore
             Key::Backspace => {
-                let mut state = self.state.lock().await;
-                let popped = state.preedit.pop();
+                let popped = self.ps.pop().await;
 
                 if popped.is_none() {
-                    drop(state);
                     self.cs.clear().await;
                     return true;
                 }
 
-                let preedit: String = state.preedit.iter().cloned().collect();
-
-                drop(state);
+                let preedit: String = self.ps.to_string().await;
 
                 let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
 
@@ -205,11 +191,7 @@ impl Dispatcher {
                 return true;
             }
             Key::Escape => {
-                let mut state = self.state.lock().await;
-                state.preedit.clear();
-
-                drop(state);
-
+                self.ps.clear().await;
                 self.cs.clear().await;
 
                 return true;
