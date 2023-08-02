@@ -1,3 +1,5 @@
+use zbus::Connection;
+
 use super::{dispatcher::Dispatcher, mode_switcher::ModeSwitcher};
 
 pub struct Pipeline {
@@ -6,6 +8,13 @@ pub struct Pipeline {
 }
 
 impl Pipeline {
+    pub fn new(conn: &Connection) -> Pipeline {
+        Pipeline {
+            mode_switcher: ModeSwitcher::new(),
+            dispatcher: Dispatcher::new(conn),
+        }
+    }
+
     pub async fn accept(&self, keyval: u32, keycode: u32, state: u32) -> bool {
         let output = self
             .mode_switcher
