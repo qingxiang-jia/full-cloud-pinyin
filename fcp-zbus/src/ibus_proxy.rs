@@ -1,7 +1,7 @@
 use zbus::Connection;
 use zvariant::Value;
 
-use crate::ibus_variants::{IBusLookupTable, IBusText};
+use super::ibus_variants::{IBusLookupTable, IBusText};
 
 static ENGINE_PATH: &str = "/org/freedesktop/IBus/Engine/FcPinyin";
 static ENGINE_IFACE: &str = "org.freedesktop.IBus.Engine";

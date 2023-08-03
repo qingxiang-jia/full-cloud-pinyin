@@ -40,7 +40,7 @@ use std::collections::HashMap;
 
 use zvariant::{Structure, StructureBuilder, Value};
 
-use crate::engine::Candidate;
+use super::candidate::Candidate;
 
 pub struct IBusComponent {
     pub component_name: String,
