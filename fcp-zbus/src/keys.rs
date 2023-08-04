@@ -44,6 +44,7 @@ pub enum Key {
     Right = 65363,
     Backspace = 65288,
     Escape = 65307,
+    BackSlash = 92,
     _0 = 48,
     _1 = 49,
     _2 = 50,
@@ -102,6 +103,7 @@ impl Key {
             65363 => Some(Key::Right),
             65288 => Some(Key::Backspace),
             65307 => Some(Key::Escape),
+            92 => Some(Key::BackSlash),
             48 => Some(Key::_0),
             49 => Some(Key::_1),
             50 => Some(Key::_2),
@@ -173,6 +175,7 @@ impl Key {
             Key::SingleQuote => Some("‘’".to_owned()),
             Key::DoubleQuote => Some("“”".to_owned()),
             Key::QuestionMark => Some("？".to_owned()),
+            Key::BackSlash => Some("、".to_owned()),
             _ => None,
         }
     }
