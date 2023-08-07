@@ -87,6 +87,8 @@ impl Dispatcher {
             | Key::Colon
             | Key::SingleQuote
             | Key::DoubleQuote
+            | Key::BracketOpen
+            | Key::BracketClose
             | Key::QuestionMark
             | Key::BackSlash => {
                 self.ss.handle_symbol(key).await;
