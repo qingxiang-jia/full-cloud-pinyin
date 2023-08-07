@@ -90,7 +90,9 @@ impl Dispatcher {
             | Key::BracketOpen
             | Key::BracketClose
             | Key::QuestionMark
-            | Key::BackSlash => {
+            | Key::BackSlash
+            | Key::ExclamationMark
+            | Key::Ellipsis => {
                 self.ss.handle_symbol(key).await;
                 return true;
             }

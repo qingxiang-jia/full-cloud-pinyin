@@ -47,6 +47,8 @@ pub enum Key {
     Backspace = 65288,
     Escape = 65307,
     BackSlash = 92,
+    ExclamationMark = 33,
+    Ellipsis = 94,
     _0 = 48,
     _1 = 49,
     _2 = 50,
@@ -108,6 +110,8 @@ impl Key {
             65288 => Some(Key::Backspace),
             65307 => Some(Key::Escape),
             92 => Some(Key::BackSlash),
+            33 => Some(Key::ExclamationMark),
+            94 => Some(Key::Ellipsis),
             48 => Some(Key::_0),
             49 => Some(Key::_1),
             50 => Some(Key::_2),
@@ -182,6 +186,8 @@ impl Key {
             Key::BracketOpen => Some("（".to_owned()),
             Key::BracketClose => Some("）".to_owned()),
             Key::BackSlash => Some("、".to_owned()),
+            Key::ExclamationMark => Some("！".to_owned()),
+            Key::Ellipsis => Some("…".to_owned()),
             _ => None,
         }
     }
