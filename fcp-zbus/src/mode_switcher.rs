@@ -23,30 +23,12 @@ impl ModeSwitcher {
         // println!("keyval: {keyval}, keycode: {keycode}, state: {bi}");
 
         // State flags
-        let is_shift = self.get_kth_bit(state, 0);
-        let is_lock = self.get_kth_bit(state, 1);
-        let is_ctrl = self.get_kth_bit(state, 2);
-        let is_alt = self.get_kth_bit(state, 3);
-        let is_mod2 = self.get_kth_bit(state, 4);
-        let is_mod3 = self.get_kth_bit(state, 5);
-        let is_mod4 = self.get_kth_bit(state, 6);
-        let is_mod5 = self.get_kth_bit(state, 7);
-        let is_btn1 = self.get_kth_bit(state, 8);
-        let is_btn2 = self.get_kth_bit(state, 9);
-        let is_btn3 = self.get_kth_bit(state, 10);
-        let is_btn4 = self.get_kth_bit(state, 11);
-        let is_btn5 = self.get_kth_bit(state, 12);
-        let is_handled = self.get_kth_bit(state, 24);
-        let is_ignored = self.get_kth_bit(state, 25);
-        let is_super = self.get_kth_bit(state, 26);
-        let is_hyper = self.get_kth_bit(state, 27);
-        let is_meta = self.get_kth_bit(state, 28);
-        let is_release = self.get_kth_bit(state, 30);
-        let is_modifier = is_ctrl || is_alt || is_super || is_hyper || is_meta || is_lock;
+        let flags = self.decode_flag(state);
+        let is_modifier = flags.is_ctrl || flags.is_alt || flags.is_super || flags.is_hyper || flags.is_meta || flags.is_lock;
 
         let mut should_reset = false;
 
-        if !is_release {
+        if !flags.is_release {
             if is_modifier || self.mode() == Mode::English {
                 // User control like ctrl+v that has nothing to do with us.
                 return ModeSwitcherReturn::Done(false);
@@ -59,7 +41,7 @@ impl ModeSwitcher {
             let key = maybe_key.expect("maybe_key is None but it shouldn't.");
             return ModeSwitcherReturn::Continue(key, should_reset);
         } else {
-            if is_shift {
+            if flags.is_shift {
                 let prev_mode = self.mode();
                 if prev_mode == Mode::English {
                     self.set_mode(Mode::Pinyin);
@@ -91,6 +73,30 @@ impl ModeSwitcher {
     fn get_kth_bit(&self, n: u32, k: u32) -> bool {
         (n & (1 << k)) >> k == 1
     }
+
+    fn decode_flag(&self, flag: u32) -> Flags {
+        Flags {
+            is_shift: self.get_kth_bit(flag, 0),
+            is_lock: self.get_kth_bit(flag, 1),
+            is_ctrl: self.get_kth_bit(flag, 2),
+            is_alt: self.get_kth_bit(flag, 3),
+            is_mod2: self.get_kth_bit(flag, 4),
+            is_mod3: self.get_kth_bit(flag, 5),
+            is_mod4: self.get_kth_bit(flag, 6),
+            is_mod5: self.get_kth_bit(flag, 7),
+            is_btn1: self.get_kth_bit(flag, 8),
+            is_btn2: self.get_kth_bit(flag, 9),
+            is_btn3: self.get_kth_bit(flag, 10),
+            is_btn4: self.get_kth_bit(flag, 11),
+            is_btn5: self.get_kth_bit(flag, 12),
+            is_handled: self.get_kth_bit(flag, 24),
+            is_ignored: self.get_kth_bit(flag, 25),
+            is_super: self.get_kth_bit(flag, 26),
+            is_hyper: self.get_kth_bit(flag, 27),
+            is_meta: self.get_kth_bit(flag, 28),
+            is_release: self.get_kth_bit(flag, 30),
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -121,4 +127,26 @@ impl ModeSwitcherReturn {
 enum Mode {
     English,
     Pinyin,
+}
+
+struct Flags {
+    is_shift: bool,
+    is_lock: bool,
+    is_ctrl: bool,
+    is_alt: bool,
+    is_mod2: bool,
+    is_mod3: bool,
+    is_mod4: bool,
+    is_mod5: bool,
+    is_btn1: bool,
+    is_btn2: bool,
+    is_btn3: bool,
+    is_btn4: bool,
+    is_btn5: bool,
+    is_handled: bool,
+    is_ignored: bool,
+    is_super: bool,
+    is_hyper: bool,
+    is_meta: bool,
+    is_release: bool,
 }
