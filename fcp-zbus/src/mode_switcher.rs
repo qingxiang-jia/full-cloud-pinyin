@@ -51,7 +51,7 @@ impl ModeSwitcher {
             return ModeSwitcherReturn::Done(false);
         }
 
-        if is_ctrl && is_release {
+        if is_shift && is_release {
             let prev_mode = self.mode();
             if prev_mode == Mode::English {
                 self.set_mode(Mode::Pinyin);
