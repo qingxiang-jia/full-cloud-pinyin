@@ -23,9 +23,33 @@ impl ModeSwitcher {
         // println!("keyval: {keyval}, keycode: {keycode}, state: {bi}");
 
         // State flags
-        let is_release = self.get_kth_bit(state, 30);
+        let is_shift = self.get_kth_bit(state, 0);
+        let is_lock = self.get_kth_bit(state, 1);
         let is_ctrl = self.get_kth_bit(state, 2);
+        let is_alt = self.get_kth_bit(state, 3);
+        let is_mod2 = self.get_kth_bit(state, 4);
+        let is_mod3 = self.get_kth_bit(state, 5);
+        let is_mod4 = self.get_kth_bit(state, 6);
+        let is_mod5 = self.get_kth_bit(state, 7);
+        let is_btn1 = self.get_kth_bit(state, 8);
+        let is_btn2 = self.get_kth_bit(state, 9);
+        let is_btn3 = self.get_kth_bit(state, 10);
+        let is_btn4 = self.get_kth_bit(state, 11);
+        let is_btn5 = self.get_kth_bit(state, 12);
+        let is_handled = self.get_kth_bit(state, 24);
+        let is_ignored = self.get_kth_bit(state, 25);
+        let is_super = self.get_kth_bit(state, 26);
+        let is_hyper = self.get_kth_bit(state, 27);
+        let is_meta = self.get_kth_bit(state, 28);
+        let is_release = self.get_kth_bit(state, 30);
+        let is_modifier = is_ctrl || is_alt || is_super || is_hyper || is_meta || is_lock;
+
         let mut should_reset = false;
+
+        if is_modifier && !is_release {
+            // User control like ctrl+v that has nothing to do with us.
+            return ModeSwitcherReturn::Done(false);
+        }
 
         if is_ctrl && is_release {
             let prev_mode = self.mode();
@@ -38,10 +62,6 @@ impl ModeSwitcher {
                 // If *now* we are in English mode, reset the engine.
                 should_reset = true;
             }
-        }
-        if is_ctrl && !is_release {
-            // User control like ctrl+v that has nothing to do with us.
-            return ModeSwitcherReturn::Done(false);
         }
 
         if self.mode() == Mode::English || is_release {
