@@ -46,34 +46,37 @@ impl ModeSwitcher {
 
         let mut should_reset = false;
 
-        if is_modifier && !is_release {
-            // User control like ctrl+v that has nothing to do with us.
-            return ModeSwitcherReturn::Done(false);
-        }
-
-        if is_shift && is_release {
-            let prev_mode = self.mode();
-            if prev_mode == Mode::English {
-                self.set_mode(Mode::Pinyin);
-            } else {
-                self.set_mode(Mode::English);
+        if !is_release {
+            if is_modifier || self.mode() == Mode::English {
+                // User control like ctrl+v that has nothing to do with us.
+                return ModeSwitcherReturn::Done(false);
             }
-            if prev_mode == Mode::Pinyin {
-                // If *now* we are in English mode, reset the engine.
-                should_reset = true;
+
+            let maybe_key = Key::from_u32(keyval);
+            if maybe_key.is_none() {
+                return ModeSwitcherReturn::Done(false); // We don't handle anything outside of key.
+            }
+            let key = maybe_key.expect("maybe_key is None but it shouldn't.");
+            return ModeSwitcherReturn::Continue(key, should_reset);
+        } else {
+            if is_shift {
+                let prev_mode = self.mode();
+                if prev_mode == Mode::English {
+                    self.set_mode(Mode::Pinyin);
+                } else {
+                    self.set_mode(Mode::English);
+                }
+                if prev_mode == Mode::Pinyin {
+                    // If *now* we are in English mode, reset the engine.
+                    should_reset = true;
+                }
+            }
+
+            if self.mode() == Mode::English {
+                return ModeSwitcherReturn::Done(false);
             }
         }
-
-        if self.mode() == Mode::English || is_release {
-            return ModeSwitcherReturn::Done(false);
-        }
-
-        let maybe_key = Key::from_u32(keyval);
-        if maybe_key.is_none() {
-            return ModeSwitcherReturn::Done(false); // We don't handle anything outside of key.
-        }
-        let key = maybe_key.expect("maybe_key is None but it shouldn't.");
-        return ModeSwitcherReturn::Continue(key, should_reset);
+        return ModeSwitcherReturn::Done(false);
     }
 
     fn mode(&self) -> Mode {
