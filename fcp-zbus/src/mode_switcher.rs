@@ -105,24 +105,6 @@ pub enum ModeSwitcherReturn {
     Done(bool),
 }
 
-impl ModeSwitcherReturn {
-    pub fn get_data_if_continue(&self) -> Option<(Key, bool)> {
-        match self {
-            ModeSwitcherReturn::Continue(key, should_reset) => {
-                Some((key.clone(), should_reset.clone()))
-            }
-            ModeSwitcherReturn::Done(_) => None,
-        }
-    }
-
-    pub fn get_data_if_early_return(&self) -> Option<bool> {
-        match self {
-            ModeSwitcherReturn::Continue(_, _) => None,
-            ModeSwitcherReturn::Done(has_handled) => Some(has_handled.clone()),
-        }
-    }
-}
-
 #[derive(Clone, Copy, PartialEq)]
 enum Mode {
     English,
