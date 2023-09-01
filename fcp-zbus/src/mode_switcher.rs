@@ -1,7 +1,6 @@
 use std::sync::{Arc, Mutex};
 
 use crate::keys::Key;
-
 pub struct ModeSwitcher {
     mode: Arc<Mutex<Mode>>,
 }
@@ -41,7 +40,7 @@ impl ModeSwitcher {
             let key = maybe_key.expect("maybe_key is None but it shouldn't.");
             return ModeSwitcherReturn::Continue(key, should_reset);
         } else {
-            if flags.is_shift {
+            if flags.is_ctrl {
                 let prev_mode = self.mode();
                 if prev_mode == Mode::English {
                     self.set_mode(Mode::Pinyin);
@@ -111,6 +110,7 @@ enum Mode {
     Pinyin,
 }
 
+#[derive(Debug)]
 struct Flags {
     is_shift: bool,
     is_lock: bool,
