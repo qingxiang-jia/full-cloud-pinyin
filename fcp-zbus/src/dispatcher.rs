@@ -106,6 +106,9 @@ impl Dispatcher {
             | Key::Right
             | Key::Backspace
             | Key::Escape => return self.handle_control(key).await,
+            | Key::Shift
+            | Key::Ctrl
+            | Key::Alt => panic!("Unexpected control keys received.")
         }
     }
 
