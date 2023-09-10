@@ -38,32 +38,32 @@ impl Dispatcher {
         }
 
         match key {
-            Key::A
-            | Key::B
-            | Key::C
-            | Key::D
-            | Key::E
-            | Key::F
-            | Key::G
-            | Key::H
-            | Key::I
-            | Key::J
-            | Key::K
-            | Key::L
-            | Key::M
-            | Key::N
-            | Key::O
-            | Key::P
-            | Key::Q
-            | Key::R
-            | Key::S
-            | Key::T
-            | Key::U
-            | Key::V
-            | Key::W
-            | Key::X
-            | Key::Y
-            | Key::Z => return self.handle_pinyin(key).await,
+            Key::a
+            | Key::b
+            | Key::c
+            | Key::d
+            | Key::e
+            | Key::f
+            | Key::g
+            | Key::h
+            | Key::i
+            | Key::j
+            | Key::k
+            | Key::l
+            | Key::m
+            | Key::n
+            | Key::o
+            | Key::p
+            | Key::q
+            | Key::r
+            | Key::s
+            | Key::t
+            | Key::u
+            | Key::v
+            | Key::w
+            | Key::x
+            | Key::y
+            | Key::z => return self.handle_pinyin(key).await,
             Key::_0
             | Key::_1
             | Key::_2
@@ -108,7 +108,33 @@ impl Dispatcher {
             | Key::Escape => return self.handle_control(key).await,
             | Key::Shift
             | Key::Ctrl
-            | Key::Alt => panic!("Unexpected control keys received.")
+            | Key::Alt => panic!("Unexpected control keys received."),
+            Key::A
+            | Key::B
+            | Key::C
+            | Key::D
+            | Key::E
+            | Key::F
+            | Key::G
+            | Key::H
+            | Key::I
+            | Key::J
+            | Key::K
+            | Key::L
+            | Key::M
+            | Key::N
+            | Key::O
+            | Key::P
+            | Key::Q
+            | Key::R
+            | Key::S
+            | Key::T
+            | Key::U
+            | Key::V
+            | Key::W
+            | Key::X
+            | Key::Y
+            | Key::Z => panic!("We do not handle uppercase letters."),
         }
     }
 
