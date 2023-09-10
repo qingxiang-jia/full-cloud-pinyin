@@ -1,14 +1,19 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::{self, Display},
+    sync::{Arc, Mutex},
+};
 
 use crate::keys::Key;
 pub struct ModeSwitcher {
     mode: Arc<Mutex<Mode>>,
+    last: Arc<Mutex<Key>>,
 }
 
 impl ModeSwitcher {
     pub fn new() -> ModeSwitcher {
         ModeSwitcher {
             mode: Arc::new(Mutex::new(Mode::Pinyin)),
+            last: Arc::new(Mutex::new(Key::a)),
         }
     }
 
@@ -18,46 +23,59 @@ impl ModeSwitcher {
         keycode: u32,
         state: u32,
     ) -> ModeSwitcherReturn {
-        // let bi = format!("{state:b}");
-        // println!("keyval: {keyval}, keycode: {keycode}, state: {bi}");
-
         // State flags
         let flags = self.decode_flag(state);
-        let is_modifier = flags.is_ctrl || flags.is_alt || flags.is_super || flags.is_hyper || flags.is_meta || flags.is_lock;
+        let key = Key::from_u32(keyval);
+        if key.is_none() {
+            return ModeSwitcherReturn::Done(false);
+        }
+        let key = key.expect("Unknown key.");
 
         let mut should_reset = false;
 
-        if !flags.is_release {
-            if is_modifier || self.mode() == Mode::English {
-                // User control like ctrl+v that has nothing to do with us.
-                return ModeSwitcherReturn::Done(false);
+        if key == Key::Shift && self.last() == Key::Shift {
+            let prev_mode = self.mode();
+            if prev_mode == Mode::Pinyin {
+                // If *now* we are in English mode, reset the engine.
+                should_reset = true;
             }
 
-            let maybe_key = Key::from_u32(keyval);
-            if maybe_key.is_none() {
-                return ModeSwitcherReturn::Done(false); // We don't handle anything outside of key.
-            }
-            let key = maybe_key.expect("maybe_key is None but it shouldn't.");
-            return ModeSwitcherReturn::Continue(key, should_reset);
-        } else {
-            if flags.is_ctrl {
-                let prev_mode = self.mode();
-                if prev_mode == Mode::English {
-                    self.set_mode(Mode::Pinyin);
-                } else {
-                    self.set_mode(Mode::English);
-                }
-                if prev_mode == Mode::Pinyin {
-                    // If *now* we are in English mode, reset the engine.
-                    should_reset = true;
-                }
-            }
-
-            if self.mode() == Mode::English {
-                return ModeSwitcherReturn::Done(false);
+            if prev_mode == Mode::English {
+                println!("EN -> PY");
+                self.set_mode(Mode::Pinyin);
+            } else {
+                println!("PY -> EN");
+                self.set_mode(Mode::English);
             }
         }
-        return ModeSwitcherReturn::Done(false);
+
+        self.set_last(key);
+
+        if key == Key::Shift {
+            if !flags.is_release {
+                println!("Shift IN");
+            } else {
+                println!("Shift OUT");
+            }
+        } else {
+            if !flags.is_release {
+                println!("{:#?}, {}", key, flags);
+            }
+        }
+
+        let is_modifier = flags.is_ctrl
+            || flags.is_alt
+            || flags.is_super
+            || flags.is_hyper
+            || flags.is_meta
+            || flags.is_lock;
+
+        if key == Key::Shift || flags.is_release || is_modifier || self.mode() == Mode::English {
+            // User control like ctrl+v that has nothing to do with us.
+            return ModeSwitcherReturn::Done(false);
+        }
+
+        return ModeSwitcherReturn::Continue(key, should_reset);
     }
 
     fn mode(&self) -> Mode {
@@ -67,6 +85,15 @@ impl ModeSwitcher {
     fn set_mode(&self, val: Mode) {
         let mut mode = self.mode.lock().expect("Failed to lock mode.");
         *mode = val;
+    }
+
+    fn last(&self) -> Key {
+        *self.last.lock().expect("Failed to lock last.")
+    }
+
+    fn set_last(&self, val: Key) {
+        let mut last = self.last.lock().expect("Failed to lock last.");
+        *last = val;
     }
 
     fn get_kth_bit(&self, n: u32, k: u32) -> bool {
@@ -110,7 +137,6 @@ enum Mode {
     Pinyin,
 }
 
-#[derive(Debug)]
 struct Flags {
     is_shift: bool,
     is_lock: bool,
@@ -131,4 +157,14 @@ struct Flags {
     is_hyper: bool,
     is_meta: bool,
     is_release: bool,
+}
+
+impl fmt::Display for Flags {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "[Shift:{} Ctrl:{} Alt:{} Release:{}]",
+            self.is_shift, self.is_ctrl, self.is_alt, self.is_release
+        )
+    }
 }
