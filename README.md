@@ -1,4 +1,11 @@
+Use GTK panel:
+
 ![Peek 2023-05-28 10-31](https://github.com/qingxiang-jia/full-cloud-pinyin/assets/5571586/a366969e-40ba-4ec5-b2e7-ae25808e0fcd)
+
+Use Kimpanel:
+
+![kimpanel](https://github.com/qingxiang-jia/full-cloud-pinyin/assets/5571586/e107b938-5411-445e-8986-462d202d7f58)
+
 
 ## Introduction
 
