@@ -2,7 +2,7 @@ use zbus::Connection;
 
 use crate::keys::Key;
 
-use super::{ibus_proxy::IBusProxy, symbol_service::SymbolService};
+use super::ibus_proxy::IBusProxy;
 
 pub struct NumberService {
     ibus: IBusProxy
