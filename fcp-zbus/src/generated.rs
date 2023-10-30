@@ -23,33 +23,33 @@ use std::prelude::rust_2021::*;
 // section of the zbus documentation.
 //
 
-impl<'a> ::zbus::ProxyDefault for IBusProxy<'a> {
+impl<'a> ::zbus::ProxyDefault for IBusProxyGen<'a> {
     const INTERFACE: &'static str = "org.freedesktop.IBus";
     const DESTINATION: &'static str = "org.freedesktop.IBus";
     const PATH: &'static str = "/org/freedesktop/IBus";
 }
 
-pub struct IBusProxy<'c>(::zbus::Proxy<'c>);
+pub struct IBusProxyGen<'c>(::zbus::Proxy<'c>);
 
 #[automatically_derived]
-impl<'c> ::core::clone::Clone for IBusProxy<'c> {
+impl<'c> ::core::clone::Clone for IBusProxyGen<'c> {
     #[inline]
 
-    fn clone(&self) -> IBusProxy<'c> {
-        IBusProxy(::core::clone::Clone::clone(&self.0))
+    fn clone(&self) -> IBusProxyGen<'c> {
+        IBusProxyGen(::core::clone::Clone::clone(&self.0))
     }
 }
 
 #[automatically_derived]
-impl<'c> ::core::fmt::Debug for IBusProxy<'c> {
+impl<'c> ::core::fmt::Debug for IBusProxyGen<'c> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         f.debug_struct("IBusProxy").field("0", &&self.0).finish()
     }
 }
 
-impl<'c> IBusProxy<'c> {
+impl<'c> IBusProxyGen<'c> {
     #[doc = r" Creates a new proxy with the default service and path."]
-    pub async fn new(conn: &::zbus::Connection) -> ::zbus::Result<IBusProxy<'c>> {
+    pub async fn new(conn: &::zbus::Connection) -> ::zbus::Result<IBusProxyGen<'c>> {
         Self::builder(conn).build().await
     }
 
@@ -285,13 +285,13 @@ impl<'c> IBusProxy<'c> {
     }
 }
 
-impl<'c> ::std::convert::From<::zbus::Proxy<'c>> for IBusProxy<'c> {
+impl<'c> ::std::convert::From<::zbus::Proxy<'c>> for IBusProxyGen<'c> {
     fn from(proxy: ::zbus::Proxy<'c>) -> Self {
-        IBusProxy(::std::convert::Into::into(proxy))
+        IBusProxyGen(::std::convert::Into::into(proxy))
     }
 }
 
-impl<'c> ::std::ops::Deref for IBusProxy<'c> {
+impl<'c> ::std::ops::Deref for IBusProxyGen<'c> {
     type Target = ::zbus::Proxy<'c>;
 
     fn deref(&self) -> &Self::Target {
@@ -299,31 +299,31 @@ impl<'c> ::std::ops::Deref for IBusProxy<'c> {
     }
 }
 
-impl<'c> ::std::ops::DerefMut for IBusProxy<'c> {
+impl<'c> ::std::ops::DerefMut for IBusProxyGen<'c> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
-impl<'c> ::std::convert::AsRef<::zbus::Proxy<'c>> for IBusProxy<'c> {
+impl<'c> ::std::convert::AsRef<::zbus::Proxy<'c>> for IBusProxyGen<'c> {
     fn as_ref(&self) -> &::zbus::Proxy<'c> {
         &*self
     }
 }
 
-impl<'c> ::std::convert::AsMut<::zbus::Proxy<'c>> for IBusProxy<'c> {
+impl<'c> ::std::convert::AsMut<::zbus::Proxy<'c>> for IBusProxyGen<'c> {
     fn as_mut(&mut self) -> &mut ::zbus::Proxy<'c> {
         &mut *self
     }
 }
 
-impl<'c> ::zbus::zvariant::Type for IBusProxy<'c> {
+impl<'c> ::zbus::zvariant::Type for IBusProxyGen<'c> {
     fn signature() -> ::zbus::zvariant::Signature<'static> {
         ::zbus::zvariant::OwnedObjectPath::signature()
     }
 }
 
-impl<'c> ::zbus::export::serde::ser::Serialize for IBusProxy<'c> {
+impl<'c> ::zbus::export::serde::ser::Serialize for IBusProxyGen<'c> {
     fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
     where
         S: ::zbus::export::serde::ser::Serializer,

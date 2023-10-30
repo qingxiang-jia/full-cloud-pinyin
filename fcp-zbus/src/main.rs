@@ -2,7 +2,7 @@ extern crate std;
 
 use std::env;
 
-use crate::{generated::IBusProxy, ibus_helper::get_ibus_address};
+use crate::{generated::IBusProxyGen, ibus_helper::get_ibus_address};
 
 use ibus_variants::{IBusEngineDesc, IBusComponent};
 use listeners::{new_input_listener, FactoryListener, ServiceListener};
@@ -125,7 +125,7 @@ async fn start_from_console() {
         .await
         .expect("Failed to build connection to IBus.");
 
-    let ibus = IBusProxy::new(&conn)
+    let ibus = IBusProxyGen::new(&conn)
         .await
         .expect("Failed to create IBusProxy.");
 
