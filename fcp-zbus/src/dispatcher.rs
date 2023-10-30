@@ -9,10 +9,10 @@ use super::{
 };
 
 pub struct Dispatcher {
-    cs: CandidateService,
-    ps: PreeditService,
-    ss: SymbolService,
-    ns: NumberService,
+    candidate_svc: CandidateService,
+    preedit_svc: PreeditService,
+    symbol_svc: SymbolService,
+    number_svc: NumberService,
     client: CloudPinyinClient,
     ibus: IBusProxy,
     level: Vec<usize>,
@@ -21,10 +21,10 @@ pub struct Dispatcher {
 impl Dispatcher {
     pub fn new(conn: &Connection) -> Dispatcher {
         Dispatcher {
-            cs: CandidateService::new(conn),
-            ps: PreeditService::new(conn),
-            ss: SymbolService::new(conn),
-            ns: NumberService::new(conn),
+            candidate_svc: CandidateService::new(conn),
+            preedit_svc: PreeditService::new(conn),
+            symbol_svc: SymbolService::new(conn),
+            number_svc: NumberService::new(conn),
             client: CloudPinyinClient::new(),
             ibus: IBusProxy::new(conn),
             level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
@@ -33,7 +33,7 @@ impl Dispatcher {
 
     pub async fn on_input(&self, key: Key, should_reset: bool) -> bool {
         if should_reset {
-            self.cs.clear().await;
+            self.candidate_svc.clear().await;
             return false;
         }
 
@@ -74,10 +74,10 @@ impl Dispatcher {
             | Key::_7
             | Key::_8
             | Key::_9 => {
-                if self.cs.in_session().await {
+                if self.candidate_svc.in_session().await {
                     return self.handle_select(key).await;
                 } else {
-                    self.ns.handle_number(key).await;
+                    self.number_svc.handle_number(key).await;
                     return true;
                 }
             }
@@ -93,7 +93,7 @@ impl Dispatcher {
             | Key::BackSlash
             | Key::ExclamationMark
             | Key::Ellipsis => {
-                self.ss.handle_symbol(key).await;
+                self.symbol_svc.handle_symbol(key).await;
                 return true;
             }
             Key::Space
@@ -141,48 +141,48 @@ impl Dispatcher {
     pub async fn handle_pinyin(&self, key: Key) -> bool {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
-        self.ps.push(c).await;
-        let preedit = self.ps.to_string().await;
+        self.preedit_svc.push(c).await;
+        let preedit = self.preedit_svc.to_string().await;
 
         let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
 
-        self.cs.set_candidates(&candidates).await;
+        self.candidate_svc.set_candidates(&candidates).await;
 
         true
     }
 
     pub async fn handle_select(&self, key: Key) -> bool {
-        self.ps.clear().await;
+        self.preedit_svc.clear().await;
 
         let i = key.to_usize().expect("Failed to conver the key to usize.");
-        self.cs.select(i).await;
-        self.cs.clear().await;
+        self.candidate_svc.select(i).await;
+        self.candidate_svc.clear().await;
 
         true
     }
 
     pub async fn handle_control(&self, key: Key) -> bool {
-        if !self.cs.in_session().await {
+        if !self.candidate_svc.in_session().await {
             return false;
         }
 
         match key {
             Key::Space => return self.handle_select(Key::_1).await,
             Key::Enter => {
-                let preedit = self.ps.to_string().await;
-                self.ps.clear().await;
-                self.cs.clear().await;
+                let preedit = self.preedit_svc.to_string().await;
+                self.preedit_svc.clear().await;
+                self.candidate_svc.clear().await;
                 self.ibus.commit_text(&preedit).await;
 
                 return true;
             }
             Key::Minus => {
-                self.cs.page_back().await;
+                self.candidate_svc.page_back().await;
 
                 return true;
             }
             Key::Equal => {
-                let (enough, min_needed) = self.cs.page_into().await;
+                let (enough, min_needed) = self.candidate_svc.page_into().await;
                 if !enough {
                     let min = min_needed
                         .expect("Not enough to fill lookup table but min_needed is None.");
@@ -197,9 +197,9 @@ impl Dispatcher {
 
                     let candidates = self
                         .client
-                        .query_candidates(&self.ps.to_string().await, to_load)
+                        .query_candidates(&self.preedit_svc.to_string().await, to_load)
                         .await;
-                    self.cs.set_candidates(&candidates).await;
+                    self.candidate_svc.set_candidates(&candidates).await;
                 }
 
                 return true;
@@ -209,24 +209,24 @@ impl Dispatcher {
             Key::Left => return false,  // For now, ignore
             Key::Right => return false, // For now, ignore
             Key::Backspace => {
-                let popped = self.ps.pop().await;
+                let popped = self.preedit_svc.pop().await;
 
                 if popped.is_none() {
-                    self.cs.clear().await;
+                    self.candidate_svc.clear().await;
                     return true;
                 }
 
-                let preedit: String = self.ps.to_string().await;
+                let preedit: String = self.preedit_svc.to_string().await;
 
                 let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
 
-                self.cs.set_candidates(&candidates).await;
+                self.candidate_svc.set_candidates(&candidates).await;
 
                 return true;
             }
             Key::Escape => {
-                self.ps.clear().await;
-                self.cs.clear().await;
+                self.preedit_svc.clear().await;
+                self.candidate_svc.clear().await;
 
                 return true;
             }
