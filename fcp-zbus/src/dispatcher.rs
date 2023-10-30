@@ -1,7 +1,10 @@
+use std::sync::Arc;
+
 use zbus::Connection;
 
 use super::ibus_proxy::IBusProxy;
 use crate::{keys::Key, preedit_service::PreeditService};
+use tokio::sync::Mutex;
 
 use super::{
     candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient,
@@ -14,19 +17,20 @@ pub struct Dispatcher {
     symbol_svc: SymbolService,
     number_svc: NumberService,
     client: CloudPinyinClient,
-    ibus: IBusProxy,
+    ibus: Arc<Mutex<IBusProxy>>,
     level: Vec<usize>,
 }
 
 impl Dispatcher {
     pub fn new(conn: &Connection) -> Dispatcher {
+        let ibus: Arc<Mutex<IBusProxy>> = Arc::new(Mutex::new(IBusProxy::new(conn)));
         Dispatcher {
-            candidate_svc: CandidateService::new(conn),
-            preedit_svc: PreeditService::new(conn),
-            symbol_svc: SymbolService::new(conn),
-            number_svc: NumberService::new(conn),
+            candidate_svc: CandidateService::new(ibus.clone()),
+            preedit_svc: PreeditService::new(ibus.clone()),
+            symbol_svc: SymbolService::new(ibus.clone()),
+            number_svc: NumberService::new(ibus.clone()),
             client: CloudPinyinClient::new(),
-            ibus: IBusProxy::new(conn),
+            ibus: ibus.clone(),
             level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
         }
     }
@@ -106,9 +110,7 @@ impl Dispatcher {
             | Key::Right
             | Key::Backspace
             | Key::Escape => return self.handle_control(key).await,
-            | Key::Shift
-            | Key::Ctrl
-            | Key::Alt => panic!("Unexpected control keys received."),
+            Key::Shift | Key::Ctrl | Key::Alt => panic!("Unexpected control keys received."),
             Key::A
             | Key::B
             | Key::C
@@ -172,7 +174,7 @@ impl Dispatcher {
                 let preedit = self.preedit_svc.to_string().await;
                 self.preedit_svc.clear().await;
                 self.candidate_svc.clear().await;
-                self.ibus.commit_text(&preedit).await;
+                self.ibus.lock().await.commit_text(&preedit).await;
 
                 return true;
             }

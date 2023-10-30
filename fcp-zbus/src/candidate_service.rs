@@ -1,6 +1,6 @@
+use std::sync::Arc;
 
 use tokio::sync::Mutex;
-use zbus::Connection;
 
 use super::{candidate::Candidate, ibus_proxy::IBusProxy, ibus_variants::IBusLookupTable};
 
@@ -23,15 +23,15 @@ unsafe impl Sync for State {} // State is safe to share between threads
 pub struct CandidateService {
     lt_size: usize,
     state: Mutex<State>,
-    ibus: IBusProxy,
+    ibus: Arc<Mutex<IBusProxy>>,
 }
 
 impl CandidateService {
-    pub fn new(conn: &Connection) -> CandidateService {
+    pub fn new(ibus: Arc<Mutex<IBusProxy>>) -> CandidateService {
         CandidateService {
             lt_size: 5,
             state: Mutex::new(State::new()),
-            ibus: IBusProxy::new(&conn),
+            ibus,
         }
     }
 
@@ -55,7 +55,11 @@ impl CandidateService {
 
         drop(state);
 
-        self.ibus.update_lookup_table(to_show, true).await;
+        self.ibus
+            .lock()
+            .await
+            .update_lookup_table(to_show, true)
+            .await;
     }
 
     pub async fn page_into(&self) -> (bool, Option<usize>) {
@@ -71,7 +75,11 @@ impl CandidateService {
 
         drop(state);
 
-        self.ibus.update_lookup_table(to_show, true).await;
+        self.ibus
+            .lock()
+            .await
+            .update_lookup_table(to_show, true)
+            .await;
         return (true, None);
     }
 
@@ -88,7 +96,11 @@ impl CandidateService {
 
         drop(state);
 
-        self.ibus.update_lookup_table(to_show, true).await;
+        self.ibus
+            .lock()
+            .await
+            .update_lookup_table(to_show, true)
+            .await;
     }
 
     pub async fn select(&self, ith: usize) {
@@ -98,7 +110,7 @@ impl CandidateService {
 
         drop(state);
 
-        self.ibus.commit_text(&text).await;
+        self.ibus.lock().await.commit_text(&text).await;
 
         self.clear().await;
     }
@@ -110,6 +122,10 @@ impl CandidateService {
 
         drop(state);
 
-        self.ibus.update_lookup_table(IBusLookupTable::from_nothing(), false).await;
+        self.ibus
+            .lock()
+            .await
+            .update_lookup_table(IBusLookupTable::from_nothing(), false)
+            .await;
     }
 }

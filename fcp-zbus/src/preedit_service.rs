@@ -1,10 +1,11 @@
+use std::sync::Arc;
+
 use tokio::sync::Mutex;
-use zbus::Connection;
 
 use super::ibus_proxy::IBusProxy;
 
 struct State {
-    preedit: Vec<char>
+    preedit: Vec<char>,
 }
 
 impl State {
@@ -16,14 +17,14 @@ impl State {
 }
 
 pub struct PreeditService {
-    ibus: IBusProxy,
+    ibus: Arc<Mutex<IBusProxy>>,
     state: Mutex<State>,
 }
 
 impl PreeditService {
-    pub fn new(conn: &Connection) -> PreeditService {
+    pub fn new(ibus: Arc<Mutex<IBusProxy>>) -> PreeditService {
         PreeditService {
-            ibus: IBusProxy::new(conn),
+            ibus,
             state: Mutex::new(State::new()),
         }
     }
@@ -35,7 +36,11 @@ impl PreeditService {
 
         drop(state);
 
-        self.ibus.update_preedit_text(&preedit, preedit.len() as u32, true).await;
+        self.ibus
+            .lock()
+            .await
+            .update_preedit_text(&preedit, preedit.len() as u32, true)
+            .await;
     }
 
     pub async fn pop(&self) -> Option<char> {
@@ -45,8 +50,12 @@ impl PreeditService {
 
         drop(state);
 
-        self.ibus.update_preedit_text(&preedit, preedit.len() as u32, true).await;
-        
+        self.ibus
+            .lock()
+            .await
+            .update_preedit_text(&preedit, preedit.len() as u32, true)
+            .await;
+
         popped
     }
 
