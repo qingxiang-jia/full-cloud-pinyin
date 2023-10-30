@@ -1,5 +1,5 @@
 use std::{
-    fmt::{self, Display},
+    fmt::{self},
     sync::{Arc, Mutex},
 };
 
@@ -137,6 +137,7 @@ enum Mode {
     Pinyin,
 }
 
+#[allow(dead_code)]
 struct Flags {
     is_shift: bool,
     is_lock: bool,
