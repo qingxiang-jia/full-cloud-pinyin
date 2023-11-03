@@ -17,6 +17,9 @@ impl CloudPinyinClient {
     }
     
     pub async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
+        if preedit.len() == 0 {
+            return Vec::new();
+        }
         let json = self.get_candidates_from_net(preedit, depth as i32).await;
         let candidates = self.json_to_candidates(json);
         candidates

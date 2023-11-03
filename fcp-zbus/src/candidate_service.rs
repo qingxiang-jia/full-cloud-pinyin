@@ -51,7 +51,11 @@ impl CandidateService {
         let page = state.page;
         let start = 0 + self.lt_size * page; // inclusive
         let end = start + self.lt_size; // exclusive
-        let to_show = IBusLookupTable::from_candidates(&state.candidates[start..end]);
+        let to_show = if state.candidates.len() <= self.lt_size {
+            IBusLookupTable::from_nothing()
+        } else {
+            IBusLookupTable::from_candidates(&state.candidates[start..end])
+        };
 
         drop(state);
 
