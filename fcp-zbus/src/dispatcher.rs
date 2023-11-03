@@ -38,7 +38,7 @@ impl Dispatcher {
     pub async fn on_input(&self, key: Key, should_reset: bool) -> bool {
         if should_reset {
             self.candidate_svc.clear().await;
-            return false;
+            return true;
         }
 
         match key {
@@ -214,8 +214,7 @@ impl Dispatcher {
                 let popped = self.preedit_svc.pop().await;
 
                 if popped.is_none() {
-                    self.candidate_svc.clear().await;
-                    return true;
+                    return false;
                 }
 
                 let preedit: String = self.preedit_svc.to_string().await;
