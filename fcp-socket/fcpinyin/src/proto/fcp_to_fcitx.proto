@@ -1,0 +1,23 @@
+message CommandToFcitx {
+  oneof command {
+    CommitText commit_text = 1;
+    UpdatePreedit update_preedut = 2;
+    UpdateLookuptable update_lt = 3;
+  }
+}
+
+message CommitText {
+  required string text = 1;
+}
+
+message UpdatePreedit {
+  required string text = 1;
+}
+
+message UpdateLookuptable {
+  required LookupTable lt = 1;
+}
+
+message LookupTable {
+  repeated string candidates = 1;
+}
