@@ -1,13 +1,20 @@
-use std::{fs, path::Path};
+use std::{fs, path::Path, process::exit};
 
 use tokio::{io, net::UnixDatagram};
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
     let path = "/home/lee/Downloads/fcitx_tx";
+
     if Path::new(path).exists() {
         let _ = fs::remove_file(&path);
     }
+
+    ctrlc::set_handler(move || {
+        _ = fs::remove_file(&path);
+        exit(0);
+    }).expect("Failed to set ctrl-c handler.");
+
     rx(path).await // A file will be created, cannot reuse existing one.
     // To send to this socket, with modern netcat, do: nc -uU /path/to/socket
 }
