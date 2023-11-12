@@ -1,3 +1,5 @@
+syntax = "proto3";
+
 message CommandToFcitx {
   oneof command {
     CommitText commit_text = 1;
@@ -7,15 +9,15 @@ message CommandToFcitx {
 }
 
 message CommitText {
-  required string text = 1;
+  string text = 1;
 }
 
 message UpdatePreedit {
-  required string text = 1;
+  string text = 1;
 }
 
 message UpdateLookuptable {
-  required LookupTable lt = 1;
+  LookupTable lt = 1;
 }
 
 message LookupTable {
