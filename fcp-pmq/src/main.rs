@@ -27,9 +27,10 @@ fn send(q: &MqdT, payload: &[u8]) {
     mq_send(q, payload, 1);
 }
 
-fn recv(q: &MqdT, payload: &mut [u8]) {
+fn recv(q: &MqdT, payload: &mut [u8]) -> usize {
     let mut prio = 1;
-    mq_receive(q, payload, &mut prio);
+    return mq_receive(q, payload, &mut prio)
+        .expect("Faild to receive message from POSIX message queue.");
 }
 
 fn close(q: MqdT) {
