@@ -5,13 +5,21 @@ use nix::sys::stat::Mode;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    for arg in args {
-        println!("arg: {}", &arg);
+    if args.len() < 2 || (args[1] != "send" && args[1] != "recv") {
+        println!("Usage: parameter is either send or recv.");
+        return;
+    }
+    let param = &args[1];
+    if param == "send" {
+        run_send();
+    }
+    if param == "recv" {
+        run_recv();
     }
 }
 
 fn run_send() {
-    let q = open_send("fcp_pmq_queue");
+    let q = open_send("/b");
     let mut input = String::new();
     loop {
         match io::stdin().read_line(&mut input) {
@@ -29,7 +37,7 @@ fn run_send() {
 }
 
 fn run_recv() {
-    let q = open_recv("fcp_pmq_queue");
+    let q = open_recv("/b");
     let mut buf = vec![0_u8; 1024];
     loop {
         let received = recv(&q, &mut buf);
@@ -44,7 +52,7 @@ fn open_send(name: &str) -> MqdT {
     mq_open(
         name,
         MQ_OFlag::O_CREAT | MQ_OFlag::O_WRONLY,
-        Mode::S_IWUSR | Mode::S_IRUSR | Mode::S_IRGRP | Mode::S_IROTH,
+        Mode::S_IWUSR | Mode::S_IRUSR,
         None,
     )
     .expect("Failed to open queue to send.")
@@ -54,7 +62,7 @@ fn open_recv(name: &str) -> MqdT {
     mq_open(
         name,
         MQ_OFlag::O_CREAT | MQ_OFlag::O_RDONLY,
-        Mode::S_IWUSR | Mode::S_IRUSR | Mode::S_IRGRP | Mode::S_IROTH,
+        Mode::S_IWUSR | Mode::S_IRUSR,
         None,
     )
     .expect("Failed to open queue to receive.")
