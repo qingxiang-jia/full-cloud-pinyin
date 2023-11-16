@@ -1,6 +1,6 @@
 use std::{env, io};
 
-use nix::mqueue::{mq_close, mq_open, mq_receive, mq_send, MQ_OFlag, MqdT};
+use nix::mqueue::{mq_close, mq_open, mq_receive, mq_send, MQ_OFlag, MqAttr, MqdT};
 use nix::sys::stat::Mode;
 
 fn main() {
@@ -19,7 +19,7 @@ fn main() {
 }
 
 fn run_send() {
-    let q = open_send("/b");
+    let q = open_send("/c");
     let mut input = String::new();
     loop {
         match io::stdin().read_line(&mut input) {
@@ -37,7 +37,7 @@ fn run_send() {
 }
 
 fn run_recv() {
-    let q = open_recv("/b");
+    let q = open_recv("/c");
     let mut buf = vec![0_u8; 1024];
     loop {
         let received = recv(&q, &mut buf);
@@ -52,8 +52,16 @@ fn open_send(name: &str) -> MqdT {
     mq_open(
         name,
         MQ_OFlag::O_CREAT | MQ_OFlag::O_WRONLY,
-        Mode::S_IWUSR | Mode::S_IRUSR,
-        None,
+        Mode::S_IWUSR
+            | Mode::S_IRUSR
+            | Mode::S_IXUSR
+            | Mode::S_IRGRP
+            | Mode::S_IWGRP
+            | Mode::S_IXGRP
+            | Mode::S_IROTH
+            | Mode::S_IWOTH
+            | Mode::S_IXOTH,
+        Some(&MqAttr::new(0, 10, 10 , 0)),
     )
     .expect("Failed to open queue to send.")
 }
@@ -62,8 +70,16 @@ fn open_recv(name: &str) -> MqdT {
     mq_open(
         name,
         MQ_OFlag::O_CREAT | MQ_OFlag::O_RDONLY,
-        Mode::S_IWUSR | Mode::S_IRUSR,
-        None,
+        Mode::S_IWUSR
+            | Mode::S_IRUSR
+            | Mode::S_IXUSR
+            | Mode::S_IRGRP
+            | Mode::S_IWGRP
+            | Mode::S_IXGRP
+            | Mode::S_IROTH
+            | Mode::S_IWOTH
+            | Mode::S_IXOTH,
+            Some(&MqAttr::new(0, 10, 10, 0)),
     )
     .expect("Failed to open queue to receive.")
 }
