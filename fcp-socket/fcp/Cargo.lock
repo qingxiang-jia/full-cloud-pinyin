@@ -82,7 +82,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fcpinyin"
+name = "fcp"
 version = "0.1.0"
 dependencies = [
  "ctrlc",
