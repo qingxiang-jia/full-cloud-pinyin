@@ -15,7 +15,7 @@ target_link_libraries(ims PRIVATE Fcitx5::Core)
 install(TARGETS ims DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
 
 # Addon config file
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/quwei-addon.conf" RENAME quwei.conf DESTINATION "${FCITX_INSTALL_PKGDATADIR}/addon")
+install(FILES "${PROJECT_SOURCE_DIR}/ims-addon.conf" RENAME ims.conf DESTINATION "${FCITX_INSTALL_PKGDATADIR}/addon")
 
 # Input Method registration file
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/quwei.conf" DESTINATION "${FCITX_INSTALL_PKGDATADIR}/inputmethod")
+install(FILES "${PROJECT_SOURCE_DIR}/ims.conf" DESTINATION "${FCITX_INSTALL_PKGDATADIR}/inputmethod")
