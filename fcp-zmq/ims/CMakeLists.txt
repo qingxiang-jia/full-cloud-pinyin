@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.20)
+project(ims VERSION 0.0.1)
+
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+
+find_package(Fcitx5Core REQUIRED)
+
+# Setup some compiler option that is generally useful and compatible with Fcitx 5 (C++17)
+include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
+
+add_library(ims SHARED ims.cpp)
+target_link_libraries(ims PRIVATE Fcitx5::Core)
+
+install(TARGETS ims DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
+
+# Addon config file
+fcitx5_translate_desktop_file("${CMAKE_CURRENT_BINARY_DIR}/quwei-addon.conf" quwei-addon.conf)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/quwei-addon.conf" RENAME quwei.conf DESTINATION "${FCITX_INSTALL_PKGDATADIR}/addon")
+
+# Input Method registration file
+fcitx5_translate_desktop_file(quwei.conf quwei.conf)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/quwei.conf" DESTINATION "${FCITX_INSTALL_PKGDATADIR}/inputmethod")
