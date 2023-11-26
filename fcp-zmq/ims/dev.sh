@@ -20,4 +20,9 @@ if [ $1 == "build" ]; then
     exit 0
 fi
 
+if [ $1 == "install" ]; then
+    cmake --install ./build
+    exit 0
+fi
+
 echo "Nothing done"
