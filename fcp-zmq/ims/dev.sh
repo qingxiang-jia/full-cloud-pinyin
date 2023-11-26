@@ -15,4 +15,9 @@ if [ $1 == "clean" ]; then
     exit 0
 fi
 
+if [ $1 == "build" ]; then
+    cmake --build ./build
+    exit 0
+fi
+
 echo "Nothing done"
