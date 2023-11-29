@@ -36,3 +36,8 @@ class ImsEngineFactory : public fcitx::AddonFactory {
         return new ImsEngine(manager->instance());
     }
 };
+
+class ImsServer {
+public:
+    ImsServer(ImsEngine* engine);
+};
