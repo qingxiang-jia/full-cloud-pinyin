@@ -25,6 +25,7 @@
 ImsEngine* engine;
 
 ImsEngine::ImsEngine(fcitx::Instance* instance)
+    : instance_(instance)
 {
     FCITX_UNUSED(instance);
 
