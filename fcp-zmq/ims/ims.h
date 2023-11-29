@@ -25,11 +25,15 @@ public:
     void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
+
+private:
+    fcitx::Instance* instance_;
 };
 
 class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
+        FCITX_INFO() << "creating addon instance for ims";
         return new ImsEngine(manager->instance());
     }
 };

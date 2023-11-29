@@ -27,8 +27,6 @@ ImsEngine* engine;
 ImsEngine::ImsEngine(fcitx::Instance* instance)
     : instance_(instance)
 {
-    FCITX_UNUSED(instance);
-
     engine = this;
 }
 
@@ -49,3 +47,5 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
 {
     FCITX_UNUSED(event);
 }
+
+FCITX_ADDON_FACTORY(ImsEngineFactory);
