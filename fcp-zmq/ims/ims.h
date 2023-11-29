@@ -33,7 +33,6 @@ private:
 class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
-        FCITX_INFO() << "creating addon instance for ims";
         return new ImsEngine(manager->instance());
     }
 };
