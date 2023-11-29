@@ -40,7 +40,8 @@ void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputConte
 void ImsEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent)
 {
     FCITX_UNUSED(entry);
-    FCITX_UNUSED(keyEvent);
+    FCITX_INFO() << "key event";
+    keyEvent.filterAndAccept();
 }
 
 void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event)

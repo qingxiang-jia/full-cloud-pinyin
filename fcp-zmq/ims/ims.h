@@ -30,7 +30,6 @@ public:
 class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
-        FCITX_UNUSED(manager);
         return new ImsEngine(manager->instance());
     }
 };
