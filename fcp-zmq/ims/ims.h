@@ -39,6 +39,8 @@ class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
         auto letItLeak = new ImsServer(manager->instance());
+        FCITX_UNUSED(letItLeak);
+
         return new ImsEngine(manager->instance());
     }
 };
