@@ -30,14 +30,15 @@ private:
     fcitx::Instance* instance_;
 };
 
-class ImsEngineFactory : public fcitx::AddonFactory {
-    fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
-    {
-        return new ImsEngine(manager->instance());
-    }
-};
-
 class ImsServer {
 public:
     ImsServer(fcitx::Instance* instance);
+};
+
+class ImsEngineFactory : public fcitx::AddonFactory {
+    fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
+    {
+        auto letItLeak = new ImsServer(manager->instance());
+        return new ImsEngine(manager->instance());
+    }
 };
