@@ -39,5 +39,5 @@ class ImsEngineFactory : public fcitx::AddonFactory {
 
 class ImsServer {
 public:
-    ImsServer(ImsEngine* engine);
+    ImsServer(fcitx::Instance* instance);
 };
