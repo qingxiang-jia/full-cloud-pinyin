@@ -15,6 +15,7 @@
 #include <fcitx/instance.h>
 #include <memory>
 #include <vector>
+#include <zmq.hpp>
 
 class ImsEngine;
 
@@ -28,6 +29,8 @@ public:
 
 private:
     fcitx::Instance* instance_;
+    zmq::context_t* ctx;
+    zmq::socket_t* pub;
 };
 
 class ImsServer {

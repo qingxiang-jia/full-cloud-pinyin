@@ -11,6 +11,7 @@ include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cma
 
 add_library(ims SHARED ims.cpp)
 target_link_libraries(ims PRIVATE Fcitx5::Core)
+target_include_directories(ims PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 install(TARGETS ims DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
 

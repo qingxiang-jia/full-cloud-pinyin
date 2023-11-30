@@ -28,6 +28,8 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     : instance_(instance)
 {
     engine = this;
+    ctx = new zmq::context_t();
+    pub = new zmq::socket_t(*ctx, ZMQ_PUB);
 }
 
 void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
