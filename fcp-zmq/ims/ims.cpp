@@ -49,4 +49,8 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
     FCITX_UNUSED(event);
 }
 
+ImsServer::ImsServer(fcitx::Instance* instance) {
+
+}
+
 FCITX_ADDON_FACTORY(ImsEngineFactory);

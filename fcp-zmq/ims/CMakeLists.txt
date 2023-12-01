@@ -5,13 +5,13 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Fcitx5Core REQUIRED)
+find_package(cppzmq REQUIRED)
 
 # Setup some compiler option that is generally useful and compatible with Fcitx 5 (C++17)
 include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
 
 add_library(ims SHARED ims.cpp)
-target_link_libraries(ims PRIVATE Fcitx5::Core)
-target_include_directories(ims PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(ims PRIVATE Fcitx5::Core cppzmq)
 
 install(TARGETS ims DESTINATION "${FCITX_INSTALL_LIBDIR}/fcitx5")
 
