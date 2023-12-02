@@ -22,6 +22,10 @@
 #include <utility>
 #include <vector>
 #include "ims_to_fcp.pb.h"
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/io/coded_stream.h>
 
 ImsEngine* engine;
 
@@ -39,7 +43,7 @@ void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputConte
     FCITX_UNUSED(event);
 }
 
-KeyEvent* fcitxKeyToProto(fcitx::KeySym& fk) {
+KeyEvent* fcitxKeyToProtoKey(fcitx::KeySym& fk) {
     switch (fk) {
         case fcitx::KeySym::FcitxKey_0:
             return new KeyEvent(NUM_0);
@@ -233,11 +237,15 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& 
     }
 
     fcitx::KeySym key = keyEvent.key().sym();
-    KeyEvent* proto = fcitxKeyToProto(key);
-    if (proto == nullptr) {
+    KeyEvent* protoKey = fcitxKeyToProtoKey(key);
+    if (protoKey == nullptr) {
         keyEvent.forward();
         return;
     }
+    FcitxEvent msg;
+    msg.set_event(*protoKey);
+    std::string serialized = msg.SerializeAsString();
+    FCITX_INFO() << serialized;
 
     keyEvent.filterAndAccept();
 }
