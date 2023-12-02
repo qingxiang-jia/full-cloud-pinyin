@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+message FcitxEvent {
+  KeyEvent event = 1;
+}
+
 enum KeyEvent {
   NUM_0 = 0;
   NUM_1 = 1;

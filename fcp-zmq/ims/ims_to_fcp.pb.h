@@ -30,9 +30,11 @@
 #include "google/protobuf/generated_message_util.h"
 #include "google/protobuf/metadata_lite.h"
 #include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/message.h"
 #include "google/protobuf/repeated_field.h"  // IWYU pragma: export
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
 #include "google/protobuf/generated_enum_reflection.h"
+#include "google/protobuf/unknown_field_set.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
@@ -54,6 +56,9 @@ struct TableStruct_ims_5fto_5ffcp_2eproto {
 };
 extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_ims_5fto_5ffcp_2eproto;
+class FcitxEvent;
+struct FcitxEventDefaultTypeInternal;
+extern FcitxEventDefaultTypeInternal _FcitxEvent_default_instance_;
 namespace google {
 namespace protobuf {
 }  // namespace protobuf
@@ -173,6 +178,182 @@ inline bool KeyEvent_Parse(absl::string_view name, KeyEvent* value) {
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class FcitxEvent final :
+    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:FcitxEvent) */ {
+ public:
+  inline FcitxEvent() : FcitxEvent(nullptr) {}
+  ~FcitxEvent() override;
+  template<typename = void>
+  explicit PROTOBUF_CONSTEXPR FcitxEvent(::google::protobuf::internal::ConstantInitialized);
+
+  inline FcitxEvent(const FcitxEvent& from)
+      : FcitxEvent(nullptr, from) {}
+  FcitxEvent(FcitxEvent&& from) noexcept
+    : FcitxEvent() {
+    *this = ::std::move(from);
+  }
+
+  inline FcitxEvent& operator=(const FcitxEvent& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline FcitxEvent& operator=(FcitxEvent&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetArena() == from.GetArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const FcitxEvent& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const FcitxEvent* internal_default_instance() {
+    return reinterpret_cast<const FcitxEvent*>(
+               &_FcitxEvent_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  friend void swap(FcitxEvent& a, FcitxEvent& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(FcitxEvent* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() != nullptr &&
+        GetArena() == other->GetArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetArena() == other->GetArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(FcitxEvent* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  FcitxEvent* New(::google::protobuf::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<FcitxEvent>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const FcitxEvent& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom( const FcitxEvent& from) {
+    FcitxEvent::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  ::size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::google::protobuf::internal::ParseContext* ctx) final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target, ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  ::google::protobuf::internal::CachedSize* AccessCachedSize() const final;
+  void SharedCtor(::google::protobuf::Arena* arena);
+  void SharedDtor();
+  void InternalSwap(FcitxEvent* other);
+
+  private:
+  friend class ::google::protobuf::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() {
+    return "FcitxEvent";
+  }
+  protected:
+  explicit FcitxEvent(::google::protobuf::Arena* arena);
+  FcitxEvent(::google::protobuf::Arena* arena, const FcitxEvent& from);
+  public:
+
+  static const ClassData _class_data_;
+  const ::google::protobuf::Message::ClassData*GetClassData() const final;
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kEventFieldNumber = 1,
+  };
+  // .KeyEvent event = 1;
+  void clear_event() ;
+  ::KeyEvent event() const;
+  void set_event(::KeyEvent value);
+
+  private:
+  ::KeyEvent _internal_event() const;
+  void _internal_set_event(::KeyEvent value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:FcitxEvent)
+ private:
+  class _Internal;
+
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+
+        inline explicit constexpr Impl_(
+            ::google::protobuf::internal::ConstantInitialized) noexcept;
+        inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                              ::google::protobuf::Arena* arena);
+        inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                              ::google::protobuf::Arena* arena, const Impl_& from);
+    int event_;
+    mutable ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_ims_5fto_5ffcp_2eproto;
+};
 
 // ===================================================================
 
@@ -186,6 +367,33 @@ inline bool KeyEvent_Parse(absl::string_view name, KeyEvent* value) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// FcitxEvent
+
+// .KeyEvent event = 1;
+inline void FcitxEvent::clear_event() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  _impl_.event_ = 0;
+}
+inline ::KeyEvent FcitxEvent::event() const {
+  // @@protoc_insertion_point(field_get:FcitxEvent.event)
+  return _internal_event();
+}
+inline void FcitxEvent::set_event(::KeyEvent value) {
+  _internal_set_event(value);
+  // @@protoc_insertion_point(field_set:FcitxEvent.event)
+}
+inline ::KeyEvent FcitxEvent::_internal_event() const {
+  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
+  return static_cast<::KeyEvent>(_impl_.event_);
+}
+inline void FcitxEvent::_internal_set_event(::KeyEvent value) {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ;
+  _impl_.event_ = value;
+}
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif  // __GNUC__

@@ -20,14 +20,53 @@ PROTOBUF_PRAGMA_INIT_SEG
 namespace _pb = ::google::protobuf;
 namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
+
+inline constexpr FcitxEvent::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : event_{static_cast< ::KeyEvent >(0)},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR FcitxEvent::FcitxEvent(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct FcitxEventDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR FcitxEventDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~FcitxEventDefaultTypeInternal() {}
+  union {
+    FcitxEvent _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FcitxEventDefaultTypeInternal _FcitxEvent_default_instance_;
+static ::_pb::Metadata file_level_metadata_ims_5fto_5ffcp_2eproto[1];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_ims_5fto_5ffcp_2eproto[1];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_ims_5fto_5ffcp_2eproto = nullptr;
-const ::uint32_t TableStruct_ims_5fto_5ffcp_2eproto::offsets[1] = {};
-static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
-static constexpr ::_pb::Message* const* file_default_instances = nullptr;
+const ::uint32_t TableStruct_ims_5fto_5ffcp_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
+    protodesc_cold) = {
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::FcitxEvent, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::FcitxEvent, _impl_.event_),
+};
+
+static const ::_pbi::MigrationSchema
+    schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+        {0, -1, -1, sizeof(::FcitxEvent)},
+};
+
+static const ::_pb::Message* const file_default_instances[] = {
+    &::_FcitxEvent_default_instance_._instance,
+};
 const char descriptor_table_protodef_ims_5fto_5ffcp_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-    "\n\020ims_to_fcp.proto*\351\007\n\010KeyEvent\022\t\n\005NUM_0"
+    "\n\020ims_to_fcp.proto\"&\n\nFcitxEvent\022\030\n\005even"
+    "t\030\001 \001(\0162\t.KeyEvent*\351\007\n\010KeyEvent\022\t\n\005NUM_0"
     "\020\000\022\t\n\005NUM_1\020\001\022\t\n\005NUM_2\020\002\022\t\n\005NUM_3\020\003\022\t\n\005N"
     "UM_4\020\004\022\t\n\005NUM_5\020\005\022\t\n\005NUM_6\020\006\022\t\n\005NUM_7\020\007\022"
     "\t\n\005NUM_8\020\010\022\t\n\005NUM_9\020\t\022\t\n\005A_LWR\020d\022\t\n\005B_LW"
@@ -58,17 +97,17 @@ static ::absl::once_flag descriptor_table_ims_5fto_5ffcp_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_ims_5fto_5ffcp_2eproto = {
     false,
     false,
-    1030,
+    1070,
     descriptor_table_protodef_ims_5fto_5ffcp_2eproto,
     "ims_to_fcp.proto",
     &descriptor_table_ims_5fto_5ffcp_2eproto_once,
     nullptr,
     0,
-    0,
+    1,
     schemas,
     file_default_instances,
     TableStruct_ims_5fto_5ffcp_2eproto::offsets,
-    nullptr,
+    file_level_metadata_ims_5fto_5ffcp_2eproto,
     file_level_enum_descriptors_ims_5fto_5ffcp_2eproto,
     file_level_service_descriptors_ims_5fto_5ffcp_2eproto,
 };
@@ -98,6 +137,176 @@ PROTOBUF_CONSTINIT const uint32_t KeyEvent_internal_data_[] = {
     1441792u, 224u, 1882984192u, 0u, 4294950912u, 255u, 0u, 4294705152u, 4095u, };
 bool KeyEvent_IsValid(int value) {
   return ::_pbi::ValidateEnum(value, KeyEvent_internal_data_);
+}
+// ===================================================================
+
+class FcitxEvent::_Internal {
+ public:
+};
+
+FcitxEvent::FcitxEvent(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:FcitxEvent)
+}
+FcitxEvent::FcitxEvent(
+    ::google::protobuf::Arena* arena, const FcitxEvent& from)
+    : FcitxEvent(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE FcitxEvent::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void FcitxEvent::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.event_ = {};
+}
+FcitxEvent::~FcitxEvent() {
+  // @@protoc_insertion_point(destructor:FcitxEvent)
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  SharedDtor();
+}
+inline void FcitxEvent::SharedDtor() {
+  ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.~Impl_();
+}
+
+PROTOBUF_NOINLINE void FcitxEvent::Clear() {
+// @@protoc_insertion_point(message_clear_start:FcitxEvent)
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.event_ = 0;
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+const char* FcitxEvent::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
+  return ptr;
+}
+
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> FcitxEvent::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_FcitxEvent_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // .KeyEvent event = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FcitxEvent, _impl_.event_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(FcitxEvent, _impl_.event_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // .KeyEvent event = 1;
+    {PROTOBUF_FIELD_OFFSET(FcitxEvent, _impl_.event_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+::uint8_t* FcitxEvent::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:FcitxEvent)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // .KeyEvent event = 1;
+  if (this->_internal_event() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+        1, this->_internal_event(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:FcitxEvent)
+  return target;
+}
+
+::size_t FcitxEvent::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:FcitxEvent)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // .KeyEvent event = 1;
+  if (this->_internal_event() != 0) {
+    total_size += 1 +
+                  ::_pbi::WireFormatLite::EnumSize(this->_internal_event());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::google::protobuf::Message::ClassData FcitxEvent::_class_data_ = {
+    FcitxEvent::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
+};
+const ::google::protobuf::Message::ClassData* FcitxEvent::GetClassData() const {
+  return &_class_data_;
+}
+
+void FcitxEvent::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
+  auto* const _this = static_cast<FcitxEvent*>(&to_msg);
+  auto& from = static_cast<const FcitxEvent&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:FcitxEvent)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_event() != 0) {
+    _this->_internal_set_event(from._internal_event());
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void FcitxEvent::CopyFrom(const FcitxEvent& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:FcitxEvent)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+PROTOBUF_NOINLINE bool FcitxEvent::IsInitialized() const {
+  return true;
+}
+
+::_pbi::CachedSize* FcitxEvent::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void FcitxEvent::InternalSwap(FcitxEvent* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_.event_, other->_impl_.event_);
+}
+
+::google::protobuf::Metadata FcitxEvent::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_ims_5fto_5ffcp_2eproto_getter, &descriptor_table_ims_5fto_5ffcp_2eproto_once,
+      file_level_metadata_ims_5fto_5ffcp_2eproto[0]);
 }
 // @@protoc_insertion_point(namespace_scope)
 namespace google {
