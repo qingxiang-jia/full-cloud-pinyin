@@ -31,6 +31,7 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     engine = this;
     ctx = new zmq::context_t();
     pub = new zmq::socket_t(*ctx, ZMQ_PUB);
+    pub->bind("tcp://127.0.0.1:8085");
 }
 
 void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
