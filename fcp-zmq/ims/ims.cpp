@@ -48,12 +48,9 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& 
         return;
     }
 
-    auto packer = msgpack::Packer{};
-    packer.clear();
-    packer.process(12);
-    auto data = packer.vector().data();
-
-    fcitx::KeySym key = keyEvent.key().sym();
+    fcitx::KeySym keySym = keyEvent.key().sym();
+    unsigned int key = (unsigned int)keySym;
+    FCITX_INFO() << key;
 
     keyEvent.filterAndAccept();
 }
