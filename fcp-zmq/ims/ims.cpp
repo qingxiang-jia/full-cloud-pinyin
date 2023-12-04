@@ -39,6 +39,11 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     pub->bind("tcp://127.0.0.1:8085");
 }
 
+ImsEngine::~ImsEngine() {
+    delete pub;
+    delete ctx;
+}
+
 void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
 {
     FCITX_UNUSED(entry);

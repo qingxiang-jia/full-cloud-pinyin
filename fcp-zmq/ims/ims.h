@@ -22,6 +22,7 @@ class ImsEngine;
 class ImsEngine : public fcitx::InputMethodEngineV2 {
 public:
     ImsEngine(fcitx::Instance* instance);
+    ~ImsEngine();
 
     void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
