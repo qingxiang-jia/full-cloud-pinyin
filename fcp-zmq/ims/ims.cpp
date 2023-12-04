@@ -1,6 +1,7 @@
 #include "ims.h"
 #include <chrono>
 #include <cstddef>
+#include <cstring>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/i18n.h>
 #include <fcitx-utils/key.h>
@@ -27,6 +28,7 @@
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/coded_stream.h>
+#include <zmq.hpp>
 
 ImsEngine* engine;
 
@@ -253,6 +255,10 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& 
     msg.set_event(*protoKey);
     std::string serialized = msg.SerializeAsString();
     FCITX_INFO() << serialized;
+
+    zmq::message_t keyMsg(serialized.size());
+    memcpy(keyMsg.data(), serialized.data(), serialized.size());
+    pub->send(keyMsg, zmq::send_flags::dontwait);
 
     keyEvent.filterAndAccept();
 }
