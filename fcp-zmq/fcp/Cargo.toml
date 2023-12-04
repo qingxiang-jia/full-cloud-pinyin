@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 zmq = "0.10.0"
+quick-protobuf = "0.8.1"

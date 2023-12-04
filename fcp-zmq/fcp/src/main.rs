@@ -1,3 +1,10 @@
+use quick_protobuf::{MessageRead, BytesReader};
+
+use crate::ims_send::FcitxEvent;
+
+pub mod ims_recv;
+pub mod ims_send;
+
 fn main() {
     let ctx = zmq::Context::new();
     let sub = ctx
@@ -10,6 +17,11 @@ fn main() {
         let data = sub
             .recv_msg(0)
             .expect("Failed to receive published message.");
-        println!("received length: {}", data.len());
+        unsafe {
+            let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
+            let mut reader = BytesReader::from_bytes(&bytes);
+            let fe = FcitxEvent::from_reader(&mut reader, bytes);
+            println!("event is: {:#?}", &fe);
+        }
     }
 }
