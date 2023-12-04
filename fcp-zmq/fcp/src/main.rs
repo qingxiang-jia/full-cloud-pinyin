@@ -1,31 +1,15 @@
-use std::{env, io};
-
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 2 || (args[1] != "send" && args[1] != "recv") {
-        println!("Usage: parameter is either send or recv.");
-        return;
-    }
-    let param = &args[1];
-    
-    if param == "send" {
-    }
-    if param == "recv" {
-    }
-}
-
-fn run_send() {
-    let mut input = String::new();
+    let ctx = zmq::Context::new();
+    let sub = ctx
+        .socket(zmq::SUB)
+        .expect("Failed to create a SUB socket.");
+    sub.connect("tcp://127.0.0.1:8085")
+        .expect("Failed to connect to the publisher address.");
+    sub.set_subscribe(b"").expect("Failed to subscribe to any.");
     loop {
-        match io::stdin().read_line(&mut input) {
-            Ok(_) => {
-            }
-            Err(e) => println!("Failed to read from stdin: {}", e),
-        }
-    }
-}
-
-fn run_recv() {
-    loop {
+        let data = sub
+            .recv_msg(0)
+            .expect("Failed to receive published message.");
+        println!("received length: {}", data.len());
     }
 }
