@@ -29,5 +29,6 @@ fn main() {
             println!("event is: {:#?}", &fe);
         }
         req.send("Hi from FCP", 0).expect("Failed to send to IMS.");
+        _ = req.recv_msg(0).expect("Failed to receive reply of REQ.");
     }
 }
