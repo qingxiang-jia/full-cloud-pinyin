@@ -55,6 +55,7 @@ class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
         std::thread t(initImsServer, manager->instance());
+        t.detach();
         return new ImsEngine(manager->instance());
     }
 };
