@@ -28,6 +28,7 @@
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/coded_stream.h>
+#include <zmq.h>
 #include <zmq.hpp>
 
 ImsEngine* engine;
@@ -269,7 +270,30 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
 }
 
 ImsServer::ImsServer(fcitx::Instance* instance) {
+    ctx = new zmq::context_t();
+    sock = new zmq::socket_t(*ctx, ZMQ_REP);
+    sock->bind("tcp://127.0.0.1:8085");
+    ins = instance;
+}
 
+ImsServer::~ImsServer() {
+    delete ctx;
+    delete sock;
+}
+
+void ImsServer::Serve() {
+    zmq::message_t* msg = new zmq::message_t();
+    zmq::message_t* empty = new zmq::message_t();
+    while (true) {
+        auto maybeSize = sock->recv(*msg);
+        if (!maybeSize.has_value()) {
+            continue;
+        }
+        auto size = maybeSize.value();
+        FCITX_INFO() << "ImsServer: received " << size;
+        
+        maybeSize = sock->send(*empty, zmq::send_flags::none);
+    }
 }
 
 FCITX_ADDON_FACTORY(ImsEngineFactory);

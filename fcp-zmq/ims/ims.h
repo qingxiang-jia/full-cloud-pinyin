@@ -14,6 +14,7 @@
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <memory>
+#include <thread>
 #include <vector>
 #include <zmq.hpp>
 
@@ -37,14 +38,23 @@ private:
 class ImsServer {
 public:
     ImsServer(fcitx::Instance* instance);
+    void Serve();
+    ~ImsServer();
+private:
+    zmq::context_t* ctx;
+    zmq::socket_t* sock;
+    fcitx::Instance* ins;
 };
+
+void initImsServer(fcitx::Instance* ins) {
+    auto imsServer = new ImsServer(ins);
+    imsServer->Serve();
+}
 
 class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
-        auto letItLeak = new ImsServer(manager->instance());
-        FCITX_UNUSED(letItLeak);
-
+        std::thread t(initImsServer, manager->instance());
         return new ImsEngine(manager->instance());
     }
 };
