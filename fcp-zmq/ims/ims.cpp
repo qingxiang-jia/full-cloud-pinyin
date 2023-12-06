@@ -296,10 +296,8 @@ void ImsServer::Serve() {
 
         // Process request.
         auto data = msg->data();
-        auto buf = static_cast<uint8_t*>(data);
-        google::protobuf::io::CodedInputStream stream(buf, size);
         CommandToFcitx cmd;
-        if (cmd.ParseFromCodedStream(&stream)) {
+        if (cmd.ParseFromArray(data, size)) {
             FCITX_INFO() << "Decoding succeeded!s";
         } else {
             FCITX_INFO() << "Failed to decode the data into CommandToFcitx.";
