@@ -285,13 +285,18 @@ void ImsServer::Serve() {
     zmq::message_t* msg = new zmq::message_t();
     zmq::message_t* empty = new zmq::message_t();
     while (true) {
+        // Receive request.
         auto maybeSize = sock->recv(*msg);
         if (!maybeSize.has_value()) {
             continue;
         }
         auto size = maybeSize.value();
         FCITX_INFO() << "ImsServer: received " << size;
+
+        // Process request.
         
+
+        // Signal process completion.
         maybeSize = sock->send(*empty, zmq::send_flags::none);
     }
 }
