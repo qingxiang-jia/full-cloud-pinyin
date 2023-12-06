@@ -271,14 +271,14 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
 
 ImsServer::ImsServer(fcitx::Instance* instance) {
     ctx = new zmq::context_t();
-    sock = new zmq::socket_t(*ctx, ZMQ_REP);
-    sock->bind("tcp://127.0.0.1:8086");
+    rep = new zmq::socket_t(*ctx, ZMQ_REP);
+    rep->bind("tcp://127.0.0.1:8086");
     ins = instance;
 }
 
 ImsServer::~ImsServer() {
     delete ctx;
-    delete sock;
+    delete rep;
 }
 
 void ImsServer::Serve() {
@@ -286,7 +286,7 @@ void ImsServer::Serve() {
     zmq::message_t* empty = new zmq::message_t();
     while (true) {
         // Receive request.
-        auto maybeSize = sock->recv(*msg);
+        auto maybeSize = rep->recv(*msg);
         if (!maybeSize.has_value()) {
             continue;
         }
@@ -294,10 +294,10 @@ void ImsServer::Serve() {
         FCITX_INFO() << "ImsServer: received " << size;
 
         // Process request.
-        
+
 
         // Signal process completion.
-        maybeSize = sock->send(*empty, zmq::send_flags::none);
+        maybeSize = rep->send(*empty, zmq::send_flags::none);
     }
 }
 

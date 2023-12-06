@@ -42,7 +42,7 @@ public:
     ~ImsServer();
 private:
     zmq::context_t* ctx;
-    zmq::socket_t* sock;
+    zmq::socket_t* rep;
     fcitx::Instance* ins;
 };
 
