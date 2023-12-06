@@ -1,6 +1,7 @@
 #include "ims.h"
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/i18n.h>
@@ -294,7 +295,15 @@ void ImsServer::Serve() {
         FCITX_INFO() << "ImsServer: received " << size;
 
         // Process request.
-
+        auto data = msg->data();
+        auto buf = static_cast<uint8_t*>(data);
+        google::protobuf::io::CodedInputStream stream(buf, size);
+        CommandToFcitx cmd;
+        if (cmd.ParseFromCodedStream(&stream)) {
+            FCITX_INFO() << "Decoding succeeded!s";
+        } else {
+            FCITX_INFO() << "Failed to decode the data into CommandToFcitx.";
+        }
 
         // Signal process completion.
         maybeSize = rep->send(*empty, zmq::send_flags::none);
