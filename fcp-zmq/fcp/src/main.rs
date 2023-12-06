@@ -1,4 +1,7 @@
-use quick_protobuf::{BytesReader, MessageRead};
+use std::borrow::Cow;
+
+use ims_recv::{CommandToFcitx, CommitText};
+use quick_protobuf::{BytesReader, MessageRead, Writer};
 
 use crate::ims_send::FcitxEvent;
 
@@ -28,7 +31,16 @@ fn main() {
             let fe = FcitxEvent::from_reader(&mut reader, bytes);
             println!("event is: {:#?}", &fe);
         }
-        req.send("Hi from FCP", 0).expect("Failed to send to IMS.");
+        let cmd = CommitText {
+            text: Cow::from("text to commit")
+        };
+        let cmd_container = CommandToFcitx {
+            command: ims_recv::mod_CommandToFcitx::OneOfcommand::commit_text(cmd)
+        };
+        let mut out = Vec::new();
+        let mut writer = Writer::new(&mut out);
+        writer.write_message(&cmd_container).expect("Failed to write message.");
+        req.send(out, 0).expect("Failed to send to IMS.");
         _ = req.recv_msg(0).expect("Failed to receive reply of REQ.");
     }
 }
