@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 
 use ims_recv::{CommandToFcitx, CommitText};
-use quick_protobuf::{BytesReader, MessageRead, Writer};
+use quick_protobuf::{BytesReader, MessageRead, Writer, MessageWrite};
 
 use crate::ims_send::FcitxEvent;
 
@@ -39,7 +39,9 @@ fn main() {
         };
         let mut out = Vec::new();
         let mut writer = Writer::new(&mut out);
-        writer.write_message(&cmd_container).expect("Failed to write message.");
+        CommandToFcitx::default().write_message(&mut writer).expect("Failed to write message.");
+        cmd_container.write_message(&mut writer).expect("Failed to write message.");
+        
         req.send(out, 0).expect("Failed to send to IMS.");
         _ = req.recv_msg(0).expect("Failed to receive reply of REQ.");
     }
