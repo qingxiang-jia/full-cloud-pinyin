@@ -292,9 +292,10 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
     if (ic == nullptr) {
         return;
     }
-    
+
     if (cmd->has_commit_text()) {
-        
+        auto text = cmd->commit_text().text();
+        ic->commitString(text);
         return;
     }
     if (cmd->has_update_preedut()) {
