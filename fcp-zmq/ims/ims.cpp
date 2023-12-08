@@ -42,17 +42,19 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     ctx = new zmq::context_t();
     pub = new zmq::socket_t(*ctx, ZMQ_PUB);
     pub->bind("tcp://127.0.0.1:8085");
+    imsServer = new ImsServer();
 }
 
 ImsEngine::~ImsEngine() {
     delete pub;
     delete ctx;
+    delete imsServer;
 }
 
 void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
 {
     FCITX_UNUSED(entry);
-    FCITX_UNUSED(event);
+    imsServer->SetInputContext(event.inputContext());
 }
 
 KeyEvent* fcitxKeyToProtoKey(fcitx::KeySym& fk) {
