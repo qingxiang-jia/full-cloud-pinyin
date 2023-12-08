@@ -33,6 +33,12 @@
 #include <zmq.h>
 #include <zmq.hpp>
 
+class ImsCandidate : public fcitx::CandidateWord {
+public:
+    ImsCandidate(fcitx::Text text) { setText(text); }
+    void select(fcitx::InputContext*) const {};
+};
+
 ImsEngine* engine;
 
 ImsEngine::ImsEngine(fcitx::Instance* instance)
