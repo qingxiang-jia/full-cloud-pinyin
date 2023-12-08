@@ -289,6 +289,10 @@ void ImsServer::SetInputContext(fcitx::InputContext* ctx) {
 }
 
 void ImsServer::dispatch(CommandToFcitx* cmd) {
+    if (ic == nullptr) {
+        return;
+    }
+    
     if (cmd->has_commit_text()) {
         
         return;
