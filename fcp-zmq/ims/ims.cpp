@@ -11,6 +11,7 @@
 #include <fcitx-utils/macros.h>
 #include <fcitx-utils/utf8.h>
 #include <fcitx/candidatelist.h>
+#include <fcitx/inputcontext.h>
 #include <fcitx/inputpanel.h>
 #include <fcitx/instance.h>
 #include <fcitx/text.h>
@@ -281,6 +282,11 @@ ImsServer::~ImsServer() {
     delete ctx;
     delete rep;
 }
+
+void ImsServer::SetInputContext(fcitx::InputContext* ctx) {
+    ic = ctx;
+}
+
 void ImsServer::dispatch(CommandToFcitx* cmd) {
     if (cmd->has_commit_text()) {
         
