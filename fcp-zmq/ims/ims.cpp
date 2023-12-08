@@ -281,6 +281,20 @@ ImsServer::~ImsServer() {
     delete ctx;
     delete rep;
 }
+void ImsServer::dispatch(CommandToFcitx* cmd) {
+    if (cmd->has_commit_text()) {
+        
+        return;
+    }
+    if (cmd->has_update_preedut()) {
+
+        return;
+    }
+    if (cmd->has_update_lt()) {
+        
+        return;
+    }
+}
 
 void ImsServer::Serve() {
     zmq::message_t* msg = new zmq::message_t();
@@ -302,6 +316,8 @@ void ImsServer::Serve() {
         } else {
             FCITX_INFO() << "Failed to decode the data into CommandToFcitx.";
         }
+
+        dispatch(&cmd);
 
         // Signal process completion.
         maybeSize = rep->send(*empty, zmq::send_flags::none);
