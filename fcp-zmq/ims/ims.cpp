@@ -299,7 +299,15 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         return;
     }
     if (cmd->has_update_preedut()) {
-
+        auto preedit = cmd->update_preedut().text();
+        if (ic->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
+            fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
+            ic->inputPanel().setClientPreedit(text);
+        } else {
+            fcitx::Text text(preedit);
+            ic->inputPanel().setPreedit(text);
+        }
+        ic->updatePreedit();
         return;
     }
     if (cmd->has_update_lt()) {
