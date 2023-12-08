@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ims_recv.pb.h"
 #include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>
@@ -38,12 +39,15 @@ private:
 class ImsServer {
 public:
     ImsServer(fcitx::Instance* instance);
+    void SetInputContext(fcitx::InputContext* ctx);
     void Serve();
     ~ImsServer();
 private:
     zmq::context_t* ctx;
     zmq::socket_t* rep;
     fcitx::Instance* ins;
+    fcitx::InputContext* ic;
+    void dispatch(CommandToFcitx*);
 };
 
 void initImsServer(fcitx::Instance* ins) {
