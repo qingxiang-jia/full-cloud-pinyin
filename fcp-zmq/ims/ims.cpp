@@ -298,7 +298,7 @@ void ImsServer::Serve() {
         auto data = msg->data();
         CommandToFcitx cmd;
         if (cmd.ParseFromArray(data, size)) {
-            FCITX_INFO() << "Decoding succeeded!s";
+            FCITX_INFO() << "Decoding succeeded!";
         } else {
             FCITX_INFO() << "Failed to decode the data into CommandToFcitx.";
         }
