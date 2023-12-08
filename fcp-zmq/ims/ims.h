@@ -20,6 +20,7 @@
 #include <zmq.hpp>
 
 class ImsEngine;
+class ImsServer;
 
 class ImsEngine : public fcitx::InputMethodEngineV2 {
 public:
@@ -34,32 +35,25 @@ private:
     fcitx::Instance* instance_;
     zmq::context_t* ctx;
     zmq::socket_t* pub;
+    ImsServer* imsServer;
 };
 
 class ImsServer {
 public:
-    ImsServer(fcitx::Instance* instance);
+    ImsServer();
     void SetInputContext(fcitx::InputContext* ctx);
     void Serve();
     ~ImsServer();
 private:
     zmq::context_t* ctx;
     zmq::socket_t* rep;
-    fcitx::Instance* ins;
     fcitx::InputContext* ic;
     void dispatch(CommandToFcitx*);
 };
 
-void initImsServer(fcitx::Instance* ins) {
-    auto imsServer = new ImsServer(ins);
-    imsServer->Serve();
-}
-
 class ImsEngineFactory : public fcitx::AddonFactory {
     fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
     {
-        std::thread t(initImsServer, manager->instance());
-        t.detach();
         return new ImsEngine(manager->instance());
     }
 };

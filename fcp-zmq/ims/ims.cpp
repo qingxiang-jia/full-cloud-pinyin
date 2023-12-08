@@ -271,11 +271,10 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
     FCITX_UNUSED(event);
 }
 
-ImsServer::ImsServer(fcitx::Instance* instance) {
+ImsServer::ImsServer() {
     ctx = new zmq::context_t();
     rep = new zmq::socket_t(*ctx, ZMQ_REP);
     rep->bind("tcp://127.0.0.1:8086");
-    ins = instance;
 }
 
 ImsServer::~ImsServer() {
