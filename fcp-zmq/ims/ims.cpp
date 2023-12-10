@@ -326,11 +326,17 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         }
         clist->clear();
         auto candidates = cmd->update_lt().lt().candidates();
-        for (int i = 0; i < candidates.size(); i++) {
-            std::string candidate = candidates.Get(i);
-            std::unique_ptr<fcitx::CandidateWord> fcitxCandidate = std::make_unique<ImsCandidate>(fcitx::Text(candidate));
-            clist->append(std::move(fcitxCandidate));
+        if (candidates.size() == 0) {
+            clist.reset();
+            ic->inputPanel().reset();
+        } else {
+            for (int i = 0; i < candidates.size(); i++) {
+                std::string candidate = candidates.Get(i);
+                std::unique_ptr<fcitx::CandidateWord> fcitxCandidate = std::make_unique<ImsCandidate>(fcitx::Text(candidate));
+                clist->append(std::move(fcitxCandidate));
+            }
         }
+        
         ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
         return;
     }
