@@ -1,10 +1,12 @@
 use std::borrow::Cow;
 
 use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
-use zmq::{Error, Message};
 
 use crate::{
-    ims_recv::{self, CommandToFcitx, CommitText, LookupTable, UpdateLookuptable, UpdatePreedit},
+    ims_recv::{
+        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, LookupTable,
+        UpdateLookuptable, UpdatePreedit,
+    },
     ims_send::FcitxEvent,
 };
 
@@ -66,7 +68,7 @@ impl Req {
             text: Cow::from(text),
         };
         let cmd_container = CommandToFcitx {
-            command: ims_recv::mod_CommandToFcitx::OneOfcommand::commit_text(cmd),
+            command: OneOfcommand::commit_text(cmd),
         };
 
         let mut out = Vec::new();
@@ -88,7 +90,7 @@ impl Req {
             text: Cow::from(text),
         };
         let cmd_container = CommandToFcitx {
-            command: ims_recv::mod_CommandToFcitx::OneOfcommand::update_preedut(cmd),
+            command: OneOfcommand::update_preedut(cmd),
         };
 
         let mut out = Vec::new();
@@ -111,7 +113,7 @@ impl Req {
         };
         let cmd = UpdateLookuptable { lt: Some(lt) };
         let cmd_container = CommandToFcitx {
-            command: ims_recv::mod_CommandToFcitx::OneOfcommand::update_lt(cmd),
+            command: OneOfcommand::update_lt(cmd),
         };
 
         let mut out = Vec::new();
