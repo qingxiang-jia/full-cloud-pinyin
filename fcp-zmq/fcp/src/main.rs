@@ -7,6 +7,7 @@ use crate::ims_send::FcitxEvent;
 
 pub mod ims_recv;
 pub mod ims_send;
+pub mod ims;
 
 fn main() {
     let ctx = zmq::Context::new();
