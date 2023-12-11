@@ -1,6 +1,7 @@
 pub mod ims_recv;
 pub mod ims_send;
 pub mod ims;
+pub mod keys;
 pub mod candidate;
 pub mod candidate_service;
 pub mod preedit_service;
