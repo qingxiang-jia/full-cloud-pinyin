@@ -45,13 +45,13 @@ impl Sub {
 }
 
 // Because Fcitx5 is not thread safe, so any call other than new() needs to be wrapped in a Mutex.
-struct Req {
+pub struct Req {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
 impl Req {
-    fn new(ims_addr: &str) -> Self {
+    pub fn new(ims_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
         let req = ctx
@@ -63,7 +63,7 @@ impl Req {
         Req { ctx, sock: req }
     }
 
-    fn commitText(&self, text: &str) {
+    pub fn commitText(&self, text: &str) {
         let cmd = CommitText {
             text: Cow::from(text),
         };
@@ -85,7 +85,7 @@ impl Req {
             .expect("Failed to receive reply of REQ.");
     }
 
-    fn updatePreedit(&self, text: &str) {
+    pub fn updatePreedit(&self, text: &str) {
         let cmd = UpdatePreedit {
             text: Cow::from(text),
         };
@@ -103,7 +103,7 @@ impl Req {
         self.sock.send(out, 0).expect("Failed to send to IMS.");
     }
 
-    fn updateLookuptable(&self, words: &[String]) {
+    pub fn updateLookuptable(&self, words: &[String]) {
         let mut cow_vec = Vec::new();
         for word in words {
             cow_vec.push(Cow::from(word));
