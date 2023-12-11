@@ -35,7 +35,7 @@ impl CandidateService {
         }
     }
 
-    pub async fn in_session(&self) -> bool {
+    pub fn in_session(&self) -> bool {
         self.state
             .lock()
             .expect("in_session: Failed to lock state.")
@@ -44,7 +44,7 @@ impl CandidateService {
             != 0
     }
 
-    pub async fn set_candidates(&self, candidates: &[Candidate]) {
+    pub fn set_candidates(&self, candidates: &[Candidate]) {
         let mut state = self
             .state
             .lock()
@@ -72,7 +72,7 @@ impl CandidateService {
         self.zmq.lock().unwrap().update_lookuptable(&to_show);
     }
 
-    pub async fn page_into(&self) -> (bool, Option<usize>) {
+    pub fn page_into(&self) -> (bool, Option<usize>) {
         let mut state = self.state.lock().expect("page_into: Failed to lock state.");
 
         state.page += 1;
@@ -92,7 +92,7 @@ impl CandidateService {
         return (true, None);
     }
 
-    pub async fn page_back(&self) {
+    pub fn page_back(&self) {
         let mut state = self.state.lock().expect("page_back: Failed to lock state.");
 
         if state.page == 0 {
@@ -111,7 +111,7 @@ impl CandidateService {
         self.zmq.lock().unwrap().update_lookuptable(&to_show);
     }
 
-    pub async fn select(&self, ith: usize) {
+    pub fn select(&self, ith: usize) {
         let state = self.state.lock().expect("select: Failed to lock state.");
         let idx = ith - 1 + state.page * self.lt_size;
         let text = state.candidates[idx].word.clone();
@@ -123,10 +123,10 @@ impl CandidateService {
             .expect("select: Failed to lock zmq.")
             .commit_text(&text);
 
-        self.clear().await;
+        self.clear();
     }
 
-    pub async fn clear(&self) {
+    pub fn clear(&self) {
         let mut state = self.state.lock().expect("clear: Failed to lock state.");
         state.candidates.clear();
         state.page = 0;

@@ -14,7 +14,7 @@ impl SymbolService {
         SymbolService { zmq: ibus }
     }
 
-    pub async fn handle_symbol(&self, key: Key) {
+    pub fn handle_symbol(&self, key: Key) {
         let fw_puctuation = key
             .to_full_width_string()
             .expect("This key cannot be converted to fullwidth string.");

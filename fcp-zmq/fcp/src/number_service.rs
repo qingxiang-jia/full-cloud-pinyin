@@ -13,7 +13,7 @@ impl NumberService {
         NumberService { zmq: ibus }
     }
 
-    pub async fn handle_number(&self, key: Key) {
+    pub fn handle_number(&self, key: Key) {
         let n = key
             .to_usize()
             .expect("This key cannot be converted to a usize.");

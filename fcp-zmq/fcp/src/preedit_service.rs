@@ -29,7 +29,7 @@ impl PreeditService {
         }
     }
 
-    pub async fn push(&self, c: char) {
+    pub fn push(&self, c: char) {
         let mut state = self.state.lock().expect("push: Failed to lock state.");
         state.preedit.push(c);
         let preedit: String = state.preedit.iter().cloned().collect();
@@ -42,7 +42,7 @@ impl PreeditService {
             .update_preedit(&preedit)
     }
 
-    pub async fn pop(&self) -> Option<char> {
+    pub fn pop(&self) -> Option<char> {
         let mut state = self.state.lock().expect("pop: Failed to lock state.");
         let popped = state.preedit.pop();
         let preedit: String = state.preedit.iter().cloned().collect();
@@ -57,12 +57,12 @@ impl PreeditService {
         popped
     }
 
-    pub async fn to_string(&self) -> String {
+    pub fn to_string(&self) -> String {
         let state = self.state.lock().expect("to_string: Failed to lock state.");
         state.preedit.iter().cloned().collect()
     }
 
-    pub async fn clear(&self) {
+    pub fn clear(&self) {
         let mut state = self.state.lock().expect("clear: Failed to lock state.");
         state.preedit.clear();
     }
