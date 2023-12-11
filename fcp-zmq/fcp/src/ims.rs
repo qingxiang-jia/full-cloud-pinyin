@@ -63,7 +63,7 @@ impl Req {
         Req { ctx, sock: req }
     }
 
-    pub fn commitText(&self, text: &str) {
+    pub fn commit_text(&self, text: &str) {
         let cmd = CommitText {
             text: Cow::from(text),
         };
@@ -85,7 +85,7 @@ impl Req {
             .expect("Failed to receive reply of REQ.");
     }
 
-    pub fn updatePreedit(&self, text: &str) {
+    pub fn update_preedit(&self, text: &str) {
         let cmd = UpdatePreedit {
             text: Cow::from(text),
         };
@@ -103,7 +103,7 @@ impl Req {
         self.sock.send(out, 0).expect("Failed to send to IMS.");
     }
 
-    pub fn updateLookuptable(&self, words: &[String]) {
+    pub fn update_lookuptable(&self, words: &[String]) {
         let mut cow_vec = Vec::new();
         for word in words {
             cow_vec.push(Cow::from(word));
