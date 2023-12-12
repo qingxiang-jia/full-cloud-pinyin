@@ -16,7 +16,7 @@ pub struct Sub {
 }
 
 impl Sub {
-    fn new(ims_addr: &str) -> Self {
+    pub fn new(ims_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
         let sub = ctx
@@ -29,7 +29,7 @@ impl Sub {
         Sub { ctx, sock: sub }
     }
 
-    fn recv(&self) -> FcitxEvent {
+    pub fn recv(&self) -> FcitxEvent {
         let data = self
             .sock
             .recv_msg(0)
