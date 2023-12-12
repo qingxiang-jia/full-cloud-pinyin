@@ -101,6 +101,10 @@ impl Req {
             .expect("Failed to write message for UpdatePreedit.");
 
         self.sock.send(out, 0).expect("Failed to send to IMS.");
+        _ = self
+            .sock
+            .recv_msg(0)
+            .expect("Failed to receive reply of REQ.");
     }
 
     pub fn update_lookuptable(&self, words: &[String]) {
@@ -123,6 +127,10 @@ impl Req {
             .write_message(&mut writer)
             .expect("Failed to write message for UpdateLookuptable.");
 
-        self.sock.send(out, 0).expect("Failed to send to IMS.")
+        self.sock.send(out, 0).expect("Failed to send to IMS.");
+        _ = self
+            .sock
+            .recv_msg(0)
+            .expect("Failed to receive reply of REQ.");
     }
 }
