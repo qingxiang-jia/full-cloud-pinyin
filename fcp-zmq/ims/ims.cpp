@@ -260,6 +260,9 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& 
     if (keyEvent.isRelease() || keyEvent.key().states()) {
         return;
     }
+    if (ic->inputPanel().candidateList() == nullptr) {
+        ic->inputPanel().setCandidateList(makeCandidateList());
+    } // Surprisingly, if you set it in activate(), it is still null when keyuEvent is called.
 
     fcitx::KeySym key = keyEvent.key().sym();
     KeyEvent* protoKey = fcitxKeyToProtoKey(key);
@@ -286,6 +289,16 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
 
 fcitx::InputContext* ImsEngine::getInputContext() {
     return ic;
+}
+
+std::unique_ptr<fcitx::CommonCandidateList> ImsEngine::makeCandidateList()
+{
+    auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
+    candidateList->setLabels(std::vector<std::string> { "1. ", "2. ", "3. ", "4. ", "5. "});
+    candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
+    candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
+    
+    return candidateList;
 }
 
 ImsServer::ImsServer() {

@@ -39,6 +39,8 @@ private:
     zmq::context_t* ctx;
     zmq::socket_t* pub;
     ImsServer* imsServer;
+
+    std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
 };
 
 class ImsServer {
