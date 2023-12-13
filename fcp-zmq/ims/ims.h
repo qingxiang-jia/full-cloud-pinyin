@@ -31,8 +31,11 @@ public:
     void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
 
+    fcitx::InputContext* getInputContext();
+
 private:
     fcitx::Instance* instance_;
+    fcitx::InputContext* ic;
     zmq::context_t* ctx;
     zmq::socket_t* pub;
     ImsServer* imsServer;
@@ -41,13 +44,13 @@ private:
 class ImsServer {
 public:
     ImsServer();
-    void SetInputContext(fcitx::InputContext* ctx);
+    void SetEngine(ImsEngine* engine);
     void Serve();
     ~ImsServer();
 private:
     zmq::context_t* ctx;
     zmq::socket_t* rep;
-    fcitx::InputContext* ic;
+    ImsEngine* engine;
     void dispatch(CommandToFcitx*);
 };
 

@@ -49,6 +49,7 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     pub = new zmq::socket_t(*ctx, ZMQ_PUB);
     pub->bind("tcp://127.0.0.1:8085");
     imsServer = new ImsServer();
+    imsServer->SetEngine(this);
 }
 
 ImsEngine::~ImsEngine() {
@@ -60,7 +61,7 @@ ImsEngine::~ImsEngine() {
 void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
 {
     FCITX_UNUSED(entry);
-    imsServer->SetInputContext(event.inputContext());
+    ic = event.inputContext();
 }
 
 KeyEvent* fcitxKeyToProtoKey(fcitx::KeySym& fk) {
@@ -279,6 +280,10 @@ void ImsEngine::reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& 
     FCITX_UNUSED(event);
 }
 
+fcitx::InputContext* ImsEngine::getInputContext() {
+    return ic;
+}
+
 ImsServer::ImsServer() {
     ctx = new zmq::context_t();
     rep = new zmq::socket_t(*ctx, ZMQ_REP);
@@ -290,15 +295,16 @@ ImsServer::~ImsServer() {
     delete rep;
 }
 
-void ImsServer::SetInputContext(fcitx::InputContext* ctx) {
-    ic = ctx;
+void ImsServer::SetEngine(ImsEngine* engine) {
+    this->engine = engine;
 }
 
 void ImsServer::dispatch(CommandToFcitx* cmd) {
-    if (ic == nullptr) {
+    if (engine == nullptr || engine->getInputContext() == nullptr) {
         return;
     }
 
+    auto ic = engine->getInputContext();
     if (cmd->has_commit_text()) {
         auto text = cmd->commit_text().text();
         ic->commitString(text);
