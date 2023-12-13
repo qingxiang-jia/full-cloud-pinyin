@@ -44,8 +44,8 @@ private:
 class ImsServer {
 public:
     ImsServer();
-    void SetEngine(ImsEngine* engine);
-    void Serve();
+    void setEngine(ImsEngine* engine);
+    void serve();
     ~ImsServer();
 private:
     zmq::context_t* ctx;

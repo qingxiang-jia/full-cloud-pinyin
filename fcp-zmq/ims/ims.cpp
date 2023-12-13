@@ -49,7 +49,7 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     pub = new zmq::socket_t(*ctx, ZMQ_PUB);
     pub->bind("tcp://127.0.0.1:8085");
     imsServer = new ImsServer();
-    imsServer->SetEngine(this);
+    imsServer->setEngine(this);
 }
 
 ImsEngine::~ImsEngine() {
@@ -295,7 +295,7 @@ ImsServer::~ImsServer() {
     delete rep;
 }
 
-void ImsServer::SetEngine(ImsEngine* engine) {
+void ImsServer::setEngine(ImsEngine* engine) {
     this->engine = engine;
 }
 
@@ -348,7 +348,7 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
     }
 }
 
-void ImsServer::Serve() {
+void ImsServer::serve() {
     zmq::message_t* msg = new zmq::message_t();
     zmq::message_t* empty = new zmq::message_t();
     while (true) {
