@@ -362,7 +362,6 @@ void ImsServer::serve() {
             continue;
         }
         auto size = maybeSize.value();
-        FCITX_INFO() << "ImsServer: received " << size;
 
         // Process request.
         auto data = msg->data();
