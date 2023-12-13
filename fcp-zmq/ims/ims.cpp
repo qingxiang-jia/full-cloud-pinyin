@@ -291,6 +291,10 @@ fcitx::InputContext* ImsEngine::getInputContext() {
     return ic;
 }
 
+fcitx::Instance* ImsEngine::getInstance() {
+    return instance_;
+}
+
 std::unique_ptr<fcitx::CommonCandidateList> ImsEngine::makeCandidateList()
 {
     auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
@@ -360,7 +364,7 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
             }
         }
         
-        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
         return;
     }
 }

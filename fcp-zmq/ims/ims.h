@@ -32,6 +32,7 @@ public:
     void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
 
     fcitx::InputContext* getInputContext();
+    fcitx::Instance* getInstance();
 
 private:
     fcitx::Instance* instance_;
