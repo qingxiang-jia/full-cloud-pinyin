@@ -364,7 +364,11 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
             }
         }
         
-        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
+        auto instance = engine->getInstance();
+        if (instance != nullptr) {
+            instance->userInterfaceManager().update(fcitx::UserInterfaceComponent::InputPanel, ic);
+        }
+        // ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
         return;
     }
 }
