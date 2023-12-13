@@ -45,11 +45,15 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     : instance_(instance)
 {
     engine = this;
+    
     ctx = new zmq::context_t();
     pub = new zmq::socket_t(*ctx, ZMQ_PUB);
     pub->bind("tcp://127.0.0.1:8085");
+    
     imsServer = new ImsServer();
     imsServer->setEngine(this);
+    std::thread serverThread(&ImsServer::serve, imsServer);
+    serverThread.detach();
 }
 
 ImsEngine::~ImsEngine() {
