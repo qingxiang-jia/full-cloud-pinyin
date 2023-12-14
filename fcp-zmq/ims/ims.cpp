@@ -344,9 +344,8 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         return;
     }
     if (cmd->has_update_lt() && cmd->update_lt().has_lt()) {
-        if (ic->inputPanel().candidateList() == nullptr) {
-            return;
-        }
+        ic->inputPanel().reset();
+        ic->inputPanel().setCandidateList(engine->makeCandidateList());
         auto clist = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic->inputPanel().candidateList());
         if (clist == nullptr) {
             return;
@@ -368,7 +367,7 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         if (instance != nullptr) {
             instance->userInterfaceManager().update(fcitx::UserInterfaceComponent::InputPanel, ic);
         }
-        // ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel, true);
+        // ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
         return;
     }
 }

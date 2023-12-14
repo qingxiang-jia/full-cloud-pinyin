@@ -33,6 +33,7 @@ public:
 
     fcitx::InputContext* getInputContext();
     fcitx::Instance* getInstance();
+    std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
 
 private:
     fcitx::Instance* instance_;
@@ -40,8 +41,6 @@ private:
     zmq::context_t* ctx;
     zmq::socket_t* pub;
     ImsServer* imsServer;
-
-    std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
 };
 
 class ImsServer {
