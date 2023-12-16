@@ -3,7 +3,7 @@ syntax = "proto3";
 message CommandToFcitx {
   oneof command {
     CommitText commit_text = 1;
-    UpdatePreedit update_preedut = 2;
+    UpdatePreedit update_preedit = 2;
     UpdateLookuptable update_lt = 3;
     UpdateAux update_aux = 4;
   }
