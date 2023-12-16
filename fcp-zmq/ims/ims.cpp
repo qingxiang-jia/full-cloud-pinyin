@@ -348,6 +348,10 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         auto candidates = cmd->update_aux().candidates();
         ic->inputPanel().setAuxDown(fcitx::Text(candidates));
         ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    } else {
+        ic->inputPanel().reset();
+        ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
+        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
 }
 
