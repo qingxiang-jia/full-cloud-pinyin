@@ -331,8 +331,8 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         ic->commitString(text);
         return;
     }
-    if (cmd->has_update_preedut()) {
-        auto preedit = cmd->update_preedut().text();
+    if (cmd->has_update_preedit()) {
+        auto preedit = cmd->update_preedit().text();
         if (ic->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
             fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
             ic->inputPanel().setClientPreedit(text);
