@@ -5,6 +5,7 @@ message CommandToFcitx {
     CommitText commit_text = 1;
     UpdatePreedit update_preedut = 2;
     UpdateLookuptable update_lt = 3;
+    UpdateAux update_aux = 4;
   }
 }
 
@@ -13,5 +14,7 @@ message CommitText { string text = 1; }
 message UpdatePreedit { string text = 1; }
 
 message UpdateLookuptable { LookupTable lt = 1; }
+
+message UpdateAux { string candidates = 1; }
 
 message LookupTable { repeated string candidates = 1; }
