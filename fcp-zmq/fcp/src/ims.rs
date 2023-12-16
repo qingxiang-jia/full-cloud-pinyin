@@ -90,7 +90,7 @@ impl Req {
             text: Cow::from(text),
         };
         let cmd_container = CommandToFcitx {
-            command: OneOfcommand::update_preedut(cmd),
+            command: OneOfcommand::update_preedit(cmd),
         };
 
         let mut out = Vec::new();

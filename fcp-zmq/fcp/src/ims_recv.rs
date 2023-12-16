@@ -26,8 +26,9 @@ impl<'a> MessageRead<'a> for CommandToFcitx<'a> {
         while !r.is_eof() {
             match r.next_tag(bytes) {
                 Ok(10) => msg.command = mod_CommandToFcitx::OneOfcommand::commit_text(r.read_message::<CommitText>(bytes)?),
-                Ok(18) => msg.command = mod_CommandToFcitx::OneOfcommand::update_preedut(r.read_message::<UpdatePreedit>(bytes)?),
+                Ok(18) => msg.command = mod_CommandToFcitx::OneOfcommand::update_preedit(r.read_message::<UpdatePreedit>(bytes)?),
                 Ok(26) => msg.command = mod_CommandToFcitx::OneOfcommand::update_lt(r.read_message::<UpdateLookuptable>(bytes)?),
+                Ok(34) => msg.command = mod_CommandToFcitx::OneOfcommand::update_aux(r.read_message::<UpdateAux>(bytes)?),
                 Ok(t) => { r.read_unknown(bytes, t)?; }
                 Err(e) => return Err(e),
             }
@@ -41,15 +42,17 @@ impl<'a> MessageWrite for CommandToFcitx<'a> {
         0
         + match self.command {
             mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => 1 + sizeof_len((m).get_size()),
-            mod_CommandToFcitx::OneOfcommand::update_preedut(ref m) => 1 + sizeof_len((m).get_size()),
+            mod_CommandToFcitx::OneOfcommand::update_preedit(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::update_lt(ref m) => 1 + sizeof_len((m).get_size()),
+            mod_CommandToFcitx::OneOfcommand::update_aux(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::None => 0,
     }    }
 
     fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
         match self.command {            mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => { w.write_with_tag(10, |w| w.write_message(m))? },
-            mod_CommandToFcitx::OneOfcommand::update_preedut(ref m) => { w.write_with_tag(18, |w| w.write_message(m))? },
+            mod_CommandToFcitx::OneOfcommand::update_preedit(ref m) => { w.write_with_tag(18, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::update_lt(ref m) => { w.write_with_tag(26, |w| w.write_message(m))? },
+            mod_CommandToFcitx::OneOfcommand::update_aux(ref m) => { w.write_with_tag(34, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::None => {},
     }        Ok(())
     }
@@ -62,8 +65,9 @@ use super::*;
 #[derive(Debug, PartialEq, Clone)]
 pub enum OneOfcommand<'a> {
     commit_text(CommitText<'a>),
-    update_preedut(UpdatePreedit<'a>),
+    update_preedit(UpdatePreedit<'a>),
     update_lt(UpdateLookuptable<'a>),
+    update_aux(UpdateAux<'a>),
     None,
 }
 
@@ -167,6 +171,38 @@ impl<'a> MessageWrite for UpdateLookuptable<'a> {
 
     fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
         if let Some(ref s) = self.lt { w.write_with_tag(10, |w| w.write_message(s))?; }
+        Ok(())
+    }
+}
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UpdateAux<'a> {
+    pub candidates: Cow<'a, str>,
+}
+
+impl<'a> MessageRead<'a> for UpdateAux<'a> {
+    fn from_reader(r: &mut BytesReader, bytes: &'a [u8]) -> Result<Self> {
+        let mut msg = Self::default();
+        while !r.is_eof() {
+            match r.next_tag(bytes) {
+                Ok(10) => msg.candidates = r.read_string(bytes).map(Cow::Borrowed)?,
+                Ok(t) => { r.read_unknown(bytes, t)?; }
+                Err(e) => return Err(e),
+            }
+        }
+        Ok(msg)
+    }
+}
+
+impl<'a> MessageWrite for UpdateAux<'a> {
+    fn get_size(&self) -> usize {
+        0
+        + if self.candidates == "" { 0 } else { 1 + sizeof_len((&self.candidates).len()) }
+    }
+
+    fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
+        if self.candidates != "" { w.write_with_tag(10, |w| w.write_string(&**&self.candidates))?; }
         Ok(())
     }
 }
