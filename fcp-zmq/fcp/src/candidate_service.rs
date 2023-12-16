@@ -70,6 +70,7 @@ impl CandidateService {
         drop(state);
 
         self.zmq.lock().unwrap().update_lookuptable(&to_show);
+        self.zmq.lock().unwrap().update_aux(&to_show);
     }
 
     pub fn page_into(&self) -> (bool, Option<usize>) {
@@ -89,6 +90,7 @@ impl CandidateService {
         drop(state);
 
         self.zmq.lock().unwrap().update_lookuptable(&to_show);
+        self.zmq.lock().unwrap().update_aux(&to_show);
         return (true, None);
     }
 
@@ -109,6 +111,7 @@ impl CandidateService {
         drop(state);
 
         self.zmq.lock().unwrap().update_lookuptable(&to_show);
+        self.zmq.lock().unwrap().update_aux(&to_show);
     }
 
     pub fn select(&self, ith: usize) {
@@ -133,9 +136,6 @@ impl CandidateService {
 
         drop(state);
 
-        self.zmq
-            .lock()
-            .expect("clear: Failed to lock zmq.")
-            .update_lookuptable(&vec![])
+        self.zmq.lock().unwrap().update_aux(&vec![]);
     }
 }

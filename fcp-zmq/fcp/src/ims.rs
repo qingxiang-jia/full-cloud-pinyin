@@ -4,7 +4,7 @@ use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 
 use crate::{
     ims_recv::{
-        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, LookupTable,
+        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, LookupTable, UpdateAux,
         UpdateLookuptable, UpdatePreedit,
     },
     ims_send::FcitxEvent,
@@ -126,6 +126,35 @@ impl Req {
         cmd_container
             .write_message(&mut writer)
             .expect("Failed to write message for UpdateLookuptable.");
+
+        self.sock.send(out, 0).expect("Failed to send to IMS.");
+        _ = self
+            .sock
+            .recv_msg(0)
+            .expect("Failed to receive reply of REQ.");
+    }
+
+    pub fn update_aux(&self, words: &[String]) {
+        let mut candidates = String::new();
+        for (i, word) in words.iter().enumerate() {
+            candidates.push_str(&((i + 1).to_string()));
+            candidates.push('.');
+            candidates.push(' ');
+            candidates.push_str(word);
+        }
+        let cmd = UpdateAux {
+            candidates: Cow::from(candidates),
+        };
+        let cmd_container = CommandToFcitx {
+            command: OneOfcommand::update_aux(cmd),
+        };
+
+        let mut out = Vec::new();
+        let mut writer = Writer::new(&mut out);
+
+        cmd_container
+            .write_message(&mut writer)
+            .expect("Failed to write message for UpdateAux.");
 
         self.sock.send(out, 0).expect("Failed to send to IMS.");
         _ = self
