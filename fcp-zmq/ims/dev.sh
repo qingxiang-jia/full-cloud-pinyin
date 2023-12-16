@@ -15,13 +15,19 @@ if [ $1 == "clean" ]; then
     exit 0
 fi
 
+if [ $1 == "build" -a $2 == "install" ]; then
+    cmake --build ./build
+    sudo cmake --install ./build
+    exit 0
+fi
+
 if [ $1 == "build" ]; then
     cmake --build ./build
     exit 0
 fi
 
 if [ $1 == "install" ]; then
-    cmake --install ./build
+    sudo cmake --install ./build
     exit 0
 fi
 
