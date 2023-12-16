@@ -343,32 +343,11 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         ic->updatePreedit();
         return;
     }
-    if (cmd->has_update_lt() && cmd->update_lt().has_lt()) {
+    if (cmd->has_update_aux()) {
         ic->inputPanel().reset();
-        ic->inputPanel().setCandidateList(engine->makeCandidateList());
-        auto clist = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(ic->inputPanel().candidateList());
-        if (clist == nullptr) {
-            return;
-        }
-        clist->clear();
-        auto candidates = cmd->update_lt().lt().candidates();
-        if (candidates.size() == 0) {
-            clist.reset();
-            ic->inputPanel().reset();
-        } else {
-            for (int i = 0; i < candidates.size(); i++) {
-                std::string candidate = candidates.Get(i);
-                std::unique_ptr<fcitx::CandidateWord> fcitxCandidate = std::make_unique<ImsCandidate>(fcitx::Text(candidate));
-                clist->append(std::move(fcitxCandidate));
-            }
-        }
-        
-        auto instance = engine->getInstance();
-        if (instance != nullptr) {
-            instance->userInterfaceManager().update(fcitx::UserInterfaceComponent::InputPanel, ic);
-        }
-        // ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-        return;
+        auto candidates = cmd->update_aux().candidates();
+        ic->inputPanel().setAuxDown(fcitx::Text(candidates));
+        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
 }
 
