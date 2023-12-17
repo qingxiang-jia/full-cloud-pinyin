@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ $1 == "init_cmake" ]; then
+if [ $1 == "init_cmake_usr" ]; then
     mkdir -p build
     cd ./build
     cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Debug ..
@@ -8,7 +8,7 @@ if [ $1 == "init_cmake" ]; then
     exit 0
 fi
 
-if [ $1 == "init_cmake_local" ]; then
+if [ $1 == "init_cmake" ]; then
     mkdir -p build
     cd ./build
     cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Debug ..
@@ -23,7 +23,7 @@ if [ $1 == "clean" ]; then
     exit 0
 fi
 
-if [ $1 == "build" -a $2 == "install" ]; then
+if [ $1 == "build_install" ]; then
     cmake --build ./build
     sudo cmake --install ./build
     exit 0
