@@ -41,18 +41,21 @@ private:
     zmq::context_t* ctx;
     zmq::socket_t* pub;
     ImsServer* imsServer;
+    fcitx::EventDispatcher* dispatcher;
 };
 
 class ImsServer {
 public:
     ImsServer();
     void setEngine(ImsEngine* engine);
+    void setDispatcher(fcitx::EventDispatcher* dispatcher);
     void serve();
     ~ImsServer();
 private:
     zmq::context_t* ctx;
     zmq::socket_t* rep;
     ImsEngine* engine;
+    fcitx::EventDispatcher* dispatcher;
     void dispatch(CommandToFcitx*);
 };
 

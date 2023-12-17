@@ -50,8 +50,13 @@ ImsEngine::ImsEngine(fcitx::Instance* instance)
     pub = new zmq::socket_t(*ctx, ZMQ_PUB);
     pub->bind("tcp://127.0.0.1:8085");
     
+    fcitx::EventDispatcher* dispatcher = new fcitx::EventDispatcher();
+    this->dispatcher = dispatcher;
+    dispatcher->attach(&instance_->eventLoop());
+
     imsServer = new ImsServer();
     imsServer->setEngine(this);
+    imsServer->setDispatcher(dispatcher);
     std::thread serverThread(&ImsServer::serve, imsServer);
     serverThread.detach();
 }
@@ -60,6 +65,8 @@ ImsEngine::~ImsEngine() {
     delete pub;
     delete ctx;
     delete imsServer;
+    dispatcher->detach();
+    delete dispatcher;
 }
 
 void ImsEngine::activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event)
@@ -318,6 +325,10 @@ ImsServer::~ImsServer() {
 
 void ImsServer::setEngine(ImsEngine* engine) {
     this->engine = engine;
+}
+
+void ImsServer::setDispatcher(fcitx::EventDispatcher* dispatcher) {
+    this->dispatcher = dispatcher;
 }
 
 void ImsServer::dispatch(CommandToFcitx* cmd) {
