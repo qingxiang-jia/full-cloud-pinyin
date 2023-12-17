@@ -329,7 +329,6 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
     if (cmd->has_commit_text()) {
         auto text = cmd->commit_text().text();
         ic->commitString(text);
-        return;
     }
     if (cmd->has_update_preedit()) {
         auto preedit = cmd->update_preedit().text();
@@ -338,21 +337,19 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
             ic->inputPanel().setClientPreedit(text);
         } else {
             fcitx::Text text(preedit);
-            ic->inputPanel().setPreedit(text);
+            ic->inputPanel().setClientPreedit(text);
         }
-        ic->updatePreedit();
-        return;
     }
     if (cmd->has_update_aux()) {
         ic->inputPanel().reset();
         auto candidates = cmd->update_aux().candidates();
         ic->inputPanel().setAuxDown(fcitx::Text(candidates));
-        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     } else {
         ic->inputPanel().reset();
         ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
-        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
     }
+    ic->updatePreedit();
+    ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void ImsServer::serve() {
