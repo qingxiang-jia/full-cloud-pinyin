@@ -335,32 +335,33 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
     if (engine == nullptr || engine->getInputContext() == nullptr) {
         return;
     }
-
     auto ic = engine->getInputContext();
-    if (cmd->has_commit_text()) {
-        auto text = cmd->commit_text().text();
-        ic->commitString(text);
-    }
-    if (cmd->has_update_preedit()) {
-        auto preedit = cmd->update_preedit().text();
-        if (ic->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
-            fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
-            ic->inputPanel().setClientPreedit(text);
-        } else {
-            fcitx::Text text(preedit);
-            ic->inputPanel().setClientPreedit(text);
+    dispatcher->schedule([ic, cmd]() {
+        if (cmd->has_commit_text()) {
+            auto text = cmd->commit_text().text();
+            ic->commitString(text);
         }
-    }
-    if (cmd->has_update_aux()) {
-        ic->inputPanel().reset();
-        auto candidates = cmd->update_aux().candidates();
-        ic->inputPanel().setAuxDown(fcitx::Text(candidates));
-    } else {
-        ic->inputPanel().reset();
-        ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
-    }
-    ic->updatePreedit();
-    ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        if (cmd->has_update_preedit()) {
+            auto preedit = cmd->update_preedit().text();
+            if (ic->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
+                fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
+                ic->inputPanel().setClientPreedit(text);
+            } else {
+                fcitx::Text text(preedit);
+                ic->inputPanel().setClientPreedit(text);
+            }
+        }
+        if (cmd->has_update_aux()) {
+            ic->inputPanel().reset();
+            auto candidates = cmd->update_aux().candidates();
+            ic->inputPanel().setAuxDown(fcitx::Text(candidates));
+        } else {
+            ic->inputPanel().reset();
+            ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
+        }
+        ic->updatePreedit();
+        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    });
 }
 
 void ImsServer::serve() {
