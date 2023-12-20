@@ -336,32 +336,36 @@ void ImsServer::dispatch(CommandToFcitx* cmd) {
         return;
     }
     auto ic = engine->getInputContext();
-    dispatcher->schedule([ic, cmd]() {
-        if (cmd->has_commit_text()) {
-            auto text = cmd->commit_text().text();
-            ic->commitString(text);
-        }
-        if (cmd->has_update_preedit()) {
-            auto preedit = cmd->update_preedit().text();
-            if (ic->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
-                fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
-                ic->inputPanel().setClientPreedit(text);
-            } else {
-                fcitx::Text text(preedit);
-                ic->inputPanel().setClientPreedit(text);
-            }
-        }
-        if (cmd->has_update_aux()) {
-            ic->inputPanel().reset();
-            auto candidates = cmd->update_aux().candidates();
-            ic->inputPanel().setAuxDown(fcitx::Text(candidates));
+    ic->inputPanel().reset();
+
+    if (cmd->has_commit_text()) {
+        auto text = cmd->commit_text().text();
+        ic->commitString(text);
+        return;
+    }
+    
+    if (cmd->has_update_preedit()) {
+        auto preedit = cmd->update_preedit().text();
+        if (ic->capabilityFlags().test(fcitx::CapabilityFlag::Preedit)) {
+            fcitx::Text text(preedit, fcitx::TextFormatFlag::HighLight);
+            ic->inputPanel().setClientPreedit(text);
         } else {
-            ic->inputPanel().reset();
-            ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
+            fcitx::Text text(preedit);
+            ic->inputPanel().setPreedit(text);
         }
         ic->updatePreedit();
-        ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
-    });
+        return;
+    }
+
+    // Wake up the event loop so UI update calls can work.
+    dispatcher->schedule(nullptr);
+    if (cmd->has_update_aux()) {
+        auto candidates = cmd->update_aux().candidates();
+        ic->inputPanel().setAuxDown(fcitx::Text(candidates));
+    } else {
+        ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
+    }
+    ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
 }
 
 void ImsServer::serve() {
