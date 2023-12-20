@@ -100,7 +100,7 @@ impl Dispatcher {
             | Key::Right
             | Key::Backspace
             | Key::Escape => return self.handle_control(key).await,
-            Key::Shift | Key::Ctrl | Key::Alt => panic!("Unexpected control keys received."),
+            Key::Shift | Key::Ctrl | Key::Alt => return false,
             Key::A
             | Key::B
             | Key::C
@@ -126,7 +126,7 @@ impl Dispatcher {
             | Key::W
             | Key::X
             | Key::Y
-            | Key::Z => panic!("We do not handle uppercase letters."),
+            | Key::Z => self.commit(key),
         }
     }
 
@@ -225,6 +225,20 @@ impl Dispatcher {
                 return true;
             }
             _ => panic!("Invalid control key."),
+        }
+    }
+
+    pub fn commit(&self, key: Key) -> bool {
+        let letter = key.to_char();
+        if letter.is_some() {
+            let letter = String::from(letter.unwrap());
+            self.zmq
+                .lock()
+                .expect("handle_control: Failed to lock zmq.")
+                .commit_text(&letter);
+            return true;
+        } else {
+            return false;
         }
     }
 }
