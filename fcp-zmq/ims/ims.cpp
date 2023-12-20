@@ -267,9 +267,6 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& 
     if (keyEvent.isRelease() || keyEvent.key().states()) {
         return;
     }
-    if (ic->inputPanel().candidateList() == nullptr) {
-        ic->inputPanel().setCandidateList(makeCandidateList());
-    } // Surprisingly, if you set it in activate(), it is still null when keyuEvent is called.
 
     fcitx::KeySym key = keyEvent.key().sym();
     KeyEvent* protoKey = fcitxKeyToProtoKey(key);
@@ -300,16 +297,6 @@ fcitx::InputContext* ImsEngine::getInputContext() {
 
 fcitx::Instance* ImsEngine::getInstance() {
     return instance_;
-}
-
-std::unique_ptr<fcitx::CommonCandidateList> ImsEngine::makeCandidateList()
-{
-    auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
-    candidateList->setLabels(std::vector<std::string> { "1. ", "2. ", "3. ", "4. ", "5. "});
-    candidateList->setCursorPositionAfterPaging(fcitx::CursorPositionAfterPaging::ResetToFirst);
-    candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
-    
-    return candidateList;
 }
 
 ImsServer::ImsServer() {
@@ -383,12 +370,8 @@ void ImsServer::serve() {
         auto data = msg->data();
         CommandToFcitx cmd;
         if (cmd.ParseFromArray(data, size)) {
-            FCITX_INFO() << "Decoding succeeded!";
-        } else {
-            FCITX_INFO() << "Failed to decode the data into CommandToFcitx.";
+            dispatch(&cmd);
         }
-
-        dispatch(&cmd);
 
         // Signal process completion.
         maybeSize = rep->send(*empty, zmq::send_flags::none);
