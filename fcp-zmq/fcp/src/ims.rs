@@ -141,7 +141,10 @@ impl Req {
             candidates.push('.');
             candidates.push(' ');
             candidates.push_str(word);
+            candidates.push(' ');
         }
+        candidates.pop();
+        
         let cmd = UpdateAux {
             candidates: Cow::from(candidates),
         };
