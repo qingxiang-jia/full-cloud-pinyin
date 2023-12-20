@@ -144,7 +144,7 @@ impl Req {
             candidates.push(' ');
         }
         candidates.pop();
-        
+
         let cmd = UpdateAux {
             candidates: Cow::from(candidates),
         };

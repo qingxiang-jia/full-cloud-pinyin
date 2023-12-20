@@ -15,7 +15,7 @@ impl CloudPinyinClient {
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }
     }
-    
+
     pub async fn query_candidates(&self, preedit: &str, depth: usize) -> Vec<Candidate> {
         if preedit.len() == 0 {
             return Vec::new();
