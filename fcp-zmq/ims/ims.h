@@ -24,43 +24,46 @@ class ImsServer;
 
 class ImsEngine : public fcitx::InputMethodEngineV2 {
 public:
-    ImsEngine(fcitx::Instance* instance);
-    ~ImsEngine();
+  ImsEngine(fcitx::Instance *instance);
+  ~ImsEngine();
 
-    void activate(const fcitx::InputMethodEntry& entry, fcitx::InputContextEvent& event) override;
-    void keyEvent(const fcitx::InputMethodEntry& entry, fcitx::KeyEvent& keyEvent) override;
-    void reset(const fcitx::InputMethodEntry&, fcitx::InputContextEvent& event) override;
+  void activate(const fcitx::InputMethodEntry &entry,
+                fcitx::InputContextEvent &event) override;
+  void keyEvent(const fcitx::InputMethodEntry &entry,
+                fcitx::KeyEvent &keyEvent) override;
+  void reset(const fcitx::InputMethodEntry &,
+             fcitx::InputContextEvent &event) override;
 
-    fcitx::InputContext* getInputContext();
-    fcitx::Instance* getInstance();
+  fcitx::InputContext *getInputContext();
+  fcitx::Instance *getInstance();
 
 private:
-    fcitx::Instance* instance_;
-    fcitx::InputContext* ic;
-    zmq::context_t* ctx;
-    zmq::socket_t* pub;
-    ImsServer* imsServer;
-    fcitx::EventDispatcher* dispatcher;
+  fcitx::Instance *instance_;
+  fcitx::InputContext *ic;
+  zmq::context_t *ctx;
+  zmq::socket_t *pub;
+  ImsServer *imsServer;
+  fcitx::EventDispatcher *dispatcher;
 };
 
 class ImsServer {
 public:
-    ImsServer();
-    void setEngine(ImsEngine* engine);
-    void setDispatcher(fcitx::EventDispatcher* dispatcher);
-    void serve();
-    ~ImsServer();
+  ImsServer();
+  void setEngine(ImsEngine *engine);
+  void setDispatcher(fcitx::EventDispatcher *dispatcher);
+  void serve();
+  ~ImsServer();
+
 private:
-    zmq::context_t* ctx;
-    zmq::socket_t* rep;
-    ImsEngine* engine;
-    fcitx::EventDispatcher* dispatcher;
-    void dispatch(CommandToFcitx*);
+  zmq::context_t *ctx;
+  zmq::socket_t *rep;
+  ImsEngine *engine;
+  fcitx::EventDispatcher *dispatcher;
+  void dispatch(CommandToFcitx *);
 };
 
 class ImsEngineFactory : public fcitx::AddonFactory {
-    fcitx::AddonInstance* create(fcitx::AddonManager* manager) override
-    {
-        return new ImsEngine(manager->instance());
-    }
+  fcitx::AddonInstance *create(fcitx::AddonManager *manager) override {
+    return new ImsEngine(manager->instance());
+  }
 };
