@@ -262,7 +262,8 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry &entry,
                          fcitx::KeyEvent &keyEvent) {
   FCITX_UNUSED(entry);
 
-  if (keyEvent.isRelease() || keyEvent.key().states()) {
+  if (keyEvent.isRelease() || keyEvent.key().states() ||
+      keyEvent.key().isModifier() || keyEvent.key().isUAZ()) {
     return;
   }
 
