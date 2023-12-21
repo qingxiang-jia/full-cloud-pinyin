@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ims_recv.pb.h"
+#include "msgs.pb.h"
 #include <cstdint>
 #include <fcitx-utils/eventdispatcher.h>
 #include <fcitx-utils/inputbuffer.h>

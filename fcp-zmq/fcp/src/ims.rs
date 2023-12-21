@@ -3,11 +3,11 @@ use std::borrow::Cow;
 use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 
 use crate::{
-    ims_recv::{
+    msgs::FcitxEvent,
+    msgs::{
         mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, LookupTable, UpdateAux,
         UpdateLookuptable, UpdatePreedit,
     },
-    ims_send::FcitxEvent,
 };
 
 pub struct Sub {

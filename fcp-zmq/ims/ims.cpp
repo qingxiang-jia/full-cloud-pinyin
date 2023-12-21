@@ -1,6 +1,5 @@
 #include "ims.h"
-#include "ims_recv.pb.h"
-#include "ims_send.pb.h"
+#include "msgs.pb.h"
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -276,7 +275,6 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry &entry,
   FcitxEvent msg;
   msg.set_event(*protoKey);
   std::string serialized = msg.SerializeAsString();
-  FCITX_INFO() << serialized;
 
   zmq::message_t keyMsg(serialized.size());
   memcpy(keyMsg.data(), serialized.data(), serialized.size());
