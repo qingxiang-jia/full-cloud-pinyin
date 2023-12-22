@@ -6,6 +6,7 @@ use crate::{
     msgs::FcitxEvent,
     msgs::{
         mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateAux, UpdatePreedit,
+        UpdateSessionStatus,
     },
 };
 
@@ -60,6 +61,26 @@ impl Req {
             .expect("Failed to connect to the reply address.");
 
         Req { ctx, sock: req }
+    }
+
+    pub fn update_session_status(&self, in_session: bool) {
+        let cmd = UpdateSessionStatus { in_session };
+        let cmd_container = CommandToFcitx {
+            command: OneOfcommand::update_session_status(cmd),
+        };
+
+        let mut out = Vec::new();
+        let mut writer = Writer::new(&mut out);
+
+        cmd_container
+            .write_message(&mut writer)
+            .expect("Failed to write message for CommitText.");
+
+        self.sock.send(out, 0).expect("Failed to send to IMS.");
+        _ = self
+            .sock
+            .recv_msg(0)
+            .expect("Failed to receive reply of REQ.");
     }
 
     pub fn commit_text(&self, text: &str) {

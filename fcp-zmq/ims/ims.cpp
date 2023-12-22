@@ -42,6 +42,7 @@ ImsEngine *engine;
 
 ImsEngine::ImsEngine(fcitx::Instance *instance) : instance_(instance) {
   engine = this;
+  isInSession = false;
 
   ctx = new zmq::context_t();
   pub = new zmq::socket_t(*ctx, ZMQ_PUB);
@@ -262,7 +263,8 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry &entry,
   FCITX_UNUSED(entry);
 
   if (keyEvent.isRelease() || keyEvent.key().states() ||
-      keyEvent.key().isModifier() || keyEvent.key().isUAZ()) {
+      keyEvent.key().isModifier() || keyEvent.key().isUAZ() ||
+      (!keyEvent.key().isLAZ() && !inSession())) {
     return;
   }
 
@@ -286,6 +288,20 @@ void ImsEngine::keyEvent(const fcitx::InputMethodEntry &entry,
 void ImsEngine::reset(const fcitx::InputMethodEntry &,
                       fcitx::InputContextEvent &event) {
   FCITX_UNUSED(event);
+}
+
+void ImsEngine::inSession(const bool isInSession) {
+  this->mtxInSession.lock();
+  this->isInSession = isInSession;
+  this->mtxInSession.unlock();
+}
+
+bool ImsEngine::inSession() {
+  this->mtxInSession.lock_shared();
+  bool toReturn = this->isInSession;
+  this->mtxInSession.unlock_shared();
+
+  return toReturn;
 }
 
 fcitx::InputContext *ImsEngine::getInputContext() { return ic; }
@@ -315,6 +331,12 @@ void ImsServer::dispatch(CommandToFcitx *cmd) {
   }
   auto ic = engine->getInputContext();
   ic->inputPanel().reset();
+
+  if (cmd->has_update_session_status()) {
+    auto inSession = cmd->update_session_status().in_session();
+    this->engine->inSession(inSession);
+    return;
+  }
 
   if (cmd->has_commit_text()) {
     auto text = cmd->commit_text().text();
