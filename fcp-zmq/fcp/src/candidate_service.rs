@@ -69,7 +69,6 @@ impl CandidateService {
 
         drop(state);
 
-        self.zmq.lock().unwrap().update_lookuptable(&to_show);
         self.zmq.lock().unwrap().update_aux(&to_show);
     }
 
@@ -89,7 +88,6 @@ impl CandidateService {
 
         drop(state);
 
-        self.zmq.lock().unwrap().update_lookuptable(&to_show);
         self.zmq.lock().unwrap().update_aux(&to_show);
         return (true, None);
     }
@@ -110,7 +108,6 @@ impl CandidateService {
 
         drop(state);
 
-        self.zmq.lock().unwrap().update_lookuptable(&to_show);
         self.zmq.lock().unwrap().update_aux(&to_show);
     }
 
