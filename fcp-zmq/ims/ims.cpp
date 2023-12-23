@@ -215,6 +215,8 @@ KeyEvent *fcitxKeyToProtoKey(fcitx::KeySym &fk) {
     return new KeyEvent(SGL_QUOTE);
   case fcitx::KeySym::FcitxKey_quoteright:
     return new KeyEvent(SGL_QUOTE);
+  case fcitx::KeySym::FcitxKey_BackSpace:
+    return new KeyEvent(BACKSPACE);
   case fcitx::KeySym::FcitxKey_bracketleft:
     return new KeyEvent(BRKT_OPEN);
   case fcitx::KeySym::FcitxKey_bracketright:

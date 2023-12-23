@@ -235,7 +235,7 @@ const char descriptor_table_protodef_msgs_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
     "\rUpdatePreedit\022\014\n\004text\030\001 \001(\t\"\037\n\tUpdateAu"
     "x\022\022\n\ncandidates\030\001 \001(\t\")\n\023UpdateSessionSt"
     "atus\022\022\n\nin_session\030\001 \001(\010\"&\n\nFcitxEvent\022\030"
-    "\n\005event\030\001 \001(\0162\t.KeyEvent*\351\007\n\010KeyEvent\022\t\n"
+    "\n\005event\030\001 \001(\0162\t.KeyEvent*\370\007\n\010KeyEvent\022\t\n"
     "\005NUM_0\020\000\022\t\n\005NUM_1\020\001\022\t\n\005NUM_2\020\002\022\t\n\005NUM_3\020"
     "\003\022\t\n\005NUM_4\020\004\022\t\n\005NUM_5\020\005\022\t\n\005NUM_6\020\006\022\t\n\005NU"
     "M_7\020\007\022\t\n\005NUM_8\020\010\022\t\n\005NUM_9\020\t\022\t\n\005A_LWR\020d\022\t"
@@ -257,16 +257,17 @@ const char descriptor_table_protodef_msgs_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
     "PERIOD\020\013\022\r\n\tQEST_MARK\020\014\022\r\n\tEXCL_MARK\020\r\022\016"
     "\n\nSEMI_COLON\020\016\022\r\n\tDBL_QUOTE\020\017\022\r\n\tSGL_QUO"
     "TE\020\020\022\r\n\tBRKT_OPEN\020\021\022\016\n\nBRKT_CLOSE\020\022\022\t\n\005S"
-    "LASH\020\023\022\r\n\tBACKSLASH\020\024\022\014\n\010ELLIPSIS\020\025\022\t\n\005E"
-    "NTER\020\036\022\t\n\005SPACE\020\037\022\t\n\005MINUS\020 \022\t\n\005EQUAL\020!\022"
-    "\006\n\002UP\020(\022\010\n\004DOWN\020)\022\010\n\004LEFT\020*\022\t\n\005RIGHT\020+\022\t"
-    "\n\005SHIFT\0202\022\010\n\004CTRL\0203\022\007\n\003ALT\0204b\006proto3"
+    "LASH\020\023\022\r\n\tBACKSLASH\020\024\022\r\n\tBACKSPACE\020\025\022\014\n\010"
+    "ELLIPSIS\020\026\022\t\n\005ENTER\020\036\022\t\n\005SPACE\020\037\022\t\n\005MINU"
+    "S\020 \022\t\n\005EQUAL\020!\022\006\n\002UP\020(\022\010\n\004DOWN\020)\022\010\n\004LEFT"
+    "\020*\022\t\n\005RIGHT\020+\022\t\n\005SHIFT\0202\022\010\n\004CTRL\0203\022\007\n\003AL"
+    "T\0204b\006proto3"
 };
 static ::absl::once_flag descriptor_table_msgs_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_msgs_2eproto = {
     false,
     false,
-    1396,
+    1411,
     descriptor_table_protodef_msgs_2eproto,
     "msgs.proto",
     &descriptor_table_msgs_2eproto_once,
@@ -303,7 +304,7 @@ const ::google::protobuf::EnumDescriptor* KeyEvent_descriptor() {
   return file_level_enum_descriptors_msgs_2eproto[0];
 }
 PROTOBUF_CONSTINIT const uint32_t KeyEvent_internal_data_[] = {
-    1441792u, 224u, 1882984192u, 0u, 4294950912u, 255u, 0u, 4294705152u, 4095u, };
+    1507328u, 224u, 941492096u, 0u, 4294959104u, 127u, 0u, 4294836224u, 2047u, };
 bool KeyEvent_IsValid(int value) {
   return ::_pbi::ValidateEnum(value, KeyEvent_internal_data_);
 }

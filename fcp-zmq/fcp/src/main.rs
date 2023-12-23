@@ -93,6 +93,7 @@ async fn main() {
             msgs::KeyEvent::BRKT_CLOSE => Key::BracketClose,
             msgs::KeyEvent::SLASH => Key::BackSlash, // We don't have Slash.
             msgs::KeyEvent::BACKSLASH => Key::BackSlash,
+            msgs::KeyEvent::BACKSPACE => Key::Backspace,
             msgs::KeyEvent::ELLIPSIS => Key::Ellipsis,
             msgs::KeyEvent::ENTER => Key::Enter,
             msgs::KeyEvent::SPACE => Key::Space,
