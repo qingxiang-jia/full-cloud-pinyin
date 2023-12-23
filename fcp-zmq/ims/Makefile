@@ -16,7 +16,5 @@ build:
 install:
 	sudo cmake --install ./build
 
-build-install: build install
-
 clean:
 	rm -rf build
