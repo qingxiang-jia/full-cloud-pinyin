@@ -1,14 +1,19 @@
-.PHONY: build install build-install
+.PHONY: build install
 
-init:
+init-debug:
 	mkdir -p build
 	cd build; \
 	cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Debug ..; \
 
-init-usr:
+init-debug-usr:
 	mkdir -p build
 	cd ./build; \
 	cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Debug ..
+
+init-release-usr:
+	mkdir -p build
+	cd ./build; \
+	cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release ..
 
 build:
 	cmake --build ./build
