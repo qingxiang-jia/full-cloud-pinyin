@@ -373,11 +373,20 @@ void ImsServer::dispatch(CommandToFcitx *cmd) {
       return;
     }
 
-    if (cmd.has_update_aux()) {
-      auto candidates = cmd.update_aux().candidates();
-      ic->inputPanel().setAuxDown(fcitx::Text(candidates));
-    } else {
-      ic->inputPanel().setAuxDown(fcitx::Text(std::string()));
+    if (cmd.has_update_candidates()) {
+      if (ic->inputPanel().candidateList() == nullptr) {
+        ic->inputPanel().setCandidateList(engine->makeCandidateList());
+      }
+      auto clist = std::dynamic_pointer_cast<fcitx::CommonCandidateList>(
+          ic->inputPanel().candidateList());
+      clist->clear();
+      auto candidates = cmd.update_candidates().candidates();
+      for (int i = 0; i < candidates.size(); i++) {
+        std::string candidate = candidates.Get(i);
+        std::unique_ptr<fcitx::CandidateWord> fcitxCandidate =
+            std::make_unique<ImsCandidate>(fcitx::Text(candidate));
+        clist->append(std::move(fcitxCandidate));
+      }
     }
     ic->updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
   });
