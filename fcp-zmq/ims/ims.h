@@ -40,6 +40,7 @@ public:
 
   fcitx::InputContext *getInputContext();
   fcitx::Instance *getInstance();
+  std::unique_ptr<fcitx::CommonCandidateList> makeCandidateList();
 
 private:
   fcitx::Instance *instance_;

@@ -310,6 +310,17 @@ fcitx::InputContext *ImsEngine::getInputContext() { return ic; }
 
 fcitx::Instance *ImsEngine::getInstance() { return instance_; }
 
+std::unique_ptr<fcitx::CommonCandidateList> ImsEngine::makeCandidateList() {
+  auto candidateList = std::make_unique<fcitx::CommonCandidateList>();
+  candidateList->setLabels(
+      std::vector<std::string>{"1. ", "2. ", "3. ", "4. ", "5. "});
+  candidateList->setCursorPositionAfterPaging(
+      fcitx::CursorPositionAfterPaging::ResetToFirst);
+  candidateList->setPageSize(instance_->globalConfig().defaultPageSize());
+
+  return candidateList;
+}
+
 ImsServer::ImsServer() {
   ctx = new zmq::context_t();
   rep = new zmq::socket_t(*ctx, ZMQ_REP);
