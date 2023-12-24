@@ -21,5 +21,8 @@ build:
 install:
 	sudo cmake --install ./build
 
+proto:
+	protoc --cpp_out=. msgs.proto
+
 clean:
 	rm -rf build

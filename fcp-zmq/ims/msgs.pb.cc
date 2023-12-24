@@ -61,6 +61,25 @@ struct UpdatePreeditDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UpdatePreeditDefaultTypeInternal _UpdatePreedit_default_instance_;
 
+inline constexpr UpdateCandidates::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : candidates_{},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR UpdateCandidates::UpdateCandidates(::_pbi::ConstantInitialized)
+    : _impl_(::_pbi::ConstantInitialized()) {}
+struct UpdateCandidatesDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR UpdateCandidatesDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~UpdateCandidatesDefaultTypeInternal() {}
+  union {
+    UpdateCandidates _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UpdateCandidatesDefaultTypeInternal _UpdateCandidates_default_instance_;
+
 inline constexpr UpdateAux::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : candidates_(
@@ -141,7 +160,7 @@ struct CommandToFcitxDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CommandToFcitxDefaultTypeInternal _CommandToFcitx_default_instance_;
-static ::_pb::Metadata file_level_metadata_msgs_2eproto[6];
+static ::_pb::Metadata file_level_metadata_msgs_2eproto[7];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_msgs_2eproto[1];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_msgs_2eproto = nullptr;
@@ -197,6 +216,15 @@ const ::uint32_t TableStruct_msgs_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
     ~0u,  // no sizeof(Split)
     PROTOBUF_FIELD_OFFSET(::UpdateSessionStatus, _impl_.in_session_),
     ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::UpdateCandidates, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::UpdateCandidates, _impl_.candidates_),
+    ~0u,  // no _has_bits_
     PROTOBUF_FIELD_OFFSET(::FcitxEvent, _internal_metadata_),
     ~0u,  // no _extensions_
     ~0u,  // no _oneof_case_
@@ -214,7 +242,8 @@ static const ::_pbi::MigrationSchema
         {22, -1, -1, sizeof(::UpdatePreedit)},
         {31, -1, -1, sizeof(::UpdateAux)},
         {40, -1, -1, sizeof(::UpdateSessionStatus)},
-        {49, -1, -1, sizeof(::FcitxEvent)},
+        {49, -1, -1, sizeof(::UpdateCandidates)},
+        {58, -1, -1, sizeof(::FcitxEvent)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -223,6 +252,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::_UpdatePreedit_default_instance_._instance,
     &::_UpdateAux_default_instance_._instance,
     &::_UpdateSessionStatus_default_instance_._instance,
+    &::_UpdateCandidates_default_instance_._instance,
     &::_FcitxEvent_default_instance_._instance,
 };
 const char descriptor_table_protodef_msgs_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
@@ -234,7 +264,8 @@ const char descriptor_table_protodef_msgs_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
     "\n\007command\"\032\n\nCommitText\022\014\n\004text\030\001 \001(\t\"\035\n"
     "\rUpdatePreedit\022\014\n\004text\030\001 \001(\t\"\037\n\tUpdateAu"
     "x\022\022\n\ncandidates\030\001 \001(\t\")\n\023UpdateSessionSt"
-    "atus\022\022\n\nin_session\030\001 \001(\010\"&\n\nFcitxEvent\022\030"
+    "atus\022\022\n\nin_session\030\001 \001(\010\"&\n\020UpdateCandid"
+    "ates\022\022\n\ncandidates\030\001 \003(\t\"&\n\nFcitxEvent\022\030"
     "\n\005event\030\001 \001(\0162\t.KeyEvent*\370\007\n\010KeyEvent\022\t\n"
     "\005NUM_0\020\000\022\t\n\005NUM_1\020\001\022\t\n\005NUM_2\020\002\022\t\n\005NUM_3\020"
     "\003\022\t\n\005NUM_4\020\004\022\t\n\005NUM_5\020\005\022\t\n\005NUM_6\020\006\022\t\n\005NU"
@@ -267,13 +298,13 @@ static ::absl::once_flag descriptor_table_msgs_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_msgs_2eproto = {
     false,
     false,
-    1411,
+    1451,
     descriptor_table_protodef_msgs_2eproto,
     "msgs.proto",
     &descriptor_table_msgs_2eproto_once,
     nullptr,
     0,
-    6,
+    7,
     schemas,
     file_default_instances,
     TableStruct_msgs_2eproto::offsets,
@@ -1436,6 +1467,191 @@ void UpdateSessionStatus::InternalSwap(UpdateSessionStatus* PROTOBUF_RESTRICT ot
 }
 // ===================================================================
 
+class UpdateCandidates::_Internal {
+ public:
+};
+
+UpdateCandidates::UpdateCandidates(::google::protobuf::Arena* arena)
+    : ::google::protobuf::Message(arena) {
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:UpdateCandidates)
+}
+inline PROTOBUF_NDEBUG_INLINE UpdateCandidates::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from)
+      : candidates_{visibility, arena, from.candidates_},
+        _cached_size_{0} {}
+
+UpdateCandidates::UpdateCandidates(
+    ::google::protobuf::Arena* arena,
+    const UpdateCandidates& from)
+    : ::google::protobuf::Message(arena) {
+  UpdateCandidates* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_);
+
+  // @@protoc_insertion_point(copy_constructor:UpdateCandidates)
+}
+inline PROTOBUF_NDEBUG_INLINE UpdateCandidates::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : candidates_{visibility, arena},
+        _cached_size_{0} {}
+
+inline void UpdateCandidates::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+UpdateCandidates::~UpdateCandidates() {
+  // @@protoc_insertion_point(destructor:UpdateCandidates)
+  _internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  SharedDtor();
+}
+inline void UpdateCandidates::SharedDtor() {
+  ABSL_DCHECK(GetArena() == nullptr);
+  _impl_.~Impl_();
+}
+
+PROTOBUF_NOINLINE void UpdateCandidates::Clear() {
+// @@protoc_insertion_point(message_clear_start:UpdateCandidates)
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.candidates_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+const char* UpdateCandidates::_InternalParse(
+    const char* ptr, ::_pbi::ParseContext* ctx) {
+  ptr = ::_pbi::TcParser::ParseLoop(this, ptr, ctx, &_table_.header);
+  return ptr;
+}
+
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 35, 2> UpdateCandidates::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    &_UpdateCandidates_default_instance_._instance,
+    ::_pbi::TcParser::GenericFallback,  // fallback
+  }, {{
+    // repeated string candidates = 1;
+    {::_pbi::TcParser::FastUR1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(UpdateCandidates, _impl_.candidates_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // repeated string candidates = 1;
+    {PROTOBUF_FIELD_OFFSET(UpdateCandidates, _impl_.candidates_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+  }},
+  // no aux_entries
+  {{
+    "\20\12\0\0\0\0\0\0"
+    "UpdateCandidates"
+    "candidates"
+  }},
+};
+
+::uint8_t* UpdateCandidates::_InternalSerialize(
+    ::uint8_t* target,
+    ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:UpdateCandidates)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  // repeated string candidates = 1;
+  for (int i = 0, n = this->_internal_candidates_size(); i < n; ++i) {
+    const auto& s = this->_internal_candidates().Get(i);
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UpdateCandidates.candidates");
+    target = stream->WriteString(1, s, target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:UpdateCandidates)
+  return target;
+}
+
+::size_t UpdateCandidates::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:UpdateCandidates)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated string candidates = 1;
+  total_size += 1 * ::google::protobuf::internal::FromIntSize(_internal_candidates().size());
+  for (int i = 0, n = _internal_candidates().size(); i < n; ++i) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+        _internal_candidates().Get(i));
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::google::protobuf::Message::ClassData UpdateCandidates::_class_data_ = {
+    UpdateCandidates::MergeImpl,
+    nullptr,  // OnDemandRegisterArenaDtor
+};
+const ::google::protobuf::Message::ClassData* UpdateCandidates::GetClassData() const {
+  return &_class_data_;
+}
+
+void UpdateCandidates::MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg) {
+  auto* const _this = static_cast<UpdateCandidates*>(&to_msg);
+  auto& from = static_cast<const UpdateCandidates&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:UpdateCandidates)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_internal_mutable_candidates()->MergeFrom(from._internal_candidates());
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void UpdateCandidates::CopyFrom(const UpdateCandidates& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:UpdateCandidates)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+PROTOBUF_NOINLINE bool UpdateCandidates::IsInitialized() const {
+  return true;
+}
+
+::_pbi::CachedSize* UpdateCandidates::AccessCachedSize() const {
+  return &_impl_._cached_size_;
+}
+void UpdateCandidates::InternalSwap(UpdateCandidates* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.candidates_.InternalSwap(&other->_impl_.candidates_);
+}
+
+::google::protobuf::Metadata UpdateCandidates::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_msgs_2eproto_getter, &descriptor_table_msgs_2eproto_once,
+      file_level_metadata_msgs_2eproto[5]);
+}
+// ===================================================================
+
 class FcitxEvent::_Internal {
  public:
 };
@@ -1602,7 +1818,7 @@ void FcitxEvent::InternalSwap(FcitxEvent* PROTOBUF_RESTRICT other) {
 ::google::protobuf::Metadata FcitxEvent::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_msgs_2eproto_getter, &descriptor_table_msgs_2eproto_once,
-      file_level_metadata_msgs_2eproto[5]);
+      file_level_metadata_msgs_2eproto[6]);
 }
 // @@protoc_insertion_point(namespace_scope)
 namespace google {

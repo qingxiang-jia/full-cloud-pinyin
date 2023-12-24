@@ -17,6 +17,8 @@ message UpdateAux { string candidates = 1; }
 
 message UpdateSessionStatus { bool in_session = 1; }
 
+message UpdateCandidates { repeated string candidates = 1; }
+
 message FcitxEvent { KeyEvent event = 1; }
 
 enum KeyEvent {
