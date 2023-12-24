@@ -60,6 +60,9 @@ ImsEngine::ImsEngine(fcitx::Instance *instance) : instance_(instance) {
 }
 
 ImsEngine::~ImsEngine() {
+  pub->close();
+  ctx->shutdown();
+  ctx->close();
   delete pub;
   delete ctx;
   delete imsServer;
@@ -328,8 +331,11 @@ ImsServer::ImsServer() {
 }
 
 ImsServer::~ImsServer() {
-  delete ctx;
+  rep->close();
+  ctx->shutdown();
+  ctx->close();
   delete rep;
+  delete ctx;
 }
 
 void ImsServer::setEngine(ImsEngine *engine) { this->engine = engine; }
@@ -397,7 +403,12 @@ void ImsServer::serve() {
   zmq::message_t *empty = new zmq::message_t();
   while (true) {
     // Receive request.
-    auto maybeSize = rep->recv(*msg);
+    zmq::recv_result_t maybeSize;
+    try {
+      maybeSize = rep->recv(*msg);
+    } catch (const zmq::error_t &e) {
+      exit(0);
+    }
     if (!maybeSize.has_value()) {
       continue;
     }
