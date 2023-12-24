@@ -5,8 +5,8 @@ use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 use crate::{
     msgs::FcitxEvent,
     msgs::{
-        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateAux, UpdatePreedit,
-        UpdateSessionStatus,
+        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateAux, UpdateCandidates,
+        UpdatePreedit, UpdateSessionStatus,
     },
 };
 
@@ -127,22 +127,16 @@ impl Req {
             .expect("Failed to receive reply of REQ.");
     }
 
-    pub fn update_aux(&self, words: &[String]) {
-        let mut candidates = String::new();
-        for (i, word) in words.iter().enumerate() {
-            candidates.push_str(&((i + 1).to_string()));
-            candidates.push('.');
-            candidates.push(' ');
-            candidates.push_str(word);
-            candidates.push(' ');
+    pub fn update_candidates(&self, words: &[String]) {
+        let mut cow_words = Vec::new();
+        for word in words {
+            cow_words.push(Cow::from(word));
         }
-        candidates.pop();
-
-        let cmd = UpdateAux {
-            candidates: Cow::from(candidates),
+        let cmd = UpdateCandidates {
+            candidates: cow_words,
         };
         let cmd_container = CommandToFcitx {
-            command: OneOfcommand::update_aux(cmd),
+            command: OneOfcommand::update_candidates(cmd),
         };
 
         let mut out = Vec::new();
@@ -150,7 +144,7 @@ impl Req {
 
         cmd_container
             .write_message(&mut writer)
-            .expect("Failed to write message for UpdateAux.");
+            .expect("Failed to write message for UpdateCandidates.");
 
         self.sock.send(out, 0).expect("Failed to send to IMS.");
         _ = self

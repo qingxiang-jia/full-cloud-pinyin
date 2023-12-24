@@ -71,7 +71,7 @@ impl CandidateService {
 
         let zmq = self.zmq.lock().unwrap();
         zmq.update_session_status(true);
-        zmq.update_aux(&to_show);
+        zmq.update_candidates(&to_show);
     }
 
     pub fn page_into(&self) -> (bool, Option<usize>) {
@@ -90,7 +90,7 @@ impl CandidateService {
 
         drop(state);
 
-        self.zmq.lock().unwrap().update_aux(&to_show);
+        self.zmq.lock().unwrap().update_candidates(&to_show);
         return (true, None);
     }
 
@@ -110,7 +110,7 @@ impl CandidateService {
 
         drop(state);
 
-        self.zmq.lock().unwrap().update_aux(&to_show);
+        self.zmq.lock().unwrap().update_candidates(&to_show);
     }
 
     pub fn select(&self, ith: usize) {
@@ -137,6 +137,6 @@ impl CandidateService {
 
         let zmq = self.zmq.lock().unwrap();
         zmq.update_session_status(false);
-        zmq.update_aux(&vec![]);
+        zmq.update_candidates(&vec![]);
     }
 }
