@@ -313,6 +313,7 @@ impl<'a> MessageRead<'a> for CommandToFcitx<'a> {
                 Ok(18) => msg.command = mod_CommandToFcitx::OneOfcommand::commit_text(r.read_message::<CommitText>(bytes)?),
                 Ok(26) => msg.command = mod_CommandToFcitx::OneOfcommand::update_preedit(r.read_message::<UpdatePreedit>(bytes)?),
                 Ok(34) => msg.command = mod_CommandToFcitx::OneOfcommand::update_aux(r.read_message::<UpdateAux>(bytes)?),
+                Ok(42) => msg.command = mod_CommandToFcitx::OneOfcommand::update_candidates(r.read_message::<UpdateCandidates>(bytes)?),
                 Ok(t) => { r.read_unknown(bytes, t)?; }
                 Err(e) => return Err(e),
             }
@@ -329,6 +330,7 @@ impl<'a> MessageWrite for CommandToFcitx<'a> {
             mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::update_preedit(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::update_aux(ref m) => 1 + sizeof_len((m).get_size()),
+            mod_CommandToFcitx::OneOfcommand::update_candidates(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::None => 0,
     }    }
 
@@ -337,6 +339,7 @@ impl<'a> MessageWrite for CommandToFcitx<'a> {
             mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => { w.write_with_tag(18, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::update_preedit(ref m) => { w.write_with_tag(26, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::update_aux(ref m) => { w.write_with_tag(34, |w| w.write_message(m))? },
+            mod_CommandToFcitx::OneOfcommand::update_candidates(ref m) => { w.write_with_tag(42, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::None => {},
     }        Ok(())
     }
@@ -352,6 +355,7 @@ pub enum OneOfcommand<'a> {
     commit_text(CommitText<'a>),
     update_preedit(UpdatePreedit<'a>),
     update_aux(UpdateAux<'a>),
+    update_candidates(UpdateCandidates<'a>),
     None,
 }
 

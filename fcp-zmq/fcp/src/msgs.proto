@@ -6,6 +6,7 @@ message CommandToFcitx {
     CommitText commit_text = 2;
     UpdatePreedit update_preedit = 3;
     UpdateAux update_aux = 4;
+    UpdateCandidates update_candidates = 5;
   }
 }
 

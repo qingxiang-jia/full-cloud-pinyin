@@ -1344,6 +1344,7 @@ class CommandToFcitx final :
     kCommitText = 2,
     kUpdatePreedit = 3,
     kUpdateAux = 4,
+    kUpdateCandidates = 5,
     COMMAND_NOT_SET = 0,
   };
 
@@ -1429,6 +1430,7 @@ class CommandToFcitx final :
     kCommitTextFieldNumber = 2,
     kUpdatePreeditFieldNumber = 3,
     kUpdateAuxFieldNumber = 4,
+    kUpdateCandidatesFieldNumber = 5,
   };
   // .UpdateSessionStatus update_session_status = 1;
   bool has_update_session_status() const;
@@ -1506,6 +1508,25 @@ class CommandToFcitx final :
   ::UpdateAux* _internal_mutable_update_aux();
 
   public:
+  // .UpdateCandidates update_candidates = 5;
+  bool has_update_candidates() const;
+  private:
+  bool _internal_has_update_candidates() const;
+
+  public:
+  void clear_update_candidates() ;
+  const ::UpdateCandidates& update_candidates() const;
+  PROTOBUF_NODISCARD ::UpdateCandidates* release_update_candidates();
+  ::UpdateCandidates* mutable_update_candidates();
+  void set_allocated_update_candidates(::UpdateCandidates* value);
+  void unsafe_arena_set_allocated_update_candidates(::UpdateCandidates* value);
+  ::UpdateCandidates* unsafe_arena_release_update_candidates();
+
+  private:
+  const ::UpdateCandidates& _internal_update_candidates() const;
+  ::UpdateCandidates* _internal_mutable_update_candidates();
+
+  public:
   void clear_command();
   CommandCase command_case() const;
   // @@protoc_insertion_point(class_scope:CommandToFcitx)
@@ -1515,13 +1536,14 @@ class CommandToFcitx final :
   void set_has_commit_text();
   void set_has_update_preedit();
   void set_has_update_aux();
+  void set_has_update_candidates();
 
   inline bool has_command() const;
   inline void clear_has_command();
 
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 4, 4,
+      0, 5, 5,
       0, 2>
       _table_;
   friend class ::google::protobuf::MessageLite;
@@ -1545,6 +1567,7 @@ class CommandToFcitx final :
       ::CommitText* commit_text_;
       ::UpdatePreedit* update_preedit_;
       ::UpdateAux* update_aux_;
+      ::UpdateCandidates* update_candidates_;
     } command_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     ::uint32_t _oneof_case_[1];
@@ -1872,6 +1895,82 @@ inline ::UpdateAux* CommandToFcitx::_internal_mutable_update_aux() {
 inline ::UpdateAux* CommandToFcitx::mutable_update_aux() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   ::UpdateAux* _msg = _internal_mutable_update_aux();
   // @@protoc_insertion_point(field_mutable:CommandToFcitx.update_aux)
+  return _msg;
+}
+
+// .UpdateCandidates update_candidates = 5;
+inline bool CommandToFcitx::has_update_candidates() const {
+  return command_case() == kUpdateCandidates;
+}
+inline bool CommandToFcitx::_internal_has_update_candidates() const {
+  return command_case() == kUpdateCandidates;
+}
+inline void CommandToFcitx::set_has_update_candidates() {
+  _impl_._oneof_case_[0] = kUpdateCandidates;
+}
+inline void CommandToFcitx::clear_update_candidates() {
+  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
+  if (command_case() == kUpdateCandidates) {
+    if (GetArena() == nullptr) {
+      delete _impl_.command_.update_candidates_;
+    }
+    clear_has_command();
+  }
+}
+inline ::UpdateCandidates* CommandToFcitx::release_update_candidates() {
+  // @@protoc_insertion_point(field_release:CommandToFcitx.update_candidates)
+  if (command_case() == kUpdateCandidates) {
+    clear_has_command();
+    auto* temp = _impl_.command_.update_candidates_;
+    if (GetArena() != nullptr) {
+      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.command_.update_candidates_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::UpdateCandidates& CommandToFcitx::_internal_update_candidates() const {
+  return command_case() == kUpdateCandidates ? *_impl_.command_.update_candidates_ : reinterpret_cast<::UpdateCandidates&>(::_UpdateCandidates_default_instance_);
+}
+inline const ::UpdateCandidates& CommandToFcitx::update_candidates() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:CommandToFcitx.update_candidates)
+  return _internal_update_candidates();
+}
+inline ::UpdateCandidates* CommandToFcitx::unsafe_arena_release_update_candidates() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:CommandToFcitx.update_candidates)
+  if (command_case() == kUpdateCandidates) {
+    clear_has_command();
+    auto* temp = _impl_.command_.update_candidates_;
+    _impl_.command_.update_candidates_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void CommandToFcitx::unsafe_arena_set_allocated_update_candidates(::UpdateCandidates* value) {
+  // We rely on the oneof clear method to free the earlier contents
+  // of this oneof. We can directly use the pointer we're given to
+  // set the new value.
+  clear_command();
+  if (value) {
+    set_has_update_candidates();
+    _impl_.command_.update_candidates_ = value;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CommandToFcitx.update_candidates)
+}
+inline ::UpdateCandidates* CommandToFcitx::_internal_mutable_update_candidates() {
+  if (command_case() != kUpdateCandidates) {
+    clear_command();
+    set_has_update_candidates();
+    _impl_.command_.update_candidates_ = CreateMaybeMessage<::UpdateCandidates>(GetArena());
+  }
+  return _impl_.command_.update_candidates_;
+}
+inline ::UpdateCandidates* CommandToFcitx::mutable_update_candidates() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::UpdateCandidates* _msg = _internal_mutable_update_candidates();
+  // @@protoc_insertion_point(field_mutable:CommandToFcitx.update_candidates)
   return _msg;
 }
 

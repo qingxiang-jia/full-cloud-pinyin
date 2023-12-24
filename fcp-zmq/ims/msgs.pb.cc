@@ -178,6 +178,7 @@ const ::uint32_t TableStruct_msgs_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
     ::_pbi::kInvalidFieldOffsetTag,
     ::_pbi::kInvalidFieldOffsetTag,
     ::_pbi::kInvalidFieldOffsetTag,
+    ::_pbi::kInvalidFieldOffsetTag,
     PROTOBUF_FIELD_OFFSET(::CommandToFcitx, _impl_.command_),
     ~0u,  // no _has_bits_
     PROTOBUF_FIELD_OFFSET(::CommitText, _internal_metadata_),
@@ -238,12 +239,12 @@ const ::uint32_t TableStruct_msgs_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
 static const ::_pbi::MigrationSchema
     schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::CommandToFcitx)},
-        {13, -1, -1, sizeof(::CommitText)},
-        {22, -1, -1, sizeof(::UpdatePreedit)},
-        {31, -1, -1, sizeof(::UpdateAux)},
-        {40, -1, -1, sizeof(::UpdateSessionStatus)},
-        {49, -1, -1, sizeof(::UpdateCandidates)},
-        {58, -1, -1, sizeof(::FcitxEvent)},
+        {14, -1, -1, sizeof(::CommitText)},
+        {23, -1, -1, sizeof(::UpdatePreedit)},
+        {32, -1, -1, sizeof(::UpdateAux)},
+        {41, -1, -1, sizeof(::UpdateSessionStatus)},
+        {50, -1, -1, sizeof(::UpdateCandidates)},
+        {59, -1, -1, sizeof(::FcitxEvent)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -256,49 +257,50 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::_FcitxEvent_default_instance_._instance,
 };
 const char descriptor_table_protodef_msgs_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-    "\n\nmsgs.proto\"\302\001\n\016CommandToFcitx\0225\n\025updat"
+    "\n\nmsgs.proto\"\362\001\n\016CommandToFcitx\0225\n\025updat"
     "e_session_status\030\001 \001(\0132\024.UpdateSessionSt"
     "atusH\000\022\"\n\013commit_text\030\002 \001(\0132\013.CommitText"
     "H\000\022(\n\016update_preedit\030\003 \001(\0132\016.UpdatePreed"
-    "itH\000\022 \n\nupdate_aux\030\004 \001(\0132\n.UpdateAuxH\000B\t"
-    "\n\007command\"\032\n\nCommitText\022\014\n\004text\030\001 \001(\t\"\035\n"
-    "\rUpdatePreedit\022\014\n\004text\030\001 \001(\t\"\037\n\tUpdateAu"
-    "x\022\022\n\ncandidates\030\001 \001(\t\")\n\023UpdateSessionSt"
-    "atus\022\022\n\nin_session\030\001 \001(\010\"&\n\020UpdateCandid"
-    "ates\022\022\n\ncandidates\030\001 \003(\t\"&\n\nFcitxEvent\022\030"
-    "\n\005event\030\001 \001(\0162\t.KeyEvent*\370\007\n\010KeyEvent\022\t\n"
-    "\005NUM_0\020\000\022\t\n\005NUM_1\020\001\022\t\n\005NUM_2\020\002\022\t\n\005NUM_3\020"
-    "\003\022\t\n\005NUM_4\020\004\022\t\n\005NUM_5\020\005\022\t\n\005NUM_6\020\006\022\t\n\005NU"
-    "M_7\020\007\022\t\n\005NUM_8\020\010\022\t\n\005NUM_9\020\t\022\t\n\005A_LWR\020d\022\t"
-    "\n\005B_LWR\020e\022\t\n\005C_LWR\020f\022\t\n\005D_LWR\020g\022\t\n\005E_LWR"
-    "\020h\022\t\n\005F_LWR\020i\022\t\n\005G_LWR\020j\022\t\n\005H_LWR\020k\022\t\n\005I"
-    "_LWR\020l\022\t\n\005J_LWR\020m\022\t\n\005K_LWR\020n\022\t\n\005L_LWR\020o\022"
-    "\t\n\005M_LWR\020p\022\t\n\005N_LWR\020q\022\t\n\005O_LWR\020r\022\t\n\005P_LW"
-    "R\020s\022\t\n\005Q_LWR\020t\022\t\n\005R_LWR\020u\022\t\n\005S_LWR\020v\022\t\n\005"
-    "T_LWR\020w\022\t\n\005U_LWR\020x\022\t\n\005V_LWR\020y\022\t\n\005W_LWR\020z"
-    "\022\t\n\005X_LWR\020{\022\t\n\005Y_LWR\020|\022\t\n\005Z_LWR\020}\022\n\n\005A_U"
-    "PR\020\310\001\022\n\n\005B_UPR\020\311\001\022\n\n\005C_UPR\020\312\001\022\n\n\005D_UPR\020\313"
-    "\001\022\n\n\005E_UPR\020\314\001\022\n\n\005F_UPR\020\315\001\022\n\n\005G_UPR\020\316\001\022\n\n"
-    "\005H_UPR\020\317\001\022\n\n\005I_UPR\020\320\001\022\n\n\005J_UPR\020\321\001\022\n\n\005K_U"
-    "PR\020\322\001\022\n\n\005L_UPR\020\323\001\022\n\n\005M_UPR\020\324\001\022\n\n\005N_UPR\020\325"
-    "\001\022\n\n\005O_UPR\020\326\001\022\n\n\005P_UPR\020\327\001\022\n\n\005Q_UPR\020\330\001\022\n\n"
-    "\005R_UPR\020\331\001\022\n\n\005S_UPR\020\332\001\022\n\n\005T_UPR\020\333\001\022\n\n\005U_U"
-    "PR\020\334\001\022\n\n\005V_UPR\020\335\001\022\n\n\005W_UPR\020\336\001\022\n\n\005X_UPR\020\337"
-    "\001\022\n\n\005Y_UPR\020\340\001\022\n\n\005Z_UPR\020\341\001\022\t\n\005COMMA\020\n\022\n\n\006"
-    "PERIOD\020\013\022\r\n\tQEST_MARK\020\014\022\r\n\tEXCL_MARK\020\r\022\016"
-    "\n\nSEMI_COLON\020\016\022\r\n\tDBL_QUOTE\020\017\022\r\n\tSGL_QUO"
-    "TE\020\020\022\r\n\tBRKT_OPEN\020\021\022\016\n\nBRKT_CLOSE\020\022\022\t\n\005S"
-    "LASH\020\023\022\r\n\tBACKSLASH\020\024\022\r\n\tBACKSPACE\020\025\022\014\n\010"
-    "ELLIPSIS\020\026\022\t\n\005ENTER\020\036\022\t\n\005SPACE\020\037\022\t\n\005MINU"
-    "S\020 \022\t\n\005EQUAL\020!\022\006\n\002UP\020(\022\010\n\004DOWN\020)\022\010\n\004LEFT"
-    "\020*\022\t\n\005RIGHT\020+\022\t\n\005SHIFT\0202\022\010\n\004CTRL\0203\022\007\n\003AL"
-    "T\0204b\006proto3"
+    "itH\000\022 \n\nupdate_aux\030\004 \001(\0132\n.UpdateAuxH\000\022."
+    "\n\021update_candidates\030\005 \001(\0132\021.UpdateCandid"
+    "atesH\000B\t\n\007command\"\032\n\nCommitText\022\014\n\004text\030"
+    "\001 \001(\t\"\035\n\rUpdatePreedit\022\014\n\004text\030\001 \001(\t\"\037\n\t"
+    "UpdateAux\022\022\n\ncandidates\030\001 \001(\t\")\n\023UpdateS"
+    "essionStatus\022\022\n\nin_session\030\001 \001(\010\"&\n\020Upda"
+    "teCandidates\022\022\n\ncandidates\030\001 \003(\t\"&\n\nFcit"
+    "xEvent\022\030\n\005event\030\001 \001(\0162\t.KeyEvent*\370\007\n\010Key"
+    "Event\022\t\n\005NUM_0\020\000\022\t\n\005NUM_1\020\001\022\t\n\005NUM_2\020\002\022\t"
+    "\n\005NUM_3\020\003\022\t\n\005NUM_4\020\004\022\t\n\005NUM_5\020\005\022\t\n\005NUM_6"
+    "\020\006\022\t\n\005NUM_7\020\007\022\t\n\005NUM_8\020\010\022\t\n\005NUM_9\020\t\022\t\n\005A"
+    "_LWR\020d\022\t\n\005B_LWR\020e\022\t\n\005C_LWR\020f\022\t\n\005D_LWR\020g\022"
+    "\t\n\005E_LWR\020h\022\t\n\005F_LWR\020i\022\t\n\005G_LWR\020j\022\t\n\005H_LW"
+    "R\020k\022\t\n\005I_LWR\020l\022\t\n\005J_LWR\020m\022\t\n\005K_LWR\020n\022\t\n\005"
+    "L_LWR\020o\022\t\n\005M_LWR\020p\022\t\n\005N_LWR\020q\022\t\n\005O_LWR\020r"
+    "\022\t\n\005P_LWR\020s\022\t\n\005Q_LWR\020t\022\t\n\005R_LWR\020u\022\t\n\005S_L"
+    "WR\020v\022\t\n\005T_LWR\020w\022\t\n\005U_LWR\020x\022\t\n\005V_LWR\020y\022\t\n"
+    "\005W_LWR\020z\022\t\n\005X_LWR\020{\022\t\n\005Y_LWR\020|\022\t\n\005Z_LWR\020"
+    "}\022\n\n\005A_UPR\020\310\001\022\n\n\005B_UPR\020\311\001\022\n\n\005C_UPR\020\312\001\022\n\n"
+    "\005D_UPR\020\313\001\022\n\n\005E_UPR\020\314\001\022\n\n\005F_UPR\020\315\001\022\n\n\005G_U"
+    "PR\020\316\001\022\n\n\005H_UPR\020\317\001\022\n\n\005I_UPR\020\320\001\022\n\n\005J_UPR\020\321"
+    "\001\022\n\n\005K_UPR\020\322\001\022\n\n\005L_UPR\020\323\001\022\n\n\005M_UPR\020\324\001\022\n\n"
+    "\005N_UPR\020\325\001\022\n\n\005O_UPR\020\326\001\022\n\n\005P_UPR\020\327\001\022\n\n\005Q_U"
+    "PR\020\330\001\022\n\n\005R_UPR\020\331\001\022\n\n\005S_UPR\020\332\001\022\n\n\005T_UPR\020\333"
+    "\001\022\n\n\005U_UPR\020\334\001\022\n\n\005V_UPR\020\335\001\022\n\n\005W_UPR\020\336\001\022\n\n"
+    "\005X_UPR\020\337\001\022\n\n\005Y_UPR\020\340\001\022\n\n\005Z_UPR\020\341\001\022\t\n\005COM"
+    "MA\020\n\022\n\n\006PERIOD\020\013\022\r\n\tQEST_MARK\020\014\022\r\n\tEXCL_"
+    "MARK\020\r\022\016\n\nSEMI_COLON\020\016\022\r\n\tDBL_QUOTE\020\017\022\r\n"
+    "\tSGL_QUOTE\020\020\022\r\n\tBRKT_OPEN\020\021\022\016\n\nBRKT_CLOS"
+    "E\020\022\022\t\n\005SLASH\020\023\022\r\n\tBACKSLASH\020\024\022\r\n\tBACKSPA"
+    "CE\020\025\022\014\n\010ELLIPSIS\020\026\022\t\n\005ENTER\020\036\022\t\n\005SPACE\020\037"
+    "\022\t\n\005MINUS\020 \022\t\n\005EQUAL\020!\022\006\n\002UP\020(\022\010\n\004DOWN\020)"
+    "\022\010\n\004LEFT\020*\022\t\n\005RIGHT\020+\022\t\n\005SHIFT\0202\022\010\n\004CTRL"
+    "\0203\022\007\n\003ALT\0204b\006proto3"
 };
 static ::absl::once_flag descriptor_table_msgs_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_msgs_2eproto = {
     false,
     false,
-    1451,
+    1499,
     descriptor_table_protodef_msgs_2eproto,
     "msgs.proto",
     &descriptor_table_msgs_2eproto_once,
@@ -349,6 +351,7 @@ class CommandToFcitx::_Internal {
   static const ::CommitText& commit_text(const CommandToFcitx* msg);
   static const ::UpdatePreedit& update_preedit(const CommandToFcitx* msg);
   static const ::UpdateAux& update_aux(const CommandToFcitx* msg);
+  static const ::UpdateCandidates& update_candidates(const CommandToFcitx* msg);
 };
 
 const ::UpdateSessionStatus& CommandToFcitx::_Internal::update_session_status(const CommandToFcitx* msg) {
@@ -362,6 +365,9 @@ const ::UpdatePreedit& CommandToFcitx::_Internal::update_preedit(const CommandTo
 }
 const ::UpdateAux& CommandToFcitx::_Internal::update_aux(const CommandToFcitx* msg) {
   return *msg->_impl_.command_.update_aux_;
+}
+const ::UpdateCandidates& CommandToFcitx::_Internal::update_candidates(const CommandToFcitx* msg) {
+  return *msg->_impl_.command_.update_candidates_;
 }
 void CommandToFcitx::set_allocated_update_session_status(::UpdateSessionStatus* update_session_status) {
   ::google::protobuf::Arena* message_arena = GetArena();
@@ -415,6 +421,19 @@ void CommandToFcitx::set_allocated_update_aux(::UpdateAux* update_aux) {
   }
   // @@protoc_insertion_point(field_set_allocated:CommandToFcitx.update_aux)
 }
+void CommandToFcitx::set_allocated_update_candidates(::UpdateCandidates* update_candidates) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  clear_command();
+  if (update_candidates) {
+    ::google::protobuf::Arena* submessage_arena = update_candidates->GetArena();
+    if (message_arena != submessage_arena) {
+      update_candidates = ::google::protobuf::internal::GetOwnedMessage(message_arena, update_candidates, submessage_arena);
+    }
+    set_has_update_candidates();
+    _impl_.command_.update_candidates_ = update_candidates;
+  }
+  // @@protoc_insertion_point(field_set_allocated:CommandToFcitx.update_candidates)
+}
 CommandToFcitx::CommandToFcitx(::google::protobuf::Arena* arena)
     : ::google::protobuf::Message(arena) {
   SharedCtor(arena);
@@ -450,6 +469,9 @@ CommandToFcitx::CommandToFcitx(
         break;
       case kUpdateAux:
         _impl_.command_.update_aux_ = CreateMaybeMessage<::UpdateAux>(arena, *from._impl_.command_.update_aux_);
+        break;
+      case kUpdateCandidates:
+        _impl_.command_.update_candidates_ = CreateMaybeMessage<::UpdateCandidates>(arena, *from._impl_.command_.update_candidates_);
         break;
   }
 
@@ -506,6 +528,12 @@ void CommandToFcitx::clear_command() {
       }
       break;
     }
+    case kUpdateCandidates: {
+      if (GetArena() == nullptr) {
+        delete _impl_.command_.update_candidates_;
+      }
+      break;
+    }
     case COMMAND_NOT_SET: {
       break;
     }
@@ -533,16 +561,16 @@ const char* CommandToFcitx::_InternalParse(
 
 
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 4, 4, 0, 2> CommandToFcitx::_table_ = {
+const ::_pbi::TcParseTable<0, 5, 5, 0, 2> CommandToFcitx::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    4, 0,  // max_field_number, fast_idx_mask
+    5, 0,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967280,  // skipmap
+    4294967264,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    4,  // num_field_entries
-    4,  // num_aux_entries
+    5,  // num_field_entries
+    5,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     &_CommandToFcitx_default_instance_._instance,
     ::_pbi::TcParser::GenericFallback,  // fallback
@@ -563,11 +591,15 @@ const ::_pbi::TcParseTable<0, 4, 4, 0, 2> CommandToFcitx::_table_ = {
     // .UpdateAux update_aux = 4;
     {PROTOBUF_FIELD_OFFSET(CommandToFcitx, _impl_.command_.update_aux_), _Internal::kOneofCaseOffset + 0, 3,
     (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .UpdateCandidates update_candidates = 5;
+    {PROTOBUF_FIELD_OFFSET(CommandToFcitx, _impl_.command_.update_candidates_), _Internal::kOneofCaseOffset + 0, 4,
+    (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
   }}, {{
     {::_pbi::TcParser::GetTable<::UpdateSessionStatus>()},
     {::_pbi::TcParser::GetTable<::CommitText>()},
     {::_pbi::TcParser::GetTable<::UpdatePreedit>()},
     {::_pbi::TcParser::GetTable<::UpdateAux>()},
+    {::_pbi::TcParser::GetTable<::UpdateCandidates>()},
   }}, {{
   }},
 };
@@ -602,6 +634,12 @@ const ::_pbi::TcParseTable<0, 4, 4, 0, 2> CommandToFcitx::_table_ = {
       target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
           4, _Internal::update_aux(this),
           _Internal::update_aux(this).GetCachedSize(), target, stream);
+      break;
+    }
+    case kUpdateCandidates: {
+      target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+          5, _Internal::update_candidates(this),
+          _Internal::update_candidates(this).GetCachedSize(), target, stream);
       break;
     }
     default:
@@ -649,6 +687,12 @@ const ::_pbi::TcParseTable<0, 4, 4, 0, 2> CommandToFcitx::_table_ = {
           1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.command_.update_aux_);
       break;
     }
+    // .UpdateCandidates update_candidates = 5;
+    case kUpdateCandidates: {
+      total_size +=
+          1 + ::google::protobuf::internal::WireFormatLite::MessageSize(*_impl_.command_.update_candidates_);
+      break;
+    }
     case COMMAND_NOT_SET: {
       break;
     }
@@ -691,6 +735,11 @@ void CommandToFcitx::MergeImpl(::google::protobuf::Message& to_msg, const ::goog
     case kUpdateAux: {
       _this->_internal_mutable_update_aux()->::UpdateAux::MergeFrom(
           from._internal_update_aux());
+      break;
+    }
+    case kUpdateCandidates: {
+      _this->_internal_mutable_update_candidates()->::UpdateCandidates::MergeFrom(
+          from._internal_update_candidates());
       break;
     }
     case COMMAND_NOT_SET: {
