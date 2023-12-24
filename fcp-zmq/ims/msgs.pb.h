@@ -65,9 +65,6 @@ extern CommitTextDefaultTypeInternal _CommitText_default_instance_;
 class FcitxEvent;
 struct FcitxEventDefaultTypeInternal;
 extern FcitxEventDefaultTypeInternal _FcitxEvent_default_instance_;
-class UpdateAux;
-struct UpdateAuxDefaultTypeInternal;
-extern UpdateAuxDefaultTypeInternal _UpdateAux_default_instance_;
 class UpdateCandidates;
 struct UpdateCandidatesDefaultTypeInternal;
 extern UpdateCandidatesDefaultTypeInternal _UpdateCandidates_default_instance_;
@@ -258,7 +255,7 @@ class UpdateSessionStatus final :
                &_UpdateSessionStatus_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
   friend void swap(UpdateSessionStatus& a, UpdateSessionStatus& b) {
     a.Swap(&b);
@@ -614,7 +611,7 @@ class UpdateCandidates final :
                &_UpdateCandidates_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    4;
 
   friend void swap(UpdateCandidates& a, UpdateCandidates& b) {
     a.Swap(&b);
@@ -748,187 +745,6 @@ class UpdateCandidates final :
   friend struct ::TableStruct_msgs_2eproto;
 };// -------------------------------------------------------------------
 
-class UpdateAux final :
-    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:UpdateAux) */ {
- public:
-  inline UpdateAux() : UpdateAux(nullptr) {}
-  ~UpdateAux() override;
-  template<typename = void>
-  explicit PROTOBUF_CONSTEXPR UpdateAux(::google::protobuf::internal::ConstantInitialized);
-
-  inline UpdateAux(const UpdateAux& from)
-      : UpdateAux(nullptr, from) {}
-  UpdateAux(UpdateAux&& from) noexcept
-    : UpdateAux() {
-    *this = ::std::move(from);
-  }
-
-  inline UpdateAux& operator=(const UpdateAux& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline UpdateAux& operator=(UpdateAux&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetArena() == from.GetArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::google::protobuf::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::google::protobuf::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const UpdateAux& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const UpdateAux* internal_default_instance() {
-    return reinterpret_cast<const UpdateAux*>(
-               &_UpdateAux_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    3;
-
-  friend void swap(UpdateAux& a, UpdateAux& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(UpdateAux* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetArena() != nullptr &&
-        GetArena() == other->GetArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetArena() == other->GetArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(UpdateAux* other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  UpdateAux* New(::google::protobuf::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<UpdateAux>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const UpdateAux& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom( const UpdateAux& from) {
-    UpdateAux::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::google::protobuf::Message& to_msg, const ::google::protobuf::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  ::size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::google::protobuf::internal::ParseContext* ctx) final;
-  ::uint8_t* _InternalSerialize(
-      ::uint8_t* target, ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
-
-  private:
-  ::google::protobuf::internal::CachedSize* AccessCachedSize() const final;
-  void SharedCtor(::google::protobuf::Arena* arena);
-  void SharedDtor();
-  void InternalSwap(UpdateAux* other);
-
-  private:
-  friend class ::google::protobuf::internal::AnyMetadata;
-  static ::absl::string_view FullMessageName() {
-    return "UpdateAux";
-  }
-  protected:
-  explicit UpdateAux(::google::protobuf::Arena* arena);
-  UpdateAux(::google::protobuf::Arena* arena, const UpdateAux& from);
-  public:
-
-  static const ClassData _class_data_;
-  const ::google::protobuf::Message::ClassData*GetClassData() const final;
-
-  ::google::protobuf::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kCandidatesFieldNumber = 1,
-  };
-  // string candidates = 1;
-  void clear_candidates() ;
-  const std::string& candidates() const;
-  template <typename Arg_ = const std::string&, typename... Args_>
-  void set_candidates(Arg_&& arg, Args_... args);
-  std::string* mutable_candidates();
-  PROTOBUF_NODISCARD std::string* release_candidates();
-  void set_allocated_candidates(std::string* value);
-
-  private:
-  const std::string& _internal_candidates() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_candidates(
-      const std::string& value);
-  std::string* _internal_mutable_candidates();
-
-  public:
-  // @@protoc_insertion_point(class_scope:UpdateAux)
- private:
-  class _Internal;
-
-  friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<
-      0, 1, 0,
-      28, 2>
-      _table_;
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-
-        inline explicit constexpr Impl_(
-            ::google::protobuf::internal::ConstantInitialized) noexcept;
-        inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                              ::google::protobuf::Arena* arena);
-        inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                              ::google::protobuf::Arena* arena, const Impl_& from);
-    ::google::protobuf::internal::ArenaStringPtr candidates_;
-    mutable ::google::protobuf::internal::CachedSize _cached_size_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_msgs_2eproto;
-};// -------------------------------------------------------------------
-
 class FcitxEvent final :
     public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:FcitxEvent) */ {
  public:
@@ -988,7 +804,7 @@ class FcitxEvent final :
                &_FcitxEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    5;
 
   friend void swap(FcitxEvent& a, FcitxEvent& b) {
     a.Swap(&b);
@@ -1343,8 +1159,7 @@ class CommandToFcitx final :
     kUpdateSessionStatus = 1,
     kCommitText = 2,
     kUpdatePreedit = 3,
-    kUpdateAux = 4,
-    kUpdateCandidates = 5,
+    kUpdateCandidates = 4,
     COMMAND_NOT_SET = 0,
   };
 
@@ -1429,8 +1244,7 @@ class CommandToFcitx final :
     kUpdateSessionStatusFieldNumber = 1,
     kCommitTextFieldNumber = 2,
     kUpdatePreeditFieldNumber = 3,
-    kUpdateAuxFieldNumber = 4,
-    kUpdateCandidatesFieldNumber = 5,
+    kUpdateCandidatesFieldNumber = 4,
   };
   // .UpdateSessionStatus update_session_status = 1;
   bool has_update_session_status() const;
@@ -1489,26 +1303,7 @@ class CommandToFcitx final :
   ::UpdatePreedit* _internal_mutable_update_preedit();
 
   public:
-  // .UpdateAux update_aux = 4;
-  bool has_update_aux() const;
-  private:
-  bool _internal_has_update_aux() const;
-
-  public:
-  void clear_update_aux() ;
-  const ::UpdateAux& update_aux() const;
-  PROTOBUF_NODISCARD ::UpdateAux* release_update_aux();
-  ::UpdateAux* mutable_update_aux();
-  void set_allocated_update_aux(::UpdateAux* value);
-  void unsafe_arena_set_allocated_update_aux(::UpdateAux* value);
-  ::UpdateAux* unsafe_arena_release_update_aux();
-
-  private:
-  const ::UpdateAux& _internal_update_aux() const;
-  ::UpdateAux* _internal_mutable_update_aux();
-
-  public:
-  // .UpdateCandidates update_candidates = 5;
+  // .UpdateCandidates update_candidates = 4;
   bool has_update_candidates() const;
   private:
   bool _internal_has_update_candidates() const;
@@ -1535,7 +1330,6 @@ class CommandToFcitx final :
   void set_has_update_session_status();
   void set_has_commit_text();
   void set_has_update_preedit();
-  void set_has_update_aux();
   void set_has_update_candidates();
 
   inline bool has_command() const;
@@ -1543,7 +1337,7 @@ class CommandToFcitx final :
 
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 5, 5,
+      0, 4, 4,
       0, 2>
       _table_;
   friend class ::google::protobuf::MessageLite;
@@ -1566,7 +1360,6 @@ class CommandToFcitx final :
       ::UpdateSessionStatus* update_session_status_;
       ::CommitText* commit_text_;
       ::UpdatePreedit* update_preedit_;
-      ::UpdateAux* update_aux_;
       ::UpdateCandidates* update_candidates_;
     } command_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -1822,83 +1615,7 @@ inline ::UpdatePreedit* CommandToFcitx::mutable_update_preedit() ABSL_ATTRIBUTE_
   return _msg;
 }
 
-// .UpdateAux update_aux = 4;
-inline bool CommandToFcitx::has_update_aux() const {
-  return command_case() == kUpdateAux;
-}
-inline bool CommandToFcitx::_internal_has_update_aux() const {
-  return command_case() == kUpdateAux;
-}
-inline void CommandToFcitx::set_has_update_aux() {
-  _impl_._oneof_case_[0] = kUpdateAux;
-}
-inline void CommandToFcitx::clear_update_aux() {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  if (command_case() == kUpdateAux) {
-    if (GetArena() == nullptr) {
-      delete _impl_.command_.update_aux_;
-    }
-    clear_has_command();
-  }
-}
-inline ::UpdateAux* CommandToFcitx::release_update_aux() {
-  // @@protoc_insertion_point(field_release:CommandToFcitx.update_aux)
-  if (command_case() == kUpdateAux) {
-    clear_has_command();
-    auto* temp = _impl_.command_.update_aux_;
-    if (GetArena() != nullptr) {
-      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
-    }
-    _impl_.command_.update_aux_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline const ::UpdateAux& CommandToFcitx::_internal_update_aux() const {
-  return command_case() == kUpdateAux ? *_impl_.command_.update_aux_ : reinterpret_cast<::UpdateAux&>(::_UpdateAux_default_instance_);
-}
-inline const ::UpdateAux& CommandToFcitx::update_aux() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:CommandToFcitx.update_aux)
-  return _internal_update_aux();
-}
-inline ::UpdateAux* CommandToFcitx::unsafe_arena_release_update_aux() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:CommandToFcitx.update_aux)
-  if (command_case() == kUpdateAux) {
-    clear_has_command();
-    auto* temp = _impl_.command_.update_aux_;
-    _impl_.command_.update_aux_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline void CommandToFcitx::unsafe_arena_set_allocated_update_aux(::UpdateAux* value) {
-  // We rely on the oneof clear method to free the earlier contents
-  // of this oneof. We can directly use the pointer we're given to
-  // set the new value.
-  clear_command();
-  if (value) {
-    set_has_update_aux();
-    _impl_.command_.update_aux_ = value;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CommandToFcitx.update_aux)
-}
-inline ::UpdateAux* CommandToFcitx::_internal_mutable_update_aux() {
-  if (command_case() != kUpdateAux) {
-    clear_command();
-    set_has_update_aux();
-    _impl_.command_.update_aux_ = CreateMaybeMessage<::UpdateAux>(GetArena());
-  }
-  return _impl_.command_.update_aux_;
-}
-inline ::UpdateAux* CommandToFcitx::mutable_update_aux() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::UpdateAux* _msg = _internal_mutable_update_aux();
-  // @@protoc_insertion_point(field_mutable:CommandToFcitx.update_aux)
-  return _msg;
-}
-
-// .UpdateCandidates update_candidates = 5;
+// .UpdateCandidates update_candidates = 4;
 inline bool CommandToFcitx::has_update_candidates() const {
   return command_case() == kUpdateCandidates;
 }
@@ -2095,63 +1812,6 @@ inline void UpdatePreedit::set_allocated_text(std::string* value) {
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:UpdatePreedit.text)
-}
-
-// -------------------------------------------------------------------
-
-// UpdateAux
-
-// string candidates = 1;
-inline void UpdateAux::clear_candidates() {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  _impl_.candidates_.ClearToEmpty();
-}
-inline const std::string& UpdateAux::candidates() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:UpdateAux.candidates)
-  return _internal_candidates();
-}
-template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void UpdateAux::set_candidates(Arg_&& arg,
-                                                     Args_... args) {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  ;
-  _impl_.candidates_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:UpdateAux.candidates)
-}
-inline std::string* UpdateAux::mutable_candidates() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  std::string* _s = _internal_mutable_candidates();
-  // @@protoc_insertion_point(field_mutable:UpdateAux.candidates)
-  return _s;
-}
-inline const std::string& UpdateAux::_internal_candidates() const {
-  PROTOBUF_TSAN_READ(&_impl_._tsan_detect_race);
-  return _impl_.candidates_.Get();
-}
-inline void UpdateAux::_internal_set_candidates(const std::string& value) {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  ;
-  _impl_.candidates_.Set(value, GetArena());
-}
-inline std::string* UpdateAux::_internal_mutable_candidates() {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  ;
-  return _impl_.candidates_.Mutable( GetArena());
-}
-inline std::string* UpdateAux::release_candidates() {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  // @@protoc_insertion_point(field_release:UpdateAux.candidates)
-  return _impl_.candidates_.Release();
-}
-inline void UpdateAux::set_allocated_candidates(std::string* value) {
-  PROTOBUF_TSAN_WRITE(&_impl_._tsan_detect_race);
-  _impl_.candidates_.SetAllocated(value, GetArena());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-        if (_impl_.candidates_.IsDefault()) {
-          _impl_.candidates_.Set("", GetArena());
-        }
-  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:UpdateAux.candidates)
 }
 
 // -------------------------------------------------------------------

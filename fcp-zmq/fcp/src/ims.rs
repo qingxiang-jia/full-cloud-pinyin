@@ -5,7 +5,7 @@ use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 use crate::{
     msgs::FcitxEvent,
     msgs::{
-        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateAux, UpdateCandidates,
+        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateCandidates,
         UpdatePreedit, UpdateSessionStatus,
     },
 };
