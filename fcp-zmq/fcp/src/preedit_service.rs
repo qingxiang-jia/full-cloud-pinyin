@@ -65,5 +65,10 @@ impl PreeditService {
     pub fn clear(&self) {
         let mut state = self.state.lock().expect("clear: Failed to lock state.");
         state.preedit.clear();
+
+        self.zmq
+            .lock()
+            .expect("clear: Failed to lock zmq.")
+            .update_preedit(&"");
     }
 }
