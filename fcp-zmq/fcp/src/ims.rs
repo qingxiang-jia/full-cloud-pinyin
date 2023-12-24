@@ -69,18 +69,7 @@ impl Req {
             command: OneOfcommand::update_session_status(cmd),
         };
 
-        let mut out = Vec::new();
-        let mut writer = Writer::new(&mut out);
-
-        cmd_container
-            .write_message(&mut writer)
-            .expect("Failed to write message for CommitText.");
-
-        self.sock.send(out, 0).expect("Failed to send to IMS.");
-        _ = self
-            .sock
-            .recv_msg(0)
-            .expect("Failed to receive reply of REQ.");
+        self.send_cmd(&cmd_container);
     }
 
     pub fn commit_text(&self, text: &str) {
@@ -91,18 +80,7 @@ impl Req {
             command: OneOfcommand::commit_text(cmd),
         };
 
-        let mut out = Vec::new();
-        let mut writer = Writer::new(&mut out);
-
-        cmd_container
-            .write_message(&mut writer)
-            .expect("Failed to write message for CommitText.");
-
-        self.sock.send(out, 0).expect("Failed to send to IMS.");
-        _ = self
-            .sock
-            .recv_msg(0)
-            .expect("Failed to receive reply of REQ.");
+        self.send_cmd(&cmd_container);
     }
 
     pub fn update_preedit(&self, text: &str) {
@@ -113,18 +91,7 @@ impl Req {
             command: OneOfcommand::update_preedit(cmd),
         };
 
-        let mut out = Vec::new();
-        let mut writer = Writer::new(&mut out);
-
-        cmd_container
-            .write_message(&mut writer)
-            .expect("Failed to write message for UpdatePreedit.");
-
-        self.sock.send(out, 0).expect("Failed to send to IMS.");
-        _ = self
-            .sock
-            .recv_msg(0)
-            .expect("Failed to receive reply of REQ.");
+        self.send_cmd(&cmd_container);
     }
 
     pub fn update_candidates(&self, words: &[String]) {
@@ -139,12 +106,15 @@ impl Req {
             command: OneOfcommand::update_candidates(cmd),
         };
 
+        self.send_cmd(&cmd_container);
+    }
+
+    fn send_cmd(&self, cmd: &CommandToFcitx) {
         let mut out = Vec::new();
         let mut writer = Writer::new(&mut out);
 
-        cmd_container
-            .write_message(&mut writer)
-            .expect("Failed to write message for UpdateCandidates.");
+        cmd.write_message(&mut writer)
+            .expect("Failed to write message.");
 
         self.sock.send(out, 0).expect("Failed to send to IMS.");
         _ = self
