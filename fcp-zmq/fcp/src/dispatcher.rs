@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::{
     candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, ims::Req,
-    keys::Key, number_service::NumberService, preedit_service::PreeditService,
+    keys::FcitxKeySym, number_service::NumberService, preedit_service::PreeditService,
     symbol_service::SymbolService,
 };
 
@@ -30,44 +30,44 @@ impl Dispatcher {
         }
     }
 
-    pub async fn on_input(&self, key: Key) -> bool {
+    pub async fn on_input(&self, key: FcitxKeySym) -> bool {
         match key {
-            Key::a
-            | Key::b
-            | Key::c
-            | Key::d
-            | Key::e
-            | Key::f
-            | Key::g
-            | Key::h
-            | Key::i
-            | Key::j
-            | Key::k
-            | Key::l
-            | Key::m
-            | Key::n
-            | Key::o
-            | Key::p
-            | Key::q
-            | Key::r
-            | Key::s
-            | Key::t
-            | Key::u
-            | Key::v
-            | Key::w
-            | Key::x
-            | Key::y
-            | Key::z => return self.handle_pinyin(key).await,
-            Key::_0
-            | Key::_1
-            | Key::_2
-            | Key::_3
-            | Key::_4
-            | Key::_5
-            | Key::_6
-            | Key::_7
-            | Key::_8
-            | Key::_9 => {
+            FcitxKeySym::a
+            | FcitxKeySym::b
+            | FcitxKeySym::c
+            | FcitxKeySym::d
+            | FcitxKeySym::e
+            | FcitxKeySym::f
+            | FcitxKeySym::g
+            | FcitxKeySym::h
+            | FcitxKeySym::i
+            | FcitxKeySym::j
+            | FcitxKeySym::k
+            | FcitxKeySym::l
+            | FcitxKeySym::m
+            | FcitxKeySym::n
+            | FcitxKeySym::o
+            | FcitxKeySym::p
+            | FcitxKeySym::q
+            | FcitxKeySym::r
+            | FcitxKeySym::s
+            | FcitxKeySym::t
+            | FcitxKeySym::u
+            | FcitxKeySym::v
+            | FcitxKeySym::w
+            | FcitxKeySym::x
+            | FcitxKeySym::y
+            | FcitxKeySym::z => return self.handle_pinyin(key).await,
+            FcitxKeySym::Num0
+            | FcitxKeySym::Num1
+            | FcitxKeySym::Num2
+            | FcitxKeySym::Num3
+            | FcitxKeySym::Num4
+            | FcitxKeySym::Num5
+            | FcitxKeySym::Num6
+            | FcitxKeySym::Num7
+            | FcitxKeySym::Num8
+            | FcitxKeySym::Num9 => {
                 if self.candidate_svc.in_session() {
                     return self.handle_select(key);
                 } else {
@@ -75,62 +75,64 @@ impl Dispatcher {
                     return true;
                 }
             }
-            Key::Comma
-            | Key::Period
-            | Key::SemiColon
-            | Key::Colon
-            | Key::SingleQuote
-            | Key::DoubleQuote
-            | Key::BracketOpen
-            | Key::BracketClose
-            | Key::QuestionMark
-            | Key::BackSlash
-            | Key::ExclamationMark
-            | Key::Ellipsis => {
+            FcitxKeySym::Comma
+            | FcitxKeySym::Period
+            | FcitxKeySym::Semicolon
+            | FcitxKeySym::Colon
+            | FcitxKeySym::LeftSingleQuoteMark
+            | FcitxKeySym::RightSingleQuoteMark
+            | FcitxKeySym::DoubleQuote
+            | FcitxKeySym::BracketLeft
+            | FcitxKeySym::BracketRight
+            | FcitxKeySym::Question
+            | FcitxKeySym::Backslash
+            | FcitxKeySym::Exclam
+            | FcitxKeySym::Ellipsis => {
                 self.symbol_svc.handle_symbol(key);
                 return true;
             }
-            Key::Space
-            | Key::Enter
-            | Key::Minus
-            | Key::Equal
-            | Key::Up
-            | Key::Down
-            | Key::Left
-            | Key::Right
-            | Key::Backspace
-            | Key::Escape => return self.handle_control(key).await,
-            Key::Shift | Key::Ctrl | Key::Alt => return false,
-            Key::A
-            | Key::B
-            | Key::C
-            | Key::D
-            | Key::E
-            | Key::F
-            | Key::G
-            | Key::H
-            | Key::I
-            | Key::J
-            | Key::K
-            | Key::L
-            | Key::M
-            | Key::N
-            | Key::O
-            | Key::P
-            | Key::Q
-            | Key::R
-            | Key::S
-            | Key::T
-            | Key::U
-            | Key::V
-            | Key::W
-            | Key::X
-            | Key::Y
-            | Key::Z => self.commit(key),
+            FcitxKeySym::Space
+            | FcitxKeySym::Return
+            | FcitxKeySym::Minus
+            | FcitxKeySym::Equal
+            | FcitxKeySym::Up
+            | FcitxKeySym::Down
+            | FcitxKeySym::Left
+            | FcitxKeySym::Right
+            | FcitxKeySym::BackSpace
+            | FcitxKeySym::Escape => return self.handle_control(key).await,
+            FcitxKeySym::ShiftL | FcitxKeySym::ControlR | FcitxKeySym::AltL => return false,
+            FcitxKeySym::A
+            | FcitxKeySym::B
+            | FcitxKeySym::C
+            | FcitxKeySym::D
+            | FcitxKeySym::E
+            | FcitxKeySym::F
+            | FcitxKeySym::G
+            | FcitxKeySym::H
+            | FcitxKeySym::I
+            | FcitxKeySym::J
+            | FcitxKeySym::K
+            | FcitxKeySym::L
+            | FcitxKeySym::M
+            | FcitxKeySym::N
+            | FcitxKeySym::O
+            | FcitxKeySym::P
+            | FcitxKeySym::Q
+            | FcitxKeySym::R
+            | FcitxKeySym::S
+            | FcitxKeySym::T
+            | FcitxKeySym::U
+            | FcitxKeySym::V
+            | FcitxKeySym::W
+            | FcitxKeySym::X
+            | FcitxKeySym::Y
+            | FcitxKeySym::Z => self.commit(key),
+            _ => false,
         }
     }
 
-    pub async fn handle_pinyin(&self, key: Key) -> bool {
+    pub async fn handle_pinyin(&self, key: FcitxKeySym) -> bool {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
         self.preedit_svc.push(c);
@@ -143,7 +145,7 @@ impl Dispatcher {
         true
     }
 
-    pub fn handle_select(&self, key: Key) -> bool {
+    pub fn handle_select(&self, key: FcitxKeySym) -> bool {
         self.preedit_svc.clear();
 
         let i = key.to_usize().expect("Failed to conver the key to usize.");
@@ -153,14 +155,14 @@ impl Dispatcher {
         true
     }
 
-    pub async fn handle_control(&self, key: Key) -> bool {
+    pub async fn handle_control(&self, key: FcitxKeySym) -> bool {
         if !self.candidate_svc.in_session() {
             return false;
         }
 
         match key {
-            Key::Space => return self.handle_select(Key::_1),
-            Key::Enter => {
+            FcitxKeySym::Space => return self.handle_select(FcitxKeySym::Num1),
+            FcitxKeySym::Return => {
                 let preedit = self.preedit_svc.to_string();
                 self.preedit_svc.clear();
                 self.candidate_svc.clear();
@@ -171,12 +173,12 @@ impl Dispatcher {
 
                 return true;
             }
-            Key::Minus => {
+            FcitxKeySym::Minus => {
                 self.candidate_svc.page_back();
 
                 return true;
             }
-            Key::Equal => {
+            FcitxKeySym::Equal => {
                 let (enough, min_needed) = self.candidate_svc.page_into();
                 if !enough {
                     let min = min_needed
@@ -199,11 +201,11 @@ impl Dispatcher {
 
                 return true;
             }
-            Key::Up => return false,    // For now, ingore
-            Key::Down => return false,  // For now, ignore
-            Key::Left => return false,  // For now, ignore
-            Key::Right => return false, // For now, ignore
-            Key::Backspace => {
+            FcitxKeySym::Up => return false,    // For now, ingore
+            FcitxKeySym::Down => return false,  // For now, ignore
+            FcitxKeySym::Left => return false,  // For now, ignore
+            FcitxKeySym::Right => return false, // For now, ignore
+            FcitxKeySym::BackSpace => {
                 let popped = self.preedit_svc.pop();
 
                 if popped.is_none() {
@@ -218,7 +220,7 @@ impl Dispatcher {
 
                 return true;
             }
-            Key::Escape => {
+            FcitxKeySym::Escape => {
                 self.preedit_svc.clear();
                 self.candidate_svc.clear();
 
@@ -228,7 +230,7 @@ impl Dispatcher {
         }
     }
 
-    pub fn commit(&self, key: Key) -> bool {
+    pub fn commit(&self, key: FcitxKeySym) -> bool {
         let letter = key.to_char();
         if letter.is_some() {
             let letter = String::from(letter.unwrap());

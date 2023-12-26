@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 
 use crate::{
-    msgs::FcitxEvent,
+    msgs::KeyEvent,
     msgs::{
         mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateCandidates,
         UpdatePreedit, UpdateSessionStatus,
@@ -29,7 +29,7 @@ impl Sub {
         Sub { ctx, sock: sub }
     }
 
-    pub fn recv(&self) -> FcitxEvent {
+    pub fn recv(&self) -> KeyEvent {
         let data = self
             .sock
             .recv_msg(0)
@@ -37,9 +37,9 @@ impl Sub {
         unsafe {
             let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
             let mut reader = BytesReader::from_bytes(&bytes);
-            let fe = FcitxEvent::from_reader(&mut reader, bytes)
+            let event = KeyEvent::from_reader(&mut reader, bytes)
                 .expect("Failed to decode published message as FcitxEvent.");
-            return fe;
+            return event;
         }
     }
 }

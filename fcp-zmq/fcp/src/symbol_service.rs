@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use crate::ims::Req;
-use crate::keys::Key;
+use crate::keys::FcitxKeySym;
 
 pub struct SymbolService {
     pub(crate) zmq: Arc<Mutex<Req>>,
@@ -14,7 +14,7 @@ impl SymbolService {
         SymbolService { zmq: ibus }
     }
 
-    pub fn handle_symbol(&self, key: Key) {
+    pub fn handle_symbol(&self, key: FcitxKeySym) {
         let fw_puctuation = key
             .to_full_width_string()
             .expect("This key cannot be converted to fullwidth string.");

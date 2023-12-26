@@ -2,7 +2,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use crate::ims::Req;
-use crate::keys::Key;
+use crate::keys::FcitxKeySym;
 
 pub struct NumberService {
     zmq: Arc<Mutex<Req>>,
@@ -13,7 +13,7 @@ impl NumberService {
         NumberService { zmq: ibus }
     }
 
-    pub fn handle_number(&self, key: Key) {
+    pub fn handle_number(&self, key: FcitxKeySym) {
         let n = key
             .to_usize()
             .expect("This key cannot be converted to a usize.");
