@@ -550,6 +550,22 @@ impl FcitxKeySym {
             _ => None,
         }
     }
+
+    pub fn to_usize(self) -> Option<usize> {
+        match self {
+            FcitxKeySym::Num0 => Some(0),
+            FcitxKeySym::Num1 => Some(1),
+            FcitxKeySym::Num2 => Some(2),
+            FcitxKeySym::Num3 => Some(3),
+            FcitxKeySym::Num4 => Some(4),
+            FcitxKeySym::Num5 => Some(5),
+            FcitxKeySym::Num6 => Some(6),
+            FcitxKeySym::Num7 => Some(7),
+            FcitxKeySym::Num8 => Some(8),
+            FcitxKeySym::Num9 => Some(9),
+            _ => None,
+        }
+    }
 }
 
 #[allow(dead_code)]
