@@ -69,18 +69,19 @@ enum FcitxKeySym {
     BackSpace = 0xff08, /* Back space, back char */
     Return = 0xff0d,    /* Return, enter */
     Escape = 0xff1b,
-    Period = 0x002e,               /* U+002E FULL STOP */
-    Comma = 0x002c,                /* U+002C COMMA */
-    DoubleQuote = 0x0022,          /* U+0022 QUOTATION MARK */
-    Question = 0x003f,             /* U+003F QUESTION MARK */
-    Exclam = 0x0021,               /* U+0021 EXCLAMATION MARK */
-    ParenLeft = 0x0028,            /* U+0028 LEFT PARENTHESIS */
-    ParenRight = 0x0029,           /* U+0029 RIGHT PARENTHESIS */
-    Equal = 0x003d,                /* U+003D EQUALS SIGN */
-    Minus = 0x002d,                /* U+002D HYPHEN-MINUS */
-    Slash = 0x002f,                /* U+002F SOLIDUS */
-    Colon = 0x003a,                /* U+003A COLON */
-    Semicolon = 0x003b,            /* U+003B SEMICOLON */
+    Period = 0x002e,      /* U+002E FULL STOP */
+    Comma = 0x002c,       /* U+002C COMMA */
+    DoubleQuote = 0x0022, /* U+0022 QUOTATION MARK */
+    Question = 0x003f,    /* U+003F QUESTION MARK */
+    Exclam = 0x0021,      /* U+0021 EXCLAMATION MARK */
+    ParenLeft = 0x0028,   /* U+0028 LEFT PARENTHESIS */
+    ParenRight = 0x0029,  /* U+0029 RIGHT PARENTHESIS */
+    Equal = 0x003d,       /* U+003D EQUALS SIGN */
+    Minus = 0x002d,       /* U+002D HYPHEN-MINUS */
+    Slash = 0x002f,       /* U+002F SOLIDUS */
+    Colon = 0x003a,       /* U+003A COLON */
+    Semicolon = 0x003b,   /* U+003B SEMICOLON */
+    Backslash = 0x005c,
     Left = 0xff51,                 /* Move left, left arrow */
     Up = 0xff52,                   /* Move up, up arrow */
     Right = 0xff53,                /* Move right, right arrow */
@@ -327,6 +328,7 @@ impl FcitxKeySym {
             0x002f => Some(FcitxKeySym::Slash),
             0x003a => Some(FcitxKeySym::Colon),
             0x003b => Some(FcitxKeySym::Semicolon),
+            0x005c => Some(FcitxKeySym::Backslash),
             0xff51 => Some(FcitxKeySym::Left),
             0xff52 => Some(FcitxKeySym::Up),
             0xff53 => Some(FcitxKeySym::Right),
@@ -563,6 +565,25 @@ impl FcitxKeySym {
             FcitxKeySym::Num7 => Some(7),
             FcitxKeySym::Num8 => Some(8),
             FcitxKeySym::Num9 => Some(9),
+            _ => None,
+        }
+    }
+
+    pub fn to_full_width_string(self) -> Option<String> {
+        match self {
+            FcitxKeySym::Comma => Some("，".to_owned()),
+            FcitxKeySym::Period => Some("。".to_owned()),
+            FcitxKeySym::Semicolon => Some("；".to_owned()),
+            FcitxKeySym::Colon => Some("：".to_owned()),
+            FcitxKeySym::LeftSingleQuoteMark => Some("‘’".to_owned()),
+            FcitxKeySym::RightSingleQuoteMark => Some(("’").to_owned()),
+            FcitxKeySym::DoubleQuote => Some("“”".to_owned()),
+            FcitxKeySym::Question => Some("？".to_owned()),
+            FcitxKeySym::BracketLeft => Some("（".to_owned()),
+            FcitxKeySym::BracketRight => Some("）".to_owned()),
+            FcitxKeySym::Backslash => Some("、".to_owned()),
+            FcitxKeySym::Exclam => Some("！".to_owned()),
+            FcitxKeySym::Ellipsis => Some("…".to_owned()),
             _ => None,
         }
     }
