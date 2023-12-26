@@ -1,7 +1,1 @@
-full-cloud-pinyin
-build/
 target/
-*.kdev4
-.cache/
-*.out
-fcpinyin/*.h
