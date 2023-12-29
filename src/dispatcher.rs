@@ -239,7 +239,10 @@ impl Dispatcher {
                 self.preedit_svc.clear();
                 self.candidate_svc.clear();
             }
-            _ => panic!("Invalid control key."),
+            _ => {
+                sock.send(false);
+                println!("Invalid control key.")
+            }
         }
     }
 }
