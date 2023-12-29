@@ -32,7 +32,7 @@ impl Server {
         let data = self
             .sock
             .recv_msg(0)
-            .expect("Failed to receive key event message.");
+            .expect("Failed to receive or decode key event message.");
         unsafe {
             let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
             let mut reader = BytesReader::from_bytes(&bytes);
@@ -126,6 +126,6 @@ impl Client {
         _ = self
             .sock
             .recv_msg(0)
-            .expect("Failed to receive reply of REQ.");
+            .expect("Failed to receive or decode reply of REQ.");
     }
 }
