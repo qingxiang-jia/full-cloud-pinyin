@@ -92,6 +92,7 @@ pub enum FcitxKeySym {
     RightSingleQuoteMark = 0x0ad1, /* U+2019 RIGHT SINGLE QUOTATION MARK */
     Ellipsis = 0x0aae,             /* U+2026 HORIZONTAL ELLIPSIS */
     Asciicircum = 0x005e,
+    Underscore = 0x005f,
     F1 = 0xffbe,
     F2 = 0xffbf,
     F3 = 0xffc0,
@@ -340,6 +341,7 @@ impl FcitxKeySym {
             0x0ad1 => Some(FcitxKeySym::RightSingleQuoteMark),
             0x005e => Some(FcitxKeySym::Asciicircum),
             0x0aae => Some(FcitxKeySym::Ellipsis),
+            0x005f => Some(FcitxKeySym::Underscore),
             0xffbe => Some(FcitxKeySym::F1),
             0xffbf => Some(FcitxKeySym::F2),
             0xffc0 => Some(FcitxKeySym::F3),
