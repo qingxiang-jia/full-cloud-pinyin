@@ -20,12 +20,10 @@ impl KeyEventSock {
         let ctx = zmq::Context::new();
 
         let sub = ctx
-            .socket(zmq::SUB)
+            .socket(zmq::REP)
             .expect("Failed to create a SUB socket.");
-        sub.connect(ims_addr)
-            .expect("Failed to connect to the publisher address.");
-        sub.set_subscribe(b"").expect("Failed to subscribe to any.");
-
+        sub.bind(ims_addr)
+            .expect("Failed to bind to the key event address.");
         KeyEventSock { ctx, sock: sub }
     }
 
