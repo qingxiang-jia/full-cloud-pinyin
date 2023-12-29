@@ -16,13 +16,13 @@ pub struct KeyEventSock {
 }
 
 impl KeyEventSock {
-    pub fn new(ims_addr: &str) -> Self {
+    pub fn new(bridge_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
         let sub = ctx
             .socket(zmq::REP)
             .expect("Failed to create a SUB socket.");
-        sub.bind(ims_addr)
+        sub.bind(bridge_addr)
             .expect("Failed to bind to the key event address.");
         KeyEventSock { ctx, sock: sub }
     }
@@ -63,13 +63,13 @@ pub struct FcitxSock {
 }
 
 impl FcitxSock {
-    pub fn new(ims_addr: &str) -> Self {
+    pub fn new(bridge_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
         let req = ctx
             .socket(zmq::REQ)
             .expect("Failed to create a REQ socket.");
-        req.connect(ims_addr)
+        req.connect(bridge_addr)
             .expect("Failed to connect to the reply address.");
 
         FcitxSock { ctx, sock: req }
@@ -119,7 +119,9 @@ impl FcitxSock {
         cmd.write_message(&mut writer)
             .expect("Failed to write message.");
 
-        self.sock.send(out, 0).expect("Failed to send to IMS.");
+        self.sock
+            .send(out, 0)
+            .expect("Failed to send to Fcitx Bridge.");
         _ = self
             .sock
             .recv_msg(0)
