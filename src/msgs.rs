@@ -25,7 +25,6 @@ impl<'a> MessageRead<'a> for CommandToFcitx<'a> {
         let mut msg = Self::default();
         while !r.is_eof() {
             match r.next_tag(bytes) {
-                Ok(10) => msg.command = mod_CommandToFcitx::OneOfcommand::update_session_status(r.read_message::<UpdateSessionStatus>(bytes)?),
                 Ok(18) => msg.command = mod_CommandToFcitx::OneOfcommand::commit_text(r.read_message::<CommitText>(bytes)?),
                 Ok(26) => msg.command = mod_CommandToFcitx::OneOfcommand::update_preedit(r.read_message::<UpdatePreedit>(bytes)?),
                 Ok(34) => msg.command = mod_CommandToFcitx::OneOfcommand::update_candidates(r.read_message::<UpdateCandidates>(bytes)?),
@@ -41,7 +40,6 @@ impl<'a> MessageWrite for CommandToFcitx<'a> {
     fn get_size(&self) -> usize {
         0
         + match self.command {
-            mod_CommandToFcitx::OneOfcommand::update_session_status(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::update_preedit(ref m) => 1 + sizeof_len((m).get_size()),
             mod_CommandToFcitx::OneOfcommand::update_candidates(ref m) => 1 + sizeof_len((m).get_size()),
@@ -49,8 +47,7 @@ impl<'a> MessageWrite for CommandToFcitx<'a> {
     }    }
 
     fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
-        match self.command {            mod_CommandToFcitx::OneOfcommand::update_session_status(ref m) => { w.write_with_tag(10, |w| w.write_message(m))? },
-            mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => { w.write_with_tag(18, |w| w.write_message(m))? },
+        match self.command {            mod_CommandToFcitx::OneOfcommand::commit_text(ref m) => { w.write_with_tag(18, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::update_preedit(ref m) => { w.write_with_tag(26, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::update_candidates(ref m) => { w.write_with_tag(34, |w| w.write_message(m))? },
             mod_CommandToFcitx::OneOfcommand::None => {},
@@ -64,7 +61,6 @@ use super::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum OneOfcommand<'a> {
-    update_session_status(UpdateSessionStatus),
     commit_text(CommitText<'a>),
     update_preedit(UpdatePreedit<'a>),
     update_candidates(UpdateCandidates<'a>),
@@ -145,38 +141,6 @@ impl<'a> MessageWrite for UpdatePreedit<'a> {
 
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct UpdateSessionStatus {
-    pub in_session: bool,
-}
-
-impl<'a> MessageRead<'a> for UpdateSessionStatus {
-    fn from_reader(r: &mut BytesReader, bytes: &'a [u8]) -> Result<Self> {
-        let mut msg = Self::default();
-        while !r.is_eof() {
-            match r.next_tag(bytes) {
-                Ok(8) => msg.in_session = r.read_bool(bytes)?,
-                Ok(t) => { r.read_unknown(bytes, t)?; }
-                Err(e) => return Err(e),
-            }
-        }
-        Ok(msg)
-    }
-}
-
-impl MessageWrite for UpdateSessionStatus {
-    fn get_size(&self) -> usize {
-        0
-        + if self.in_session == false { 0 } else { 1 + sizeof_varint(*(&self.in_session) as u64) }
-    }
-
-    fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
-        if self.in_session != false { w.write_with_tag(8, |w| w.write_bool(*&self.in_session))?; }
-        Ok(())
-    }
-}
-
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone)]
 pub struct UpdateCandidates<'a> {
     pub candidates: Vec<Cow<'a, str>>,
 }
@@ -235,6 +199,38 @@ impl MessageWrite for KeyEvent {
 
     fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
         if self.key != 0u32 { w.write_with_tag(8, |w| w.write_uint32(*&self.key))?; }
+        Ok(())
+    }
+}
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct KeyEventReply {
+    pub accepted: bool,
+}
+
+impl<'a> MessageRead<'a> for KeyEventReply {
+    fn from_reader(r: &mut BytesReader, bytes: &'a [u8]) -> Result<Self> {
+        let mut msg = Self::default();
+        while !r.is_eof() {
+            match r.next_tag(bytes) {
+                Ok(8) => msg.accepted = r.read_bool(bytes)?,
+                Ok(t) => { r.read_unknown(bytes, t)?; }
+                Err(e) => return Err(e),
+            }
+        }
+        Ok(msg)
+    }
+}
+
+impl MessageWrite for KeyEventReply {
+    fn get_size(&self) -> usize {
+        0
+        + if self.accepted == false { 0 } else { 1 + sizeof_varint(*(&self.accepted) as u64) }
+    }
+
+    fn write_message<W: WriterBackend>(&self, w: &mut Writer<W>) -> Result<()> {
+        if self.accepted != false { w.write_with_tag(8, |w| w.write_bool(*&self.accepted))?; }
         Ok(())
     }
 }

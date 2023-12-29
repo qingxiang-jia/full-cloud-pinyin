@@ -5,71 +5,75 @@ use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 use crate::{
     msgs::KeyEvent,
     msgs::{
-        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateCandidates,
-        UpdatePreedit, UpdateSessionStatus,
+        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, KeyEventReply,
+        UpdateCandidates, UpdatePreedit,
     },
 };
 
-pub struct Sub {
+// Fcitx Bridge sends key events to us, so we are the server.
+pub struct Server {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
-impl Sub {
-    pub fn new(ims_addr: &str) -> Self {
+impl Server {
+    pub fn new(bridge_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
         let sub = ctx
-            .socket(zmq::SUB)
-            .expect("Failed to create a SUB socket.");
-        sub.connect(ims_addr)
-            .expect("Failed to connect to the publisher address.");
-        sub.set_subscribe(b"").expect("Failed to subscribe to any.");
-
-        Sub { ctx, sock: sub }
+            .socket(zmq::REP)
+            .expect("Failed to create a REP socket.");
+        sub.bind(bridge_addr)
+            .expect("Failed to bind to the key event address.");
+        Server { ctx, sock: sub }
     }
 
     pub fn recv(&self) -> KeyEvent {
         let data = self
             .sock
             .recv_msg(0)
-            .expect("Failed to receive published message.");
+            .expect("Failed to receive or decode key event message.");
         unsafe {
             let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
             let mut reader = BytesReader::from_bytes(&bytes);
             let event = KeyEvent::from_reader(&mut reader, bytes)
-                .expect("Failed to decode published message as FcitxEvent.");
+                .expect("Failed to decode key event message as FcitxEvent.");
             return event;
         }
     }
+
+    pub fn send(&self, accepted: bool) {
+        let cmd = KeyEventReply { accepted };
+
+        let mut out = Vec::new();
+        let mut writer = Writer::new(&mut out);
+
+        cmd.write_message(&mut writer)
+            .expect("Failed to write message.");
+
+        self.sock
+            .send(out, 0)
+            .expect("Failed to send to Fcitx Bridge.");
+    }
 }
 
-// Because Fcitx5 is not thread safe, so any call other than new() needs to be wrapped in a Mutex.
-pub struct Req {
+// We send the API calls to Fcitx Bridege, so we are the client.
+pub struct Client {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
-impl Req {
-    pub fn new(ims_addr: &str) -> Self {
+impl Client {
+    pub fn new(bridge_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
         let req = ctx
             .socket(zmq::REQ)
             .expect("Failed to create a REQ socket.");
-        req.connect(ims_addr)
+        req.connect(bridge_addr)
             .expect("Failed to connect to the reply address.");
 
-        Req { ctx, sock: req }
-    }
-
-    pub fn update_session_status(&self, in_session: bool) {
-        let cmd = UpdateSessionStatus { in_session };
-        let cmd_container = CommandToFcitx {
-            command: OneOfcommand::update_session_status(cmd),
-        };
-
-        self.send_cmd(&cmd_container);
+        Client { ctx, sock: req }
     }
 
     pub fn commit_text(&self, text: &str) {
@@ -116,10 +120,12 @@ impl Req {
         cmd.write_message(&mut writer)
             .expect("Failed to write message.");
 
-        self.sock.send(out, 0).expect("Failed to send to IMS.");
+        self.sock
+            .send(out, 0)
+            .expect("Failed to send to Fcitx Bridge.");
         _ = self
             .sock
             .recv_msg(0)
-            .expect("Failed to receive reply of REQ.");
+            .expect("Failed to receive or decode reply of REQ.");
     }
 }

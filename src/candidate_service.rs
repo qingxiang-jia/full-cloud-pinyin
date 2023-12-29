@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::{candidate::Candidate, ims::Req};
+use crate::{candidate::Candidate, zmq::Client};
 
 struct State {
     candidates: Vec<Candidate>,
@@ -23,11 +23,11 @@ unsafe impl Sync for State {} // State is safe to share between threads
 pub struct CandidateService {
     lt_size: usize,
     state: Mutex<State>,
-    zmq: Arc<Mutex<Req>>,
+    zmq: Arc<Mutex<Client>>,
 }
 
 impl CandidateService {
-    pub fn new(req: Arc<Mutex<Req>>) -> CandidateService {
+    pub fn new(req: Arc<Mutex<Client>>) -> CandidateService {
         CandidateService {
             lt_size: 5,
             state: Mutex::new(State::new()),
@@ -70,7 +70,6 @@ impl CandidateService {
         drop(state);
 
         let zmq = self.zmq.lock().unwrap();
-        zmq.update_session_status(true);
         zmq.update_candidates(&to_show);
     }
 
@@ -136,7 +135,6 @@ impl CandidateService {
         drop(state);
 
         let zmq = self.zmq.lock().unwrap();
-        zmq.update_session_status(false);
         zmq.update_candidates(&vec![]);
     }
 }

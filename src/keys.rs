@@ -66,7 +66,7 @@ pub enum FcitxKeySym {
     Num8 = 0x0038,      /* U+0038 DIGIT EIGHT */
     Num9 = 0x0039,      /* U+0039 DIGIT NINE */
     Space = 0x0020,     /* U+0020 SPACE */
-    BackSpace = 0xff08, /* Back space, back char */
+    Backspace = 0xff08, /* Back space, back char */
     Return = 0xff0d,    /* Return, enter */
     Escape = 0xff1b,
     Period = 0x002e,      /* U+002E FULL STOP */
@@ -91,6 +91,8 @@ pub enum FcitxKeySym {
     LeftSingleQuoteMark = 0x0ad0,  /* U+2018 LEFT SINGLE QUOTATION MARK */
     RightSingleQuoteMark = 0x0ad1, /* U+2019 RIGHT SINGLE QUOTATION MARK */
     Ellipsis = 0x0aae,             /* U+2026 HORIZONTAL ELLIPSIS */
+    Asciicircum = 0x005e,
+    Underscore = 0x005f,
     F1 = 0xffbe,
     F2 = 0xffbf,
     F3 = 0xffc0,
@@ -313,7 +315,7 @@ impl FcitxKeySym {
             0x0038 => Some(FcitxKeySym::Num8),
             0x0039 => Some(FcitxKeySym::Num9),
             0x0020 => Some(FcitxKeySym::Space),
-            0xff08 => Some(FcitxKeySym::BackSpace),
+            0xff08 => Some(FcitxKeySym::Backspace),
             0xff0d => Some(FcitxKeySym::Return),
             0xff1b => Some(FcitxKeySym::Escape),
             0x002e => Some(FcitxKeySym::Period),
@@ -337,7 +339,9 @@ impl FcitxKeySym {
             0x003e => Some(FcitxKeySym::Greater),
             0x0ad0 => Some(FcitxKeySym::LeftSingleQuoteMark),
             0x0ad1 => Some(FcitxKeySym::RightSingleQuoteMark),
+            0x005e => Some(FcitxKeySym::Asciicircum),
             0x0aae => Some(FcitxKeySym::Ellipsis),
+            0x005f => Some(FcitxKeySym::Underscore),
             0xffbe => Some(FcitxKeySym::F1),
             0xffbf => Some(FcitxKeySym::F2),
             0xffc0 => Some(FcitxKeySym::F3),
@@ -584,6 +588,7 @@ impl FcitxKeySym {
             FcitxKeySym::Backslash => Some("、".to_owned()),
             FcitxKeySym::Exclam => Some("！".to_owned()),
             FcitxKeySym::Ellipsis => Some("…".to_owned()),
+            FcitxKeySym::Asciicircum => Some("…".to_owned()),
             _ => None,
         }
     }

@@ -2,7 +2,6 @@ syntax = "proto3";
 
 message CommandToFcitx {
   oneof command {
-    UpdateSessionStatus update_session_status = 1;
     CommitText commit_text = 2;
     UpdatePreedit update_preedit = 3;
     UpdateCandidates update_candidates = 4;
@@ -13,8 +12,8 @@ message CommitText { string text = 1; }
 
 message UpdatePreedit { string text = 1; }
 
-message UpdateSessionStatus { bool in_session = 1; }
-
 message UpdateCandidates { repeated string candidates = 1; }
 
 message KeyEvent { uint32 key = 1; }
+
+message KeyEventReply { bool accepted = 1; }

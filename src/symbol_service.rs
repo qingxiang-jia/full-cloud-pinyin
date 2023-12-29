@@ -2,15 +2,15 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::ims::Req;
 use crate::keys::FcitxKeySym;
+use crate::zmq::Client;
 
 pub struct SymbolService {
-    pub(crate) zmq: Arc<Mutex<Req>>,
+    pub(crate) zmq: Arc<Mutex<Client>>,
 }
 
 impl SymbolService {
-    pub fn new(ibus: Arc<Mutex<Req>>) -> SymbolService {
+    pub fn new(ibus: Arc<Mutex<Client>>) -> SymbolService {
         SymbolService { zmq: ibus }
     }
 
