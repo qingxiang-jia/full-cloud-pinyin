@@ -10,12 +10,13 @@ use crate::{
     },
 };
 
-pub struct KeyEventSock {
+// Fcitx Bridge sends key events to us, so we are the server.
+pub struct Server {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
-impl KeyEventSock {
+impl Server {
     pub fn new(bridge_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
@@ -24,7 +25,7 @@ impl KeyEventSock {
             .expect("Failed to create a REP socket.");
         sub.bind(bridge_addr)
             .expect("Failed to bind to the key event address.");
-        KeyEventSock { ctx, sock: sub }
+        Server { ctx, sock: sub }
     }
 
     pub fn recv(&self) -> KeyEvent {
@@ -56,13 +57,13 @@ impl KeyEventSock {
     }
 }
 
-// Because Fcitx5 is not thread safe, so any call other than new() needs to be wrapped in a Mutex.
-pub struct FcitxSock {
+// We send the API calls to Fcitx Bridege, so we are the client.
+pub struct Client {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
-impl FcitxSock {
+impl Client {
     pub fn new(bridge_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
@@ -72,7 +73,7 @@ impl FcitxSock {
         req.connect(bridge_addr)
             .expect("Failed to connect to the reply address.");
 
-        FcitxSock { ctx, sock: req }
+        Client { ctx, sock: req }
     }
 
     pub fn commit_text(&self, text: &str) {

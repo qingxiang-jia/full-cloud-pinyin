@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::zmq::FcitxSock;
+use crate::zmq::Client;
 
 struct State {
     preedit: Vec<char>,
@@ -17,12 +17,12 @@ impl State {
 }
 
 pub struct PreeditService {
-    zmq: Arc<Mutex<FcitxSock>>,
+    zmq: Arc<Mutex<Client>>,
     state: Mutex<State>,
 }
 
 impl PreeditService {
-    pub fn new(ibus: Arc<Mutex<FcitxSock>>) -> PreeditService {
+    pub fn new(ibus: Arc<Mutex<Client>>) -> PreeditService {
         PreeditService {
             zmq: ibus,
             state: Mutex::new(State::new()),

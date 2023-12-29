@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::{candidate::Candidate, zmq::FcitxSock};
+use crate::{candidate::Candidate, zmq::Client};
 
 struct State {
     candidates: Vec<Candidate>,
@@ -23,11 +23,11 @@ unsafe impl Sync for State {} // State is safe to share between threads
 pub struct CandidateService {
     lt_size: usize,
     state: Mutex<State>,
-    zmq: Arc<Mutex<FcitxSock>>,
+    zmq: Arc<Mutex<Client>>,
 }
 
 impl CandidateService {
-    pub fn new(req: Arc<Mutex<FcitxSock>>) -> CandidateService {
+    pub fn new(req: Arc<Mutex<Client>>) -> CandidateService {
         CandidateService {
             lt_size: 5,
             state: Mutex::new(State::new()),

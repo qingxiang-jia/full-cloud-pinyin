@@ -1,6 +1,6 @@
 use dispatcher::Dispatcher;
 use keys::FcitxKeySym;
-use zmq::KeyEventSock;
+use zmq::Server;
 
 pub mod candidate;
 pub mod candidate_service;
@@ -15,7 +15,7 @@ pub mod zmq;
 
 #[tokio::main]
 async fn main() {
-    let sock = KeyEventSock::new("tcp://127.0.0.1:8085");
+    let sock = Server::new("tcp://127.0.0.1:8085");
     let dispatcher = Dispatcher::new();
     loop {
         let event: msgs::KeyEvent = sock.recv();

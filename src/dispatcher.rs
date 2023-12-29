@@ -7,7 +7,7 @@ use crate::{
     number_service::NumberService,
     preedit_service::PreeditService,
     symbol_service::SymbolService,
-    zmq::{FcitxSock, KeyEventSock},
+    zmq::{Client, Server},
 };
 
 pub struct Dispatcher {
@@ -16,14 +16,13 @@ pub struct Dispatcher {
     preedit_svc: PreeditService,
     symbol_svc: SymbolService,
     number_svc: NumberService,
-    zmq: Arc<Mutex<FcitxSock>>,
+    zmq: Arc<Mutex<Client>>,
     level: Vec<usize>,
 }
 
 impl Dispatcher {
     pub fn new() -> Dispatcher {
-        let req: Arc<Mutex<FcitxSock>> =
-            Arc::new(Mutex::new(FcitxSock::new("tcp://127.0.0.1:8086")));
+        let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
         Dispatcher {
             client: CloudPinyinClient::new(),
             candidate_svc: CandidateService::new(req.clone()),
@@ -36,7 +35,7 @@ impl Dispatcher {
     }
 
     // True if key is accepted; false otherwise.
-    pub async fn on_input(&self, key: FcitxKeySym, sock: &KeyEventSock) {
+    pub async fn on_input(&self, key: FcitxKeySym, sock: &Server) {
         match key {
             FcitxKeySym::a
             | FcitxKeySym::b
@@ -166,7 +165,7 @@ impl Dispatcher {
         self.candidate_svc.clear();
     }
 
-    pub async fn handle_control(&self, key: FcitxKeySym, sock: &KeyEventSock) {
+    pub async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
         if !self.candidate_svc.in_session() {
             sock.send(false);
         }

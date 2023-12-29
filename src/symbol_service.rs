@@ -3,14 +3,14 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use crate::keys::FcitxKeySym;
-use crate::zmq::FcitxSock;
+use crate::zmq::Client;
 
 pub struct SymbolService {
-    pub(crate) zmq: Arc<Mutex<FcitxSock>>,
+    pub(crate) zmq: Arc<Mutex<Client>>,
 }
 
 impl SymbolService {
-    pub fn new(ibus: Arc<Mutex<FcitxSock>>) -> SymbolService {
+    pub fn new(ibus: Arc<Mutex<Client>>) -> SymbolService {
         SymbolService { zmq: ibus }
     }
 
