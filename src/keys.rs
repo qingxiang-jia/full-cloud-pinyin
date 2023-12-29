@@ -91,6 +91,7 @@ pub enum FcitxKeySym {
     LeftSingleQuoteMark = 0x0ad0,  /* U+2018 LEFT SINGLE QUOTATION MARK */
     RightSingleQuoteMark = 0x0ad1, /* U+2019 RIGHT SINGLE QUOTATION MARK */
     Ellipsis = 0x0aae,             /* U+2026 HORIZONTAL ELLIPSIS */
+    Asciicircum = 0x005e,
     F1 = 0xffbe,
     F2 = 0xffbf,
     F3 = 0xffc0,
@@ -337,6 +338,7 @@ impl FcitxKeySym {
             0x003e => Some(FcitxKeySym::Greater),
             0x0ad0 => Some(FcitxKeySym::LeftSingleQuoteMark),
             0x0ad1 => Some(FcitxKeySym::RightSingleQuoteMark),
+            0x005e => Some(FcitxKeySym::Asciicircum),
             0x0aae => Some(FcitxKeySym::Ellipsis),
             0xffbe => Some(FcitxKeySym::F1),
             0xffbf => Some(FcitxKeySym::F2),
@@ -584,6 +586,7 @@ impl FcitxKeySym {
             FcitxKeySym::Backslash => Some("、".to_owned()),
             FcitxKeySym::Exclam => Some("！".to_owned()),
             FcitxKeySym::Ellipsis => Some("…".to_owned()),
+            FcitxKeySym::Asciicircum => Some("…".to_owned()),
             _ => None,
         }
     }
