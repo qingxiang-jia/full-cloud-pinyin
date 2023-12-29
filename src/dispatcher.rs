@@ -3,11 +3,11 @@ use std::sync::{Arc, Mutex};
 use crate::{
     candidate_service::CandidateService,
     cloud_pinyin_client::CloudPinyinClient,
-    ims::{FcitxSock, KeyEventSock},
     keys::FcitxKeySym,
     number_service::NumberService,
     preedit_service::PreeditService,
     symbol_service::SymbolService,
+    zmq::{FcitxSock, KeyEventSock},
 };
 
 pub struct Dispatcher {

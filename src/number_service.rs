@@ -1,8 +1,8 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use crate::ims::FcitxSock;
 use crate::keys::FcitxKeySym;
+use crate::zmq::FcitxSock;
 
 pub struct NumberService {
     zmq: Arc<Mutex<FcitxSock>>,

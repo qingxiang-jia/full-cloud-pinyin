@@ -1,17 +1,17 @@
 use dispatcher::Dispatcher;
-use ims::KeyEventSock;
 use keys::FcitxKeySym;
+use zmq::KeyEventSock;
 
 pub mod candidate;
 pub mod candidate_service;
 pub mod cloud_pinyin_client;
 pub mod dispatcher;
-pub mod ims;
 pub mod keys;
 pub mod msgs;
 pub mod number_service;
 pub mod preedit_service;
 pub mod symbol_service;
+pub mod zmq;
 
 #[tokio::main]
 async fn main() {

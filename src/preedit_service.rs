@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::ims::FcitxSock;
+use crate::zmq::FcitxSock;
 
 struct State {
     preedit: Vec<char>,
