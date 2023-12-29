@@ -66,7 +66,7 @@ pub enum FcitxKeySym {
     Num8 = 0x0038,      /* U+0038 DIGIT EIGHT */
     Num9 = 0x0039,      /* U+0039 DIGIT NINE */
     Space = 0x0020,     /* U+0020 SPACE */
-    BackSpace = 0xff08, /* Back space, back char */
+    Backspace = 0xff08, /* Back space, back char */
     Return = 0xff0d,    /* Return, enter */
     Escape = 0xff1b,
     Period = 0x002e,      /* U+002E FULL STOP */
@@ -313,7 +313,7 @@ impl FcitxKeySym {
             0x0038 => Some(FcitxKeySym::Num8),
             0x0039 => Some(FcitxKeySym::Num9),
             0x0020 => Some(FcitxKeySym::Space),
-            0xff08 => Some(FcitxKeySym::BackSpace),
+            0xff08 => Some(FcitxKeySym::Backspace),
             0xff0d => Some(FcitxKeySym::Return),
             0xff1b => Some(FcitxKeySym::Escape),
             0x002e => Some(FcitxKeySym::Period),

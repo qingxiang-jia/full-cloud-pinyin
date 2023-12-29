@@ -109,7 +109,7 @@ impl Dispatcher {
             | FcitxKeySym::Down
             | FcitxKeySym::Left
             | FcitxKeySym::Right
-            | FcitxKeySym::BackSpace
+            | FcitxKeySym::Backspace
             | FcitxKeySym::Escape => {
                 self.handle_control(key, sock).await;
             }
@@ -219,7 +219,7 @@ impl Dispatcher {
             FcitxKeySym::Down => sock.send(false), // For now, ignore
             FcitxKeySym::Left => sock.send(false), // For now, ignore
             FcitxKeySym::Right => sock.send(false), // For now, ignore
-            FcitxKeySym::BackSpace => {
+            FcitxKeySym::Backspace => {
                 let popped = self.preedit_svc.pop();
 
                 if popped.is_none() {
