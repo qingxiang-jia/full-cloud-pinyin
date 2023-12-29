@@ -1,15 +1,15 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use crate::ims::Req;
+use crate::ims::FcitxSock;
 use crate::keys::FcitxKeySym;
 
 pub struct NumberService {
-    zmq: Arc<Mutex<Req>>,
+    zmq: Arc<Mutex<FcitxSock>>,
 }
 
 impl NumberService {
-    pub fn new(ibus: Arc<Mutex<Req>>) -> NumberService {
+    pub fn new(ibus: Arc<Mutex<FcitxSock>>) -> NumberService {
         NumberService { zmq: ibus }
     }
 

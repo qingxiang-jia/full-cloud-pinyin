@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     candidate_service::CandidateService,
     cloud_pinyin_client::CloudPinyinClient,
-    ims::{KeyEventSock, Req},
+    ims::{FcitxSock, KeyEventSock},
     keys::FcitxKeySym,
     number_service::NumberService,
     preedit_service::PreeditService,
@@ -16,13 +16,14 @@ pub struct Dispatcher {
     preedit_svc: PreeditService,
     symbol_svc: SymbolService,
     number_svc: NumberService,
-    zmq: Arc<Mutex<Req>>,
+    zmq: Arc<Mutex<FcitxSock>>,
     level: Vec<usize>,
 }
 
 impl Dispatcher {
     pub fn new() -> Dispatcher {
-        let req: Arc<Mutex<Req>> = Arc::new(Mutex::new(Req::new("tcp://127.0.0.1:8086")));
+        let req: Arc<Mutex<FcitxSock>> =
+            Arc::new(Mutex::new(FcitxSock::new("tcp://127.0.0.1:8086")));
         Dispatcher {
             client: CloudPinyinClient::new(),
             candidate_svc: CandidateService::new(req.clone()),

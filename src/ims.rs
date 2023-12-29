@@ -59,12 +59,12 @@ impl KeyEventSock {
 }
 
 // Because Fcitx5 is not thread safe, so any call other than new() needs to be wrapped in a Mutex.
-pub struct Req {
+pub struct FcitxSock {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
-impl Req {
+impl FcitxSock {
     pub fn new(ims_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
@@ -74,7 +74,7 @@ impl Req {
         req.connect(ims_addr)
             .expect("Failed to connect to the reply address.");
 
-        Req { ctx, sock: req }
+        FcitxSock { ctx, sock: req }
     }
 
     pub fn commit_text(&self, text: &str) {
