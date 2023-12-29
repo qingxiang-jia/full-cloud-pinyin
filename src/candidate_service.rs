@@ -70,7 +70,6 @@ impl CandidateService {
         drop(state);
 
         let zmq = self.zmq.lock().unwrap();
-        zmq.update_session_status(true);
         zmq.update_candidates(&to_show);
     }
 
@@ -136,7 +135,6 @@ impl CandidateService {
         drop(state);
 
         let zmq = self.zmq.lock().unwrap();
-        zmq.update_session_status(false);
         zmq.update_candidates(&vec![]);
     }
 }

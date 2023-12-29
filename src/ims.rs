@@ -5,17 +5,17 @@ use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 use crate::{
     msgs::KeyEvent,
     msgs::{
-        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, UpdateCandidates,
-        UpdatePreedit, UpdateSessionStatus,
+        mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, KeyEventReply,
+        UpdateCandidates, UpdatePreedit,
     },
 };
 
-pub struct Sub {
+pub struct KeyEventSock {
     ctx: zmq::Context,
     sock: zmq::Socket,
 }
 
-impl Sub {
+impl KeyEventSock {
     pub fn new(ims_addr: &str) -> Self {
         let ctx = zmq::Context::new();
 
@@ -26,7 +26,7 @@ impl Sub {
             .expect("Failed to connect to the publisher address.");
         sub.set_subscribe(b"").expect("Failed to subscribe to any.");
 
-        Sub { ctx, sock: sub }
+        KeyEventSock { ctx, sock: sub }
     }
 
     pub fn recv(&self) -> KeyEvent {
@@ -41,6 +41,20 @@ impl Sub {
                 .expect("Failed to decode published message as FcitxEvent.");
             return event;
         }
+    }
+
+    pub fn send(&self, accepted: bool) {
+        let cmd = KeyEventReply { accepted };
+
+        let mut out = Vec::new();
+        let mut writer = Writer::new(&mut out);
+
+        cmd.write_message(&mut writer)
+            .expect("Failed to write message.");
+
+        self.sock
+            .send(out, 0)
+            .expect("Failed to send to Fcitx Bridge.");
     }
 }
 
@@ -61,15 +75,6 @@ impl Req {
             .expect("Failed to connect to the reply address.");
 
         Req { ctx, sock: req }
-    }
-
-    pub fn update_session_status(&self, in_session: bool) {
-        let cmd = UpdateSessionStatus { in_session };
-        let cmd_container = CommandToFcitx {
-            command: OneOfcommand::update_session_status(cmd),
-        };
-
-        self.send_cmd(&cmd_container);
     }
 
     pub fn commit_text(&self, text: &str) {

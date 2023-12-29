@@ -1,8 +1,12 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    candidate_service::CandidateService, cloud_pinyin_client::CloudPinyinClient, ims::Req,
-    keys::FcitxKeySym, number_service::NumberService, preedit_service::PreeditService,
+    candidate_service::CandidateService,
+    cloud_pinyin_client::CloudPinyinClient,
+    ims::{KeyEventSock, Req},
+    keys::FcitxKeySym,
+    number_service::NumberService,
+    preedit_service::PreeditService,
     symbol_service::SymbolService,
 };
 
@@ -30,7 +34,8 @@ impl Dispatcher {
         }
     }
 
-    pub async fn on_input(&self, key: FcitxKeySym) -> bool {
+    // True if key is accepted; false otherwise.
+    pub async fn on_input(&self, key: FcitxKeySym, sock: &KeyEventSock) {
         match key {
             FcitxKeySym::a
             | FcitxKeySym::b
@@ -57,7 +62,12 @@ impl Dispatcher {
             | FcitxKeySym::w
             | FcitxKeySym::x
             | FcitxKeySym::y
-            | FcitxKeySym::z => return self.handle_pinyin(key).await,
+            | FcitxKeySym::z => {
+                // Tells the bridge that we accept this event.
+                sock.send(true);
+                // Work on getting the candidates.
+                self.handle_pinyin(key).await;
+            }
             FcitxKeySym::Num0
             | FcitxKeySym::Num1
             | FcitxKeySym::Num2
@@ -68,11 +78,11 @@ impl Dispatcher {
             | FcitxKeySym::Num7
             | FcitxKeySym::Num8
             | FcitxKeySym::Num9 => {
+                sock.send(true);
                 if self.candidate_svc.in_session() {
-                    return self.handle_select(key);
+                    self.handle_select(key);
                 } else {
                     self.number_svc.handle_number(key);
-                    return true;
                 }
             }
             FcitxKeySym::Comma
@@ -88,8 +98,8 @@ impl Dispatcher {
             | FcitxKeySym::Backslash
             | FcitxKeySym::Exclam
             | FcitxKeySym::Ellipsis => {
+                sock.send(true);
                 self.symbol_svc.handle_symbol(key);
-                return true;
             }
             FcitxKeySym::Space
             | FcitxKeySym::Return
@@ -100,8 +110,12 @@ impl Dispatcher {
             | FcitxKeySym::Left
             | FcitxKeySym::Right
             | FcitxKeySym::BackSpace
-            | FcitxKeySym::Escape => return self.handle_control(key).await,
-            FcitxKeySym::ShiftL | FcitxKeySym::ControlR | FcitxKeySym::AltL => return false,
+            | FcitxKeySym::Escape => {
+                self.handle_control(key, sock).await;
+            }
+            FcitxKeySym::ShiftL | FcitxKeySym::ControlR | FcitxKeySym::AltL => {
+                sock.send(false);
+            }
             FcitxKeySym::A
             | FcitxKeySym::B
             | FcitxKeySym::C
@@ -127,12 +141,12 @@ impl Dispatcher {
             | FcitxKeySym::W
             | FcitxKeySym::X
             | FcitxKeySym::Y
-            | FcitxKeySym::Z => self.commit(key),
-            _ => false,
+            | FcitxKeySym::Z => sock.send(false),
+            _ => sock.send(false),
         }
     }
 
-    pub async fn handle_pinyin(&self, key: FcitxKeySym) -> bool {
+    pub async fn handle_pinyin(&self, key: FcitxKeySym) {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
         self.preedit_svc.push(c);
@@ -141,28 +155,30 @@ impl Dispatcher {
         let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
 
         self.candidate_svc.set_candidates(&candidates);
-
-        true
     }
 
-    pub fn handle_select(&self, key: FcitxKeySym) -> bool {
+    pub fn handle_select(&self, key: FcitxKeySym) {
         self.preedit_svc.clear();
 
         let i = key.to_usize().expect("Failed to conver the key to usize.");
         self.candidate_svc.select(i);
         self.candidate_svc.clear();
-
-        true
     }
 
-    pub async fn handle_control(&self, key: FcitxKeySym) -> bool {
+    pub async fn handle_control(&self, key: FcitxKeySym, sock: &KeyEventSock) {
         if !self.candidate_svc.in_session() {
-            return false;
+            sock.send(false);
         }
 
         match key {
-            FcitxKeySym::Space => return self.handle_select(FcitxKeySym::Num1),
+            FcitxKeySym::Space => {
+                sock.send(true);
+
+                self.handle_select(FcitxKeySym::Num1);
+            }
             FcitxKeySym::Return => {
+                sock.send(true);
+
                 let preedit = self.preedit_svc.to_string();
                 self.preedit_svc.clear();
                 self.candidate_svc.clear();
@@ -170,15 +186,15 @@ impl Dispatcher {
                     .lock()
                     .expect("handle_control: Failed to lock zmq.")
                     .commit_text(&preedit);
-
-                return true;
             }
             FcitxKeySym::Minus => {
-                self.candidate_svc.page_back();
+                sock.send(true);
 
-                return true;
+                self.candidate_svc.page_back();
             }
             FcitxKeySym::Equal => {
+                sock.send(true);
+
                 let (enough, min_needed) = self.candidate_svc.page_into();
                 if !enough {
                     let min = min_needed
@@ -198,49 +214,30 @@ impl Dispatcher {
                         .await;
                     self.candidate_svc.set_candidates(&candidates);
                 }
-
-                return true;
             }
-            FcitxKeySym::Up => return false,    // For now, ingore
-            FcitxKeySym::Down => return false,  // For now, ignore
-            FcitxKeySym::Left => return false,  // For now, ignore
-            FcitxKeySym::Right => return false, // For now, ignore
+            FcitxKeySym::Up => sock.send(false), // For now, ingore
+            FcitxKeySym::Down => sock.send(false), // For now, ignore
+            FcitxKeySym::Left => sock.send(false), // For now, ignore
+            FcitxKeySym::Right => sock.send(false), // For now, ignore
             FcitxKeySym::BackSpace => {
                 let popped = self.preedit_svc.pop();
 
                 if popped.is_none() {
-                    return false;
+                    sock.send(false);
                 }
+                sock.send(true);
 
                 let preedit: String = self.preedit_svc.to_string();
-
                 let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
-
                 self.candidate_svc.set_candidates(&candidates);
-
-                return true;
             }
             FcitxKeySym::Escape => {
+                sock.send(true);
+
                 self.preedit_svc.clear();
                 self.candidate_svc.clear();
-
-                return true;
             }
             _ => panic!("Invalid control key."),
-        }
-    }
-
-    pub fn commit(&self, key: FcitxKeySym) -> bool {
-        let letter = key.to_char();
-        if letter.is_some() {
-            let letter = String::from(letter.unwrap());
-            self.zmq
-                .lock()
-                .expect("handle_control: Failed to lock zmq.")
-                .commit_text(&letter);
-            return true;
-        } else {
-            return false;
         }
     }
 }
