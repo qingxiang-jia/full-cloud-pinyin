@@ -21,7 +21,7 @@ impl KeyEventSock {
 
         let sub = ctx
             .socket(zmq::REP)
-            .expect("Failed to create a SUB socket.");
+            .expect("Failed to create a REP socket.");
         sub.bind(bridge_addr)
             .expect("Failed to bind to the key event address.");
         KeyEventSock { ctx, sock: sub }
@@ -31,12 +31,12 @@ impl KeyEventSock {
         let data = self
             .sock
             .recv_msg(0)
-            .expect("Failed to receive published message.");
+            .expect("Failed to receive key event message.");
         unsafe {
             let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
             let mut reader = BytesReader::from_bytes(&bytes);
             let event = KeyEvent::from_reader(&mut reader, bytes)
-                .expect("Failed to decode published message as FcitxEvent.");
+                .expect("Failed to decode key event message as FcitxEvent.");
             return event;
         }
     }
