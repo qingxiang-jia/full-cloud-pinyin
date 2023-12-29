@@ -225,6 +225,7 @@ impl Dispatcher {
 
                 if popped.is_none() {
                     sock.send(false);
+                    return;
                 }
                 sock.send(true);
 
