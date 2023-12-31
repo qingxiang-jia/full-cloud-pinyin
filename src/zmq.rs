@@ -51,9 +51,13 @@ impl Server {
         cmd.write_message(&mut writer)
             .expect("Failed to write message.");
 
-        self.sock
-            .send(out, 0)
-            .expect("Failed to send to Fcitx Bridge.");
+        let snd_res = self.sock.send(out, 0);
+        match snd_res {
+            Ok(_) => {}
+            Err(e) => {
+                eprintln!("send_cmd: Failed to send to Fcitx Bridge. Error: {:#?}", e);
+            }
+        }
     }
 }
 
@@ -112,12 +116,19 @@ impl Client {
         cmd.write_message(&mut writer)
             .expect("Failed to write message.");
 
-        self.sock
-            .send(out, 0)
-            .expect("Failed to send to Fcitx Bridge.");
-        _ = self
-            .sock
-            .recv_msg(0)
-            .expect("Failed to receive or decode reply of REQ.");
+        let snd_res = self.sock.send(out, 0);
+        // .expect("Failed to send to Fcitx Bridge.");
+
+        match snd_res {
+            Ok(_) => {
+                _ = self
+                    .sock
+                    .recv_msg(0)
+                    .expect("Failed to receive or decode reply of REQ.");
+            }
+            Err(e) => {
+                eprintln!("send_cmd: Failed to send to Fcitx Bridge. Error: {:#?}", e);
+            }
+        }
     }
 }
