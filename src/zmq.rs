@@ -77,25 +77,19 @@ impl Client {
     }
 
     pub fn commit_text(&self, text: &str) {
-        let cmd = CommitText {
-            text: Cow::from(text),
-        };
-        let cmd_container = CommandToFcitx {
-            command: OneOfcommand::commit_text(cmd),
-        };
-
-        self.send_cmd(&cmd_container);
+        self.send_cmd(&CommandToFcitx {
+            command: OneOfcommand::commit_text(CommitText {
+                text: Cow::from(text),
+            }),
+        });
     }
 
     pub fn update_preedit(&self, text: &str) {
-        let cmd = UpdatePreedit {
-            text: Cow::from(text),
-        };
-        let cmd_container = CommandToFcitx {
-            command: OneOfcommand::update_preedit(cmd),
-        };
-
-        self.send_cmd(&cmd_container);
+        self.send_cmd(&CommandToFcitx {
+            command: OneOfcommand::update_preedit(UpdatePreedit {
+                text: Cow::from(text),
+            }),
+        });
     }
 
     pub fn update_candidates(&self, words: &[String]) {
@@ -103,14 +97,12 @@ impl Client {
         for word in words {
             cow_words.push(Cow::from(word));
         }
-        let cmd = UpdateCandidates {
-            candidates: cow_words,
-        };
-        let cmd_container = CommandToFcitx {
-            command: OneOfcommand::update_candidates(cmd),
-        };
 
-        self.send_cmd(&cmd_container);
+        self.send_cmd(&CommandToFcitx {
+            command: OneOfcommand::update_candidates(UpdateCandidates {
+                candidates: cow_words,
+            }),
+        });
     }
 
     fn send_cmd(&self, cmd: &CommandToFcitx) {
