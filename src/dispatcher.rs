@@ -168,6 +168,7 @@ impl Dispatcher {
     pub async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
         if !self.candidate_svc.in_session() {
             sock.send(false);
+            return;
         }
 
         match key {
