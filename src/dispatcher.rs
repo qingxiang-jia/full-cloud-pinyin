@@ -97,7 +97,7 @@ impl Dispatcher {
             | FcitxKeySym::Question
             | FcitxKeySym::Backslash
             | FcitxKeySym::Exclam
-            | FcitxKeySym::Ellipsis => {
+            | FcitxKeySym::Asciicircum => {
                 sock.send(true);
                 self.symbol_svc.handle_symbol(key);
             }
