@@ -29,6 +29,13 @@ impl PreeditService {
         }
     }
 
+    pub fn set_display(&self, preedit: &str) {
+        self.zmq
+            .lock()
+            .expect("set: Failed to lock zmq.")
+            .update_preedit(preedit);
+    }
+
     pub fn push(&self, c: char) {
         let mut state = self.state.lock().expect("push: Failed to lock state.");
         state.preedit.push(c);
