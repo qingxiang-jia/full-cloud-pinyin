@@ -583,12 +583,15 @@ impl FcitxKeySym {
             FcitxKeySym::RightSingleQuoteMark => Some(("’").to_owned()),
             FcitxKeySym::DoubleQuote => Some("“”".to_owned()),
             FcitxKeySym::Question => Some("？".to_owned()),
-            FcitxKeySym::BracketLeft => Some("（".to_owned()),
-            FcitxKeySym::BracketRight => Some("）".to_owned()),
+            FcitxKeySym::BracketLeft => Some("【".to_owned()),
+            FcitxKeySym::BracketRight => Some("】".to_owned()),
+            FcitxKeySym::BraceLeft => Some("「".to_owned()),
+            FcitxKeySym::BraceRight => Some("」".to_owned()),
             FcitxKeySym::Backslash => Some("、".to_owned()),
             FcitxKeySym::Exclam => Some("！".to_owned()),
-            FcitxKeySym::Ellipsis => Some("…".to_owned()),
             FcitxKeySym::Asciicircum => Some("…".to_owned()),
+            FcitxKeySym::Less => Some("《".to_owned()),
+            FcitxKeySym::Greater => Some("》".to_owned()),
             _ => None,
         }
     }
