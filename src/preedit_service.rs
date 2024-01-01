@@ -22,9 +22,9 @@ pub struct PreeditService {
 }
 
 impl PreeditService {
-    pub fn new(ibus: Arc<Mutex<Client>>) -> PreeditService {
+    pub fn new(zmq: Arc<Mutex<Client>>) -> PreeditService {
         PreeditService {
-            zmq: ibus,
+            zmq,
             state: Mutex::new(State::new()),
         }
     }
