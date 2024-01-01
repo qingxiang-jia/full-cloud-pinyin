@@ -36,6 +36,21 @@ impl PreeditService {
             .update_preedit(preedit);
     }
 
+    pub fn push_str(&self, s: &str) {
+        let mut state = self.state.lock().expect("push: Failed to lock state.");
+        for c in s.chars() {
+            state.preedit.push(c);
+        }
+        let preedit: String = state.preedit.iter().cloned().collect();
+
+        drop(state);
+
+        self.zmq
+            .lock()
+            .expect("push: Failed to lock zmq.")
+            .update_preedit(&preedit)
+    }
+
     pub fn push(&self, c: char) {
         let mut state = self.state.lock().expect("push: Failed to lock state.");
         state.preedit.push(c);

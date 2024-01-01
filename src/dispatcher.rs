@@ -80,7 +80,7 @@ impl Dispatcher {
             | FcitxKeySym::Num9 => {
                 sock.send(true);
                 if self.candidate_svc.in_session() {
-                    self.handle_select(key);
+                    self.handle_select(key).await;
                 } else {
                     self.number_svc.handle_number(key);
                 }
@@ -161,12 +161,30 @@ impl Dispatcher {
         self.candidate_svc.set_candidates(&candidates);
     }
 
-    pub fn handle_select(&self, key: FcitxKeySym) {
-        self.preedit_svc.clear();
-
+    pub async fn handle_select(&self, key: FcitxKeySym) {
         let i = key.to_usize().expect("Failed to conver the key to usize.");
-        self.candidate_svc.select(i);
+        let matched_len = self.candidate_svc.select(i);
+        let old_preedit = self.preedit_svc.to_string();
+        self.preedit_svc.clear();
         self.candidate_svc.clear();
+
+        if matched_len.is_some() {
+            let matched_len = matched_len.unwrap() as usize;
+            if old_preedit.len() > matched_len {
+                // It's getting the first matched_len bytes, but since we only have a-z, it's fine.
+                let new_preedit = &old_preedit[matched_len..];
+                self.preedit_svc.push_str(new_preedit);
+                let candidates = self
+                    .client
+                    .query_candidates(new_preedit, self.level[0])
+                    .await;
+                if candidates.len() > 0 {
+                    let segmented_preedit = &candidates[0].annotation;
+                    self.preedit_svc.set_display(segmented_preedit);
+                }
+                self.candidate_svc.set_candidates(&candidates);
+            }
+        }
     }
 
     pub async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
@@ -179,7 +197,7 @@ impl Dispatcher {
             FcitxKeySym::Space => {
                 sock.send(true);
 
-                self.handle_select(FcitxKeySym::Num1);
+                self.handle_select(FcitxKeySym::Num1).await;
             }
             FcitxKeySym::Return => {
                 sock.send(true);
