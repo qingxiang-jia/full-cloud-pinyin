@@ -123,8 +123,6 @@ impl CandidateService {
             .lock()
             .expect("select: Failed to lock zmq.")
             .commit_text(&text);
-
-        self.clear();
     }
 
     pub fn clear(&self) {
