@@ -153,10 +153,6 @@ impl Dispatcher {
         let preedit = self.preedit_svc.to_string();
 
         let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
-        if candidates.len() > 0 {
-            let segmented_preedit = &candidates[0].annotation;
-            self.preedit_svc.set_display(segmented_preedit);
-        }
 
         self.candidate_svc.set_candidates(&candidates);
     }
@@ -178,10 +174,6 @@ impl Dispatcher {
                     .client
                     .query_candidates(new_preedit, self.level[0])
                     .await;
-                if candidates.len() > 0 {
-                    let segmented_preedit = &candidates[0].annotation;
-                    self.preedit_svc.set_display(segmented_preedit);
-                }
                 self.candidate_svc.set_candidates(&candidates);
             }
         }
@@ -235,10 +227,6 @@ impl Dispatcher {
                         .client
                         .query_candidates(&self.preedit_svc.to_string(), to_load)
                         .await;
-                    if candidates.len() > 0 {
-                        let segmented_preedit = &candidates[0].annotation;
-                        self.preedit_svc.set_display(segmented_preedit);
-                    }
                     self.candidate_svc.set_candidates(&candidates);
                 }
             }
@@ -257,10 +245,6 @@ impl Dispatcher {
 
                 let preedit: String = self.preedit_svc.to_string();
                 let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
-                if candidates.len() > 0 {
-                    let segmented_preedit = &candidates[0].annotation;
-                    self.preedit_svc.set_display(segmented_preedit);
-                }
                 self.candidate_svc.set_candidates(&candidates);
             }
             FcitxKeySym::Escape => {
