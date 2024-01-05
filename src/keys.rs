@@ -583,6 +583,8 @@ impl FcitxKeySym {
             FcitxKeySym::RightSingleQuoteMark => Some(("’").to_owned()),
             FcitxKeySym::DoubleQuote => Some("“”".to_owned()),
             FcitxKeySym::Question => Some("？".to_owned()),
+            FcitxKeySym::ParenLeft => Some("（".to_owned()),
+            FcitxKeySym::ParenRight => Some("）".to_owned()),
             FcitxKeySym::BracketLeft => Some("【".to_owned()),
             FcitxKeySym::BracketRight => Some("】".to_owned()),
             FcitxKeySym::BraceLeft => Some("「".to_owned()),

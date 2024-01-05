@@ -92,6 +92,8 @@ impl Dispatcher {
             | FcitxKeySym::LeftSingleQuoteMark
             | FcitxKeySym::RightSingleQuoteMark
             | FcitxKeySym::DoubleQuote
+            | FcitxKeySym::ParenLeft
+            | FcitxKeySym::ParenRight
             | FcitxKeySym::BracketLeft
             | FcitxKeySym::BracketRight
             | FcitxKeySym::Question
