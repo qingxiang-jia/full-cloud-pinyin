@@ -112,12 +112,11 @@ impl CandidateService {
         self.zmq.lock().unwrap().update_candidates(&to_show);
     }
 
-    pub fn select(&self, ith: usize) -> Option<i32> {
+    pub fn select(&self, ith: usize) -> Candidate {
         let state = self.state.lock().expect("select: Failed to lock state.");
         let idx = ith - 1 + state.page * self.lt_size;
-        let selected = &state.candidates[idx];
+        let selected = state.candidates[idx].clone();
         let text = selected.word.clone();
-        let matched_len = selected.matched_len;
 
         drop(state);
 
@@ -126,7 +125,7 @@ impl CandidateService {
             .expect("select: Failed to lock zmq.")
             .commit_text(&text);
 
-        return matched_len;
+        return selected;
     }
 
     pub fn clear(&self) {

@@ -7,31 +7,58 @@ use crate::{
     number_service::NumberService,
     preedit_service::PreeditService,
     symbol_service::SymbolService,
+    user_dict::UserDict,
     zmq::{Client, Server},
 };
 
+struct State {
+    partial_match: bool,
+    pm_preedit: String,
+}
+
+impl State {
+    fn new() -> State {
+        State {
+            partial_match: false,
+            pm_preedit: "".to_owned(),
+        }
+    }
+}
+
 pub struct Dispatcher {
+    zmq: Arc<Mutex<Client>>,
     client: CloudPinyinClient,
     candidate_svc: CandidateService,
     preedit_svc: PreeditService,
     symbol_svc: SymbolService,
     number_svc: NumberService,
-    zmq: Arc<Mutex<Client>>,
+    user_dict: Mutex<UserDict>,
+    state: Mutex<State>,
     level: Vec<usize>,
 }
 
 impl Dispatcher {
     pub fn new() -> Dispatcher {
         let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
-        Dispatcher {
+        let dispatcher = Dispatcher {
+            zmq: req.clone(),
             client: CloudPinyinClient::new(),
             candidate_svc: CandidateService::new(req.clone()),
             preedit_svc: PreeditService::new(req.clone()),
             symbol_svc: SymbolService::new(req.clone()),
             number_svc: NumberService::new(req.clone()),
-            zmq: req.clone(),
+            user_dict: Mutex::new(UserDict::new()),
+            state: Mutex::new(State::new()),
             level: vec![11, 21, 41, 81, 161, 321, 641, 1281],
+        };
+        {
+            let dict = dispatcher
+                .user_dict
+                .lock()
+                .expect("new: Failed to lock user_dict.");
+            dict.load();
         }
+        dispatcher
     }
 
     // True if key is accepted; false otherwise.
@@ -161,14 +188,25 @@ impl Dispatcher {
 
     pub async fn handle_select(&self, key: FcitxKeySym) {
         let i = key.to_usize().expect("Failed to conver the key to usize.");
-        let matched_len = self.candidate_svc.select(i);
+        let selected = self.candidate_svc.select(i);
         let old_preedit = self.preedit_svc.to_string();
         self.preedit_svc.clear();
         self.candidate_svc.clear();
 
-        if matched_len.is_some() {
-            let matched_len = matched_len.unwrap() as usize;
+        if selected.matched_len.is_some() {
+            let matched_len = selected.matched_len.unwrap() as usize;
+            let mut state = self
+                .state
+                .lock()
+                .expect("handle_select: Failed to lock state.");
             if old_preedit.len() > matched_len {
+                if !state.partial_match {
+                    // It wasn't partial match before, but now it is and we need to save the full preedit before it gets shorter and shorter with subsequent partial match.
+                    state.pm_preedit = old_preedit.clone();
+                }
+                state.partial_match = true;
+                drop(state);
+
                 // It's getting the first matched_len bytes, but since we only have a-z, it's fine.
                 let new_preedit = &old_preedit[matched_len..];
                 self.preedit_svc.push_str(new_preedit);
@@ -177,6 +215,16 @@ impl Dispatcher {
                     .query_candidates(new_preedit, self.level[0])
                     .await;
                 self.candidate_svc.set_candidates(&candidates);
+            } else {
+                if state.partial_match {
+                    let dict = self
+                        .user_dict
+                        .lock()
+                        .expect("handle_select: Failed to lock user_dict");
+                    dict.insert(&state.pm_preedit, &selected.word);
+                }
+                state.partial_match = false;
+                drop(state);
             }
         }
     }
