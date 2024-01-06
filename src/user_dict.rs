@@ -2,14 +2,14 @@ use std::{
     collections::HashMap,
     fs::{File, OpenOptions},
     io::{BufRead, BufReader, BufWriter},
-    sync::{Arc, Mutex},
+    sync::Mutex,
 };
 
 use std::io::Write;
 
 pub struct UserDict {
     filepath: String,
-    dict: Arc<Mutex<HashMap<String, String>>>,
+    dict: Mutex<HashMap<String, String>>,
 }
 
 impl Drop for UserDict {
@@ -20,20 +20,28 @@ impl Drop for UserDict {
 
 impl UserDict {
     pub fn new() -> UserDict {
-        Self::new_with_path("~/local/share/fcitx5/fcp/user_dict.csv")
+        Self::new_with_path("~/.local/share/fcitx5/fcp/user_dict.csv")
     }
 
     pub fn new_with_path(path: &str) -> UserDict {
         UserDict {
             filepath: path.to_owned(),
-            dict: Arc::new(Mutex::new(HashMap::new())),
+            dict: Mutex::new(HashMap::new()),
         }
     }
 
-    pub fn insert(&self, preedit: &str, candidate: &str) {}
+    pub fn insert(&self, preedit: &str, candidate: &str) {
+        let mut dict = self.dict.lock().expect("insert: Failed to lock dict.");
+        dict.insert(preedit.to_string(), candidate.to_string());
+    }
 
     pub fn get(&self, preedit: &str) -> Option<String> {
-        unimplemented!()
+        let dict = self.dict.lock().expect("get: Failed to lock dict.");
+        let candidate = dict.get(preedit);
+        match candidate {
+            Some(cand) => Some(cand.to_owned()),
+            None => None,
+        }
     }
 
     pub fn load(&self) {
