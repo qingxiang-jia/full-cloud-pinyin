@@ -94,7 +94,7 @@ impl UserDict {
         let map = &*self.dict.lock().expect("persist: Failed to lock dict.");
 
         for (preedit, candidate) in map {
-            let res = write!(writer, "{}, {}\n", preedit, candidate);
+            let res = write!(writer, "{},{}\n", preedit, candidate);
             if res.is_err() {
                 println!("persist: Failed to write line.");
             }
