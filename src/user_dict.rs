@@ -1,11 +1,11 @@
+use dirs::home_dir;
+use std::io::Write;
 use std::{
     collections::HashMap,
-    fs::{File, OpenOptions},
+    fs::{create_dir_all, OpenOptions},
     io::{BufRead, BufReader, BufWriter},
     sync::Mutex,
 };
-
-use std::io::Write;
 
 pub struct UserDict {
     filepath: String,
@@ -20,7 +20,23 @@ impl Drop for UserDict {
 
 impl UserDict {
     pub fn new() -> UserDict {
-        Self::new_with_path("~/.local/share/fcitx5/fcp/user_dict.csv")
+        let filepath = home_dir()
+            .expect("new: Failed to get home path.")
+            .join(".local/share/fcitx5/fcp/user_dict.csv");
+        // Create folders and files if do not already exist
+        let res = create_dir_all(
+            &filepath
+                .parent()
+                .expect("new: Failed to get parent path from PathBuf."),
+        );
+        if res.is_err() {
+            panic!("new: Failed to create missing directories in path.");
+        }
+        Self::new_with_path(
+            filepath
+                .to_str()
+                .expect("new: Failed to convert PathBuf to &str."),
+        )
     }
 
     pub fn new_with_path(path: &str) -> UserDict {
@@ -45,14 +61,18 @@ impl UserDict {
     }
 
     pub fn load(&self) {
-        let file = File::open(&self.filepath).expect("load: Failed to open file.");
+        let file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(&self.filepath)
+            .expect("load: Failed to open file.");
         let reader = BufReader::new(file);
         let mut map = self.dict.lock().expect("persist: Failed to lock dict.");
 
         for line in reader.lines() {
             if line.is_err() {
                 println!("load: Error reading a line, skip.");
-                continue;
+                break;
             }
             let line = line.unwrap();
             let preedit_candidate: Vec<&str> = line.split(",").collect();
