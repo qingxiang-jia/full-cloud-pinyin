@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 
 use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
+use zmq::Error;
 
 use crate::{
     msgs::KeyEvent,
@@ -28,21 +29,21 @@ impl Server {
         Server { ctx, sock: sub }
     }
 
-    pub fn recv(&self) -> KeyEvent {
-        let data = self
-            .sock
-            .recv_msg(0)
-            .expect("Failed to receive or decode key event message.");
-        unsafe {
-            let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
-            let mut reader = BytesReader::from_bytes(&bytes);
-            let event = KeyEvent::from_reader(&mut reader, bytes)
-                .expect("Failed to decode key event message as FcitxEvent.");
-            return event;
+    pub fn recv(&self) -> Result<KeyEvent, Error> {
+        let res = self.sock.recv_msg(0);
+        match res {
+            Ok(data) => unsafe {
+                let bytes = std::slice::from_raw_parts(data.as_ptr(), data.len());
+                let mut reader = BytesReader::from_bytes(&bytes);
+                let event = KeyEvent::from_reader(&mut reader, bytes)
+                    .expect("Failed to decode key event message as FcitxEvent.");
+                Ok(event)
+            },
+            Err(e) => Err(e),
         }
     }
 
-    pub fn send(&self, accepted: bool) {
+    pub fn send(&self, accepted: bool) -> Result<(), Error> {
         let cmd = KeyEventReply { accepted };
 
         let mut out = Vec::new();
@@ -51,13 +52,7 @@ impl Server {
         cmd.write_message(&mut writer)
             .expect("Failed to write message.");
 
-        let snd_res = self.sock.send(out, 0);
-        match snd_res {
-            Ok(_) => {}
-            Err(e) => {
-                eprintln!("send_cmd: Failed to send to Fcitx Bridge. Error: {:#?}", e);
-            }
-        }
+        self.sock.send(out, 0)
     }
 }
 

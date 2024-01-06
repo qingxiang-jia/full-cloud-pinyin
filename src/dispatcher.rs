@@ -91,7 +91,7 @@ impl Dispatcher {
             | FcitxKeySym::y
             | FcitxKeySym::z => {
                 // Tells the bridge that we accept this event.
-                sock.send(true);
+                _ = sock.send(true);
                 // Work on getting the candidates.
                 self.handle_pinyin(key).await;
             }
@@ -105,7 +105,7 @@ impl Dispatcher {
             | FcitxKeySym::Num7
             | FcitxKeySym::Num8
             | FcitxKeySym::Num9 => {
-                sock.send(true);
+                _ = sock.send(true);
                 if self.candidate_svc.in_session() {
                     self.handle_select(key).await;
                 } else {
@@ -127,7 +127,7 @@ impl Dispatcher {
             | FcitxKeySym::Backslash
             | FcitxKeySym::Exclam
             | FcitxKeySym::Asciicircum => {
-                sock.send(true);
+                _ = sock.send(true);
                 self.symbol_svc.handle_symbol(key);
             }
             FcitxKeySym::Space
@@ -143,7 +143,7 @@ impl Dispatcher {
                 self.handle_control(key, sock).await;
             }
             FcitxKeySym::ShiftL | FcitxKeySym::ControlR | FcitxKeySym::AltL => {
-                sock.send(false);
+                _ = sock.send(false);
             }
             FcitxKeySym::A
             | FcitxKeySym::B
@@ -170,8 +170,8 @@ impl Dispatcher {
             | FcitxKeySym::W
             | FcitxKeySym::X
             | FcitxKeySym::Y
-            | FcitxKeySym::Z => sock.send(false),
-            _ => sock.send(false),
+            | FcitxKeySym::Z => _ = sock.send(false),
+            _ => _ = sock.send(false),
         }
     }
 
@@ -231,18 +231,18 @@ impl Dispatcher {
 
     pub async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
         if !self.candidate_svc.in_session() {
-            sock.send(false);
+            _ = sock.send(false);
             return;
         }
 
         match key {
             FcitxKeySym::Space => {
-                sock.send(true);
+                _ = sock.send(true);
 
                 self.handle_select(FcitxKeySym::Num1).await;
             }
             FcitxKeySym::Return => {
-                sock.send(true);
+                _ = sock.send(true);
 
                 let preedit = self.preedit_svc.to_string();
                 self.preedit_svc.clear();
@@ -253,12 +253,12 @@ impl Dispatcher {
                     .commit_text(&preedit);
             }
             FcitxKeySym::Minus => {
-                sock.send(true);
+                _ = sock.send(true);
 
                 self.candidate_svc.page_back();
             }
             FcitxKeySym::Equal => {
-                sock.send(true);
+                _ = sock.send(true);
 
                 let (enough, min_needed) = self.candidate_svc.page_into();
                 if !enough {
@@ -280,31 +280,31 @@ impl Dispatcher {
                     self.candidate_svc.set_candidates(&candidates);
                 }
             }
-            FcitxKeySym::Up => sock.send(false), // For now, ingore
-            FcitxKeySym::Down => sock.send(false), // For now, ignore
-            FcitxKeySym::Left => sock.send(false), // For now, ignore
-            FcitxKeySym::Right => sock.send(false), // For now, ignore
+            FcitxKeySym::Up => _ = sock.send(false), // For now, ingore
+            FcitxKeySym::Down => _ = sock.send(false), // For now, ignore
+            FcitxKeySym::Left => _ = sock.send(false), // For now, ignore
+            FcitxKeySym::Right => _ = sock.send(false), // For now, ignore
             FcitxKeySym::Backspace => {
                 let popped = self.preedit_svc.pop();
 
                 if popped.is_none() {
-                    sock.send(false);
+                    _ = sock.send(false);
                     return;
                 }
-                sock.send(true);
+                _ = sock.send(true);
 
                 let preedit: String = self.preedit_svc.to_string();
                 let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
                 self.candidate_svc.set_candidates(&candidates);
             }
             FcitxKeySym::Escape => {
-                sock.send(true);
+                _ = sock.send(true);
 
                 self.preedit_svc.clear();
                 self.candidate_svc.clear();
             }
             _ => {
-                sock.send(false);
+                _ = sock.send(false);
                 println!("Invalid control key.")
             }
         }
