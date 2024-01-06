@@ -11,6 +11,7 @@ pub mod msgs;
 pub mod number_service;
 pub mod preedit_service;
 pub mod symbol_service;
+pub mod user_dict;
 pub mod zmq;
 
 #[tokio::main]
