@@ -1,9 +1,6 @@
-use std::{
-    process::exit,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
 };
 
 use ctrlc::set_handler;
@@ -28,7 +25,6 @@ async fn main() {
     let run = Arc::new(AtomicBool::new(true));
     let run_for_handler = run.clone();
     set_handler(move || {
-        println!("Ctrl+C received, performing cleanup...");
         run_for_handler.store(false, Ordering::Release);
     })
     .expect("main: Failed to set signal handler.");
@@ -38,11 +34,8 @@ async fn main() {
     while run.load(Ordering::SeqCst) {
         let res = sock.recv();
         if res.is_err() {
-            println!(
-                "main: Failed to receive event from Fctix Bridge: {:#?}",
-                res.err()
-            );
-            exit(0); // Most likely we received ctrl+c, so it's okay.
+            println!("main: Shutting down");
+            break; // Most likely we received ctrl+c, so it's okay.
         }
         let event: msgs::KeyEvent = res.unwrap();
         let key_u32 = event.key;
