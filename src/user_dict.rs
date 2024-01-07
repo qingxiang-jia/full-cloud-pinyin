@@ -1,4 +1,5 @@
 use dirs::home_dir;
+use std::fs::File;
 use std::io::Write;
 use std::{
     collections::HashMap,
@@ -32,16 +33,11 @@ impl UserDict {
         if res.is_err() {
             panic!("new: Failed to create missing directories in path.");
         }
-        Self::new_with_path(
-            filepath
-                .to_str()
-                .expect("new: Failed to convert PathBuf to &str."),
-        )
-    }
-
-    pub fn new_with_path(path: &str) -> UserDict {
+        let path_str = filepath
+            .to_str()
+            .expect("new: Failed to convert PathBuf to &str.");
         UserDict {
-            filepath: path.to_owned(),
+            filepath: path_str.to_owned(),
             dict: Mutex::new(HashMap::new()),
         }
     }
@@ -61,17 +57,18 @@ impl UserDict {
     }
 
     pub fn load(&self) {
-        let file = OpenOptions::new()
-            .write(true)
-            .create(true)
-            .open(&self.filepath)
-            .expect("load: Failed to open file.");
+        let res = File::open(&self.filepath);
+        if res.is_err() {
+            println!("load: Failed to load the file, give up: {:#?}", res.err());
+            return;
+        }
+        let file = res.unwrap();
         let reader = BufReader::new(file);
         let mut map = self.dict.lock().expect("persist: Failed to lock dict.");
 
         for line in reader.lines() {
             if line.is_err() {
-                println!("load: Error reading a line, skip.");
+                println!("load: Error reading a line, give up. {:#?}", line.err());
                 break;
             }
             let line = line.unwrap();
@@ -83,7 +80,7 @@ impl UserDict {
         }
     }
 
-    pub fn persist(&self) {
+    fn persist(&self) {
         let file = OpenOptions::new()
             .write(true)
             .truncate(true)
