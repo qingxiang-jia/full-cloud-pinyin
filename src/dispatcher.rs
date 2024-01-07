@@ -14,6 +14,7 @@ use crate::{
 struct State {
     partial_match: bool,
     pm_preedit: String,
+    pm_candidate: String,
 }
 
 impl State {
@@ -21,6 +22,7 @@ impl State {
         State {
             partial_match: false,
             pm_preedit: "".to_owned(),
+            pm_candidate: "".to_owned(),
         }
     }
 }
@@ -200,10 +202,11 @@ impl Dispatcher {
                 .lock()
                 .expect("handle_select: Failed to lock state.");
             if old_preedit.len() > matched_len {
-                if !state.partial_match {
-                    // It wasn't partial match before, but now it is and we need to save the full preedit before it gets shorter and shorter with subsequent partial match.
-                    state.pm_preedit = old_preedit.clone();
-                }
+                // We need to save the full preedit before it gets shorter and shorter with
+                // subsequent partial match Similarly, we also need to save the candidate strings.
+                // BEGIN: user custom word composing (to be saved to user dict).
+                state.pm_preedit.push_str(&old_preedit[0..matched_len]);
+                state.pm_candidate.push_str(&selected.word);
                 state.partial_match = true;
                 drop(state);
 
@@ -217,11 +220,16 @@ impl Dispatcher {
                 self.candidate_svc.set_candidates(&candidates);
             } else {
                 if state.partial_match {
+                    // END: user custom word composing (to be saved to user dict).
                     let dict = self
                         .user_dict
                         .lock()
                         .expect("handle_select: Failed to lock user_dict");
-                    dict.insert(&state.pm_preedit, &selected.word);
+                    state.pm_preedit.push_str(&old_preedit[0..matched_len]);
+                    state.pm_candidate.push_str(&selected.word);
+                    dict.insert(&state.pm_preedit, &state.pm_candidate);
+                    state.pm_preedit.clear();
+                    state.pm_candidate.clear();
                 }
                 state.partial_match = false;
                 drop(state);
