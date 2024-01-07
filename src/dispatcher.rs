@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    candidate::Candidate,
     candidate_service::CandidateService,
     cloud_pinyin_client::CloudPinyinClient,
     keys::FcitxKeySym,
@@ -183,7 +184,22 @@ impl Dispatcher {
         self.preedit_svc.push(c);
         let preedit = self.preedit_svc.to_string();
 
-        let candidates = self.client.query_candidates(&preedit, self.level[0]).await;
+        let mut candidates: Vec<Candidate> = Vec::new();
+        let ud = self
+            .user_dict
+            .lock()
+            .expect("handle_pinyin: Failed to lock user_dict.");
+        let cand_from_ud = ud.get(&preedit);
+        if cand_from_ud.is_some() {
+            candidates.push(Candidate {
+                word: cand_from_ud.unwrap(),
+                annotation: preedit.clone(),
+                matched_len: Some(preedit.len() as i32),
+            });
+        }
+
+        let mut cand_from_cloud = self.client.query_candidates(&preedit, self.level[0]).await;
+        candidates.append(&mut cand_from_cloud);
 
         self.candidate_svc.set_candidates(&candidates);
     }
