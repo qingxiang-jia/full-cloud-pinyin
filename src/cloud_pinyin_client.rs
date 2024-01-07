@@ -1,17 +1,26 @@
+use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheOptions};
 use regex::Regex;
-use reqwest::header::USER_AGENT;
+use reqwest::{header::USER_AGENT, Client};
+use reqwest_middleware::ClientBuilder;
 
 use super::candidate::Candidate;
 
 pub struct CloudPinyinClient {
-    http: reqwest::Client,
+    http: reqwest_middleware::ClientWithMiddleware,
     re: Regex,
 }
 
 impl CloudPinyinClient {
     pub fn new() -> CloudPinyinClient {
+        let client = ClientBuilder::new(Client::new())
+            .with(Cache(HttpCache {
+                mode: CacheMode::Default,
+                manager: CACacheManager::default(),
+                options: HttpCacheOptions::default(),
+            }))
+            .build();
         CloudPinyinClient {
-            http: reqwest::Client::new(),
+            http: client,
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }
     }
