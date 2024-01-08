@@ -1,7 +1,6 @@
-use dirs::home_dir;
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::{
     collections::HashMap,
     fs::{create_dir_all, OpenOptions},
