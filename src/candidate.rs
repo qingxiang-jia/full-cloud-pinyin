@@ -2,5 +2,5 @@
 pub struct Candidate {
     pub word: String,
     pub annotation: String,
-    pub matched_len: Option<i32>,
+    pub matched_len: usize,
 }

@@ -87,10 +87,6 @@ impl UserDict {
 
         for (preedit, candidate) in map {
             let res = write!(writer, "{},{}\n", preedit, candidate);
-            println!(
-                "persisting {} and {} to {:#?}",
-                preedit, candidate, &self.filepath
-            );
             if res.is_err() {
                 println!("persist: Failed to write line.");
             }

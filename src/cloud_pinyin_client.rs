@@ -30,7 +30,12 @@ impl CloudPinyinClient {
             return Vec::new();
         }
         let json = self.get_candidates_from_net(preedit, depth as i32).await;
-        let candidates = self.json_to_candidates(json);
+        let mut candidates = self.json_to_candidates(json);
+        for candidate in candidates.iter_mut() {
+            if candidate.matched_len == 0 {
+                candidate.matched_len = preedit.len();
+            }
+        }
         candidates
     }
 
@@ -95,12 +100,10 @@ impl CloudPinyinClient {
                 word: candidates[i].to_owned(),
                 annotation: annotations[i].to_owned(),
                 matched_len: match matched_len {
-                    Some(len) => Some(
-                        len[i]
-                            .parse::<i32>()
-                            .expect("Matched length faield to be parsed to i32."),
-                    ),
-                    _ => None,
+                    Some(len) => len[i]
+                        .parse::<usize>()
+                        .expect("Matched length faield to be parsed to usize."),
+                    _ => 0, // All candidates match the whole preedit.
                 },
             })
         }

@@ -194,7 +194,7 @@ impl Dispatcher {
             candidates.push(Candidate {
                 word: cand_from_ud.unwrap(),
                 annotation: preedit.clone(),
-                matched_len: Some(preedit.len() as i32),
+                matched_len: preedit.len(),
             });
         }
 
@@ -211,45 +211,46 @@ impl Dispatcher {
         self.preedit_svc.clear();
         self.candidate_svc.clear();
 
-        if selected.matched_len.is_some() {
-            let matched_len = selected.matched_len.unwrap() as usize;
-            let mut state = self
-                .state
-                .lock()
-                .expect("handle_select: Failed to lock state.");
-            if old_preedit.len() > matched_len {
-                // We need to save the full preedit before it gets shorter and shorter with
-                // subsequent partial match Similarly, we also need to save the candidate strings.
-                // BEGIN: user custom word composing (to be saved to user dict).
-                state.pm_preedit.push_str(&old_preedit[0..matched_len]);
-                state.pm_candidate.push_str(&selected.word);
-                state.partial_match = true;
-                drop(state);
+        let mut state = self
+            .state
+            .lock()
+            .expect("handle_select: Failed to lock state.");
+        if old_preedit.len() > selected.matched_len {
+            // We need to save the full preedit before it gets shorter and shorter with
+            // subsequent partial match Similarly, we also need to save the candidate strings.
+            // BEGIN: user custom word composing (to be saved to user dict).
+            state
+                .pm_preedit
+                .push_str(&old_preedit[0..selected.matched_len]);
+            state.pm_candidate.push_str(&selected.word);
+            state.partial_match = true;
+            drop(state);
 
-                // It's getting the first matched_len bytes, but since we only have a-z, it's fine.
-                let new_preedit = &old_preedit[matched_len..];
-                self.preedit_svc.push_str(new_preedit);
-                let candidates = self
-                    .client
-                    .query_candidates(new_preedit, self.level[0])
-                    .await;
-                self.candidate_svc.set_candidates(&candidates);
-            } else {
-                if state.partial_match {
-                    // END: user custom word composing (to be saved to user dict).
-                    let dict = self
-                        .user_dict
-                        .lock()
-                        .expect("handle_select: Failed to lock user_dict");
-                    state.pm_preedit.push_str(&old_preedit[0..matched_len]);
-                    state.pm_candidate.push_str(&selected.word);
-                    dict.insert(&state.pm_preedit, &state.pm_candidate);
-                    state.pm_preedit.clear();
-                    state.pm_candidate.clear();
-                }
-                state.partial_match = false;
-                drop(state);
+            // It's getting the first matched_len bytes, but since we only have a-z, it's fine.
+            let new_preedit = &old_preedit[selected.matched_len..];
+            self.preedit_svc.push_str(new_preedit);
+            let candidates = self
+                .client
+                .query_candidates(new_preedit, self.level[0])
+                .await;
+            self.candidate_svc.set_candidates(&candidates);
+        } else {
+            if state.partial_match {
+                // END: user custom word composing (to be saved to user dict).
+                let dict = self
+                    .user_dict
+                    .lock()
+                    .expect("handle_select: Failed to lock user_dict");
+                state
+                    .pm_preedit
+                    .push_str(&old_preedit[0..selected.matched_len]);
+                state.pm_candidate.push_str(&selected.word);
+                dict.insert(&state.pm_preedit, &state.pm_candidate);
+                state.pm_preedit.clear();
+                state.pm_candidate.clear();
             }
+            state.partial_match = false;
+            drop(state);
         }
     }
 
