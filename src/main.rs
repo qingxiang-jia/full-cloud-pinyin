@@ -15,6 +15,7 @@ pub mod dispatcher;
 pub mod keys;
 pub mod msgs;
 pub mod number_service;
+pub mod path_util;
 pub mod preedit_service;
 pub mod symbol_service;
 pub mod user_dict;

@@ -1,6 +1,7 @@
 use dirs::home_dir;
 use std::fs::File;
 use std::io::Write;
+use std::path::{Path, PathBuf};
 use std::{
     collections::HashMap,
     fs::{create_dir_all, OpenOptions},
@@ -8,8 +9,10 @@ use std::{
     sync::Mutex,
 };
 
+use crate::path_util::abs_config_path;
+
 pub struct UserDict {
-    filepath: String,
+    filepath: PathBuf,
     dict: Mutex<HashMap<String, String>>,
 }
 
@@ -21,23 +24,15 @@ impl Drop for UserDict {
 
 impl UserDict {
     pub fn new() -> UserDict {
-        let filepath = home_dir()
-            .expect("new: Failed to get home path.")
-            .join(".local/share/fcitx5/fcp/user_dict.csv");
+        let config_path = abs_config_path();
+        let ud_path = config_path.join("user_dict.csv");
         // Create folders and files if do not already exist
-        let res = create_dir_all(
-            &filepath
-                .parent()
-                .expect("new: Failed to get parent path from PathBuf."),
-        );
+        let res = create_dir_all(&config_path.as_path());
         if res.is_err() {
             panic!("new: Failed to create missing directories in path.");
         }
-        let path_str = filepath
-            .to_str()
-            .expect("new: Failed to convert PathBuf to &str.");
         UserDict {
-            filepath: path_str.to_owned(),
+            filepath: ud_path,
             dict: Mutex::new(HashMap::new()),
         }
     }
@@ -92,6 +87,10 @@ impl UserDict {
 
         for (preedit, candidate) in map {
             let res = write!(writer, "{},{}\n", preedit, candidate);
+            println!(
+                "persisting {} and {} to {:#?}",
+                preedit, candidate, &self.filepath
+            );
             if res.is_err() {
                 println!("persist: Failed to write line.");
             }
