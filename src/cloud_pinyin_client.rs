@@ -3,6 +3,8 @@ use regex::Regex;
 use reqwest::{header::USER_AGENT, Client};
 use reqwest_middleware::ClientBuilder;
 
+use crate::path_util::abs_config_path;
+
 use super::candidate::Candidate;
 
 pub struct CloudPinyinClient {
@@ -12,10 +14,13 @@ pub struct CloudPinyinClient {
 
 impl CloudPinyinClient {
     pub fn new() -> CloudPinyinClient {
+        let cache_path = abs_config_path().join("cache");
         let client = ClientBuilder::new(Client::new())
             .with(Cache(HttpCache {
                 mode: CacheMode::Default,
-                manager: CACacheManager::default(),
+                manager: CACacheManager {
+                    path: cache_path.into(),
+                },
                 options: HttpCacheOptions::default(),
             }))
             .build();
