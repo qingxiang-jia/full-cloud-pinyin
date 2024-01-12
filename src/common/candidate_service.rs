@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::{candidate::Candidate, zmq::Client};
+use crate::{common::candidate::Candidate, common::zmq::Client};
 
 struct State {
     candidates: Vec<Candidate>,

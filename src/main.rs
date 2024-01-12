@@ -3,23 +3,13 @@ use std::sync::{
     Arc,
 };
 
+use common::zmq::Server;
+use common::{keys::FcitxKeySym, msgs};
 use ctrlc::set_handler;
-use dispatcher::Dispatcher;
-use keys::FcitxKeySym;
-use zmq::Server;
+use pinyin::dispatcher::Dispatcher;
 
-pub mod candidate;
-pub mod candidate_service;
-pub mod cloud_pinyin_client;
-pub mod dispatcher;
-pub mod keys;
-pub mod msgs;
-pub mod number_service;
-pub mod path_util;
-pub mod preedit_service;
-pub mod symbol_service;
-pub mod user_dict;
-pub mod zmq;
+pub mod common;
+pub mod pinyin;
 
 #[tokio::main]
 async fn main() {

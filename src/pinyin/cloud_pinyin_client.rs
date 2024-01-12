@@ -3,9 +3,9 @@ use regex::Regex;
 use reqwest::{header::USER_AGENT, Client};
 use reqwest_middleware::ClientBuilder;
 
-use crate::path_util::abs_config_path;
+use crate::common::path_util::abs_config_path;
 
-use super::candidate::Candidate;
+use crate::common::candidate::Candidate;
 
 pub struct CloudPinyinClient {
     http: reqwest_middleware::ClientWithMiddleware,

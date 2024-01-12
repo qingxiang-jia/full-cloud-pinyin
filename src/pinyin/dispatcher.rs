@@ -1,15 +1,15 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    candidate::Candidate,
-    candidate_service::CandidateService,
-    cloud_pinyin_client::CloudPinyinClient,
-    keys::FcitxKeySym,
-    number_service::NumberService,
-    preedit_service::PreeditService,
-    symbol_service::SymbolService,
-    user_dict::UserDict,
-    zmq::{Client, Server},
+    common::candidate::Candidate,
+    common::candidate_service::CandidateService,
+    common::keys::FcitxKeySym,
+    common::preedit_service::PreeditService,
+    common::user_dict::UserDict,
+    common::zmq::{Client, Server},
+    pinyin::cloud_pinyin_client::CloudPinyinClient,
+    pinyin::number_service::NumberService,
+    pinyin::symbol_service::SymbolService,
 };
 
 struct State {

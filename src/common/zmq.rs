@@ -4,8 +4,8 @@ use quick_protobuf::{BytesReader, MessageRead, MessageWrite, Writer};
 use zmq::Error;
 
 use crate::{
-    msgs::KeyEvent,
-    msgs::{
+    common::msgs::KeyEvent,
+    common::msgs::{
         mod_CommandToFcitx::OneOfcommand, CommandToFcitx, CommitText, KeyEventReply,
         UpdateCandidates, UpdatePreedit,
     },

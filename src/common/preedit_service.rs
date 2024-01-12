@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::zmq::Client;
+use crate::common::zmq::Client;
 
 struct State {
     preedit: Vec<char>,

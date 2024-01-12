@@ -573,7 +573,7 @@ impl FcitxKeySym {
         }
     }
 
-    pub fn to_full_width_string(self) -> Option<String> {
+    pub fn to_chinese(self) -> Option<String> {
         match self {
             FcitxKeySym::Comma => Some("，".to_owned()),
             FcitxKeySym::Period => Some("。".to_owned()),

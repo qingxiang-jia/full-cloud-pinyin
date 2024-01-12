@@ -8,7 +8,7 @@ use std::{
     sync::Mutex,
 };
 
-use crate::path_util::abs_config_path;
+use crate::common::path_util::abs_config_path;
 
 pub struct UserDict {
     filepath: PathBuf,

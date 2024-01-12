@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 
-use crate::keys::FcitxKeySym;
-use crate::zmq::Client;
+use crate::common::keys::FcitxKeySym;
+use crate::common::zmq::Client;
 
 pub struct SymbolService {
     pub(crate) zmq: Arc<Mutex<Client>>,
@@ -16,7 +16,7 @@ impl SymbolService {
 
     pub fn handle_symbol(&self, key: FcitxKeySym) {
         let fw_puctuation = key
-            .to_full_width_string()
+            .to_chinese()
             .expect("This key cannot be converted to fullwidth string.");
 
         self.zmq
