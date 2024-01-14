@@ -180,7 +180,7 @@ impl Dispatcher {
         }
     }
 
-    pub async fn handle_pinyin(&self, key: FcitxKeySym) {
+    async fn handle_pinyin(&self, key: FcitxKeySym) {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
         self.preedit_svc.push(c);
@@ -206,7 +206,7 @@ impl Dispatcher {
         self.candidate_svc.set_candidates(&candidates);
     }
 
-    pub async fn handle_select(&self, key: FcitxKeySym) {
+    async fn handle_select(&self, key: FcitxKeySym) {
         let i = key.to_usize().expect("Failed to conver the key to usize.");
         let selected = self.candidate_svc.select(i);
         let old_preedit = self.preedit_svc.to_string();
@@ -256,7 +256,7 @@ impl Dispatcher {
         }
     }
 
-    pub async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
+    async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
         if !self.candidate_svc.in_session() {
             _ = sock.send(false);
             return;
