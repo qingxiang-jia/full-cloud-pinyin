@@ -3,7 +3,7 @@ use regex::Regex;
 use reqwest::{header::USER_AGENT, Client};
 use reqwest_middleware::ClientBuilder;
 
-use crate::common::path_util::abs_config_path;
+use crate::common::path_util::abs_config_path_fcp;
 
 use crate::common::candidate::Candidate;
 
@@ -14,7 +14,7 @@ pub struct CloudPinyinClient {
 
 impl CloudPinyinClient {
     pub fn new() -> CloudPinyinClient {
-        let cache_path = abs_config_path().join("cache");
+        let cache_path = abs_config_path_fcp().join("cache");
         let client = ClientBuilder::new(Client::new())
             .with(Cache(HttpCache {
                 mode: CacheMode::Default,

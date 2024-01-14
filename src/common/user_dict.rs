@@ -8,7 +8,7 @@ use std::{
     sync::Mutex,
 };
 
-use crate::common::path_util::abs_config_path;
+use crate::common::path_util::abs_config_path_fcp;
 
 pub struct UserDict {
     filepath: PathBuf,
@@ -23,7 +23,7 @@ impl Drop for UserDict {
 
 impl UserDict {
     pub fn new() -> UserDict {
-        let config_path = abs_config_path();
+        let config_path = abs_config_path_fcp();
         let ud_path = config_path.join("user_dict.csv");
         // Create folders and files if do not already exist
         let res = create_dir_all(&config_path.as_path());
