@@ -6,7 +6,7 @@ use std::sync::{
 use common::zmq::Server;
 use common::{keys::FcitxKeySym, msgs};
 use ctrlc::set_handler;
-use pinyin::dispatcher::Dispatcher;
+use pinyin::pinyin_dispatcher::PinyinDispatcher;
 
 pub mod common;
 pub mod pinyin;
@@ -21,7 +21,7 @@ async fn main() {
     .expect("main: Failed to set signal handler.");
 
     let sock = Server::new("tcp://127.0.0.1:8085");
-    let dispatcher = Dispatcher::new();
+    let dispatcher = PinyinDispatcher::new();
     while run.load(Ordering::SeqCst) {
         let res = sock.recv();
         if res.is_err() {

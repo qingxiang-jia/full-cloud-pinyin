@@ -30,7 +30,7 @@ impl State {
     }
 }
 
-pub struct Dispatcher {
+pub struct PinyinDispatcher {
     zmq: Arc<Mutex<Client>>,
     client: CloudPinyin<PinyinDecoder>,
     candidate_svc: CandidateService,
@@ -42,10 +42,10 @@ pub struct Dispatcher {
     level: Vec<usize>,
 }
 
-impl Dispatcher {
-    pub fn new() -> Dispatcher {
+impl PinyinDispatcher {
+    pub fn new() -> PinyinDispatcher {
         let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
-        let dispatcher = Dispatcher {
+        let dispatcher = PinyinDispatcher {
             zmq: req.clone(),
             client: CloudPinyin::new(),
             candidate_svc: CandidateService::new(req.clone()),
