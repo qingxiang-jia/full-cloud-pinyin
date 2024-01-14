@@ -1,4 +1,5 @@
 pub mod candidate;
+pub mod candidate_decoder;
 pub mod candidate_service;
 pub mod http2;
 pub mod keys;
