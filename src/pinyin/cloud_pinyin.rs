@@ -4,6 +4,7 @@ use reqwest::{header::USER_AGENT, Client};
 use reqwest_middleware::ClientBuilder;
 
 use crate::common::candidate_decoder::CandidateDecoder;
+use crate::common::http2::Http2;
 use crate::common::path_util::abs_config_path_fcp;
 
 use crate::common::candidate::Candidate;
@@ -12,6 +13,7 @@ use super::pinyin_decoder::PinyinDecoder;
 
 pub struct CloudPinyin<D: CandidateDecoder> {
     http: reqwest_middleware::ClientWithMiddleware,
+    http2: Http2,
     re: Regex,
     decoder: D,
 }
@@ -30,6 +32,7 @@ impl CloudPinyin<PinyinDecoder> {
             .build();
         CloudPinyin {
             http: client,
+            http2: Http2::new(abs_config_path_fcp()),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             decoder: PinyinDecoder::new(),
         }
