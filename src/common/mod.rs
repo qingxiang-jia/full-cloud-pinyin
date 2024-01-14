@@ -1,6 +1,7 @@
 pub mod candidate;
 pub mod candidate_decoder;
 pub mod candidate_service;
+pub mod dispatcher;
 pub mod http2;
 pub mod keys;
 pub mod msgs;
