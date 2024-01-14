@@ -7,13 +7,13 @@ use crate::common::path_util::abs_config_path_fcp;
 
 use crate::common::candidate::Candidate;
 
-pub struct CloudPinyinClient {
+pub struct CloudPinyin {
     http: reqwest_middleware::ClientWithMiddleware,
     re: Regex,
 }
 
-impl CloudPinyinClient {
-    pub fn new() -> CloudPinyinClient {
+impl CloudPinyin {
+    pub fn new() -> CloudPinyin {
         let cache_path = abs_config_path_fcp().join("cache");
         let client = ClientBuilder::new(Client::new())
             .with(Cache(HttpCache {
@@ -24,7 +24,7 @@ impl CloudPinyinClient {
                 options: HttpCacheOptions::default(),
             }))
             .build();
-        CloudPinyinClient {
+        CloudPinyin {
             http: client,
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
         }

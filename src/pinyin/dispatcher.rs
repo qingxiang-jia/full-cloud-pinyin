@@ -7,7 +7,7 @@ use crate::{
     common::preedit_service::PreeditService,
     common::user_dict::UserDict,
     common::zmq::{Client, Server},
-    pinyin::cloud_pinyin_client::CloudPinyinClient,
+    pinyin::cloud_pinyin::CloudPinyin,
     pinyin::number_service::NumberService,
     pinyin::symbol_service::SymbolService,
 };
@@ -30,7 +30,7 @@ impl State {
 
 pub struct Dispatcher {
     zmq: Arc<Mutex<Client>>,
-    client: CloudPinyinClient,
+    client: CloudPinyin,
     candidate_svc: CandidateService,
     preedit_svc: PreeditService,
     symbol_svc: SymbolService,
@@ -45,7 +45,7 @@ impl Dispatcher {
         let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
         let dispatcher = Dispatcher {
             zmq: req.clone(),
-            client: CloudPinyinClient::new(),
+            client: CloudPinyin::new(),
             candidate_svc: CandidateService::new(req.clone()),
             preedit_svc: PreeditService::new(req.clone()),
             symbol_svc: SymbolService::new(req.clone()),
