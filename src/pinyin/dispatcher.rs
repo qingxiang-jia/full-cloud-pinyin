@@ -12,6 +12,8 @@ use crate::{
     pinyin::symbol_service::SymbolService,
 };
 
+use super::pinyin_decoder::PinyinDecoder;
+
 struct State {
     partial_match: bool,
     pm_preedit: String,
@@ -30,7 +32,7 @@ impl State {
 
 pub struct Dispatcher {
     zmq: Arc<Mutex<Client>>,
-    client: CloudPinyin,
+    client: CloudPinyin<PinyinDecoder>,
     candidate_svc: CandidateService,
     preedit_svc: PreeditService,
     symbol_svc: SymbolService,

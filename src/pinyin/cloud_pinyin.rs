@@ -3,17 +3,21 @@ use regex::Regex;
 use reqwest::{header::USER_AGENT, Client};
 use reqwest_middleware::ClientBuilder;
 
+use crate::common::candidate_decoder::CandidateDecoder;
 use crate::common::path_util::abs_config_path_fcp;
 
 use crate::common::candidate::Candidate;
 
-pub struct CloudPinyin {
+use super::pinyin_decoder::PinyinDecoder;
+
+pub struct CloudPinyin<D: CandidateDecoder> {
     http: reqwest_middleware::ClientWithMiddleware,
     re: Regex,
+    decoder: D,
 }
 
-impl CloudPinyin {
-    pub fn new() -> CloudPinyin {
+impl CloudPinyin<PinyinDecoder> {
+    pub fn new() -> CloudPinyin<PinyinDecoder> {
         let cache_path = abs_config_path_fcp().join("cache");
         let client = ClientBuilder::new(Client::new())
             .with(Cache(HttpCache {
@@ -27,6 +31,7 @@ impl CloudPinyin {
         CloudPinyin {
             http: client,
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
+            decoder: PinyinDecoder::new(),
         }
     }
 
