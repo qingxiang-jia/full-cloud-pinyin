@@ -1,6 +1,6 @@
 use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheOptions};
 use regex::Regex;
-use reqwest::{header::USER_AGENT, Client};
+use reqwest::Client;
 use reqwest_middleware::ClientBuilder;
 
 use crate::common::candidate_decoder::CandidateDecoder;
@@ -11,8 +11,9 @@ use crate::common::candidate::Candidate;
 
 use super::pinyin_decoder::PinyinDecoder;
 
+const IM_NAME: &str = "zh-t-i0-pinyin";
+
 pub struct CloudPinyin<D: CandidateDecoder> {
-    http: reqwest_middleware::ClientWithMiddleware,
     http2: Http2,
     re: Regex,
     decoder: D,
@@ -31,7 +32,6 @@ impl CloudPinyin<PinyinDecoder> {
             }))
             .build();
         CloudPinyin {
-            http: client,
             http2: Http2::new(abs_config_path_fcp()),
             re: Regex::new("[^\"\\[\\],\\{\\}]+").expect("Invalid regex input."),
             decoder: PinyinDecoder::new(),
@@ -42,7 +42,10 @@ impl CloudPinyin<PinyinDecoder> {
         if preedit.len() == 0 {
             return Vec::new();
         }
-        let json = self.get_candidates_from_net(preedit, depth as i32).await;
+        let json = self
+            .http2
+            .get_candidates_json(preedit, IM_NAME, depth as i32)
+            .await;
         let mut candidates = self.json_to_candidates(json);
         for candidate in candidates.iter_mut() {
             if candidate.matched_len == 0 {
@@ -50,25 +53,6 @@ impl CloudPinyin<PinyinDecoder> {
             }
         }
         candidates
-    }
-
-    async fn get_candidates_from_net(&self, preedit: &str, depth: i32) -> String {
-        let url = format!("https://inputtools.google.com/request?text={}&itc=zh-t-i0-pinyin&num={}&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage", preedit, depth);
-
-        let resp = self
-            .http
-            .get(url)
-            .header(
-                USER_AGENT,
-                "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
-            )
-            .send()
-            .await
-            .expect("Network problems when making the request.");
-
-        resp.text()
-            .await
-            .expect("Network problem when getting the text from the response.")
     }
 
     fn json_to_candidates(&self, s: String) -> Vec<Candidate> {
