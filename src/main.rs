@@ -3,7 +3,7 @@ use std::sync::{
     Arc,
 };
 
-use common::zmq::Server;
+use common::{dispatcher::Dispatcher, zmq::Server};
 use common::{keys::FcitxKeySym, msgs};
 use ctrlc::set_handler;
 use pinyin::pinyin_dispatcher::PinyinDispatcher;

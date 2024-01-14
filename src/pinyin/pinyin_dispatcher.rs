@@ -5,8 +5,8 @@ use crate::{
     common::candidate_service::CandidateService,
     common::keys::FcitxKeySym,
     common::preedit_service::PreeditService,
-    common::user_dict::UserDict,
     common::zmq::{Client, Server},
+    common::{dispatcher::Dispatcher, user_dict::UserDict},
     pinyin::cloud_pinyin::CloudPinyin,
     pinyin::number_service::NumberService,
     pinyin::symbol_service::SymbolService,
@@ -42,8 +42,8 @@ pub struct PinyinDispatcher {
     level: Vec<usize>,
 }
 
-impl PinyinDispatcher {
-    pub fn new() -> PinyinDispatcher {
+impl Dispatcher for PinyinDispatcher {
+    fn new() -> PinyinDispatcher {
         let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
         let dispatcher = PinyinDispatcher {
             zmq: req.clone(),
@@ -67,7 +67,7 @@ impl PinyinDispatcher {
     }
 
     // True if key is accepted; false otherwise.
-    pub async fn on_input(&self, key: FcitxKeySym, sock: &Server) {
+    async fn on_input(&self, key: FcitxKeySym, sock: &Server) {
         match key {
             FcitxKeySym::a
             | FcitxKeySym::b
@@ -179,7 +179,9 @@ impl PinyinDispatcher {
             _ => _ = sock.send(false),
         }
     }
+}
 
+impl PinyinDispatcher {
     async fn handle_pinyin(&self, key: FcitxKeySym) {
         let c = key.to_char().expect("A-Z cannot be converted to a char.");
 
