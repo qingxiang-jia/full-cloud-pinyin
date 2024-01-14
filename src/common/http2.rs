@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheOptions};
 use reqwest::{header::USER_AGENT, Client};
 use reqwest_middleware::ClientBuilder;
@@ -7,13 +9,12 @@ pub struct Http2 {
 }
 
 impl Http2 {
-    pub fn new(cache_path: &str) -> Http2 {
+    pub fn new(config_path: PathBuf) -> Http2 {
+        let cache_path = config_path.join("cache");
         let client = ClientBuilder::new(Client::new())
             .with(Cache(HttpCache {
                 mode: CacheMode::Default,
-                manager: CACacheManager {
-                    path: cache_path.into(),
-                },
+                manager: CACacheManager { path: cache_path },
                 options: HttpCacheOptions::default(),
             }))
             .build();
