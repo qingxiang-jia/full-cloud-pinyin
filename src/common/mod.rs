@@ -1,5 +1,6 @@
 pub mod candidate;
 pub mod candidate_service;
+pub mod http2;
 pub mod keys;
 pub mod msgs;
 pub mod path_util;
