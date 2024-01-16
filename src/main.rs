@@ -9,6 +9,7 @@ use ctrlc::set_handler;
 use pinyin::pinyin_dispatcher::PinyinDispatcher;
 
 pub mod common;
+pub mod nepali;
 pub mod pinyin;
 
 #[tokio::main]
