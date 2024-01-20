@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::common::{
+    candidate::Candidate,
     candidate_service::CandidateService,
     dispatcher::Dispatcher,
     keys::FcitxKeySym,
@@ -133,7 +134,15 @@ impl Dispatcher for NepaliDispatcher {
 
 impl NepaliDispatcher {
     async fn handle_nepali(&self, key: FcitxKeySym) {
-        todo!()
+        let c = key.to_char().expect("A-Z cannot be converted to a char.");
+
+        self.preedit_svc.push(c);
+        let preedit = self.preedit_svc.to_string();
+
+        let candidates: Vec<Candidate> =
+            self.nepali.query_candidates(&preedit, self.level[0]).await;
+
+        self.candidate_svc.set_candidates(&candidates);
     }
 
     async fn handle_select(&self, key: FcitxKeySym) {
