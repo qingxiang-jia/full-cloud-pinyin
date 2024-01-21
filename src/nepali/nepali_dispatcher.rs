@@ -146,7 +146,10 @@ impl NepaliDispatcher {
     }
 
     async fn handle_select(&self, key: FcitxKeySym) {
-        todo!()
+        let i = key.to_usize().expect("Failed to conver the key to usize.");
+        let _ = self.candidate_svc.select(i);
+        self.preedit_svc.clear();
+        self.candidate_svc.clear();
     }
 
     async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
