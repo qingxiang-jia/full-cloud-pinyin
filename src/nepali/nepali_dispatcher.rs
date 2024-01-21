@@ -153,6 +153,83 @@ impl NepaliDispatcher {
     }
 
     async fn handle_control(&self, key: FcitxKeySym, sock: &Server) {
-        todo!()
+        if !self.candidate_svc.in_session() {
+            _ = sock.send(false);
+            return;
+        }
+
+        match key {
+            FcitxKeySym::Space => {
+                _ = sock.send(true);
+
+                self.handle_select(FcitxKeySym::Num1).await;
+            }
+            FcitxKeySym::Return => {
+                _ = sock.send(true);
+
+                let preedit = self.preedit_svc.to_string();
+                self.preedit_svc.clear();
+                self.candidate_svc.clear();
+                self.zmq
+                    .lock()
+                    .expect("handle_control: Failed to lock zmq.")
+                    .commit_text(&preedit);
+            }
+            FcitxKeySym::Minus => {
+                _ = sock.send(true);
+
+                self.candidate_svc.page_back();
+            }
+            FcitxKeySym::Equal => {
+                _ = sock.send(true);
+
+                let (enough, min_needed) = self.candidate_svc.page_into();
+                if !enough {
+                    let min = min_needed
+                        .expect("Not enough to fill lookup table but min_needed is None.");
+
+                    let mut to_load = 0;
+                    for qty in &self.level {
+                        if qty >= &min {
+                            to_load = *qty;
+                            break;
+                        }
+                    }
+
+                    let candidates = self
+                        .nepali
+                        .query_candidates(&self.preedit_svc.to_string(), to_load)
+                        .await;
+                    self.candidate_svc.set_candidates(&candidates);
+                }
+            }
+            FcitxKeySym::Up => _ = sock.send(false), // For now, ingore
+            FcitxKeySym::Down => _ = sock.send(false), // For now, ignore
+            FcitxKeySym::Left => _ = sock.send(false), // For now, ignore
+            FcitxKeySym::Right => _ = sock.send(false), // For now, ignore
+            FcitxKeySym::Backspace => {
+                let popped = self.preedit_svc.pop();
+
+                if popped.is_none() {
+                    _ = sock.send(false);
+                    return;
+                }
+                _ = sock.send(true);
+
+                let preedit: String = self.preedit_svc.to_string();
+                let candidates = self.nepali.query_candidates(&preedit, self.level[0]).await;
+                self.candidate_svc.set_candidates(&candidates);
+            }
+            FcitxKeySym::Escape => {
+                _ = sock.send(true);
+
+                self.preedit_svc.clear();
+                self.candidate_svc.clear();
+            }
+            _ => {
+                _ = sock.send(false);
+                println!("Invalid control key.")
+            }
+        }
     }
 }
