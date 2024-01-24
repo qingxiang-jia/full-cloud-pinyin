@@ -21,7 +21,14 @@ async fn main() {
     })
     .expect("main: Failed to set signal handler.");
 
-    let sock = Server::new("tcp://127.0.0.1:8085");
+    let sock = if cfg!(feature = "fcp") {
+        Server::new("tcp://127.0.0.1:8087")
+    } else if cfg!(feature = "fcn") {
+        Server::new("tcp://127.0.0.1:8089")
+    } else {
+        Server::new("tcp://127.0.0.1:8085")
+    };
+
     let dispatcher = PinyinDispatcher::new();
     while run.load(Ordering::SeqCst) {
         let res = sock.recv();
