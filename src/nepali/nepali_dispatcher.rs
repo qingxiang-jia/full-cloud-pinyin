@@ -24,7 +24,7 @@ pub struct NepaliDispatcher {
 
 impl Dispatcher for NepaliDispatcher {
     fn new() -> NepaliDispatcher {
-        let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
+        let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8090")));
         let dispatcher = NepaliDispatcher {
             zmq: req.clone(),
             nepali: CloudNepali::new(),

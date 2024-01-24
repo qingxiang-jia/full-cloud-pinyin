@@ -44,7 +44,7 @@ pub struct PinyinDispatcher {
 
 impl Dispatcher for PinyinDispatcher {
     fn new() -> PinyinDispatcher {
-        let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8086")));
+        let req: Arc<Mutex<Client>> = Arc::new(Mutex::new(Client::new("tcp://127.0.0.1:8088")));
         let dispatcher = PinyinDispatcher {
             zmq: req.clone(),
             client: CloudPinyin::new(),
