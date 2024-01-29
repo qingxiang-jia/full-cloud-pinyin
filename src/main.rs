@@ -6,6 +6,7 @@ use std::sync::{
 use common::{dispatcher::Dispatcher, zmq::Server};
 use common::{keys::FcitxKeySym, msgs};
 use ctrlc::set_handler;
+use nepali::nepali_dispatcher::NepaliDispatcher;
 use pinyin::pinyin_dispatcher::PinyinDispatcher;
 
 pub mod common;
@@ -14,6 +15,22 @@ pub mod pinyin;
 
 #[tokio::main]
 async fn main() {
+    if cfg!(feature = "fcp") {
+        let dispatcher = PinyinDispatcher::new();
+        event_loop("tcp://127.0.0.1:8087", dispatcher).await;
+    } else if cfg!(feature = "fcn") {
+        let dispatcher = NepaliDispatcher::new();
+        event_loop("tcp://127.0.0.1:8089", dispatcher).await;
+    } else {
+        let dispatcher = PinyinDispatcher::new();
+        event_loop("tcp://127.0.0.1:8085", dispatcher).await;
+    }
+}
+
+async fn event_loop<D>(addr: &str, dispatcher: D)
+where
+    D: Dispatcher,
+{
     let run = Arc::new(AtomicBool::new(true));
     let run_for_handler = run.clone();
     set_handler(move || {
@@ -21,19 +38,11 @@ async fn main() {
     })
     .expect("main: Failed to set signal handler.");
 
-    let sock = if cfg!(feature = "fcp") {
-        Server::new("tcp://127.0.0.1:8087")
-    } else if cfg!(feature = "fcn") {
-        Server::new("tcp://127.0.0.1:8089")
-    } else {
-        Server::new("tcp://127.0.0.1:8085")
-    };
-
-    let dispatcher = PinyinDispatcher::new();
+    let sock = Server::new(addr);
     while run.load(Ordering::SeqCst) {
         let res = sock.recv();
         if res.is_err() {
-            println!("main: Shutting down");
+            println!("event_loop: Shutting down");
             break; // Most likely we received ctrl+c, so it's okay.
         }
         let event: msgs::KeyEvent = res.unwrap();
