@@ -32,7 +32,10 @@ impl CandidateDecoder for NepaliDecoder {
         }
 
         let mut candidates: Vec<Candidate> = Vec::new();
-        for str in &linear_data {
+        for (i, str) in linear_data.iter().enumerate() {
+            if i == 0 {
+                continue; // Skip status code.
+            }
             if str == "candidate_type" {
                 break;
             }
